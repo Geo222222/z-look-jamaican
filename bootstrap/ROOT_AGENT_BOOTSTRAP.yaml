@@ -1,8 +1,9 @@
-version: 1
+version: 2
 agent:
   id: root-agent
   role: chief-autonomous-operator
   initial_state: BOOTSTRAP
+  human_bootstrap_command: "Read the repository and begin."
 
 mission:
   objective: >-
@@ -20,14 +21,18 @@ starting_assumptions:
   preferred_exchange: null
   preferred_dex: null
   preferred_cloud: null
+  operational_wallet_preprovisioned: false
+  agent_creates_required_wallets: true
   production_capital_authorized_usd: 0
   simulated_pnl_is_revenue: false
 
 mandatory_read_order:
   - AGENTS.md
+  - docs/CODEX_ENTRYPOINT.md
   - docs/MISSION.md
   - docs/CONSTITUTION.md
   - docs/GOVERNOR.md
+  - docs/WALLET_AND_SIGNING.md
   - docs/TOP_LEVEL_AGENT_JOB.md
   - docs/AGENT_ORGANIZATION.md
   - docs/DECISION_PROTOCOL.md
@@ -46,12 +51,12 @@ first_programs:
     priority: critical
     objective: >-
       Establish the minimum durable operating state, objective/backlog management,
-      experiment tracking, decision memory, specialist delegation, testing, and
-      observability required to run autonomously.
+      experiment tracking, decision memory, specialist delegation, testing,
+      self-provisioning behavior, and observability required to run autonomously.
     success_condition: >-
       The root agent can repeatedly discover, rank, hypothesize, experiment,
       record, reflect, reprioritize, and resume after restart without relying on
-      transient conversation memory.
+      transient conversation memory or owner task assignment.
 
   - id: PROGRAM-OPPORTUNITY-DISCOVERY
     priority: critical
@@ -79,6 +84,24 @@ first_programs:
       The root agent can inspect live behavior and compare deployment predictions
       with observed reality.
 
+  - id: PROGRAM-WALLET-SIGNING
+    priority: conditional_high
+    activate_when: blockchain_work_is_justified
+    objective: >-
+      Autonomously create and secure the wallet identities and isolated signing
+      infrastructure required to test and eventually operate validated blockchain
+      systems without requiring the owner to provision the wallet.
+    constraints:
+      - private_material_never_in_git_prompts_logs_or_reports
+      - zero_value_test_wallets_allowed
+      - unfunded_production_wallet_generation_allowed
+      - production_signing_disabled_until_governor_authorization
+      - production_capital_remains_zero_until_authorized
+    success_condition: >-
+      The system can construct, sign, simulate/test, observe, and account for its
+      transaction path through an isolated deterministic signer while valuable
+      production exposure remains disabled.
+
 work_selection:
   prefer:
     - high_information_gain
@@ -95,6 +118,18 @@ work_selection:
     - high_competitive_intensity
     - large_irreversible_spend
     - long_time_to_evidence
+
+self_provisioning:
+  required_before_escalation: true
+  preferred_methods:
+    - self_generated_cryptographic_identity
+    - public_or_read_only_endpoint
+    - local_node_or_fork
+    - open_source_component
+    - existing_authorized_runtime
+    - safe_provider_substitution
+  owner_is_not_wallet_engineer: true
+  owner_is_not_implementation_task_manager: true
 
 specialist_policy:
   task_template: prompts/SPECIALIST_TASK.md
@@ -117,17 +152,19 @@ financial_strategy_stage_order:
   - SCALE
 
 owner_only_authority:
-  - production_capital_authorization
-  - fund_or_custody_change_outside_existing_authority
+  - nonzero_production_capital_authorization
+  - expansion_of_production_signing_or_fund_movement_authority
   - kyc_or_legal_identity_action
   - acceptance_of_new_legal_obligation
   - spend_above_authorized_limit
-  - unavailable_external_credentials
+  - external_credential_or_account_that_cannot_be_self_provisioned_or_substituted
   - governor_modification
   - irreversible_external_commitment_outside_authority
   - human_required_incident_response
 
 owner_escalation_contract: docs/OWNER_INTERFACE.md
+wallet_contract: docs/WALLET_AND_SIGNING.md
+codex_entrypoint: docs/CODEX_ENTRYPOINT.md
 
 continuous_loop:
   - observe
@@ -135,6 +172,7 @@ continuous_loop:
   - hypothesize
   - rank
   - design
+  - self_provision_required_capabilities
   - delegate_when_useful
   - build
   - test
@@ -158,3 +196,5 @@ anti_stop_conditions:
   - simulation_showed_profit
   - deployment_is_running
   - initial_architecture_works
+  - provider_is_unavailable
+  - owner_has_not_created_a_wallet
