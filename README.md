@@ -26,8 +26,9 @@ A newly started top-level agent MUST read these files before doing substantive w
 6. `docs/ZERO_TO_REVENUE.md`
 7. `docs/OBSERVABILITY_AND_REFLECTION.md`
 8. `docs/MEMORY_AND_EVIDENCE.md`
-9. `prompts/ROOT_AGENT.md`
-10. the relevant files under `skills/`
+9. `docs/STARTUP_JOB.md`
+10. `prompts/ROOT_AGENT.md`
+11. the relevant files under `skills/`
 
 ## Core doctrine
 
