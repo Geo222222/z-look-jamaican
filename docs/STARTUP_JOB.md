@@ -8,7 +8,7 @@ The Root Agent must use `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml` as the machine-rea
 
 Bootstrap the minimum operating system required to autonomously discover, evaluate, build, observe, and improve lawful revenue opportunities starting from zero.
 
-The agent must not ask the owner what business to build. It must begin discovery and capability construction itself.
+The agent must not ask the owner what business to build, what wallet to create, which chain to use, or what implementation task to perform. It must begin discovery and capability construction itself.
 
 ## Required first outputs
 
@@ -26,7 +26,9 @@ Before declaring BOOTSTRAP complete, create durable forms of:
 10. incident registry;
 11. reflection log;
 12. economic/system metric interfaces;
-13. resume/recovery procedure after process restart.
+13. wallet/public-address registry;
+14. signer-policy metadata where blockchain work exists;
+15. resume/recovery procedure after process restart.
 
 The exact implementation may begin with Markdown/JSONL/SQLite if appropriate, but it must be durable and machine-readable enough for autonomous continuation.
 
@@ -45,6 +47,7 @@ Create the minimum structures needed for:
 - incidents;
 - reflections;
 - current objective and backlog;
+- wallet/public-address metadata where relevant;
 - restart/resume state.
 
 Use stable IDs and timestamps.
@@ -80,10 +83,28 @@ Create the ability to:
 - create isolated experiments;
 - record evidence;
 - build containerized components when useful;
+- create and secure machine identities/keys when required;
 - identify version/deployment lineage;
 - recover from failed experiments without losing institutional state.
 
-### D. Establish observability before meaningful deployment
+### D. Establish autonomous wallet/signing capability when justified
+
+When blockchain work becomes useful, follow `docs/WALLET_AND_SIGNING.md` and autonomously:
+
+- determine the wallet/account model required by the selected chain;
+- create zero-value development/test wallets;
+- create an unfunded production execution address when production-path validation benefits from it;
+- protect private material outside Git, prompts, logs, reports, and ordinary agent memory;
+- register only public addresses and non-secret wallet metadata in durable state;
+- build deterministic signing policy and an isolated signer boundary;
+- validate transaction construction/signing on local forks, simulations, or test networks where practical;
+- monitor signer health, nonces, receipts, balances, approvals, and transaction outcomes where relevant.
+
+Do not ask the owner to create a wallet or choose wallet software.
+
+Wallet creation does not authorize non-zero production capital or live financial exposure.
+
+### E. Establish observability before meaningful deployment
 
 Before relying on a deployed system, ensure the Root Agent can retrieve:
 
@@ -94,12 +115,13 @@ Before relying on a deployed system, ensure the Root Agent can retrieve:
 - dependency health;
 - recent errors;
 - resource use;
+- wallet/signer health where relevant;
 - economic outcomes where applicable;
 - rollback target.
 
 A deployed service that cannot be observed by the Root Agent does not satisfy deployment completion.
 
-### E. Produce the first opportunity register
+### F. Produce the first opportunity register
 
 For each candidate include:
 
@@ -123,7 +145,7 @@ For each candidate include:
 
 Rank the register using `docs/TOP_LEVEL_AGENT_JOB.md` and begin the cheapest high-information experiments.
 
-### F. Create the first specialist assignments
+### G. Create the first specialist assignments
 
 At minimum, independently produce or route work equivalent to:
 
@@ -132,9 +154,11 @@ At minimum, independently produce or route work equivalent to:
 - engineering/bootstrap implementation;
 - security/SRE review of the emerging runtime.
 
+Add wallet/signer engineering or smart-contract review when blockchain work actually requires it.
+
 Do not create permanent bureaucracy. Create only the roles needed to improve quality, parallelism, or separation of duties.
 
-### G. Perform the first Root Agent reflection
+### H. Perform the first Root Agent reflection
 
 After the first meaningful research/engineering cycle, write a reflection answering:
 
@@ -167,9 +191,23 @@ Do not conflate visible spread with executable net edge.
 
 Explicitly model fees, gas, slippage, price impact, failure probability, latency, MEV/adverse selection where relevant, capital/inventory requirements, infrastructure costs, and realistic execution constraints.
 
+## Self-provisioning rule
+
+If blocked by a technical dependency, first determine whether the capability can be built, self-provisioned, substituted, emulated, or tested locally within current authority.
+
+Prefer, where technically sufficient:
+
+- self-generated wallets over asking the owner to create one;
+- local forks over requesting production capital to test logic;
+- public/read-only APIs over unnecessary credentials;
+- open-source/local infrastructure over a paid service when it answers the same experiment;
+- replacing a blocked provider when that provider is not essential to the economic hypothesis.
+
+Escalation is not appropriate merely because using the owner would be easier.
+
 ## Owner behavior
 
-Do not ask the owner which opportunity to pursue, which protocol to use, which language to use, which database to use, or what task to perform next.
+Do not ask the owner which opportunity to pursue, which protocol to use, which language to use, which database to use, what wallet to create, or what task to perform next.
 
 Use `docs/OWNER_INTERFACE.md` only when an actual owner-only authority boundary is reached.
 
@@ -182,6 +220,7 @@ Do not stop merely because:
 - a simulation shows profit;
 - the first architecture is imperfect;
 - one specialist is blocked;
+- one provider is unavailable;
 - a live service is healthy;
 - an opportunity was successfully rejected.
 
