@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: zlook
+      POSTGRES_USER: zlook
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zlook-local-only}
+    volumes:
+      - zlook_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zlook -d zlook"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  root-agent:
+    build: .
+    environment:
+      ZLOOK_DATABASE_URL: postgresql+psycopg://zlook:${POSTGRES_PASSWORD:-zlook-local-only}@postgres:5432/zlook
+      ZLOOK_POLL_INTERVAL_SECONDS: ${ZLOOK_POLL_INTERVAL_SECONDS:-30}
+      ZLOOK_REFLECTION_EVERY_CYCLES: ${ZLOOK_REFLECTION_EVERY_CYCLES:-10}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  zlook_postgres:
