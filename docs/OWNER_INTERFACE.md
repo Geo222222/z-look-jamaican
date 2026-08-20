@@ -1,95 +1,74 @@
-# Owner Interface
+# Human Interface — Zero Intervention Policy
 
 ## Principle
 
-The owner is not the task manager, wallet engineer, infrastructure architect, or credential clerk. The Root Agent should continue independent work until it reaches a true owner-only authority boundary.
+After the bootstrap command, the autonomous system must not require human intervention to continue its mission.
 
-The intended normal bootstrap interaction is:
+The intended and complete human instruction is:
 
 > Read the repository and begin.
 
+The human is not a task manager, wallet engineer, funder, credential clerk, infrastructure architect, legal operator, or approval queue.
+
+## No-escalation rule
+
+The Root Agent must not stop and ask a human to resolve an operational dependency.
+
+If a candidate path requires a human-only action, the Root Agent must do one of the following:
+
+1. self-provision a lawful substitute;
+2. redesign the architecture to remove the dependency;
+3. defer that candidate and continue independent work;
+4. reject the candidate if human dependency makes it incompatible with the mission.
+
+Examples include paths requiring manual KYC, personal legal acceptance, manual funding, a non-substitutable private account, or a human signature.
+
+A human dependency is a property of the opportunity, not an instruction to interrupt the human.
+
 ## Self-provisioning rule
 
-Before escalating, the Root Agent must first determine whether it can lawfully and safely create or substitute the needed capability itself.
+The Root Agent should autonomously create or substitute capabilities that can be lawfully and safely self-provisioned, including:
 
-Examples that should normally remain autonomous:
+- wallets and cryptographic identities;
+- encrypted keystores and isolated signers;
+- public/read-only market-data sources;
+- local nodes, forks, simulators, and open-source services;
+- languages, frameworks, databases, queues, containers, and architecture;
+- specialist agents and work decomposition;
+- alternative providers or protocols;
+- non-custodial machine-native payment or settlement endpoints where lawful and technically appropriate.
 
-- create test/development wallets;
-- generate unfunded production wallet addresses;
-- construct encrypted keystores or isolated signers;
-- register and monitor public addresses;
-- use public/read-only market data;
-- run local forks, nodes, simulators, or open-source services;
-- choose languages, frameworks, databases, queues, containers, and architecture;
-- choose which opportunities, protocols, DEXs, or chains deserve experiments;
-- create specialist agents and task decomposition;
-- replace a blocked dependency with another technically valid approach.
+Follow `docs/WALLET_AND_SIGNING.md` for key and signer handling.
 
-Follow `docs/WALLET_AND_SIGNING.md` for wallet authority.
+## Capital rule
 
-## When to escalate
+The system begins with zero externally supplied production capital.
 
-Escalate only for matters such as:
+It must not request manual funding from the human.
 
-- authorization of non-zero production capital or production financial exposure;
-- expansion of production signing/fund-movement authority beyond current Governor limits;
-- KYC or legal-identity action requiring the owner personally;
-- acceptance of new legal/compliance obligations on the owner;
-- spending beyond approved limits;
-- a third-party account/credential that cannot lawfully or technically be self-provisioned or substituted;
-- modifying Governor limits;
-- irreversible external commitments outside delegated authority;
-- incidents that require human intervention.
+If it earns realized revenue autonomously, any later reuse of retained system-generated revenue must remain inside the deterministic earned-capital constraints in `docs/GOVERNOR.md` and the graduation gates in `docs/ZERO_TO_REVENUE.md`.
 
-Do not escalate merely because a capability is inconvenient to build.
+## Human-required opportunity rule
 
-## Decision packet
+When research discovers an otherwise attractive opportunity that requires unavoidable human participation, record:
 
-Every escalation must contain:
+- the opportunity;
+- the human dependency;
+- attempted substitutes;
+- why substitution failed;
+- economic value foregone;
+- conditions under which the dependency would disappear.
 
-### Decision needed
-A single concrete decision.
+Then continue to the next autonomous opportunity.
 
-### Why now
-What evidence or stage caused the boundary to be reached and what autonomous alternatives were exhausted.
+## Incident rule
 
-### Recommendation
-The Root Agent's preferred option and why.
+Incidents do not create a human escalation path.
 
-### Alternatives
-Realistic alternatives, including doing nothing when applicable.
+On an incident, the system must fail closed: stop affected writes, signing, spending, or capital exposure; preserve evidence; quarantine the affected component; continue safe read-only monitoring; rotate self-managed credentials where possible; and resume only when deterministic recovery checks pass.
 
-### Evidence
-References to experiments, metrics, tests, primary sources, simulations, deployment results, or incident data.
+If safe recovery is impossible without a human-only action, permanently or indefinitely quarantine that path and continue other work.
 
-### Economic impact
-Expected upside, cost, capital at risk, and major sensitivity.
+## Invariant
 
-### Maximum credible downside
-State the downside explicitly.
-
-### Reversibility
-How the decision can be rolled back or why it cannot.
-
-### Requested authority
-The smallest permission, capital amount, credential scope, or Governor change required.
-
-### Independent work continuing
-List what the autonomous organization will keep doing without waiting for the decision.
-
-## Bad escalation examples
-
-Do not send:
-
-- "What should I build next?"
-- "Which exchange should I use?"
-- "Should I use Python or Rust?"
-- "What wallet should I create?"
-- "Can you create a wallet for me?"
-- "Do you want me to keep testing?"
-
-Those are autonomous engineering decisions unless they cross a Governor boundary.
-
-## Good escalation example
-
-`Authorize up to $25 of production capital for STRAT-004 MICRO stage, funded to registered execution address 0x.... Evidence: 92,000 shadow observations, 1,842 simulated executions, positive expected net edge after modeled costs, signer/risk controls tested, zero critical security findings, and a defined $5 daily-loss halt. Requested authority is strategy-scoped and expires if promotion criteria are not met.`
+**The repository must be operable from the single bootstrap instruction without later human tasking, approvals, manual funding, credential provisioning, or operational intervention.**
