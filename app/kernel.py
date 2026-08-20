@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 from typing import Any
@@ -101,6 +101,23 @@ class Reflection(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class SpecialistTask(Base):
+    __tablename__ = "specialist_tasks"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    role: Mapped[str] = mapped_column(String(80), index=True)
+    parent_objective_id: Mapped[str] = mapped_column(String(64), index=True)
+    opportunity_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    title: Mapped[str] = mapped_column(String(200))
+    instruction: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(32), default="PENDING", index=True)
+    priority: Mapped[float] = mapped_column(Float, default=0.0, index=True)
+    worker_id: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    result: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
 class RuntimeState(Base):
     __tablename__ = "runtime_state"
     key: Mapped[str] = mapped_column(String(100), primary_key=True)
@@ -156,12 +173,7 @@ class GovernorPolicy:
 
     def limits(self, retained_realized_revenue_usd: float) -> dict[str, float]:
         r = max(0.0, retained_realized_revenue_usd)
-        return {
-            "max_total_financial_allocation_usd": r * self.max_financial_allocation_pct_retained_revenue,
-            "max_single_trade_usd": r * self.max_single_trade_pct_retained_revenue,
-            "max_concurrent_exposure_usd": r * self.max_concurrent_exposure_pct_retained_revenue,
-            "max_daily_realized_loss_usd": r * self.max_daily_realized_loss_pct_retained_revenue,
-        }
+        return {"max_total_financial_allocation_usd": r * self.max_financial_allocation_pct_retained_revenue, "max_single_trade_usd": r * self.max_single_trade_pct_retained_revenue, "max_concurrent_exposure_usd": r * self.max_concurrent_exposure_pct_retained_revenue, "max_daily_realized_loss_usd": r * self.max_daily_realized_loss_pct_retained_revenue}
 
     def assert_trade_allowed(self, *, retained_realized_revenue_usd: float, trade_notional_usd: float, concurrent_exposure_usd: float, daily_realized_loss_usd: float) -> None:
         limits = self.limits(retained_realized_revenue_usd)
@@ -225,9 +237,60 @@ class AutonomousKernel:
                 top = s.scalar(select(Opportunity).order_by(Opportunity.score.desc()).limit(1))
                 if top:
                     s.add(Experiment(id=f"EXP-{uuid4().hex[:12].upper()}", opportunity_id=top.id, hypothesis=f"{top.title} deserves a deeper falsification experiment.", method=top.next_experiment, success_criteria="Current evidence materially raises or lowers confidence and quantifies economics."))
+            self._ensure_research_task(s)
             if s.get(Decision, "DEC-BOOTSTRAP-001") is None:
                 s.add(Decision(id="DEC-BOOTSTRAP-001", subject="Initial architecture", decision="Use a small persistent kernel with deterministic Governor enforcement and hypothesis-first discovery.", rationale="Minimizes complexity while enabling autonomous continuation.", evidence={"external_starting_capital_usd": 0}, reversal_conditions="Replace components only when measured bottlenecks justify more complexity."))
             state.value = {**state.value, "state": "DISCOVERY", "last_action": "bootstrap complete"}
+
+    def _ensure_research_task(self, s: Session) -> None:
+        active = s.scalar(select(SpecialistTask).where(SpecialistTask.status.in_(["PENDING", "RUNNING"])).limit(1))
+        if active is not None:
+            return
+        top = s.scalar(select(Opportunity).where(Opportunity.stage.notin_(["REJECTED", "SUSPENDED"])).order_by(Opportunity.score.desc()).limit(1))
+        if top is None:
+            return
+        s.add(SpecialistTask(id=f"TASK-{uuid4().hex[:12].upper()}", role="Opportunity Researcher", parent_objective_id="OBJ-MISSION", opportunity_id=top.id, title=f"Falsify or strengthen {top.id}", instruction=f"Research current primary-source evidence for {top.title}. Mechanism: {top.mechanism} Payer/value source: {top.payer} Next experiment: {top.next_experiment} Return evidence, economics, major risks, confidence_delta from -0.5 to 0.5, and a concrete next experiment. Do not claim profitability from visible spread, simulated P&L, or marketing material.", priority=top.score))
+
+    def claim_task(self, worker_id: str, lease_minutes: int = 30) -> dict[str, Any] | None:
+        with session_scope() as s:
+            now = utcnow()
+            task = s.scalar(select(SpecialistTask).where((SpecialistTask.status == "PENDING") | ((SpecialistTask.status == "RUNNING") & (SpecialistTask.lease_until < now))).order_by(SpecialistTask.priority.desc(), SpecialistTask.created_at.asc()).limit(1))
+            if task is None:
+                return None
+            task.status = "RUNNING"
+            task.worker_id = worker_id
+            task.lease_until = now + timedelta(minutes=max(1, lease_minutes))
+            return {"id": task.id, "role": task.role, "title": task.title, "instruction": task.instruction, "opportunity_id": task.opportunity_id, "lease_until": task.lease_until.isoformat()}
+
+    def complete_task(self, task_id: str, worker_id: str, result: dict[str, Any]) -> dict[str, Any]:
+        with session_scope() as s:
+            task = s.get(SpecialistTask, task_id)
+            if task is None:
+                raise KeyError(task_id)
+            if task.worker_id not in (None, worker_id):
+                raise PermissionError("Task is leased to another worker")
+            task.status = "COMPLETED"
+            task.worker_id = worker_id
+            task.lease_until = None
+            task.result = result
+            if task.opportunity_id:
+                opp = s.get(Opportunity, task.opportunity_id)
+                if opp is not None:
+                    delta = max(-0.5, min(0.5, float(result.get("confidence_delta", 0.0))))
+                    opp.confidence = max(0.0, min(1.0, opp.confidence + delta))
+                    opp.stage = "RESEARCH"
+                    opp.evidence = {**(opp.evidence or {}), "latest_task_id": task.id, "latest_result": result}
+                    next_exp = result.get("next_experiment")
+                    if isinstance(next_exp, str) and next_exp.strip():
+                        opp.next_experiment = next_exp.strip()
+                    if result.get("recommendation") == "REJECT":
+                        opp.stage = "REJECTED"
+            return {"id": task.id, "status": task.status, "opportunity_id": task.opportunity_id}
+
+    def list_tasks(self, limit: int = 50) -> list[dict[str, Any]]:
+        with session_scope() as s:
+            tasks = list(s.scalars(select(SpecialistTask).order_by(SpecialistTask.created_at.desc()).limit(limit)))
+            return [{"id": t.id, "role": t.role, "title": t.title, "status": t.status, "opportunity_id": t.opportunity_id, "worker_id": t.worker_id} for t in tasks]
 
     def run_cycle(self) -> CycleResult:
         with session_scope() as s:
@@ -240,6 +303,7 @@ class AutonomousKernel:
             value = dict(state.value)
             value.update({"cycle": cycle, "state": "RESEARCH", "last_action": action, "top_opportunity_id": top.id if top else None})
             state.value = value
+            self._ensure_research_task(s)
             if cycle % max(1, settings.reflection_every_cycles) == 0:
                 s.add(Reflection(id=f"REF-{uuid4().hex[:12].upper()}", cycle=cycle, expected="The highest-ranked opportunity remains the best next research target unless new evidence changes ranking.", observed=f"Current top opportunity: {top.id if top else 'none'}; action: {action}", delta="No current external evidence adapter is integrated yet.", lesson="Kernel operation is proven; economic truth now requires live evidence and experiment execution.", next_action="Integrate primary-source research and experiment workers without weakening the Governor."))
             return CycleResult(cycle, value["state"], action, value["top_opportunity_id"])
@@ -249,10 +313,6 @@ class AutonomousKernel:
             state = s.get(RuntimeState, "kernel")
             top = s.scalar(select(Opportunity).order_by(Opportunity.score.desc()).limit(1))
             experiments = list(s.scalars(select(Experiment).order_by(Experiment.created_at.desc()).limit(10)))
+            tasks = list(s.scalars(select(SpecialistTask).order_by(SpecialistTask.created_at.desc()).limit(10)))
             retained = float((state.value if state else {}).get("retained_realized_revenue_usd", 0.0))
-            return {
-                "kernel": state.value if state else None,
-                "governor": {"external_starting_capital_usd": 0.0, "manual_human_funding_allowed": False, "borrowing_allowed": False, "leverage_allowed": False, "earned_capital_limits": POLICY.limits(retained)},
-                "top_opportunity": None if top is None else {"id": top.id, "title": top.title, "score": top.score, "confidence": top.confidence, "stage": top.stage, "live_validated": bool(top.evidence.get("live_validated", False))},
-                "experiments": [{"id": e.id, "opportunity_id": e.opportunity_id, "status": e.status} for e in experiments],
-            }
+            return {"kernel": state.value if state else None, "governor": {"external_starting_capital_usd": 0.0, "manual_human_funding_allowed": False, "borrowing_allowed": False, "leverage_allowed": False, "earned_capital_limits": POLICY.limits(retained)}, "top_opportunity": None if top is None else {"id": top.id, "title": top.title, "score": top.score, "confidence": top.confidence, "stage": top.stage, "live_validated": bool(top.evidence.get("live_validated", False))}, "experiments": [{"id": e.id, "opportunity_id": e.opportunity_id, "status": e.status} for e in experiments], "tasks": [{"id": t.id, "role": t.role, "status": t.status, "opportunity_id": t.opportunity_id} for t in tasks]}

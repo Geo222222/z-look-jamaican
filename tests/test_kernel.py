@@ -15,19 +15,22 @@ def test_zero_revenue_blocks_live_trade():
 
 
 def test_earned_capital_limits():
-    limits = GovernorPolicy().limits(1000)
-    assert limits == {"max_total_financial_allocation_usd": 200, "max_single_trade_usd": 5, "max_concurrent_exposure_usd": 50, "max_daily_realized_loss_usd": 10}
+    assert GovernorPolicy().limits(1000) == {"max_total_financial_allocation_usd": 200, "max_single_trade_usd": 5, "max_concurrent_exposure_usd": 50, "max_daily_realized_loss_usd": 10}
 
 
-def test_bootstrap_and_cycle_are_durable():
+def test_bootstrap_cycle_and_specialist_evidence_flow():
     init_db()
     kernel = AutonomousKernel()
     kernel.bootstrap()
     state = kernel.snapshot()
     assert state["kernel"]["external_capital_usd"] == 0
-    assert state["kernel"]["state"] == "DISCOVERY"
-    assert state["top_opportunity"] is not None
     assert state["top_opportunity"]["live_validated"] is False
+    assert state["tasks"]
+    task = kernel.claim_task("codex-research-1")
+    assert task and task["role"] == "Opportunity Researcher"
+    kernel.complete_task(task["id"], "codex-research-1", {"confidence_delta": .1, "summary": "primary evidence gathered", "next_experiment": "run measured comparison", "recommendation": "CONTINUE"})
+    assert kernel.list_tasks()[0]["status"] == "COMPLETED"
     result = kernel.run_cycle()
     assert result.cycle == 1
     assert result.top_opportunity_id
+    assert any(t["status"] == "PENDING" for t in kernel.list_tasks())
