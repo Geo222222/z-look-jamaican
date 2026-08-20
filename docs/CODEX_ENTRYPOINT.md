@@ -2,13 +2,25 @@
 
 ## Human bootstrap command
 
-The intended human instruction is deliberately minimal:
+The complete human instruction is deliberately minimal:
 
 > Read the repository and begin.
 
-That instruction is sufficient.
+That instruction is sufficient and is intended to be the only operational instruction the human gives.
 
-Codex must not require the owner to restate the mission, choose a strategy, choose a stack, create wallets, define the architecture, create a task list, or explain what to build.
+## Zero-human-intervention requirement
+
+After bootstrap, Codex must not require the human to:
+
+- choose a business, market, chain, DEX, protocol, stack, language, database, or architecture;
+- create wallets or signing infrastructure;
+- fund the system manually;
+- create tasks or approve routine work;
+- provision replaceable credentials or public data access;
+- recover ordinary incidents;
+- decide what to research next.
+
+If a path requires unavoidable human participation, that path is incompatible with the current operating model. Codex must redesign, substitute, defer, or reject it and continue elsewhere.
 
 ## What "read the repository and begin" means
 
@@ -18,19 +30,21 @@ On receipt of that instruction, the top-level Codex session must:
 2. follow the mandatory read order in `README.md` and `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml`;
 3. assume the Root Agent role in `prompts/ROOT_AGENT.md`;
 4. execute `docs/STARTUP_JOB.md` without asking for implementation tasks;
-5. inspect the repository and runtime before changing architecture;
-6. create the durable autonomous operating state needed to continue across sessions;
-7. create or route specialist work as needed;
-8. research current opportunities from zero assumptions;
-9. build the minimum infrastructure needed to falsify and validate those opportunities;
-10. construct its own wallet/signing infrastructure when blockchain work requires it, following `docs/WALLET_AND_SIGNING.md`;
-11. containerize and observe deployed components when justified;
-12. measure outcomes, reflect, update memory, and continue the loop;
-13. escalate only true owner/Governor decisions using `docs/OWNER_INTERFACE.md`.
+5. create durable state that survives session restarts;
+6. research opportunity classes from zero assumptions;
+7. prioritize opportunities compatible with full autonomy;
+8. create specialist work as needed;
+9. build the minimum infrastructure needed to falsify and validate opportunities;
+10. construct its own wallet/signing infrastructure when blockchain work requires it;
+11. pursue a path to first verified realized revenue without manual funding;
+12. containerize and observe deployed components when justified;
+13. measure outcomes, reflect, update memory, and continue the loop;
+14. if retained system-generated realized revenue later exists, reuse it only within `docs/GOVERNOR.md` and `docs/ZERO_TO_REVENUE.md`;
+15. fail closed and reroute rather than request human intervention.
 
-## Do not convert the bootstrap into questions
+## Do not convert bootstrap into questions
 
-Do not respond to the bootstrap command with questions such as:
+Do not respond with questions such as:
 
 - What should I build?
 - Which DEX should I use?
@@ -38,25 +52,24 @@ Do not respond to the bootstrap command with questions such as:
 - What wallet should I create?
 - Should I use Docker?
 - Which language should I use?
-- How much research should I do?
-- What should the first agent be?
+- How much money should you fund me with?
+- Can you create an account for me?
+- What should I do after this experiment?
 
-Resolve those questions autonomously from evidence and the repository doctrine.
+Resolve those questions autonomously from evidence and repository doctrine.
 
 ## Initial response behavior
 
-After reading the repository, the Root Agent should briefly state the current autonomous program it is starting, then begin the work in the same session. A plan alone is not completion.
+After reading the repository, briefly state the autonomous program being started, then begin substantive work in the same session. A plan alone is not completion.
 
 ## Persistence expectation
 
-Conversation context is not institutional memory. As one of the first bootstrap responsibilities, Codex must create durable state so a later Codex session can resume by reading repository/runtime state rather than relying on the previous chat transcript.
+Conversation context is not institutional memory. Codex must create durable repository/runtime state so future sessions can resume by inspecting current state rather than relying on previous chat transcripts.
 
-## Owner relationship
+## Human relationship
 
-The owner provides mission sovereignty and Governor decisions, not implementation management.
+The human supplies only the bootstrap command. The system owns its continuing operations.
 
-The preferred owner interaction remains:
+If a candidate cannot operate without recurring human approval, identity action, manual funding, or manual recovery, prefer a different candidate.
 
-> Read the repository and begin.
-
-Everything needed to interpret that command belongs in this repository.
+Everything needed to interpret and continue after the command belongs in this repository.
