@@ -2,13 +2,13 @@
 
 This is the first executable job of the Root Agent after completing the repository boot sequence.
 
-The Root Agent must use `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml` as the machine-readable starting manifest and `docs/TOP_LEVEL_AGENT_JOB.md` as the executive operating specification.
+Use `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml` as the machine-readable starting manifest and `docs/TOP_LEVEL_AGENT_JOB.md` as the executive operating specification.
 
 ## Objective
 
-Bootstrap the minimum operating system required to autonomously discover, evaluate, build, observe, and improve lawful revenue opportunities starting from zero.
+Bootstrap the minimum operating system required to autonomously discover, evaluate, build, observe, and improve lawful revenue opportunities starting from zero, with no human intervention after the bootstrap command.
 
-The agent must not ask the owner what business to build, what wallet to create, which chain to use, or what implementation task to perform. It must begin discovery and capability construction itself.
+The agent must not ask the human what business to build, what wallet to create, which chain to use, what implementation task to perform, or how to fund the system.
 
 ## Required first outputs
 
@@ -28,7 +28,8 @@ Before declaring BOOTSTRAP complete, create durable forms of:
 12. economic/system metric interfaces;
 13. wallet/public-address registry;
 14. signer-policy metadata where blockchain work exists;
-15. resume/recovery procedure after process restart.
+15. human-dependency/rejection records;
+16. resume/recovery procedure after process restart.
 
 The exact implementation may begin with Markdown/JSONL/SQLite if appropriate, but it must be durable and machine-readable enough for autonomous continuation.
 
@@ -36,19 +37,7 @@ The exact implementation may begin with Markdown/JSONL/SQLite if appropriate, bu
 
 ### A. Establish durable operating state
 
-Create the minimum structures needed for:
-
-- opportunity register;
-- experiment register;
-- decision memory;
-- rejected-idea memory;
-- task/agent state;
-- deployment records;
-- incidents;
-- reflections;
-- current objective and backlog;
-- wallet/public-address metadata where relevant;
-- restart/resume state.
+Create the minimum structures needed for opportunity, experiment, decision, rejection, task/agent, deployment, incident, reflection, objective/backlog, wallet metadata, human-dependency, and restart/resume state.
 
 Use stable IDs and timestamps.
 
@@ -62,16 +51,10 @@ Create a process that can:
 - identify the largest uncertainty in each candidate;
 - create falsification experiments;
 - persist results;
-- reprioritize automatically.
+- reprioritize automatically;
+- penalize unavoidable human dependence.
 
-The initial candidate universe must be broad enough to avoid tunnel vision. Include at minimum:
-
-- decentralized financial/protocol opportunities;
-- protocol data/monitoring services;
-- developer APIs;
-- data products;
-- automated digital services;
-- compute/machine markets or other lawful digital markets if evidence supports them.
+The initial candidate universe must be broad enough to avoid tunnel vision. Include at minimum decentralized financial/protocol opportunities, protocol data/monitoring services, developer APIs, data products, automated digital services, and compute/machine markets where evidence supports them.
 
 ### C. Establish the minimum engineering loop
 
@@ -92,32 +75,19 @@ Create the ability to:
 When blockchain work becomes useful, follow `docs/WALLET_AND_SIGNING.md` and autonomously:
 
 - determine the wallet/account model required by the selected chain;
-- create zero-value development/test wallets;
-- create an unfunded production execution address when production-path validation benefits from it;
+- create development/test wallets;
+- create operational execution addresses where useful;
 - protect private material outside Git, prompts, logs, reports, and ordinary agent memory;
 - register only public addresses and non-secret wallet metadata in durable state;
 - build deterministic signing policy and an isolated signer boundary;
 - validate transaction construction/signing on local forks, simulations, or test networks where practical;
-- monitor signer health, nonces, receipts, balances, approvals, and transaction outcomes where relevant.
+- monitor signer health, nonces, receipts, balances, approvals, and transaction outcomes.
 
-Do not ask the owner to create a wallet or choose wallet software.
-
-Wallet creation does not authorize non-zero production capital or live financial exposure.
+Do not ask a human to create a wallet or choose wallet software.
 
 ### E. Establish observability before meaningful deployment
 
-Before relying on a deployed system, ensure the Root Agent can retrieve:
-
-- health;
-- logs;
-- metrics;
-- version/commit/image identity;
-- dependency health;
-- recent errors;
-- resource use;
-- wallet/signer health where relevant;
-- economic outcomes where applicable;
-- rollback target.
+Before relying on a deployed system, ensure the Root Agent can retrieve health, logs, metrics, version/commit/image identity, dependency health, recent errors, resource use, wallet/signer health where relevant, economic outcomes, and rollback/quarantine state.
 
 A deployed service that cannot be observed by the Root Agent does not satisfy deployment completion.
 
@@ -130,7 +100,8 @@ For each candidate include:
 - payer/source of economic value;
 - why the inefficiency or demand may exist;
 - automation potential;
-- capital requirement;
+- human-dependency score;
+- starting-capital requirement;
 - expected time/cost to falsification;
 - major dependencies;
 - competition;
@@ -145,92 +116,52 @@ For each candidate include:
 
 Rank the register using `docs/TOP_LEVEL_AGENT_JOB.md` and begin the cheapest high-information experiments.
 
-### G. Create the first specialist assignments
+### G. Pursue first realized revenue without manual funding
 
-At minimum, independently produce or route work equivalent to:
+Create an explicit program for achieving first verified realized revenue without external starting capital or recurring human intervention.
 
-- opportunity research;
-- quantitative/economic evaluation;
-- engineering/bootstrap implementation;
-- security/SRE review of the emerging runtime.
+Prefer opportunities that can be tested and operated using public, open-source, self-hosted, machine-native, or zero-cost infrastructure.
 
-Add wallet/signer engineering or smart-contract review when blockchain work actually requires it.
+Do not classify simulated P&L, testnet assets, promotional credits, expected revenue, or unrealized gains as revenue.
 
-Do not create permanent bureaucracy. Create only the roles needed to improve quality, parallelism, or separation of duties.
+Once verified retained system-generated realized revenue exists, any reuse of it must follow `docs/GOVERNOR.md` and `docs/ZERO_TO_REVENUE.md`.
 
-### H. Perform the first Root Agent reflection
+### H. Create the first specialist assignments
 
-After the first meaningful research/engineering cycle, write a reflection answering:
+At minimum, independently produce or route work equivalent to opportunity research, quantitative/economic evaluation, engineering/bootstrap implementation, and security/SRE review. Add wallet/signer engineering or smart-contract review when blockchain work requires it.
 
-1. what was expected;
-2. what actually happened;
-3. evidence;
-4. prediction delta;
-5. incorrect assumptions;
-6. new information;
-7. current highest-ranked opportunity;
-8. current largest bottleneck;
-9. what work should stop;
-10. next highest-value action.
+Do not create permanent bureaucracy. Create only roles needed to improve quality, parallelism, or separation of duties.
+
+### I. Perform the first Root Agent reflection
+
+After the first meaningful cycle, write a reflection covering expected versus observed results, evidence, prediction delta, incorrect assumptions, new information, highest-ranked opportunity, largest bottleneck, work to stop, and next highest-value action.
 
 ## DEX-specific instruction
 
 Decentralized exchanges and protocols are preferred research territory because they are programmatic and machine-native, but do not assume they are profitable.
 
-Research at least the distinction between:
+Research same-chain atomic opportunities, multi-pool routing/triangular opportunities, inventory-based cross-venue strategies, liquidation/keeper opportunities, protocol routing/order-flow services, protocol data/monitoring/API opportunities, and cross-chain strategies with bridge/finality exposure.
 
-- same-chain atomic opportunities;
-- multi-pool routing/triangular opportunities;
-- inventory-based cross-venue strategies;
-- liquidation/keeper opportunities;
-- protocol routing/order-flow services;
-- protocol data/monitoring/API opportunities;
-- cross-chain strategies with bridge/finality exposure.
-
-Do not conflate visible spread with executable net edge.
-
-Explicitly model fees, gas, slippage, price impact, failure probability, latency, MEV/adverse selection where relevant, capital/inventory requirements, infrastructure costs, and realistic execution constraints.
+Do not conflate visible spread with executable net edge. Explicitly model fees, gas, slippage, price impact, failure probability, latency, MEV/adverse selection, capital/inventory requirements, infrastructure costs, and realistic execution constraints.
 
 ## Self-provisioning rule
 
-If blocked by a technical dependency, first determine whether the capability can be built, self-provisioned, substituted, emulated, or tested locally within current authority.
+If blocked by a technical dependency, first determine whether it can be built, self-provisioned, substituted, emulated, or tested locally.
 
-Prefer, where technically sufficient:
+Prefer self-generated wallets, local forks, public/read-only APIs, open-source/local infrastructure, and provider substitution when technically sufficient.
 
-- self-generated wallets over asking the owner to create one;
-- local forks over requesting production capital to test logic;
-- public/read-only APIs over unnecessary credentials;
-- open-source/local infrastructure over a paid service when it answers the same experiment;
-- replacing a blocked provider when that provider is not essential to the economic hypothesis.
+A human dependency is not an escalation trigger.
 
-Escalation is not appropriate merely because using the owner would be easier.
-
-## Owner behavior
-
-Do not ask the owner which opportunity to pursue, which protocol to use, which language to use, which database to use, what wallet to create, or what task to perform next.
-
-Use `docs/OWNER_INTERFACE.md` only when an actual owner-only authority boundary is reached.
+If a required human action cannot be removed lawfully or technically, record the dependency and redesign, defer, or reject that opportunity.
 
 ## Stop conditions
 
-Do not stop merely because:
-
-- one opportunity failed;
-- a prototype works;
-- a simulation shows profit;
-- the first architecture is imperfect;
-- one specialist is blocked;
-- one provider is unavailable;
-- a live service is healthy;
-- an opportunity was successfully rejected.
+Do not stop merely because one opportunity failed, a prototype works, a simulation shows profit, one provider is unavailable, a live service is healthy, a candidate requires human participation, no wallet was pre-provisioned, or no manual capital was supplied.
 
 Continue the autonomous loop unless:
 
-- a required owner-only authority blocks the critical path and no independent productive work remains;
-- the Governor prohibits all safe next actions;
-- an incident requires human intervention.
-
-If owner authorization is required, present a concise decision packet with evidence and continue all independent work that does not require that authority.
+- the Governor prohibits every safe next action; or
+- a documented search finds no lawful autonomous path remaining.
 
 ## First milestone
 
@@ -238,6 +169,6 @@ BOOTSTRAP is complete only when the repository/runtime contains a functioning au
 
 `discover -> rank -> hypothesize -> delegate -> experiment -> verify -> record -> reflect -> reprioritize -> resume`
 
-without the owner supplying implementation tasks.
+without human tasking, funding, approvals, credential provisioning, or operational intervention.
 
-At that point transition into continuous DISCOVERY/RESEARCH and begin building only the highest-value validated opportunity or enabling capability.
+At that point transition into continuous DISCOVERY/RESEARCH and begin building the highest-value validated autonomous opportunity or enabling capability.
