@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.coverage
+
+# Local configuration and secret-bearing material must never enter Git.
+.env
+.env.*
+!.env.example
+secrets/
+var/secrets/
+wallets/private/
+*.key
+*.pem
+
+# Ephemeral runtime output is reproducible and not institutional memory.
+artifacts/runtime/
+state/.writer.lock
+state/pending_transaction.json

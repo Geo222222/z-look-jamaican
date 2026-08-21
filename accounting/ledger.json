@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-21T19:30:10.3723107Z",
+  "currency": "USD",
+  "scope": "repository-recorded autonomous-system activity",
+  "production_capital_authorized_usd": 0,
+  "entries": [],
+  "observation": "No prior transaction/accounting ledger was found. Empty entries do not assert external balances; they record that no economic activity has yet been entered in this repository."
+}

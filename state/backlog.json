@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-21T19:57:13.939640Z",
+  "ranking_method": "priority_score is a 0-100 judgment combining information gain, mission value, falsification cost, reversibility, risk, dependency burden, and reuse value; assumptions remain explicit in each task.",
+  "items": [
+    {
+      "id": "TASK-BOOT-003",
+      "parent_objective_id": "PROGRAM-BOOTSTRAP-KERNEL",
+      "title": "Implement the minimum durable kernel and machine-readable registries",
+      "status": "completed",
+      "priority_score": 100,
+      "score_basis": {
+        "information_gain": 5,
+        "mission_value": 5,
+        "low_falsification_cost": 5,
+        "reversibility": 5,
+        "risk_control": 5,
+        "reuse_value": 5
+      },
+      "depends_on": [],
+      "acceptance": "Zero-dependency CLI validates Governor/state invariants, selects work deterministically, records allowed transitions, supports recovery, and passes tests.",
+      "reversal_condition": "Replace the storage layer only when measured scale or concurrency makes versioned files inadequate.",
+      "updated_at": "2026-08-21T19:48:06.852380Z"
+    },
+    {
+      "id": "TASK-OPP-001",
+      "parent_objective_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
+      "title": "Build a current primary-source opportunity register",
+      "status": "completed",
+      "priority_score": 97,
+      "score_basis": {
+        "information_gain": 5,
+        "mission_value": 5,
+        "low_falsification_cost": 4,
+        "reversibility": 5,
+        "risk_control": 5,
+        "reuse_value": 4
+      },
+      "depends_on": [],
+      "acceptance": "Five or more candidates are ranked with current primary evidence, economics, uncertainty, risks, falsification and reopening criteria.",
+      "reversal_condition": "Re-rank when material source, market, cost, or policy evidence changes.",
+      "updated_at": "2026-08-21T19:48:07.507788Z"
+    },
+    {
+      "id": "TASK-BOOT-001",
+      "parent_objective_id": "PROGRAM-BOOTSTRAP-KERNEL",
+      "title": "Audit repository, runtime, deployment, credential, wallet, and persistent-state reality",
+      "status": "completed",
+      "priority_score": 95,
+      "score_basis": {
+        "information_gain": 5,
+        "mission_value": 5,
+        "low_falsification_cost": 5,
+        "reversibility": 5,
+        "risk_control": 5,
+        "reuse_value": 3
+      },
+      "depends_on": [],
+      "acceptance": "Observed state and absent capabilities are documented without reading or exposing secret values.",
+      "reversal_condition": "Repeat after material repository, runtime, deployment, or credential-boundary changes.",
+      "updated_at": "2026-08-21T19:48:05.316625Z"
+    },
+    {
+      "id": "TASK-BOOT-002",
+      "parent_objective_id": "PROGRAM-BOOTSTRAP-KERNEL",
+      "title": "Independently review minimal kernel design and prior branch artifacts",
+      "status": "completed",
+      "priority_score": 90,
+      "score_basis": {
+        "information_gain": 4,
+        "mission_value": 4,
+        "low_falsification_cost": 5,
+        "reversibility": 5,
+        "risk_control": 5,
+        "reuse_value": 4
+      },
+      "depends_on": [],
+      "acceptance": "Review identifies required schemas, invariants, commands, tests, recovery behavior, and unsafe or premature scope.",
+      "reversal_condition": "Re-review after any material architecture or permission expansion.",
+      "updated_at": "2026-08-21T19:48:06.160688Z"
+    },
+    {
+      "id": "TASK-BOOT-004",
+      "parent_objective_id": "PROGRAM-BOOTSTRAP-KERNEL",
+      "title": "Verify kernel, persist audit evidence, and complete bootstrap transition",
+      "status": "completed",
+      "priority_score": 94,
+      "score_basis": {
+        "information_gain": 5,
+        "mission_value": 5,
+        "low_falsification_cost": 5,
+        "reversibility": 5,
+        "risk_control": 5,
+        "reuse_value": 4
+      },
+      "depends_on": [
+        "TASK-BOOT-001",
+        "TASK-BOOT-002",
+        "TASK-BOOT-003"
+      ],
+      "acceptance": "Tests and validation pass, audit gaps are persisted, and the BOOTSTRAP to DISCOVERY transition has evidence.",
+      "reversal_condition": "Return to BOOTSTRAP if state cannot be validated or resumed from a fresh process.",
+      "updated_at": "2026-08-21T19:57:13.939640Z"
+    },
+    {
+      "id": "TASK-EXP-001",
+      "parent_objective_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
+      "title": "Execute the cheapest high-information opportunity falsification experiment",
+      "status": "in_progress",
+      "priority_score": 92,
+      "score_basis": {
+        "information_gain": 5,
+        "mission_value": 5,
+        "low_falsification_cost": 5,
+        "reversibility": 5,
+        "risk_control": 5,
+        "reuse_value": 3
+      },
+      "depends_on": [
+        "TASK-OPP-001",
+        "TASK-BOOT-003"
+      ],
+      "acceptance": "A bounded reproducible experiment records prediction, method, evidence, observed result, uncertainty, decision, and next action without capital or external writes.",
+      "reversal_condition": "Replace the selected experiment if current evidence changes the opportunity ranking before execution.",
+      "updated_at": "2026-08-21T19:48:08.121223Z"
+    }
+  ]
+}

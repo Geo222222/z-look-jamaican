@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-21T19:58:37.4253687Z",
+  "items": [
+    {
+      "id": "AUTO-EXP-OPP-001",
+      "kind": "codex_thread_heartbeat",
+      "external_id": "continue-exp-opp-001-daily",
+      "status": "active_unobserved",
+      "created_at": "2026-08-21T19:58:00Z",
+      "schedule": "daily at approximately 15:15 app-local time",
+      "purpose": "Continue the date-separated EXP-OPP-001 read-only telemetry and reflection loop.",
+      "scope": "Validate state; perform public unauthenticated GET snapshots; compare, test, and persist evidence; finalize after seven date-distinct valid snapshots.",
+      "prohibited": ["accounts or legal acceptance","spending","deployment","messages or submissions","wallets or keys","capital or trading","treasury sweeps","treasury registry mutation"],
+      "last_success_at": null,
+      "health": "creation acknowledged by app; first scheduled execution not yet observed",
+      "rollback": "Pause or delete the app automation; repository experiment state and evidence remain intact.",
+      "completion_condition": "Seven valid date-distinct collector-revision-2 snapshots are classified and the automation is paused."
+    }
+  ],
+  "observation": "No pre-existing repository deployment was found. One Codex thread heartbeat is now registered for the active read-only experiment; it is not a product or financial deployment."
+}

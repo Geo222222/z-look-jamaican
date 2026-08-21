@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-21T19:30:10.3723107Z",
+  "private_material_permitted_in_repository": false,
+  "items": [],
+  "observation": "No operational wallet or public-address registry existed at bootstrap inspection.",
+  "decision": "Do not generate a wallet until an active evidence-backed experiment justifies a specific chain and purpose; production capital remains zero."
+}

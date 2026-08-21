@@ -1,0 +1,32 @@
+name: kernel-tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile
+        run: python -m compileall -q autonomous_kernel experiments tests
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Validate durable state
+        run: python -m autonomous_kernel validate
+      - name: Verify clean recovery path
+        run: python -m autonomous_kernel recover
+      - name: Verify resumable status
+        run: python -m autonomous_kernel status

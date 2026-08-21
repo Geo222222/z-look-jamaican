@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-21T19:40:50.140784Z",
+  "items": [
+    {
+      "task_id": "TASK-BOOT-001",
+      "agent_id": "/root/runtime_audit",
+      "role": "SRE and Security Reviewer",
+      "status": "completed",
+      "scope": "Read-only repository/runtime/deployment/credential-boundary audit",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-OPP-001",
+      "agent_id": "/root/opportunity_research",
+      "role": "Opportunity Researcher",
+      "status": "completed",
+      "scope": "Public primary-source research and candidate ranking",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-BOOT-002",
+      "agent_id": "/root/kernel_design_review",
+      "role": "Product Engineer and Independent Design Reviewer",
+      "status": "completed",
+      "scope": "Read-only minimum-kernel and prior-art review",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    }
+  ]
+}

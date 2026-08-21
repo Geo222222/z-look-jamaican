@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-21T19:55:00Z",
+  "items": [
+    {
+      "id": "INC-DATA-001",
+      "opened_at": "2026-08-21T19:48:53.478932Z",
+      "resolved_at": "2026-08-21T19:50:26.264757Z",
+      "status": "resolved",
+      "severity": "low",
+      "type": "research_data_quality",
+      "subject": "EXP-OPP-001 Apify run-count normalization",
+      "impact": "The initial snapshot recorded 30-day run counts as zero because the collector read a nonexistent field. No external action, ranking promotion, financial claim, or product decision used the faulty field.",
+      "root_cause": "The implementation expected stats.totalRuns30Days; the documented response uses stats.publicActorRunStats30Days.TOTAL.",
+      "containment": "Preserved the flawed snapshot, stopped using its run-count fields, and did not rewrite evidence.",
+      "remediation": "Updated normalization to TOTAL with outcome-sum fallback, added regression tests, versioned the collector, recaptured, and made comparisons reject old revisions.",
+      "evidence": ["artifacts/evidence/apify_store/snapshot-20260821T194047Z.json","artifacts/evidence/apify_store/snapshot-20260821T195023Z.json","tests/test_apify_snapshot.py","tests/test_apify_compare.py"],
+      "reopen_if": "A source schema change, incompatible snapshot, or unexplained zero/negative telemetry is observed."
+    }
+  ]
+}
