@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T19:57:13.939640Z",
+  "updated_at": "2026-08-21T20:11:30.4949537Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "Bootstrap exit criteria passed: durable state, recovery, evidence-backed ranking, one real experiment/incident/reflection cycle, and 14 local tests are recorded; continue EXP-OPP-001 without external writes or capital.",
+  "checkpoint": "Bootstrap is committed at d32318b and the durable EXP-OPP-001 continuation preflight is committed at f2d2e78; app metadata and cold-start replay are verified, while the first scheduled run remains unobserved.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY"
@@ -16,7 +16,7 @@
   ],
   "next_observation_not_before": "2026-08-22T15:50:26Z",
   "last_transition_id": "TRANSITION-7735644130dd46e49c5ab093e4f2d79d",
-  "resume_command": "python -m autonomous_kernel status",
+  "resume_command": "python -m experiments.apify_store_continue",
   "validation_command": "python -m autonomous_kernel validate",
   "test_command": "python -m unittest discover -s tests -v",
   "safe_restart_rule": "Validate state and Governor snapshots before selecting or mutating work."

@@ -1,0 +1,4 @@
+# Evidence checksums cover exact repository bytes. Do not perform checkout-time
+# newline conversion on artifacts whose hashes are recorded in evidence/sources.jsonl.
+artifacts/evidence/** -text
+evidence/audits/** -text

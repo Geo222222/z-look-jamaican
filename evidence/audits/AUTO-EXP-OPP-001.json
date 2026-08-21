@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "id": "AUDIT-AUTO-EXP-OPP-001-001",
+  "captured_at": "2026-08-21T20:11:30.4949537Z",
+  "created_by": "root-agent",
+  "subject": "AUTO-EXP-OPP-001",
+  "code_version": "f2d2e78be16dfc0cd4cda0aa0c9cdc42de991792",
+  "external_registration": {
+    "app_view_resolved": true,
+    "metadata_file_present": true,
+    "metadata_sha256": "7c95fab9a4193c78daa0630b8315021fe435e59f392495bd79c3f2fceef814c6",
+    "id": "continue-exp-opp-001-daily",
+    "kind": "heartbeat",
+    "status": "ACTIVE",
+    "schedule": "daily at 15:15 app-local time",
+    "attached_to_current_thread": true
+  },
+  "saved_prompt_contract": {
+    "reads_agents_instructions": true,
+    "reads_governor": true,
+    "reads_durable_resume_state": true,
+    "validates_before_action": true,
+    "requires_date_separated_compatible_snapshots": true,
+    "preserves_zero_capital_and_no_external_write_boundaries": true,
+    "pauses_after_seven_valid_dates": true,
+    "depends_on_conversation_history": false
+  },
+  "cold_start_replay": {
+    "command": "python -m experiments.apify_store_continue",
+    "current_result": "wait",
+    "current_reason": "cadence_not_elapsed",
+    "future_replay_command": "python -m experiments.apify_store_continue --at 2026-08-22T16:00:00Z",
+    "future_result": "capture",
+    "next_capture_not_before": "2026-08-22T15:50:26.264757Z",
+    "date_distinct_snapshot_count": 1,
+    "unit_tests_passed": 17
+  },
+  "official_product_contract": {
+    "source": "https://learn.chatgpt.com/docs/automations",
+    "observed": "Desktop scheduled tasks can use local projects and run in the project directory; the computer must be on and the app running when local files are required."
+  },
+  "limitations": [
+    "The first scheduled execution has not occurred, so runtime delivery and notification behavior remain unobserved.",
+    "Local execution depends on the machine being on, the desktop app running, and the repository remaining available.",
+    "The automation metadata is external control-plane state; the repository records its last verified identity and hash but does not control it."
+  ],
+  "decision": "The heartbeat is registered and its saved prompt plus repository preflight can resume EXP-OPP-001 from durable state without conversation history. Retain active_unobserved runtime status until the first scheduled run succeeds."
+}
