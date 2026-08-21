@@ -1,110 +1,154 @@
-# Wallet and Signing Lifecycle
+# Wallet, Signing, and Treasury Lifecycle
 
-## Principle
+## Core principle
 
-Wallet bootstrap is part of the autonomous system's own job. The owner is not expected to create, configure, or custody the system's operational wallets on the agent's behalf.
+The autonomous system creates and controls its own working wallets. The owner provides only final treasury withdrawal destinations.
 
-The Root Agent must be capable of creating and operating the wallet infrastructure it needs while remaining inside the Governor.
+Operational wallet custody and owner treasury custody must remain separate.
 
-## Bootstrap responsibility
+## Operational wallets
 
-When blockchain work becomes justified, the Root Agent must autonomously:
+When blockchain work is justified, the Root Agent must autonomously:
 
-1. determine which chain/account model is required;
-2. create an isolated wallet or account for that purpose;
+1. determine the required chain/account model;
+2. create a purpose-specific working wallet;
 3. generate keys using a cryptographically secure implementation appropriate to the chain;
-4. keep private material out of source control, prompts, logs, reports, and ordinary agent memory;
-5. store private material in a dedicated secret boundary such as a secrets manager, encrypted keystore, hardware-backed signer, or isolated signing service;
-6. register only public addresses and non-secret metadata in durable system state;
-7. create deterministic signing policy around the key;
-8. test signing on local forks, simulations, or test networks when available;
-9. monitor balances, nonces, approvals, transactions, receipts, and signer health;
-10. rotate, quarantine, or replace keys when compromise is suspected;
-11. maintain recovery and incident procedures appropriate to the value controlled.
+4. persist private material only inside an encrypted or isolated secret boundary;
+5. never expose private material in Git, prompts, logs, reports, ordinary memory, or analytics;
+6. register only public addresses and non-secret metadata in durable state;
+7. build deterministic signing and destination policy around the key;
+8. test transaction construction and signing in local forks, simulations, testnets, or other safe environments when practical;
+9. monitor balances, nonces, approvals, transactions, receipts, fees, and signer health;
+10. rotate, quarantine, or replace keys when required;
+11. preserve accounting and recovery state across restarts.
 
-Creating a wallet is not equivalent to authorizing financial exposure.
+Operational wallets are working capital identities. They are not treasury wallets.
 
 ## Wallet classes
 
-The system should separate wallet purpose and privilege. Examples include:
+Use least privilege and separate purpose where appropriate:
 
-### Research/Test wallet
-For local forks, testnets, protocol integration tests, signing tests, and zero-value validation.
+- research/test wallet;
+- observation identity;
+- revenue-receiving wallet;
+- production execution wallet;
+- fee/gas wallet;
+- settlement/sweep wallet.
 
-### Observation identity
-A public address used for address-based simulations, allowlist testing, or protocol-specific identity where no valuable signing authority is required.
+Do not collapse every function into one hot wallet merely for convenience.
 
-### Production execution wallet
-A restricted wallet used only after a strategy has passed the required stage gates and the Governor authorizes non-zero production exposure.
+## Owner treasury destinations
 
-### Treasury or reserve wallet
-If the system eventually requires one, it must be isolated from ordinary execution. Execution services should not hold unrestricted treasury authority.
+Owner withdrawal destinations are defined in:
 
-The Root Agent may create additional purpose-specific wallet classes when least privilege requires them.
+`config/treasury_destinations.yaml`
 
-## Secret boundary
+These entries are public destination metadata, not operational credentials.
 
-The Root Agent may design and implement its own signer infrastructure, but private keys must not be directly available to every specialist agent or container.
+The Root Agent:
 
-Preferred pattern:
+- must never request or require the private keys for owner treasury destinations;
+- must not modify or replace owner treasury addresses;
+- must not infer a replacement address;
+- must validate network/address compatibility before the first transfer;
+- must refuse to use any destination marked blocked, invalid, disabled, or pending validation;
+- must reconcile every sweep from source wallet to confirmed receipt state.
 
-`AI control plane -> deterministic transaction proposal -> policy/risk gate -> isolated signer -> network`
+Current owner-provided destinations include BTC, DOGE, ETH, and a TRON-USDT entry. The TRON-USDT entry is blocked pending address validation because the supplied value uses EVM `0x` encoding rather than the normal Tron mainnet address representation.
 
-The signer should enforce machine-readable rules such as:
+## Treasury sweep architecture
+
+Preferred path:
+
+`AI control plane -> sweep proposal -> deterministic treasury policy -> isolated signer -> network -> receipt/reconciliation`
+
+A treasury sweep subsystem should enforce at minimum:
+
+- active destination allowlist;
+- chain and asset match;
+- preflight address validation;
+- minimum sweep threshold;
+- operating reserve;
+- network-fee reserve;
+- maximum single-transfer value;
+- cumulative daily limits where configured;
+- transaction simulation/preflight where supported;
+- nonce/replay protection;
+- confirmation policy;
+- receipt reconciliation;
+- duplicate-sweep prevention;
+- emergency pause state;
+- durable audit record.
+
+## Sweep policy
+
+The agent should retain enough working capital to keep validated operations functioning while avoiding unnecessary accumulation in hot wallets.
+
+A sweep decision should distinguish:
+
+- gross receipts;
+- realized net profit;
+- liabilities;
+- pending settlement;
+- working capital;
+- gas/network reserve;
+- funds already committed to open obligations;
+- excess sweepable balance.
+
+Only excess sweepable balance is eligible for treasury transfer.
+
+Do not sweep funds whose economic state is uncertain, disputed, pending, or required to satisfy known obligations.
+
+## Signing boundary
+
+Private keys must not be directly available to every specialist agent, process, or container.
+
+Preferred design:
+
+`reasoning/control plane -> deterministic transaction request -> policy/risk gate -> isolated signer -> network`
+
+The isolated signer should enforce machine-readable constraints including:
 
 - allowed chain IDs;
-- allowed contracts or destination classes;
+- allowed asset/contracts;
+- allowed destinations;
 - maximum transaction value;
-- maximum cumulative exposure;
-- allowed function selectors when practical;
-- deadline/nonce validity;
-- strategy/stage authorization;
-- emergency pause state;
-- current Governor limits.
+- cumulative exposure limits;
+- allowed function selectors where practical;
+- nonce/deadline validity;
+- current operating stage;
+- emergency pause state.
 
 The LLM must not be the sole enforcement mechanism.
 
-## Zero-start behavior
+## Token approvals
 
-At initial bootstrap:
+Token approvals are capital permissions. The system must:
 
-- the agent may create zero-value development/test wallets without owner involvement;
-- the agent may build production-grade wallet/signing infrastructure before production capital exists;
-- production wallets may be generated and registered before funding;
-- production capital remains `0` until the Governor authorizes otherwise;
-- a generated wallet must never be treated as permission to trade or transfer value.
-
-This lets the autonomous organization construct and validate its complete transaction path from zero while preserving the capital boundary.
-
-## Funding and earned assets
-
-If a validated strategy eventually requires initial production capital, the Root Agent must present a Governor decision packet containing the public funding address, requested amount, strategy/stage, maximum authorized exposure, evidence, and expiry/revocation conditions.
-
-If the system earns assets through an already-authorized production activity, those assets remain subject to the Governor and accounting rules. Earnings do not automatically expand risk limits or spending authority.
-
-## Approval hygiene
-
-Token approvals and smart-contract permissions are capital permissions. The system must:
-
-- minimize approval amounts and duration where practical;
+- minimize approval amount and duration where practical;
 - inventory active approvals;
 - monitor unexpected allowance changes;
-- revoke obsolete approvals when economically justified;
-- include approval exposure in risk analysis.
+- revoke obsolete approvals when justified;
+- include approval exposure in risk accounting.
 
 ## Compromise behavior
 
-On suspected key, signer, RPC, dependency, or contract compromise:
+On suspected wallet, signer, RPC, dependency, contract, or destination compromise:
 
 1. stop affected write paths;
-2. disable the signer or policy path where possible;
-3. preserve evidence without revealing secrets;
-4. identify assets and approvals exposed;
-5. move to a known-safe operational state only through authorized deterministic controls;
-6. rotate or replace affected keys;
-7. independently review the incident and remediation;
-8. do not resume merely because the service is healthy again.
+2. disable or isolate the signer where possible;
+3. preserve evidence without exposing secrets;
+4. identify assets, approvals, transactions, and destinations affected;
+5. prevent additional loss;
+6. rotate or replace operational keys as appropriate;
+7. independently review remediation;
+8. reconcile chain state before resuming.
 
-## Invariant
+## Invariants
 
-**The Root Agent owns wallet engineering. The Governor owns capital authority.**
+- The Root Agent owns operational-wallet engineering.
+- Owner treasury addresses are withdrawal-only destinations.
+- Treasury private keys never enter the autonomous system.
+- The Root Agent cannot rewrite the treasury registry.
+- A blocked or invalid destination cannot receive funds.
+- Every capital-moving action must pass deterministic policy and accounting controls.
