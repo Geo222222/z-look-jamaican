@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T20:11:30.4949537Z",
+  "updated_at": "2026-08-21T20:15:25.1870433Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "Bootstrap is committed at d32318b and the durable EXP-OPP-001 continuation preflight is committed at f2d2e78; app metadata and cold-start replay are verified, while the first scheduled run remains unobserved.",
+  "checkpoint": "Bootstrap and continuation preflight are committed; the ACTIVE heartbeat saved prompt now invokes the deterministic preflight from repository state, while the first scheduled run remains unobserved.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY"

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T20:11:30.4949537Z",
+  "updated_at": "2026-08-21T20:15:25.1870433Z",
   "items": [
     {
       "id": "AUTO-EXP-OPP-001",
@@ -14,6 +14,9 @@
       "prohibited": ["accounts or legal acceptance","spending","deployment","messages or submissions","wallets or keys","capital or trading","treasury sweeps","treasury registry mutation"],
       "last_success_at": null,
       "health": "app view and persisted ACTIVE heartbeat metadata verified; repository cold-start replay returns wait now and capture after the saved cadence; first scheduled execution not yet observed",
+      "last_verified_at": "2026-08-21T20:15:25.1870433Z",
+      "last_verified_metadata_sha256": "46cab2543d27b59441e7a8ddebcff21e874653c1ac22dc2fc6d216b779240b27",
+      "prompt_entrypoint": "python -m experiments.apify_store_continue",
       "rollback": "Pause or delete the app automation; repository experiment state and evidence remain intact.",
       "completion_condition": "Seven valid date-distinct collector-revision-2 snapshots are classified and the automation is paused."
     }
