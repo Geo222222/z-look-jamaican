@@ -8,17 +8,24 @@ from experiments.apify_store_continue import decide, preflight
 
 
 class ApifyContinuationTests(unittest.TestCase):
-    def test_current_repository_cold_start_waits_before_cadence(self) -> None:
+    def test_current_repository_cold_start_reports_closed_experiment(self) -> None:
         result = preflight(repository_root(), datetime(2026, 8, 22, 14, 0, tzinfo=timezone.utc))
-        self.assertEqual(result["action"], "wait")
+        self.assertEqual(result["action"], "closed")
+        self.assertEqual(result["reason"], "experiment_completed_and_automation_paused")
         self.assertEqual(result["experiment_id"], "EXP-OPP-001")
         self.assertEqual(result["automation_external_id"], "continue-exp-opp-001-daily")
         self.assertEqual(result["date_distinct_snapshot_count"], 1)
 
-    def test_current_repository_cold_start_captures_after_cadence(self) -> None:
-        result = preflight(repository_root(), datetime(2026, 8, 22, 16, 0, tzinfo=timezone.utc))
+    def test_decision_captures_after_cadence(self) -> None:
+        start = datetime(2026, 8, 21, 19, 50, tzinfo=timezone.utc)
+        result = decide([{"captured_at": start}], start + timedelta(hours=21), start)
         self.assertEqual(result["action"], "capture")
         self.assertEqual(result["reason"], "cadence_elapsed_and_target_not_reached")
+
+    def test_decision_waits_before_cadence(self) -> None:
+        start = datetime(2026, 8, 21, 19, 50, tzinfo=timezone.utc)
+        result = decide([{"captured_at": start}], start + timedelta(hours=19), start)
+        self.assertEqual(result["action"], "wait")
 
     def test_decision_finalizes_at_seven_distinct_dates(self) -> None:
         start = datetime(2026, 8, 1, 16, 0, tzinfo=timezone.utc)

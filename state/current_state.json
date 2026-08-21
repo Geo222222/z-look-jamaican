@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "system_id": "z-look-jamaican",
-  "updated_at": "2026-08-21T20:11:30.4949537Z",
+  "updated_at": "2026-08-21T20:27:04.1613287Z",
   "root_state": "DISCOVERY",
   "strategy_stage": "DISCOVERY",
   "mission_objective_id": "MISSION-001",
@@ -66,8 +66,8 @@
     "state_validation": "verified_bootstrap",
     "single_writer_recovery": "verified_failure_injection",
     "opportunity_ranking": "verified_initial_register",
-    "experiment_execution": "initial_read_only_snapshot_verified",
-    "autonomous_cadence": "codex_heartbeat_registered_cold_start_verified_first_run_unobserved",
+    "experiment_execution": "four_market_candidates_rejected_cantina_offline_replay_active",
+    "autonomous_cadence": "apify_heartbeat_paused_after_early_rejection",
     "deployment": "not_configured",
     "operational_wallets": "not_justified",
     "capital_movement": "disabled"

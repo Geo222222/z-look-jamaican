@@ -1,22 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T20:15:25.1870433Z",
+  "updated_at": "2026-08-21T20:27:04.1613287Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "Bootstrap and continuation preflight are committed; the ACTIVE heartbeat saved prompt now invokes the deterministic preflight from repository state, while the first scheduled run remains unobserved.",
+  "checkpoint": "EXP-OPP-001, SEC diff, Shopify catalog monitoring and Atlassian access evidence were rejected from current market/feature/economics evidence. The Apify heartbeat is paused. Begin bounded isolated EXP-CANTINA-001 replay; no account, submission, wallet, spend or live testing.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY"
   ],
   "next_task_id": null,
   "active_task_ids": [
-    "TASK-EXP-001"
+    "TASK-EXP-002"
   ],
-  "active_automation_ids": [
-    "AUTO-EXP-OPP-001"
-  ],
-  "next_observation_not_before": "2026-08-22T15:50:26Z",
+  "active_automation_ids": [],
+  "next_observation_not_before": null,
   "last_transition_id": "TRANSITION-7735644130dd46e49c5ab093e4f2d79d",
-  "resume_command": "python -m experiments.apify_store_continue",
+  "resume_command": "python -m autonomous_kernel status",
   "validation_command": "python -m autonomous_kernel validate",
   "test_command": "python -m unittest discover -s tests -v",
   "safe_restart_rule": "Validate state and Governor snapshots before selecting or mutating work."

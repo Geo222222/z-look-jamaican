@@ -130,29 +130,55 @@ def preflight(
 
     tasks = {item.get("id"): item for item in backlog.get("items", [])}
     task = tasks.get(TASK_ID)
-    if not task or task.get("status") != "in_progress" or TASK_ID not in resume.get("active_task_ids", []):
-        raise ContinuationError(f"{TASK_ID} is not the active durable task")
+    if not task:
+        raise ContinuationError(f"{TASK_ID} is missing from the durable backlog")
 
     automations = {item.get("id"): item for item in deployments.get("items", [])}
     automation = automations.get(AUTOMATION_ID)
     if not automation or automation.get("external_id") != AUTOMATION_EXTERNAL_ID:
         raise ContinuationError(f"{AUTOMATION_ID} is not registered with the expected external id")
-    if not str(automation.get("status", "")).startswith("active"):
-        raise ContinuationError(f"{AUTOMATION_ID} is not active in durable state")
-    if AUTOMATION_ID not in resume.get("active_automation_ids", []):
-        raise ContinuationError(f"{AUTOMATION_ID} is missing from the resume checkpoint")
 
     not_before_value = resume.get("next_observation_not_before")
-    if not isinstance(not_before_value, str):
-        raise ContinuationError("resume checkpoint lacks next_observation_not_before")
     snapshots = inspect_snapshots((root / "artifacts/evidence/apify_store").glob("snapshot-*.json"))
-    decision = decide(
-        snapshots,
-        now or datetime.now(timezone.utc),
-        parse_timestamp(not_before_value),
-        minimum_hours,
-        target_days,
-    )
+    observed_at = now or datetime.now(timezone.utc)
+    task_status = task.get("status")
+    automation_status = str(automation.get("status", ""))
+
+    if task_status == "completed":
+        if not automation_status.startswith("paused"):
+            raise ContinuationError(f"{AUTOMATION_ID} must be paused after experiment completion")
+        if AUTOMATION_ID in resume.get("active_automation_ids", []):
+            raise ContinuationError(f"{AUTOMATION_ID} is paused but remains active in the resume checkpoint")
+        if not snapshots:
+            raise ContinuationError("completed experiment has no compatible snapshot")
+        latest = max(item["captured_at"] for item in snapshots)
+        distinct_dates = sorted({item["captured_at"].date().isoformat() for item in snapshots})
+        decision = {
+            "action": "closed",
+            "reason": "experiment_completed_and_automation_paused",
+            "compatible_snapshot_count": len(snapshots),
+            "date_distinct_snapshot_count": len(distinct_dates),
+            "target_date_distinct_snapshots": target_days,
+            "latest_captured_at": latest.isoformat().replace("+00:00", "Z"),
+            "next_capture_not_before": None,
+            "observed_at": observed_at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
+        }
+    else:
+        if task_status != "in_progress" or TASK_ID not in resume.get("active_task_ids", []):
+            raise ContinuationError(f"{TASK_ID} is neither active nor cleanly completed")
+        if not automation_status.startswith("active"):
+            raise ContinuationError(f"{AUTOMATION_ID} is not active in durable state")
+        if AUTOMATION_ID not in resume.get("active_automation_ids", []):
+            raise ContinuationError(f"{AUTOMATION_ID} is missing from the resume checkpoint")
+        if not isinstance(not_before_value, str):
+            raise ContinuationError("resume checkpoint lacks next_observation_not_before")
+        decision = decide(
+            snapshots,
+            observed_at,
+            parse_timestamp(not_before_value),
+            minimum_hours,
+            target_days,
+        )
     decision.update(
         {
             "status": "ok",

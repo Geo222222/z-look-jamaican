@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "id": "ARTIFACT-OPP-SEC-001-REJECT-001",
+  "opportunity_id": "OPP-SEC-001",
+  "captured_at": "2026-08-21T20:17:00Z",
+  "created_by": "root-agent with /root/sec_gap_falsification",
+  "method": "Read-only official SEC source and current first-party competitor/pricing review.",
+  "hypothesis": "A point-in-time filing diff/event API has a narrow uncommoditized output worth a 100-issuer local prototype.",
+  "observed": {
+    "raw_source": "SEC submissions and XBRL JSON are public, unauthenticated, rapidly updated, accession-addressable and available as nightly bulk archives under declared-user-agent and rate policies.",
+    "marketplace_signal": "The durable snapshot found 25 SEC results, 40 aggregate monthly users, a free leader with 15 users and no paid result with five users.",
+    "exact_substitutes": [
+      "Apify canonical-section change detector with previous-period/amendment pairing, deterministic hunks, stable IDs, bounded evidence and source links",
+      "FilingDiff visual section diffs, evidence quotes, PDFs and alerts",
+      "secapi.ai accession-scoped comparable MD&A workflows",
+      "sec-api.io streaming, section extraction, XBRL conversion and structured 8-K events",
+      "SEC Daily API commercial filing infrastructure"
+    ]
+  },
+  "optimistic_economics": {
+    "exact_substitute_retail_usd_per_comparison": 0.02,
+    "creator_share_before_compute_usd_per_comparison": 0.016,
+    "comparisons_for_100_usd_monthly_before_compute": 6250,
+    "hundred_issuer_four_filings_per_year_creator_proceeds_usd_per_year": 6.4,
+    "such_customers_for_100_usd_monthly_before_compute": 188,
+    "warning": "The exact competitor has one monthly user and no ratings; paying status, revenue and margin are unknown."
+  },
+  "decision": "REJECT",
+  "reason": "The output is already commoditized, buyer demand is absent, and the proposed 100-issuer build would measure parser feasibility rather than economic demand.",
+  "reopening_conditions": [
+    "Multiple independent buyers identify the same unmet workflow.",
+    "A source/schema change creates a genuinely new provenance capability.",
+    "A 12-pair adversarial fixture demonstrates an output absent from the named substitutes and buyer evidence supports sufficient volume."
+  ],
+  "smallest_reopened_experiment": "Twelve immutable filing pairs: four ordinary prior-year pairs, four original/amendment pairs and four adversarial structural pairs, with manually reviewed section/hunk oracles and deterministic stable-ID gates.",
+  "urls": [
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "https://www.sec.gov/about/webmaster-frequently-asked-questions",
+    "https://apify.com/bb-tradetec/sec-filing-change-detector/input-schema",
+    "https://filingdiff.com/pricing/",
+    "https://secapi.ai/workflows/mda-change-detector",
+    "https://secapi.ai/pricing",
+    "https://sec-api.io/pricing",
+    "https://www.secdailyapi.com/pricing",
+    "https://docs.apify.com/legal/store-publishing-terms-and-conditions"
+  ]
+}

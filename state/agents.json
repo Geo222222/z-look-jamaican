@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T19:40:50.140784Z",
+  "updated_at": "2026-08-21T20:27:04.1613287Z",
   "items": [
     {
       "task_id": "TASK-BOOT-001",
@@ -26,6 +26,51 @@
       "role": "Product Engineer and Independent Design Reviewer",
       "status": "completed",
       "scope": "Read-only minimum-kernel and prior-art review",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-EXP-001",
+      "agent_id": "/root/eu_ted_falsification",
+      "role": "Opportunity Falsification Researcher",
+      "status": "completed",
+      "scope": "Read-only EU TED competition, feature, source and unit-economics falsification",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-DISC-001",
+      "agent_id": "/root/sec_gap_falsification",
+      "role": "Opportunity Falsification Researcher",
+      "status": "completed",
+      "scope": "Read-only SEC source, competitor, demand and unit-economics falsification",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-DISC-002",
+      "agent_id": "/root/opportunity_refresh",
+      "role": "Opportunity Researcher",
+      "status": "completed",
+      "scope": "Read-only current primary-source opportunity refresh",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-DISC-003",
+      "agent_id": "/root/opportunity_refresh",
+      "role": "Opportunity Falsification Researcher",
+      "status": "completed",
+      "scope": "Read-only Shopify competitor, review, permission and economics falsification",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-DISC-004",
+      "agent_id": "/root/opportunity_refresh",
+      "role": "Opportunity Falsification Researcher",
+      "status": "completed",
+      "scope": "Read-only Atlassian competitor, review, scope, security and economics falsification",
       "production_authority": false,
       "capital_authority_usd": 0
     }

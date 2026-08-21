@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "ARTIFACT-OPP-ATLASSIAN-001-REJECT-001",
+  "opportunity_id": "OPP-ATLASSIAN-001",
+  "captured_at": "2026-08-21T20:25:08Z",
+  "created_by": "root-agent with /root/opportunity_refresh",
+  "method": "Read-only current Atlassian Marketplace, official economics, Forge scope/security and data-residency review.",
+  "hypothesis": "A Forge/Rovo access-review evidence assistant has a repeated unmet workflow absent from direct substitutes.",
+  "observed": {
+    "direct_substitutes_reviewed": 7,
+    "direct_substitute_install_range": "1-10 where exposed",
+    "direct_substitute_customer_reviews": 0,
+    "adjacent_confluence_permission_apps": "196+",
+    "adjacent_install_examples": "133-367",
+    "repeated_unmet_complaint": null,
+    "covered_capabilities": [
+      "Jira and Confluence access reviews, decisions and remediation",
+      "Cadenced attestation and effective-access mapping",
+      "Reversible revocation and evidence export",
+      "Risk checks for privileged, inactive and external users",
+      "Snapshots, diffs, sign-off and hash-chained/append-only evidence",
+      "Identity lifecycle provisioning and revocation"
+    ],
+    "native_substitute": "Atlassian Guard supplies SCIM lifecycle, organization audit logs, policies, detections and remediation."
+  },
+  "economics_model": {
+    "hypothetical_price_usd_per_site_month": 75,
+    "hypothetical_customers": 3,
+    "gross_mrr_usd": 225,
+    "modeled_contribution_current_incentive_usd": 175,
+    "modeled_contribution_at_83_percent_share_usd": 136.75,
+    "warning": "No evidence supports acquiring three paying sites; Atlassian does not remit until accrued partner profit reaches USD 500."
+  },
+  "security_boundary": "Access topology requires sensitive user/group/project/space/role scopes; remediation adds administrative writes. Rovo actions require explicit authorization and prompt-injection defenses. Tenant isolation, PII-safe logging, residency declarations and egress controls remain developer responsibilities.",
+  "decision": "REJECT",
+  "reason": "Seven exact low-adoption substitutes already cover the workflow, a dense adjacent market and native Guard capabilities constrain the wedge, and no review corpus or buyer evidence establishes demand.",
+  "reopening_conditions": [
+    "Three independent public complaints identify the same missing workflow.",
+    "A direct substitute reaches at least 100 installs and reviews validate demand while exposing a common narrow failure.",
+    "An authoritative Atlassian API/RBAC change enables an unavailable capability.",
+    "Three qualified buyers pre-commit at least USD 75/site/month."
+  ],
+  "urls": [
+    "https://marketplace.atlassian.com/apps/2440052505/access-evidence-access-reviews-audit-evidence-for-jira?hosting=cloud&tab=overview",
+    "https://marketplace.atlassian.com/apps/1372005598/access-governance-for-jira?hosting=cloud&tab=overview",
+    "https://marketplace.atlassian.com/apps/3827910812/access-reviewer360-project-access-roles-audit-for-jira?hosting=cloud&tab=overview",
+    "https://marketplace.atlassian.com/apps/2029689515/permission-auditor-for-jira?hosting=cloud&tab=overview",
+    "https://marketplace.atlassian.com/apps/3549326490/permission-auditor",
+    "https://marketplace.atlassian.com/apps/1238274/identity-governance-auditing-access-control-via-jsm?hosting=cloud&tab=overview",
+    "https://marketplace.atlassian.com/apps/147263462/access-review-audit-trail-for-jira?hosting=cloud&tab=overview",
+    "https://marketplace.atlassian.com/search?product=confluence&query=permissions",
+    "https://www.atlassian.com/software/guard/pricing",
+    "https://developer.atlassian.com/platform/marketplace/pricing-payment-and-billing/",
+    "https://developer.atlassian.com/platform/forge/manifest-reference/permissions/",
+    "https://developer.atlassian.com/platform/marketplace/security-requirements/",
+    "https://developer.atlassian.com/platform/forge/data-residency/",
+    "https://developer.atlassian.com/platform/forge/forge-platform-pricing/"
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T19:40:50.140784Z",
-  "status": "ranked_initial_experiment_running",
+  "updated_at": "2026-08-21T20:27:04.1613287Z",
+  "status": "reranked_after_four_rejections_cantina_offline_replay_selected",
   "ranking_method": {
     "scale": "1-5 ordinal; 1 unfavorable, 5 favorable",
     "warning": "Weighted scores rank information-gathering work. They are not ROI, probability, revenue, or profit forecasts.",
@@ -12,11 +12,13 @@
   "items": [
     {
       "id": "OPP-APIFY-001",
-      "rank": 1,
-      "priority_score": 84.8,
+      "rank": null,
+      "prior_rank": 1,
+      "prior_priority_score": 84.8,
+      "priority_score": 0,
       "title": "Apify pay-per-event official-data Actors",
       "domain": "automated data product",
-      "status": "experiment_running",
+      "status": "rejected",
       "mechanism": "Users or software agents pay per result or event for normalized public-source data selected from measured Store demand gaps.",
       "payer_source_of_value": "Customers avoid source integration, normalization, maintenance, metering, and delivery work.",
       "automation_potential": "very_high",
@@ -34,15 +36,17 @@
       "rejection_criteria": ["Curated telemetry is flat or declining.","Credible substitutes dominate.","Source automation is restricted/unstable.","Plausible volume cannot support USD 100 monthly contribution margin."],
       "reopening_criteria": ["Material user growth","Changed source-access terms","A differentiated higher-value billable event"],
       "scores": {"information_gain":5,"economic_value_if_successful":3,"low_falsification_cost":5,"low_capital_need":4,"fast_time_to_evidence":5,"reversibility":5,"automation_potential":5,"reuse_value":4,"evidence_confidence":5,"recurrence_scalability":4,"low_legal_friction":3,"low_dependency_risk":2,"low_security_risk":4,"low_competition":2,"low_complexity_burden":4},
-      "evidence_ids": ["EVIDENCE-OPPORTUNITY-RESEARCH-001","EVIDENCE-EXP-OPP-001-SNAPSHOT-001"]
+      "evidence_ids": ["EVIDENCE-OPPORTUNITY-RESEARCH-001","EVIDENCE-EXP-OPP-001-SNAPSHOT-001","EVIDENCE-EXP-OPP-001-FINAL-001"]
     },
     {
       "id": "OPP-SEC-001",
-      "rank": 2,
-      "priority_score": 79.2,
+      "rank": null,
+      "prior_rank": 2,
+      "prior_priority_score": 79.2,
+      "priority_score": 0,
       "title": "SEC filing-diff and event API",
       "domain": "developer data API",
-      "status": "investigate_after_current_experiment",
+      "status": "rejected",
       "mechanism": "Developers and analysts pay for point-in-time filing changes, extracted events, amendment provenance, and alerts rather than raw EDGAR records.",
       "payer_source_of_value": "Integration time, correctness, latency, normalized schemas, and maintained provenance.",
       "automation_potential": "very_high",
@@ -59,15 +63,17 @@
       "rejection_criteria": ["Output is trivial over raw EDGAR.","Point-in-time correctness is not deterministic.","No differentiated workflow survives comparison."],
       "reopening_criteria": ["Schema/provenance changes create a wedge.","New buyer evidence identifies an underserved workflow."],
       "scores": {"information_gain":4,"economic_value_if_successful":3,"low_falsification_cost":5,"low_capital_need":4,"fast_time_to_evidence":4,"reversibility":5,"automation_potential":5,"reuse_value":5,"evidence_confidence":3,"recurrence_scalability":4,"low_legal_friction":3,"low_dependency_risk":3,"low_security_risk":4,"low_competition":1,"low_complexity_burden":4},
-      "evidence_ids": ["EVIDENCE-OPPORTUNITY-RESEARCH-001"]
+      "evidence_ids": ["EVIDENCE-OPPORTUNITY-RESEARCH-001","EVIDENCE-OPP-SEC-001-REJECT-001"]
     },
     {
       "id": "OPP-ATLASSIAN-001",
-      "rank": 3,
-      "priority_score": 77.2,
+      "rank": null,
+      "prior_rank": 3,
+      "prior_priority_score": 77.2,
+      "priority_score": 0,
       "title": "Atlassian Forge/Rovo access-evidence assistant",
       "domain": "marketplace SaaS",
-      "status": "investigate",
+      "status": "rejected",
       "mechanism": "Administrators pay per licensed user for access reviews, permission evidence, remediation tracking, and auditor-ready exports.",
       "payer_source_of_value": "Reduced compliance evidence labor and safer remediation.",
       "automation_potential": "very_high",
@@ -84,15 +90,17 @@
       "rejection_criteria": ["No repeated unmet workflow.","Scopes or support/security cost dominate plausible MRR."],
       "reopening_criteria": ["New Rovo capability or clear narrow-workflow growth."],
       "scores": {"information_gain":4,"economic_value_if_successful":4,"low_falsification_cost":4,"low_capital_need":4,"fast_time_to_evidence":4,"reversibility":4,"automation_potential":5,"reuse_value":4,"evidence_confidence":3,"recurrence_scalability":5,"low_legal_friction":3,"low_dependency_risk":2,"low_security_risk":3,"low_competition":1,"low_complexity_burden":3},
-      "evidence_ids": ["EVIDENCE-OPPORTUNITY-RESEARCH-001"]
+      "evidence_ids": ["EVIDENCE-OPPORTUNITY-RESEARCH-001","EVIDENCE-OPP-ATLASSIAN-001-REJECT-001"]
     },
     {
       "id": "OPP-SHOPIFY-001",
-      "rank": 4,
-      "priority_score": 77.2,
+      "rank": null,
+      "prior_rank": 4,
+      "prior_priority_score": 77.2,
+      "priority_score": 0,
       "title": "Shopify catalog-quality anomaly monitor",
       "domain": "marketplace SaaS",
-      "status": "investigate",
+      "status": "rejected",
       "mechanism": "Merchants pay monthly for detection and controlled remediation of catalog-quality anomalies.",
       "payer_source_of_value": "Reduced manual catalog work and fewer revenue-impacting defects.",
       "automation_potential": "very_high",
@@ -109,12 +117,14 @@
       "rejection_criteria": ["Five or more credible adopted apps already solve the wedge without unresolved complaints."],
       "reopening_criteria": ["New Shopify data surface or strong merchant signal."],
       "scores": {"information_gain":4,"economic_value_if_successful":4,"low_falsification_cost":4,"low_capital_need":3,"fast_time_to_evidence":4,"reversibility":4,"automation_potential":5,"reuse_value":4,"evidence_confidence":4,"recurrence_scalability":5,"low_legal_friction":3,"low_dependency_risk":2,"low_security_risk":3,"low_competition":1,"low_complexity_burden":3},
-      "evidence_ids": ["EVIDENCE-OPPORTUNITY-RESEARCH-001"]
+      "evidence_ids": ["EVIDENCE-OPPORTUNITY-RESEARCH-001","EVIDENCE-OPP-SHOPIFY-001-REJECT-001"]
     },
     {
       "id": "OPP-ALGORA-001",
-      "rank": 5,
-      "priority_score": 73.6,
+      "rank": null,
+      "prior_rank": 5,
+      "prior_priority_score": 73.6,
+      "priority_score": 0,
       "title": "Algora code-bounty worker",
       "domain": "bounty labor automation",
       "status": "deferred_terms_block",
@@ -138,7 +148,8 @@
     },
     {
       "id": "OPP-IMMUNEFI-001",
-      "rank": 6,
+      "rank": 2,
+      "prior_rank": 6,
       "priority_score": 69.0,
       "title": "AI-assisted smart-contract audit pipeline",
       "domain": "security bounty research",
@@ -163,7 +174,8 @@
     },
     {
       "id": "OPP-COW-001",
-      "rank": 7,
+      "rank": 3,
+      "prior_rank": 7,
       "priority_score": 62.2,
       "title": "CoW Protocol solver optimization",
       "domain": "decentralized market execution",
@@ -185,6 +197,32 @@
       "reopening_criteria": ["Reward changes, new liquidity, or new optimization mechanism."],
       "scores": {"information_gain":3,"economic_value_if_successful":4,"low_falsification_cost":2,"low_capital_need":1,"fast_time_to_evidence":2,"reversibility":3,"automation_potential":5,"reuse_value":5,"evidence_confidence":4,"recurrence_scalability":5,"low_legal_friction":2,"low_dependency_risk":2,"low_security_risk":1,"low_competition":1,"low_complexity_burden":1},
       "evidence_ids": ["EVIDENCE-OPPORTUNITY-RESEARCH-001"]
+    },
+    {
+      "id": "OPP-CANTINA-001",
+      "rank": 1,
+      "priority_score": 75.4,
+      "title": "Cantina automated security-review replay",
+      "domain": "security bounty research",
+      "status": "offline_replay_selected",
+      "mechanism": "Protocols fund accepted unique vulnerability findings; automation assists review while human validation and coded proofs remain required.",
+      "payer_source_of_value": "Prevention of exploitable smart-contract and protocol failures through validated private findings.",
+      "automation_potential": "medium: automated or semi-automated review is permitted, but findings require human validation and coded proofs.",
+      "capital_requirement": "USD 0 for isolated offline replay of completed public scopes; deposits, account, KYC and verified payout wallet are later gates.",
+      "expected_economics": "Cantina reports substantial platform payouts, but this system has no unique-finding rate; duplicates, false positives and validation effort can reduce expected value to zero.",
+      "largest_uncertainty": "Whether a deterministic analysis pipeline produces unique medium/high findings at acceptable precision and effective hourly value.",
+      "evidence_quality": "high for platform mechanics and permission; absent for this system's finding edge",
+      "falsification_cost_time": "USD 0 direct cost; begin with one completed public scope, expand to ten only if precision is nonzero.",
+      "security_operational_risk": "very high: untrusted repositories, sensitive vulnerability reasoning, unsafe proofs and disclosure risk; replay remains offline with no submission.",
+      "legal_compliance_friction": "medium-high: automated review is permitted, but live participation, deposits, KYC, verified wallet and program-specific rules are separate gates.",
+      "competition": "very high: more than twenty thousand researchers and duplicate reward decay.",
+      "next_experiment_id": "EXP-CANTINA-001",
+      "next_falsifiable_experiment": "Run an isolated offline replay on one completed public scope and compare deterministic candidate findings with public outcomes; expand toward ten scopes only after safe execution and nonzero precision.",
+      "promotion_gate": "At least 25% validated precision, at least two unique accepted-equivalent medium/high findings across ten scopes, and estimated return above USD 50/hour before any account or payout action.",
+      "rejection_criteria": ["Precision below 25%.","Fewer than two unique accepted-equivalent findings across ten scopes.","Estimated return below USD 50/hour.","Safe isolation or reproducible validation cannot be maintained."],
+      "reopening_criteria": ["A materially stronger analyzer or new public scope improves measured precision.","Platform rules or competition change materially."],
+      "scores": {"information_gain":5,"economic_value_if_successful":5,"low_falsification_cost":3,"low_capital_need":5,"fast_time_to_evidence":2,"reversibility":5,"automation_potential":3,"reuse_value":5,"evidence_confidence":5,"recurrence_scalability":3,"low_legal_friction":4,"low_dependency_risk":3,"low_security_risk":1,"low_competition":1,"low_complexity_burden":1},
+      "evidence_ids": ["EVIDENCE-OPPORTUNITY-REFRESH-002"]
     }
   ]
 }

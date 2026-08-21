@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T19:57:13.939640Z",
+  "updated_at": "2026-08-21T20:27:04.1613287Z",
   "ranking_method": "priority_score is a 0-100 judgment combining information gain, mission value, falsification cost, reversibility, risk, dependency burden, and reuse value; assumptions remain explicit in each task.",
   "items": [
     {
@@ -106,7 +106,7 @@
       "id": "TASK-EXP-001",
       "parent_objective_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
       "title": "Execute the cheapest high-information opportunity falsification experiment",
-      "status": "in_progress",
+      "status": "completed",
       "priority_score": 92,
       "score_basis": {
         "information_gain": 5,
@@ -122,7 +122,67 @@
       ],
       "acceptance": "A bounded reproducible experiment records prediction, method, evidence, observed result, uncertainty, decision, and next action without capital or external writes.",
       "reversal_condition": "Replace the selected experiment if current evidence changes the opportunity ranking before execution.",
-      "updated_at": "2026-08-21T19:48:08.121223Z"
+      "updated_at": "2026-08-21T20:27:04.1613287Z"
+    },
+    {
+      "id": "TASK-DISC-001",
+      "parent_objective_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
+      "title": "Falsify the SEC filing-diff API before prototype work",
+      "status": "completed",
+      "priority_score": 91,
+      "score_basis": {"information_gain":5,"mission_value":4,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":4},
+      "depends_on": ["TASK-OPP-001"],
+      "acceptance": "Current source, substitute, demand and unit-economics evidence supports a build-or-reject decision without implementing a parser.",
+      "reversal_condition": "Reopen only on repeated independent buyer evidence or a genuinely new provenance capability.",
+      "updated_at": "2026-08-21T20:17:00Z"
+    },
+    {
+      "id": "TASK-DISC-002",
+      "parent_objective_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
+      "title": "Refresh the register for materially stronger opportunities",
+      "status": "completed",
+      "priority_score": 90,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":3},
+      "depends_on": ["TASK-OPP-001"],
+      "acceptance": "Current primary evidence either adds a stronger falsifiable candidate or records why none qualifies.",
+      "reversal_condition": "Repeat when material platform, source, market or capability evidence changes.",
+      "updated_at": "2026-08-21T20:17:36Z"
+    },
+    {
+      "id": "TASK-DISC-003",
+      "parent_objective_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
+      "title": "Falsify Shopify catalog-quality monitoring before build",
+      "status": "completed",
+      "priority_score": 89,
+      "score_basis": {"information_gain":5,"mission_value":4,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":3},
+      "depends_on": ["TASK-DISC-002"],
+      "acceptance": "A current competitor/review/permission/economics matrix finds a repeated unmet paid wedge or rejects the candidate.",
+      "reversal_condition": "Reopen only on repeated buyer complaints, a new uncovered data surface or incumbent withdrawal.",
+      "updated_at": "2026-08-21T20:21:19Z"
+    },
+    {
+      "id": "TASK-DISC-004",
+      "parent_objective_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
+      "title": "Falsify Atlassian access-evidence monitoring before build",
+      "status": "completed",
+      "priority_score": 88,
+      "score_basis": {"information_gain":5,"mission_value":4,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":3},
+      "depends_on": ["TASK-DISC-003"],
+      "acceptance": "Direct substitutes, complaints, native competition, scopes and economics support a build-or-reject decision.",
+      "reversal_condition": "Reopen only on repeated unmet complaints, an enabling RBAC/API change or qualified buyer pre-commitments.",
+      "updated_at": "2026-08-21T20:25:08Z"
+    },
+    {
+      "id": "TASK-EXP-002",
+      "parent_objective_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
+      "title": "Run a bounded isolated Cantina public-scope replay",
+      "status": "in_progress",
+      "priority_score": 86,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":3,"reversibility":5,"risk_control":3,"reuse_value":5},
+      "depends_on": ["TASK-DISC-004","TASK-BOOT-003"],
+      "acceptance": "One completed public scope is reproduced in isolation without account/submission; analyzer candidates are compared with public outcomes and precision, safety, time and next gate are recorded.",
+      "reversal_condition": "Stop if source permission changes, safe isolation cannot be maintained, or the first replay produces no useful signal for a ten-scope test.",
+      "updated_at": "2026-08-21T20:27:04.1613287Z"
     }
   ]
 }

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "id": "ARTIFACT-OPPORTUNITY-REFRESH-001",
+  "captured_at": "2026-08-21T20:17:36Z",
+  "created_by": "root-agent with /root/opportunity_refresh",
+  "method": "Read-only primary-source refresh for materially stronger lawful, automatable, zero/near-zero-capital opportunities.",
+  "decision": "NO_REGISTER_ADDITION",
+  "observed": [
+    {
+      "candidate": "Cantina automated security review",
+      "disposition": "near_miss_watch_only",
+      "reason": "Automation is expressly permitted and payouts exist, but no measured unique-finding edge exists; competition, deposits on some work, human-validated PoCs, KYC and verified-wallet payout requirements prevent a stronger ranking."
+    },
+    {
+      "candidate": "RapidAPI distribution",
+      "disposition": "distribution_rail_not_opportunity",
+      "reason": "Subscriptions/pay-per-use exist, but a 25% fee, required external API operations and absent paid-conversion evidence do not cure commodity-data demand uncertainty."
+    },
+    {
+      "candidate": "JetBrains Marketplace plugin",
+      "disposition": "reject_current_evidence",
+      "reason": "Recurring billing exists, but public downloads do not reveal paid conversion; review, legal, support and bank-payout obligations arrive before demand is proven."
+    },
+    {
+      "candidate": "Code4rena",
+      "disposition": "reject_platform_closing",
+      "reason": "The current homepage states that the platform is winding down and closing."
+    }
+  ],
+  "cantina_reopening_test": "Offline replay of ten completed public scopes with reports withheld; require at least 25% precision, two unique accepted-equivalent medium/high findings and estimated return above USD 50/hour before reconsideration.",
+  "urls": [
+    "https://cantina.xyz/opportunities/bounties",
+    "https://cantina.xyz/terms/general",
+    "https://docs.cantina.security/researchers/participation/competitions",
+    "https://docs.cantina.security/standards/severity/competition",
+    "https://docs.rapidapi.com/docs/monetizing-your-api-on-rapidapicom",
+    "https://docs.rapidapi.com/docs/payouts-and-finance",
+    "https://plugins.jetbrains.com/docs/marketplace/benefits-of-jetbrains-marketplace.html",
+    "https://plugins.jetbrains.com/docs/marketplace/release-plugin.html",
+    "https://plugins.jetbrains.com/docs/marketplace/getting-paid.html",
+    "https://plugins.jetbrains.com/docs/marketplace/sales-and-technical-support.html",
+    "https://code4rena.com/"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "ARTIFACT-EXP-OPP-001-FINAL-001",
+  "experiment_id": "EXP-OPP-001",
+  "captured_at": "2026-08-21T20:18:00Z",
+  "created_by": "root-agent with /root/eu_ted_falsification",
+  "method": "Read-only public Store API/listing and official documentation review; external content treated as untrusted evidence.",
+  "hypothesis": "EU TED remains a defensible official-data pay-per-event wedge after adoption, competition, source-access, feature-gap, and contribution-margin gates.",
+  "observed": {
+    "store_search_results": 269,
+    "first_100_clearly_relevant_by_conservative_title_curation": 61,
+    "monitor_or_delta_variants": 17,
+    "award_or_winner_variants": 9,
+    "actors_with_at_least_five_monthly_users": 2,
+    "source_access_gate": "passed",
+    "feature_gap_gate": "failed",
+    "contribution_margin_gate": "failed_unproven"
+  },
+  "substitute_coverage": [
+    "Official-API pagination, common filters, multilingual flattening, export, links, buyer values and deadlines",
+    "Opportunity, award and planning modes with winner and value filters",
+    "Persistent delta/watch mode with charge-only-new behavior",
+    "Exact lot/award relationships, notice versions, winners, no-award reasons and completeness receipts",
+    "Winner integrity flags and provenance-backed currency handling",
+    "Tender-to-award links, incumbent changes, procedure deltas and source receipts",
+    "Higher-value alert and report events"
+  ],
+  "optimistic_monthly_volume_for_100_usd_before_most_costs": [
+    {"retail_usd_per_1000": 1.0, "minimum_events": 125000},
+    {"retail_usd_per_1000": 4.0, "minimum_events": 31250},
+    {"retail_usd_per_1000": 5.0, "minimum_events": 25000},
+    {"retail_usd_per_1000": 13.4, "minimum_events": 9329},
+    {"retail_usd_per_event": 0.12, "minimum_events": 1042},
+    {"retail_usd_per_event": 4.0, "minimum_events": 32}
+  ],
+  "economics_warning": "Bounds use Apify's 80% creator share and omit most compute, transfer, storage, support and maintenance costs. Public telemetry does not reveal paid-user share or billable event volume.",
+  "source_access": {
+    "decision": "permitted_with_conditions",
+    "notes": "TED Search API is anonymous and intended for reuse, including commercial users. Attribution/change notices apply, personal and third-party rights remain, and source correctness/availability limitations become support costs."
+  },
+  "decision": "REJECT",
+  "reason": "Credible substitutes dominate every recorded output gap, and no evidence supports the billable volume required for USD 100 monthly contribution margin.",
+  "next_action": "Stop the seven-day observation early, pause the heartbeat, do not build or create an Apify account, and rerank the next cheap falsification.",
+  "reopening_conditions": [
+    "At least three independent prospective paying buyers identify the same unmet workflow and credible paid volume.",
+    "A new official data surface enables an output not represented by current substitutes.",
+    "Paid-event economics become observable alongside material adoption growth.",
+    "A pre-sale or pilot supports at least USD 100 monthly contribution after measured platform and support costs."
+  ],
+  "urls": [
+    "https://api.apify.com/v2/store?limit=100&includeUnrunnableActors=true&search=EU%20TED%20tenders",
+    "https://apify.com/memo23/ted-tenders-scraper",
+    "https://apify.com/foxlabs/ted-tenders",
+    "https://apify.com/straightforward_hydra/eu-ted-tender-intelligence",
+    "https://apify.com/westerly_breaker/ted-tender-monitor",
+    "https://apify.com/8tp/eu-ted-tender-lot-award-collector",
+    "https://apify.com/convenient_yarn/eu-ted-award-integrity-feed",
+    "https://apify.com/nexgenwatch/eu-ted-tender-award-watch",
+    "https://apify.com/taroyamada/government-contract-award-monitor",
+    "https://docs.apify.com/actors/publishing/monetize/pay-per-event",
+    "https://docs.apify.com/actors/publishing/monetize/pricing-and-costs",
+    "https://docs.ted.europa.eu/api/latest/search.html",
+    "https://ted.europa.eu/en/legal-notice",
+    "https://docs.ted.europa.eu/ODS/latest/reuse/search-api.html",
+    "https://docs.ted.europa.eu/ODS/latest/querying/known_issues.html"
+  ]
+}
