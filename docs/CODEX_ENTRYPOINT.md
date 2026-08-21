@@ -1,62 +1,57 @@
 # Codex Entrypoint
 
-## Human bootstrap command
+## Bootstrap command
 
-The intended human instruction is deliberately minimal:
+The intended human instruction is:
 
 > Read the repository and begin.
 
 That instruction is sufficient.
 
-Codex must not require the owner to restate the mission, choose a strategy, choose a stack, create wallets, define the architecture, create a task list, or explain what to build.
+Codex must not require the owner to restate the mission, choose a strategy, choose a stack, create working wallets, define the architecture, create a task list, or explain what to build.
 
-## What "read the repository and begin" means
+## Required boot sequence
 
-On receipt of that instruction, the top-level Codex session must:
+On receipt of the bootstrap command, the top-level Codex session must:
 
-1. treat `AGENTS.md` as binding repository operating instructions;
-2. follow the mandatory read order in `README.md` and `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml`;
-3. assume the Root Agent role in `prompts/ROOT_AGENT.md`;
-4. execute `docs/STARTUP_JOB.md` without asking for implementation tasks;
-5. inspect the repository and runtime before changing architecture;
-6. create the durable autonomous operating state needed to continue across sessions;
-7. create or route specialist work as needed;
-8. research current opportunities from zero assumptions;
-9. build the minimum infrastructure needed to falsify and validate those opportunities;
-10. construct its own wallet/signing infrastructure when blockchain work requires it, following `docs/WALLET_AND_SIGNING.md`;
-11. containerize and observe deployed components when justified;
-12. measure outcomes, reflect, update memory, and continue the loop;
-13. escalate only true owner/Governor decisions using `docs/OWNER_INTERFACE.md`.
+1. read `AGENTS.md`;
+2. read `docs/GOVERNOR.md`;
+3. read `docs/WALLET_AND_SIGNING.md`;
+4. read `config/treasury_destinations.yaml`;
+5. read `docs/STARTUP_JOB.md`;
+6. read `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml`;
+7. assume the Root Agent role in `prompts/ROOT_AGENT.md`;
+8. inspect repository, git, runtime, deployments, credentials boundaries, and existing state before changing architecture;
+9. establish durable machine-readable state independent of conversation history;
+10. begin the first autonomous program in the same session.
 
-## Do not convert the bootstrap into questions
+Use the remaining repository documents as references when their subjects become relevant. Do not spend the bootstrap phase rewriting doctrine that is already sufficient.
 
-Do not respond to the bootstrap command with questions such as:
+## Wallet interpretation
 
-- What should I build?
-- Which DEX should I use?
-- Which chain should I target?
-- What wallet should I create?
-- Should I use Docker?
-- Which language should I use?
-- How much research should I do?
-- What should the first agent be?
+Do not ask the owner to create operational wallets.
 
-Resolve those questions autonomously from evidence and the repository doctrine.
+The autonomous system must create and secure the working wallets required by validated activities. Owner-supplied withdrawal destinations already exist in `config/treasury_destinations.yaml`.
 
-## Initial response behavior
+These are two separate domains:
 
-After reading the repository, the Root Agent should briefly state the current autonomous program it is starting, then begin the work in the same session. A plan alone is not completion.
+- operational wallets: created and controlled by the autonomous system;
+- treasury destinations: public withdrawal addresses supplied by the owner and immutable to the Root Agent.
 
-## Persistence expectation
+Never request treasury private keys.
 
-Conversation context is not institutional memory. As one of the first bootstrap responsibilities, Codex must create durable state so a later Codex session can resume by reading repository/runtime state rather than relying on the previous chat transcript.
+Do not use a treasury destination that fails address/network validation or is marked blocked.
+
+## Initial behavior
+
+After reading the boot sequence, briefly state what program is starting and begin executing it. A plan-only response is not completion.
+
+The first priority is to create the autonomous operating kernel and current opportunity/evidence state, not a giant speculative platform.
+
+## Persistence
+
+Conversation context is not institutional memory. The system must persist enough state that a later Codex session can resume from the repository/runtime without requiring the previous chat transcript.
 
 ## Owner relationship
 
-The owner provides mission sovereignty and Governor decisions, not implementation management.
-
-The preferred owner interaction remains:
-
-> Read the repository and begin.
-
-Everything needed to interpret that command belongs in this repository.
+The owner provides mission sovereignty, immutable treasury destinations, and only genuinely owner-only decisions. The owner is not the implementation manager.
