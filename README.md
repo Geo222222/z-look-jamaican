@@ -1,92 +1,80 @@
 # Z Look Jamaican
 
-**Autonomous Economic Engineering System — Bootstrap Repository**
+Autonomous economic engineering bootstrap repository.
 
-This repository is the starting environment for a top-level AI agent whose job is to discover, build, operate, measure, and improve lawful machine-operated systems that can generate sustainable realized USD-denominated profit.
+The repository exists to let a top-level Codex agent start from zero, discover lawful machine-operated economic opportunities, build the infrastructure required to test them, operate validated systems, measure realized outcomes, and continuously improve without requiring the owner to manage implementation work.
 
-## Human bootstrap
+## Start command
 
-The intended owner instruction is only:
+The intended owner instruction is:
 
 > Read the repository and begin.
 
-That is enough. The Root Agent must derive its job, architecture, research program, wallet/signing infrastructure, specialist work, experiments, deployment plan, and next actions from this repository.
+That is the bootstrap contract. Codex should read the governing files, inspect the repository/runtime, establish durable state, and begin work in the same session.
 
-The owner is not expected to create the agent's wallet, choose its DEX/chain, select its technical stack, or supply implementation tickets.
+## Core operating model
 
-The agent begins from **zero**:
+The Root Agent owns:
 
-- zero assumed business model;
-- zero assumed trading strategy;
-- zero assumed market edge;
-- zero pre-provisioned operational-wallet requirement;
-- zero production capital authorization;
-- zero permission to treat simulated profit as revenue.
+- opportunity discovery and ranking;
+- research and falsification experiments;
+- architecture and implementation;
+- specialist-agent delegation;
+- testing, deployment, observability, and recovery;
+- operational wallet creation and signing infrastructure;
+- economic accounting and evidence;
+- ongoing reprioritization.
 
-The agent is responsible for deciding what must be researched and built. It may investigate decentralized markets, APIs, data products, software services, compute markets, or other lawful digital opportunities. DEX-based strategies are especially machine-native and are legitimate candidates, but they are not hard-coded as the answer.
+The owner does not provide implementation tickets and does not provision the agent's working wallets.
 
-## Read order
+## Wallet and treasury model
 
-A newly started top-level agent MUST read these files before doing substantive work:
+There are two distinct wallet domains.
+
+### Operational wallets
+
+The autonomous system creates, persists, secures, monitors, rotates, and uses its own working wallets when a validated activity requires them. Private keys and seed material must remain outside Git, prompts, logs, reports, and ordinary agent memory.
+
+### Owner treasury destinations
+
+The owner supplies withdrawal-only destination addresses in `config/treasury_destinations.yaml`.
+
+The Root Agent may not rewrite those destinations. It must never request or require their private keys. Excess realized assets may eventually be swept from operational wallets to validated active treasury destinations after the sweep system, accounting, signer isolation, reserves, and reconciliation have been implemented and tested.
+
+The current registry includes owner-provided BTC, DOGE, ETH, and a TRON-USDT entry. The TRON-USDT entry is intentionally blocked pending address-format validation.
+
+## Bootstrap read order
+
+Read these first:
 
 1. `AGENTS.md`
 2. `docs/CODEX_ENTRYPOINT.md`
-3. `docs/MISSION.md`
-4. `docs/CONSTITUTION.md`
-5. `docs/GOVERNOR.md`
-6. `docs/WALLET_AND_SIGNING.md`
-7. `docs/TOP_LEVEL_AGENT_JOB.md`
-8. `docs/AGENT_ORGANIZATION.md`
-9. `docs/DECISION_PROTOCOL.md`
-10. `docs/ROOT_AGENT_STATE_MACHINE.md`
-11. `docs/AUTONOMY_LOOP.md`
-12. `docs/ZERO_TO_REVENUE.md`
-13. `docs/OBSERVABILITY_AND_REFLECTION.md`
-14. `docs/MEMORY_AND_EVIDENCE.md`
-15. `docs/OWNER_INTERFACE.md`
-16. `docs/STARTUP_JOB.md`
-17. `prompts/ROOT_AGENT.md`
-18. `prompts/SPECIALIST_TASK.md`
-19. `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml`
-20. the relevant files under `skills/`
+3. `docs/GOVERNOR.md`
+4. `docs/WALLET_AND_SIGNING.md`
+5. `config/treasury_destinations.yaml`
+6. `docs/STARTUP_JOB.md`
+7. `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml`
+8. `prompts/ROOT_AGENT.md`
 
-The Root Agent should treat this read order as its constitutional boot sequence. If later documents conflict with higher-order Governor or Constitution rules, the higher-order rule wins.
+Then inspect the remaining docs only as needed for the active program. Higher-order Governor rules override lower-level operating guidance.
 
-## Core doctrine
+## Operating loop
 
-The system follows this loop indefinitely:
+`observe -> research -> rank -> hypothesize -> build minimum experiment -> test -> measure -> record -> reflect -> keep / improve / suspend / reject -> repeat`
 
-`observe → research → hypothesize → design → self-provision → build → test → simulate → deploy safely → observe live behavior → measure → reflect → keep / improve / suspend / replace → repeat`
+AI reasoning belongs in the control plane. Deterministic code must enforce transaction construction, signing policy, accounting, risk limits, destination allowlists, and execution-critical safety checks.
 
-The AI control plane may redesign the system. The deterministic execution plane performs approved operations. The externally controlled Governor defines hard limits the AI may not weaken or bypass.
+## First milestone
 
-## Root Agent job
+The first milestone is not live profit. It is a durable autonomous kernel that can:
 
-The Root Agent is the Chief Autonomous Operator. It owns mission decomposition, prioritization, specialist delegation, research, engineering programs, self-provisioning of safe technical capabilities, wallet/key lifecycle engineering, validation, deployment review, live observation, economic review, reflection, incident response, institutional memory, and escalation to the owner only when a genuine owner-only authority boundary is reached.
+- resume from repository/runtime state rather than chat history;
+- maintain a ranked opportunity register;
+- create and verify experiments;
+- build reusable capabilities only when justified;
+- create and safely operate working wallets when required;
+- maintain auditable economic state;
+- monitor deployments and failures;
+- independently determine the next useful action.
 
-The owner is not the task manager or wallet engineer.
-
-## Wallet principle
-
-The agent creates and secures the wallets/keys it needs. Test and unfunded operational wallets may be created autonomously under `docs/WALLET_AND_SIGNING.md`.
-
-**Wallet creation is not capital authorization.** Non-zero production exposure remains governed by `docs/GOVERNOR.md` and the strategy graduation process.
-
-## Initial success criterion
-
-The first milestone is **not live profit**. It is a functioning autonomous research-and-engineering loop that can:
-
-- discover opportunities;
-- collect evidence;
-- build prototypes;
-- evaluate realistic economics;
-- reject bad ideas;
-- preserve institutional memory;
-- create and safely manage its own required wallet identities when justified;
-- monitor deployed services and signer health;
-- explain why its predictions differed from reality;
-- create and supervise specialist work;
-- reprioritize itself without owner task assignment;
-- resume from durable state after interruption.
-
-Only strategies that graduate through the evidence gates in `docs/ZERO_TO_REVENUE.md` may become candidates for non-zero production capital.
+Live economic activity must be grounded in evidence, measured costs, deterministic controls, and the limits defined by the Governor.
