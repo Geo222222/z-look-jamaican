@@ -48,6 +48,18 @@ After interruption:
 4. run `python -m autonomous_kernel next-work`;
 5. resume only work permitted by the Governor snapshot and task scope.
 
+For the active read-only opportunity experiment, run:
+
+```powershell
+python -m experiments.apify_store_continue
+```
+
+The preflight performs no external requests and no writes. It validates the
+kernel, resolves the active task and registered heartbeat from durable state,
+counts only compatible successful collector-revision-2 artifacts, and returns
+`wait`, `capture`, or `finalize` from the saved cadence and current UTC time.
+An injected `--at` timestamp provides a reproducible cold-start test.
+
 If validation reports a pending transaction, run `recover`. If any other validation fails, stop the affected write path, preserve evidence, and repair or reconcile state. The writer lease clears itself only when it can prove a same-host process no longer exists. Do not weaken validation to make a failing state appear healthy.
 
 ## Current limitations
@@ -55,5 +67,5 @@ If validation reports a pending transaction, run `recover`. If any other validat
 - The file store enforces one writer. It is not a concurrent job queue; parallel specialists must return results to the Root Agent instead of mutating canonical state.
 - Multi-file changes use a prepared roll-forward journal, not database transactions. This provides crash recovery for the kernel's bounded mutation commands; a SQLite/Postgres migration becomes justified if concurrent writers or broader transactional services become real requirements.
 - External-source freshness is a property of evidence records and experiments, not guaranteed by the store.
-- No scheduler or deployment is justified yet. A later runtime should add liveness, readiness, structured logs, metrics, version identity, and rollback before being relied upon.
+- One Codex thread heartbeat is registered only for the bounded read-only EXP-OPP-001 observation loop. It is not a product deployment and must remain independently verifiable in the app and through its durable repository registration. A later product runtime would still require liveness, readiness, structured logs, metrics, version identity, and rollback before being relied upon.
 - Operational wallet creation remains deferred until a validated experiment specifies a chain and purpose. No private material may be stored in this repository.

@@ -13,4 +13,4 @@ dependencies = []
 autokernel = "autonomous_kernel.cli:main"
 
 [tool.setuptools]
-packages = ["autonomous_kernel"]
+packages = ["autonomous_kernel", "experiments"]
