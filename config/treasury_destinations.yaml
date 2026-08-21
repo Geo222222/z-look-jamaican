@@ -1,0 +1,55 @@
+version: 1
+purpose: owner_treasury_withdrawal_destinations
+
+policy:
+  source: owner_supplied
+  mutable_by_root_agent: false
+  operational_wallets_may_send_only_to_active_destinations: true
+  private_keys_expected_here: false
+  private_keys_must_never_be_committed: true
+  validate_chain_and_address_before_first_transfer: true
+  failed_validation_blocks_transfer: true
+
+# These are destination addresses only. The autonomous system must create and
+# operate its own working wallets. It must never expect or request treasury
+# private keys for the addresses below.
+destinations:
+  - id: treasury-btc
+    asset: BTC
+    network: bitcoin-mainnet
+    address: "1EWaQ5deecyYAsfwAGSBc3YopL6Hacr4Ko"
+    status: active
+
+  - id: treasury-doge
+    asset: DOGE
+    network: dogecoin-mainnet
+    address: "DE3hbtm7Eo1x5Jah48P4TV31zHX7hbjCbM"
+    status: active
+
+  - id: treasury-eth
+    asset: ETH
+    network: ethereum-mainnet
+    address: "0xA19E10B4937e7E07b239fAd251407B2b1E29CE41"
+    status: active
+
+  - id: treasury-trx-usdt
+    asset: USDT
+    network: tron-mainnet
+    address: "0xA19E10B4937e7E07b239fAd251407B2b1E29CE41"
+    status: blocked_pending_validation
+    note: >-
+      Owner supplied this address for TRX-USDT. A Tron mainnet address normally
+      uses Tron address encoding rather than an EVM 0x address. The execution
+      plane MUST treat this destination as blocked until the address is validated
+      as a usable Tron/USDT destination or replaced by a valid Tron address.
+
+sweep_defaults:
+  enabled: false
+  reason: >-
+    Build and test the treasury sweep subsystem first. Enable live sweeps only
+    after operational wallets, chain adapters, accounting, signer isolation,
+    address validation, and rollback/incident controls are implemented.
+  retain_operating_reserve: true
+  retain_network_fee_reserve: true
+  require_preflight_address_validation: true
+  require_receipt_reconciliation: true
