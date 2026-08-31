@@ -18,6 +18,7 @@ from .store import (
     update_task,
     validate,
 )
+from .monitor import monitor_snapshot
 
 
 def _print(value: Any) -> None:
@@ -32,6 +33,8 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("status", help="show a machine-readable resume summary")
     subparsers.add_parser("next-work", help="select the highest-scored ready task whose dependencies are complete")
     subparsers.add_parser("recover", help="idempotently roll a prepared state transaction forward")
+    monitor_parser = subparsers.add_parser("monitor_snapshot", help="emit the authoritative read-only observer snapshot")
+    monitor_parser.add_argument("--json", action="store_true", help="emit JSON (the only supported representation)")
 
     transition_parser = subparsers.add_parser("transition", help="record an allowed root-state transition")
     transition_parser.add_argument("--to", required=True, dest="new_state")
@@ -59,6 +62,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             _print({"status": "ok", "next_work": next_work(root)})
         elif args.command == "recover":
             _print(recover_pending(root))
+        elif args.command == "monitor_snapshot":
+            _print(monitor_snapshot(root))
         elif args.command == "transition":
             record = transition(args.new_state, args.trigger, args.decision_id, args.evidence, root)
             _print({"status": "ok", "transition": record})
