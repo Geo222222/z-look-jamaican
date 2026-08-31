@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "automation_id": "crypto-forward-shadow-continuation",
+  "kind": "heartbeat",
+  "name": "Crypto forward shadow continuation",
+  "status": "ACTIVE",
+  "rrule": "FREQ=MINUTELY;INTERVAL=15",
+  "verified_at": "2026-08-31T17:31:00Z",
+  "durable_entrypoint": "python -m experiments.crypto_market_shadow --state state/market_shadow.json",
+  "preflight": "python -m autonomous_kernel validate",
+  "experiment_id": "EXP-MKT-002",
+  "task_id": "TASK-MKT-002",
+  "safety_boundary": "Public data and zero-capital shadow observation only; no authentication, accounts, orders, wallets, capital movement or Governor changes.",
+  "recovery_independence": "The prompt names the repository entrypoint and durable state directly. The first state contains prospective decisions and can be resumed without conversation history.",
+  "verification": {
+    "automation_update_create": "successful",
+    "automation_update_view": "successful",
+    "local_automation_toml": "present and ACTIVE",
+    "first_shadow_state": "present"
+  }
+}

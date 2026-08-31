@@ -12,8 +12,10 @@
   "active_task_ids": [
     "TASK-MKT-002"
   ],
-  "active_automation_ids": [],
-  "next_observation_not_before": null,
+  "active_automation_ids": [
+    "crypto-forward-shadow-continuation"
+  ],
+  "next_observation_not_before": "2026-08-31T17:45:00Z",
   "last_transition_id": "TRANSITION-7735644130dd46e49c5ab093e4f2d79d",
   "resume_command": "python -m autonomous_kernel status",
   "validation_command": "python -m autonomous_kernel validate",

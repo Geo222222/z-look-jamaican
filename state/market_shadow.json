@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MKT-002",
+  "mode": "zero_capital_shadow",
+  "decisions": [
+    {
+      "id": "SHADOW-BTC-USD-1788197100",
+      "product": "BTC-USD",
+      "observed_at": 1788197404,
+      "signal_candle_timestamp": 1788197100,
+      "actionable_at": 1788197700,
+      "target_position": 1,
+      "baseline_breakout_target": 1,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 4356509.932347399,
+      "absolute_log_return": 0.00018030042224628535,
+      "status": "pending"
+    },
+    {
+      "id": "SHADOW-ETH-USD-1788197100",
+      "product": "ETH-USD",
+      "observed_at": 1788197404,
+      "signal_candle_timestamp": 1788197100,
+      "actionable_at": 1788197700,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 1777878.8544387703,
+      "absolute_log_return": 0.0014196596824160399,
+      "status": "pending"
+    }
+  ],
+  "updated_at": "2026-08-31T17:30:04Z",
+  "summary": {
+    "total": 2,
+    "resolved": 0,
+    "eligible_long": 1,
+    "net_return_sum": 0.0
+  }
+}

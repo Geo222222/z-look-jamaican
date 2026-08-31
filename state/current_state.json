@@ -70,7 +70,7 @@
     "experiment_execution": "crypto_market_baseline_rejected_forward_shadow_active",
     "strategic_focus": "cryptocurrency_markets",
     "market_activity_model": "continuous_availability_but_opportunity_conditioned_on_activity_liquidity_volatility_spread_and_execution_cost",
-    "autonomous_cadence": "apify_heartbeat_paused_after_early_rejection",
+    "autonomous_cadence": "crypto_forward_shadow_heartbeat_active_every_15_minutes",
     "deployment": "not_configured",
     "operational_wallets": "not_justified",
     "capital_movement": "disabled"
