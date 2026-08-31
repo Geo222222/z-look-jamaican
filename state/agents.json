@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T21:36:01.5313588Z",
+  "updated_at": "2026-08-31T16:45:44.0046593Z",
   "items": [
     {
       "task_id": "TASK-BOOT-001",
@@ -78,8 +78,17 @@
       "task_id": "TASK-EXP-002",
       "agent_id": "/root with scoped specialists",
       "role": "Defensive Replay Coordinator",
-      "status": "in_progress_ground_truth_pending",
+      "status": "deferred_candidate_set_preserved",
       "scope": "Completed public EIP-7702 proxy secure-code review, deterministic inventory, platform-safeguard recovery, and adjudicated-result comparison; one generic scan blocked, two narrower reviews completed",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-MKT-001",
+      "agent_id": "/root",
+      "role": "Crypto Market Research and Replay Coordinator",
+      "status": "in_progress",
+      "scope": "Public-data activity segmentation, execution-aware strategy falsification, deterministic replay, and zero-capital shadow selection",
       "production_authority": false,
       "capital_authority_usd": 0
     }

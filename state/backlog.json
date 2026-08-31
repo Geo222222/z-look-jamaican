@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T21:36:01.5313588Z",
+  "updated_at": "2026-08-31T16:45:44.0046593Z",
   "ranking_method": "priority_score is a 0-100 judgment combining information gain, mission value, falsification cost, reversibility, risk, dependency burden, and reuse value; assumptions remain explicit in each task.",
   "items": [
     {
@@ -176,13 +176,26 @@
       "id": "TASK-EXP-002",
       "parent_objective_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
       "title": "Run a bounded isolated Cantina public-scope replay",
-      "status": "in_progress",
-      "priority_score": 86,
+      "status": "ready",
+      "priority_score": 20,
       "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":3,"reversibility":5,"risk_control":3,"reuse_value":5},
       "depends_on": ["TASK-DISC-004","TASK-BOOT-003"],
       "acceptance": "One completed public scope is reproduced in isolation without account/submission; analyzer candidates are compared with public outcomes and precision, safety, time and next gate are recorded.",
       "reversal_condition": "Stop if source permission changes, safe isolation cannot be maintained, or the first replay produces no useful signal for a ten-scope test.",
-      "updated_at": "2026-08-21T21:36:01.5313588Z"
+      "deferred_reason": "Candidate generation is durably frozen; final comparison is deferred behind the owner-directed crypto-market focus and may resume without repeating completed work.",
+      "updated_at": "2026-08-31T16:45:44.0046593Z"
+    },
+    {
+      "id": "TASK-MKT-001",
+      "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+      "title": "Establish an activity-conditioned crypto-market replay baseline",
+      "status": "in_progress",
+      "priority_score": 96,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":5},
+      "depends_on": ["TASK-BOOT-003","TASK-OPP-001"],
+      "acceptance": "Public market data and deterministic replays compare at least three crypto strategy families across activity, liquidity, volatility and time-of-week regimes, with fees, spread, slippage, latency, funding, fill probability and failure costs included; the result selects or rejects a zero-capital shadow experiment.",
+      "reversal_condition": "Re-rank if accessible data, venue rules, costs, market structure, Governor authority or measured net edge changes materially.",
+      "updated_at": "2026-08-31T16:45:44.0046593Z"
     }
   ]
 }

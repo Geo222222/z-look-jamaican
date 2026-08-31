@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "id": "ARTIFACT-OWNER-CRYPTO-FOCUS-001",
+  "captured_at": "2026-08-31T16:45:44.0046593Z",
+  "source_type": "owner_strategy_directive",
+  "directive": "Retain the repository mission, Governor, autonomous loop, evidence standards, and falsification process while focusing opportunity discovery and execution research on cryptocurrency markets.",
+  "interpretation": [
+    "Continuous market availability is useful for observation and operation but is not treated as an edge by itself.",
+    "Activity, liquidity, volatility, spreads, and executable flow determine opportunity; time-of-week, including weekends, is a conditioning variable rather than a blanket exclusion.",
+    "The system should seek net executable profit after fees, spread, slippage, latency, funding, failed execution, infrastructure cost, and risk.",
+    "The existing research-build-replay-shadow-validate-promote process remains authoritative.",
+    "Previously rejected opportunities and completed evidence remain preserved; unrelated product discovery is deferred rather than erased."
+  ],
+  "immediate_scope": "Public-data crypto-market research, activity-conditioned opportunity ranking, deterministic replay, and zero-capital shadow validation.",
+  "unchanged_boundaries": [
+    "Production financial trading remains disabled.",
+    "All configured exposure and loss limits remain zero.",
+    "No operational wallet, exchange account, credential, signer, or capital is justified before measured edge and the applicable Governor gate.",
+    "Owner treasury destinations remain withdrawal-only and immutable to the Root Agent."
+  ],
+  "reversal_condition": "A later owner directive changes the strategic domain, or crypto-market evidence shows the entire accessible opportunity class is inferior after costs and risk."
+}

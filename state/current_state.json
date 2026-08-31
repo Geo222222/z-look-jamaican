@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
   "system_id": "z-look-jamaican",
-  "updated_at": "2026-08-21T21:36:01.5313588Z",
+  "updated_at": "2026-08-31T16:45:44.0046593Z",
   "root_state": "DISCOVERY",
   "strategy_stage": "DISCOVERY",
   "mission_objective_id": "MISSION-001",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
-    "PROGRAM-OPPORTUNITY-DISCOVERY"
+    "PROGRAM-OPPORTUNITY-DISCOVERY",
+    "PROGRAM-CRYPTO-MARKETS"
   ],
   "next_task_id": null,
   "governor": {
@@ -66,7 +67,9 @@
     "state_validation": "verified_bootstrap",
     "single_writer_recovery": "verified_failure_injection",
     "opportunity_ranking": "verified_initial_register",
-    "experiment_execution": "cantina_eip7702_defensive_candidates_frozen_ground_truth_pending",
+    "experiment_execution": "crypto_market_activity_conditioned_replay_baseline_active",
+    "strategic_focus": "cryptocurrency_markets",
+    "market_activity_model": "continuous_availability_but_opportunity_conditioned_on_activity_liquidity_volatility_spread_and_execution_cost",
     "autonomous_cadence": "apify_heartbeat_paused_after_early_rejection",
     "deployment": "not_configured",
     "operational_wallets": "not_justified",

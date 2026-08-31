@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T20:27:04.1613287Z",
-  "status": "reranked_after_four_rejections_cantina_offline_replay_selected",
+  "updated_at": "2026-08-31T16:45:44.0046593Z",
+  "status": "owner_directed_crypto_market_focus_activity_conditioned_replay_selected",
   "ranking_method": {
     "scale": "1-5 ordinal; 1 unfavorable, 5 favorable",
     "warning": "Weighted scores rank information-gathering work. They are not ROI, probability, revenue, or profit forecasts.",
@@ -148,12 +148,12 @@
     },
     {
       "id": "OPP-IMMUNEFI-001",
-      "rank": 2,
+      "rank": null,
       "prior_rank": 6,
-      "priority_score": 69.0,
+      "priority_score": 35.0,
       "title": "AI-assisted smart-contract audit pipeline",
       "domain": "security bounty research",
-      "status": "research_only",
+      "status": "deferred_strategy_focus",
       "mechanism": "Protocols pay accepted rewards for privately disclosed reproducible vulnerabilities.",
       "payer_source_of_value": "Loss prevention and coordinated disclosure.",
       "automation_potential": "medium; analysis can be automated, expert review/disclosure remain mandatory.",
@@ -174,7 +174,7 @@
     },
     {
       "id": "OPP-COW-001",
-      "rank": 3,
+      "rank": 2,
       "prior_rank": 7,
       "priority_score": 62.2,
       "title": "CoW Protocol solver optimization",
@@ -200,11 +200,12 @@
     },
     {
       "id": "OPP-CANTINA-001",
-      "rank": 1,
+      "rank": null,
+      "prior_rank": 1,
       "priority_score": 75.4,
       "title": "Cantina automated security-review replay",
       "domain": "security bounty research",
-      "status": "offline_replay_selected",
+      "status": "deferred_candidate_set_frozen",
       "mechanism": "Protocols fund accepted unique vulnerability findings; automation assists review while human validation and coded proofs remain required.",
       "payer_source_of_value": "Prevention of exploitable smart-contract and protocol failures through validated private findings.",
       "automation_potential": "medium: automated or semi-automated review is permitted, but findings require human validation and coded proofs.",
@@ -223,6 +224,32 @@
       "reopening_criteria": ["A materially stronger analyzer or new public scope improves measured precision.","Platform rules or competition change materially."],
       "scores": {"information_gain":5,"economic_value_if_successful":5,"low_falsification_cost":3,"low_capital_need":5,"fast_time_to_evidence":2,"reversibility":5,"automation_potential":3,"reuse_value":5,"evidence_confidence":5,"recurrence_scalability":3,"low_legal_friction":4,"low_dependency_risk":3,"low_security_risk":1,"low_competition":1,"low_complexity_burden":1},
       "evidence_ids": ["EVIDENCE-OPPORTUNITY-REFRESH-002"]
+    },
+    {
+      "id": "OPP-CRYPTO-MICROSTRUCTURE-001",
+      "rank": 1,
+      "priority_score": 82.0,
+      "title": "Activity-conditioned crypto market microstructure and execution",
+      "domain": "cryptocurrency markets",
+      "status": "replay_selected",
+      "mechanism": "Use public spot, perpetual and decentralized-market data to identify activity regimes where pricing, basis, funding, routing, liquidity provision or short-horizon execution signals retain positive net expectancy after realistic execution costs.",
+      "payer_source_of_value": "Realized trading or solver revenue from improved pricing, timing, routing and liquidity under measurable market activity.",
+      "automation_potential": "very_high for data collection, replay, shadow execution, monitoring and deterministic controls; capital execution remains separately gated.",
+      "capital_requirement": "USD 0 for public-data collection, replay and shadow accounting. Live operation requires measured edge, deterministic risk infrastructure and nonzero Governor authority.",
+      "expected_economics": "Unknown until activity-segmented replay includes fees, spread, slippage, latency, funding, fill probability, failed execution and infrastructure cost.",
+      "largest_uncertainty": "Whether any signal remains executable and stable after costs, competition and regime changes.",
+      "evidence_quality": "Owner strategic focus is durable; public market feeds are accessible, but proprietary net edge is unmeasured.",
+      "falsification_cost_time": "Zero capital; initial multi-strategy replay baseline can be built from public data before any account, wallet or credential.",
+      "security_operational_risk": "high for eventual live execution; low for bounded public-data replay with no credentials or target writes.",
+      "legal_compliance_friction": "medium-high for venue access and eventual trading; public-data research remains the current scope.",
+      "competition": "very_high",
+      "next_experiment_id": "EXP-MKT-001",
+      "next_falsifiable_experiment": "Compare at least three strategy families across activity, liquidity, volatility and time-of-week regimes using execution-aware deterministic replay; promote only a positive walk-forward result to zero-capital shadow operation.",
+      "promotion_gate": "Positive net walk-forward expectancy across multiple activity regimes after all modeled costs; sufficient sample size; bounded drawdown; stable results outside one asset/day; deterministic pause and accounting behavior before shadow promotion.",
+      "rejection_criteria": ["Gross edge disappears after costs.","Result depends on lookahead, stale prices or unrealistic fills.","Profit is isolated to one unrepeated event or fragile parameter set.","Operational or legal burden dominates expected value."],
+      "reopening_criteria": ["New venue, fee structure, market mechanism, liquidity regime, data source or execution method materially changes measured economics."],
+      "scores": {"information_gain":5,"economic_value_if_successful":5,"low_falsification_cost":5,"low_capital_need":5,"fast_time_to_evidence":4,"reversibility":5,"automation_potential":5,"reuse_value":5,"evidence_confidence":3,"recurrence_scalability":5,"low_legal_friction":3,"low_dependency_risk":4,"low_security_risk":3,"low_competition":1,"low_complexity_burden":2},
+      "evidence_ids": ["EVIDENCE-OWNER-CRYPTO-FOCUS-001"]
     }
   ]
 }
