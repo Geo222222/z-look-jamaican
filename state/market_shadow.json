@@ -91,7 +91,12 @@
       "weekday": true,
       "quote_volume": 1390059.9590636792,
       "absolute_log_return": 0.0009540165418346861,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788214744,
+      "evaluation_end": 1788213300,
+      "gross_return": -0.0,
+      "transition_cost": 0.002,
+      "net_return": -0.002
     },
     {
       "id": "SHADOW-ETH-USD-1788211800",
@@ -105,7 +110,12 @@
       "weekday": true,
       "quote_volume": 972892.3766197866,
       "absolute_log_return": 0.0007099980934674245,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788214744,
+      "evaluation_end": 1788213300,
+      "gross_return": -0.0,
+      "transition_cost": 0.0,
+      "net_return": -0.0
     },
     {
       "id": "SHADOW-BTC-USD-1788212700",
@@ -134,13 +144,41 @@
       "quote_volume": 341576.13736671716,
       "absolute_log_return": 0.000338635945410026,
       "status": "pending"
+    },
+    {
+      "id": "SHADOW-BTC-USD-1788214200",
+      "product": "BTC-USD",
+      "observed_at": 1788214741,
+      "signal_candle_timestamp": 1788214200,
+      "actionable_at": 1788214800,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 1376105.0192603592,
+      "absolute_log_return": 0.001036738668665068,
+      "status": "pending"
+    },
+    {
+      "id": "SHADOW-ETH-USD-1788214200",
+      "product": "ETH-USD",
+      "observed_at": 1788214741,
+      "signal_candle_timestamp": 1788214200,
+      "actionable_at": 1788214800,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 588477.2431792248,
+      "absolute_log_return": 0.0011674717083073826,
+      "status": "pending"
     }
   ],
-  "updated_at": "2026-08-31T21:50:56Z",
+  "updated_at": "2026-08-31T22:19:01Z",
   "summary": {
-    "total": 8,
-    "resolved": 4,
+    "total": 10,
+    "resolved": 6,
     "eligible_long": 2,
-    "net_return_sum": 0.0027855436323667177
+    "net_return_sum": 0.0007855436323667177
   }
 }
