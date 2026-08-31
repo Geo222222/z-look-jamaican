@@ -1,3 +1,5 @@
+import unittest
+
 from monitor.app.contract import MonitorContractError, overview_view, validate_snapshot
 
 
@@ -37,21 +39,21 @@ def sample():
     }
 
 
-def test_contract_and_overview():
-    snap = validate_snapshot(sample())
-    out = overview_view(snap)
-    assert out["active_experiment"]["id"] == "EXP-MKT-002"
-    assert out["metrics"]["decisions_total"] == 8
-    assert out["metrics"]["timestamp_violations"] == 0
-    assert out["availability"]["economics"] == "not_earned"
+class MonitorContractTests(unittest.TestCase):
+    def test_contract_and_overview(self):
+        snap = validate_snapshot(sample())
+        out = overview_view(snap)
+        self.assertEqual(out["active_experiment"]["id"], "EXP-MKT-002")
+        self.assertEqual(out["metrics"]["decisions_total"], 8)
+        self.assertEqual(out["metrics"]["timestamp_violations"], 0)
+        self.assertEqual(out["availability"]["economics"], "not_earned")
+
+    def test_rejects_mutable_contract(self):
+        payload = sample()
+        payload["contract"]["read_only"] = False
+        with self.assertRaises(MonitorContractError):
+            validate_snapshot(payload)
 
 
-def test_rejects_mutable_contract():
-    payload = sample()
-    payload["contract"]["read_only"] = False
-    try:
-        validate_snapshot(payload)
-    except MonitorContractError:
-        pass
-    else:
-        raise AssertionError("mutable contract should be rejected")
+if __name__ == "__main__":
+    unittest.main()
