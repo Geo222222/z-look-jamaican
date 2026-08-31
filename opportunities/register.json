@@ -249,7 +249,7 @@
       "rejection_criteria": ["Gross edge disappears after costs.","Result depends on lookahead, stale prices or unrealistic fills.","Profit is isolated to one unrepeated event or fragile parameter set.","Operational or legal burden dominates expected value."],
       "reopening_criteria": ["New venue, fee structure, market mechanism, liquidity regime, data source or execution method materially changes measured economics."],
       "scores": {"information_gain":5,"economic_value_if_successful":5,"low_falsification_cost":5,"low_capital_need":5,"fast_time_to_evidence":4,"reversibility":5,"automation_potential":5,"reuse_value":5,"evidence_confidence":3,"recurrence_scalability":5,"low_legal_friction":3,"low_dependency_risk":4,"low_security_risk":3,"low_competition":1,"low_complexity_burden":2},
-      "evidence_ids": ["EVIDENCE-OWNER-CRYPTO-FOCUS-001","EVIDENCE-EXP-MKT-001-PREREG-001","EVIDENCE-EXP-MKT-001-RESULT-001"]
+      "evidence_ids": ["EVIDENCE-OWNER-CRYPTO-FOCUS-001","EVIDENCE-EXP-MKT-001-PREREG-001","EVIDENCE-EXP-MKT-001-RESULT-001","EVIDENCE-EXP-MKT-002-PREREG-001"]
     }
   ]
 }
