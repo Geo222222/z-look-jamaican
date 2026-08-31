@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T20:27:04.1613287Z",
+  "updated_at": "2026-08-21T21:36:01.5313588Z",
   "ranking_method": "priority_score is a 0-100 judgment combining information gain, mission value, falsification cost, reversibility, risk, dependency burden, and reuse value; assumptions remain explicit in each task.",
   "items": [
     {
@@ -182,7 +182,7 @@
       "depends_on": ["TASK-DISC-004","TASK-BOOT-003"],
       "acceptance": "One completed public scope is reproduced in isolation without account/submission; analyzer candidates are compared with public outcomes and precision, safety, time and next gate are recorded.",
       "reversal_condition": "Stop if source permission changes, safe isolation cannot be maintained, or the first replay produces no useful signal for a ten-scope test.",
-      "updated_at": "2026-08-21T20:27:04.1613287Z"
+      "updated_at": "2026-08-21T21:36:01.5313588Z"
     }
   ]
 }

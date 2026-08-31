@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T19:55:00Z",
+  "updated_at": "2026-08-21T21:36:01.5313588Z",
   "items": [
     {
       "id": "INC-DATA-001",
@@ -16,6 +16,22 @@
       "remediation": "Updated normalization to TOTAL with outcome-sum fallback, added regression tests, versioned the collector, recaptured, and made comparisons reject old revisions.",
       "evidence": ["artifacts/evidence/apify_store/snapshot-20260821T194047Z.json","artifacts/evidence/apify_store/snapshot-20260821T195023Z.json","tests/test_apify_snapshot.py","tests/test_apify_compare.py"],
       "reopen_if": "A source schema change, incompatible snapshot, or unexplained zero/negative telemetry is observed."
+    },
+    {
+      "id": "INC-PLATFORM-001",
+      "opened_at": "2026-08-21T21:33:40.8510827Z",
+      "resolved_at": "2026-08-21T21:36:01.5313588Z",
+      "status": "resolved_with_graceful_degradation",
+      "severity": "low",
+      "type": "external_capability_boundary_platform_cyber_safeguard",
+      "subject": "EXP-CANTINA-001 generic invariant-scan specialist response",
+      "impact": "One specialist method returned no content. The notice did not establish a policy violation and did not falsify the economic opportunity. No live system, capital, credential, wallet, or external submission was involved.",
+      "root_cause": "An OpenAI additional automated cybersecurity safeguard prevented the specialist result from being returned; the provider did not expose a more specific trigger or event timestamp.",
+      "containment": "Did not retry, obfuscate, fragment, change model/account, or otherwise attempt to defeat the safeguard.",
+      "remediation": "Narrowed the work to secure-code review, defensive invariant analysis, non-executing source inventory, and comparison with already-public adjudicated findings. Two independent narrowed reviews completed.",
+      "evidence": ["ARTIFACT-PLATFORM-CYBER-SAFEGUARD-001","ARTIFACT-CANTINA-EIP7702-CANDIDATES-001","https://help.openai.com/en/articles/20001326-additional-safety-checks-for-biological-and-cybersecurity-requests-in-chatgpt-codex-and-the-api"],
+      "owner_action_required": false,
+      "reopen_if": "Clearly defensive authorized methods are repeatedly blocked and the economic hypothesis cannot be evaluated through a narrower safe workflow; supported provider verification or OpenAI Support would then be an external owner/provider boundary."
     }
   ]
 }

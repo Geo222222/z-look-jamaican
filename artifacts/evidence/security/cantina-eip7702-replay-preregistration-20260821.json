@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "id": "ARTIFACT-CANTINA-EIP7702-PREREG-001",
+  "experiment_id": "EXP-CANTINA-001",
+  "captured_at": "2026-08-21T20:46:37.7269171Z",
+  "created_by": "root-agent with scope selection by /root/cantina_scope_selection",
+  "status": "candidate_generation_in_progress_ground_truth_withheld",
+  "purpose": "Measure whether a reusable security-review pipeline produces validated high/medium signal on one completed public competition scope before any account, submission, wallet, deposit, or live-system action.",
+  "selection": {
+    "competition": "Coinbase/Base EIP-7702 Proxy",
+    "competition_url": "https://cantina.xyz/competitions/b0a948cd-c861-4807-b36e-d680d82598bf",
+    "repository_url": "https://github.com/base/eip-7702-proxy",
+    "commit": "371a141ed738a0328b356092a8df1bed0e1d9856",
+    "scope_loc": 237,
+    "scope": [
+      "src/EIP7702Proxy.sol",
+      "src/DefaultReceiver.sol",
+      "src/NonceTracker.sol",
+      "src/interfaces/IAccountStateValidator.sol",
+      "src/validators/CoinbaseSmartWalletValidator.sol"
+    ],
+    "excluded": [
+      "tests, deployments, live contracts, and all non-public systems",
+      "findings, fixes, issues, and commits after the competition source commit"
+    ],
+    "selection_reason": "The exact historical commit is publicly reproducible, the repository is MIT licensed, the complete scope is only 237 LOC, and an immutable public report contains exactly two adjudicated Medium findings.",
+    "source_retrieval": "Read-only clone into ignored artifacts/runtime. Pinned imported dependency sources were retrieved only to validate interface/storage semantics; no project code, tests, hooks, dependencies, or build commands executed.",
+    "dependency_commits": {
+      "openzeppelin-contracts": "acd4ff74de833399287ed6b31b4debf6b2b35527",
+      "smart-wallet": "facf1a5a00a393c859c77a7cff38de1e557c393f",
+      "solady": "66162801e022c268a2a0f621ac5eb0df4986f6eb"
+    }
+  },
+  "source_sha256": {
+    "src/EIP7702Proxy.sol": "85d96d5aa1ba75da90cfbcbae6f5c9c3fceb3c17292a969bef0b5195c4024b90",
+    "src/DefaultReceiver.sol": "173cbac4968726392f670e5cb35c76dc1af563fbf5f8f60bf0eb13bc564e3794",
+    "src/NonceTracker.sol": "57741bde3ed4fafab72c892b6f4406acaf13885c1d50052744ff0125796959ff",
+    "src/interfaces/IAccountStateValidator.sol": "8fb168e1aaa0e93d5de48f0a2d02566e24346572fd7d46ab22689cc0875c604f",
+    "src/validators/CoinbaseSmartWalletValidator.sol": "9443f40d6fb8213113ab416e8d746549da2e4120306765fde14ff47fca6812bf"
+  },
+  "ground_truth": {
+    "report_url": "https://github.com/base/eip-7702-proxy/blob/eed3b0440c7ad1a4760dde45c7d901334ef4c773/audits/Cantina-Competition-April-2025.pdf",
+    "known_summary_only": {
+      "critical": 0,
+      "high": 0,
+      "medium": 2
+    },
+    "withholding_rule": "Do not inspect finding titles, descriptions, issues, fixes, later commits, or the report body until candidate IDs, locations, severities, exploit hypotheses, and confidence are frozen.",
+    "contamination": "The root agent has observed summary counts and scope metadata only. The selector explicitly withheld finding details; review agents are prohibited from report access."
+  },
+  "candidate_protocol": {
+    "time_budget_minutes": 60,
+    "maximum_candidates": 5,
+    "tracks": [
+      "Reusable deterministic lexical/invariant inventory with source locations",
+      "Two independent source-only semantic reviews",
+      "Root validation and duplicate collapse without report access"
+    ],
+    "candidate_minimum": "A concrete violated invariant, reachable untrusted action or realistic state transition, material impact, exact source location, and an offline reproduction plan.",
+    "rejection_default": "Speculative, owner-malicious, explicitly accepted-risk, dependency-only, live-state-dependent, or low/informational observations are excluded.",
+    "freeze_rule": "Hash and preserve the candidate artifact before opening the public report."
+  },
+  "measurement": {
+    "primary": "validated_precision = report-matched or independently reproducible accepted-equivalent high/medium candidates divided by all frozen candidates",
+    "secondary": [
+      "known-finding recall against the two adjudicated Medium findings",
+      "unique accepted-equivalent candidates not present in the report, retained only if reproducible",
+      "elapsed analyst time and estimated effective hourly value",
+      "false-positive classes and pipeline safety"
+    ],
+    "one_scope_continuation_gate": "Continue toward ten scopes only if at least one candidate is validated and first-scope precision is at least 25%; otherwise reject or redesign before more replay activity.",
+    "economic_promotion_gate": "Across ten scopes require at least two unique accepted-equivalent high/medium findings and estimated return above USD 50/hour before any live participation step."
+  },
+  "safety": {
+    "network_after_retrieval": "No source execution or live target access; report retrieval occurs only after candidate freeze.",
+    "execution": "No project build, test, dependency install, script, deployment, RPC, transaction, or proof against a live system.",
+    "credentials_and_capital": "No account, KYC, secrets, wallet, deposit, signer, funds, or submission.",
+    "disclosure": "Only already-public completed-scope material may enter ordinary evidence; any apparently novel issue remains quarantined from external communication."
+  },
+  "kernel_commit": "bcc364f8fd353041d2eb685e77a7e80feb759725"
+}

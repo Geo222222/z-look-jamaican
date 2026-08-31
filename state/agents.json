@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T20:27:04.1613287Z",
+  "updated_at": "2026-08-21T21:36:01.5313588Z",
   "items": [
     {
       "task_id": "TASK-BOOT-001",
@@ -71,6 +71,15 @@
       "role": "Opportunity Falsification Researcher",
       "status": "completed",
       "scope": "Read-only Atlassian competitor, review, scope, security and economics falsification",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-EXP-002",
+      "agent_id": "/root with scoped specialists",
+      "role": "Defensive Replay Coordinator",
+      "status": "in_progress_ground_truth_pending",
+      "scope": "Completed public EIP-7702 proxy secure-code review, deterministic inventory, platform-safeguard recovery, and adjudicated-result comparison; one generic scan blocked, two narrower reviews completed",
       "production_authority": false,
       "capital_authority_usd": 0
     }

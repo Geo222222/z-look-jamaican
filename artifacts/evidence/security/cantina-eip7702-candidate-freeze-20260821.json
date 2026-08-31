@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "ARTIFACT-CANTINA-EIP7702-CANDIDATES-001",
+  "experiment_id": "EXP-CANTINA-001",
+  "frozen_at": "2026-08-21T21:36:01.5313588Z",
+  "created_by": "root-agent with independent source-only reviews /root/eip7702_review_a and /root/eip7702_review_b",
+  "status": "frozen_before_ground_truth_reveal",
+  "source_commit": "371a141ed738a0328b356092a8df1bed0e1d9856",
+  "ground_truth_accessed": false,
+  "coverage": {
+    "scoped_files": 5,
+    "scoped_lines": 237,
+    "independent_completed_reviews": 2,
+    "deterministic_inventory": "ARTIFACT-CANTINA-EIP7702-INVENTORY-001",
+    "elapsed_specialist_minutes_reported": 32
+  },
+  "candidates": [
+    {
+      "id": "CAND-EIP7702-001",
+      "title": "Unbounded implementation response can prevent the promised EOA signature fallback",
+      "severity_hypothesis": "medium",
+      "confidence": 0.86,
+      "location": "src/EIP7702Proxy.sol:118",
+      "invariant": "A valid underlying EOA signature should remain verifiable regardless of the active implementation's ERC-1271 response behavior, as documented by the proxy.",
+      "defensive_observation": "The proxy copies dynamically sized delegatecall return data before reaching its EOA recovery fallback. An approved implementation with excessive gas or response behavior can therefore make signature validation fail before the fallback executes.",
+      "impact_boundary": "Availability of ERC-1271 validation for an otherwise valid EOA signature; severity depends on whether an approved implementation can exhibit the behavior under realistic gas limits.",
+      "offline_falsifier": "A bounded local harness shows that all validator-approved implementations leave sufficient gas and bounded return data for the fallback on every input, or EVM/compiler behavior avoids the full copy/allocation.",
+      "review_support": ["/root/eip7702_review_a","ARTIFACT-CANTINA-EIP7702-INVENTORY-001"]
+    },
+    {
+      "id": "CAND-EIP7702-002",
+      "title": "Initialization counter alone does not prove a usable and intended ownership state",
+      "severity_hypothesis": "medium",
+      "confidence": 0.78,
+      "location": "src/validators/CoinbaseSmartWalletValidator.sol:25-30",
+      "invariant": "Post-upgrade validation should prove that the supported wallet implementation has a coherent, usable, intended controller set, not merely that an initialization counter is nonzero.",
+      "defensive_observation": "The validator treats nextOwnerIndex() != 0 as conclusive. Persisted account storage can make that counter nonzero without, by itself, proving the corresponding owner records and membership state are coherent.",
+      "impact_boundary": "A signed migration could be accepted into an unusable or unintended controller state. The finding is falsified if all reachable pre-upgrade storage states make a nonzero counter structurally equivalent to at least one coherent intended owner.",
+      "offline_falsifier": "A storage-layout review or bounded local state harness proves the counter and owner mappings cannot diverge across any authorized migration path.",
+      "review_support": ["/root/eip7702_review_b","pinned smart-wallet MultiOwnable dependency facf1a5a00a393c859c77a7cff38de1e557c393f"]
+    }
+  ],
+  "rejected_classes": [
+    "raw-hash domain concerns without a concrete authorization break",
+    "nonce griefing defeated by caller-keying and transaction rollback",
+    "validator state mutation defeated by view/static-call behavior",
+    "explicit opt-in cross-chain replay",
+    "owner-malicious or low/informational observations"
+  ],
+  "comparison_protocol": "Compare semantic invariants and affected code paths against the two already-public adjudicated Medium findings. Do not count title similarity alone. Classify exact/equivalent, partial, false positive, or not in ground truth, and preserve uncertainty.",
+  "safety": "Defensive source review only; no live target, transaction, wallet, account, submission, or operational proof. Detailed offensive procedures are unnecessary and excluded."
+}

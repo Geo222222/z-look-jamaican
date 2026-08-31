@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "system_id": "z-look-jamaican",
-  "updated_at": "2026-08-21T20:27:04.1613287Z",
+  "updated_at": "2026-08-21T21:36:01.5313588Z",
   "root_state": "DISCOVERY",
   "strategy_stage": "DISCOVERY",
   "mission_objective_id": "MISSION-001",
@@ -66,14 +66,15 @@
     "state_validation": "verified_bootstrap",
     "single_writer_recovery": "verified_failure_injection",
     "opportunity_ranking": "verified_initial_register",
-    "experiment_execution": "four_market_candidates_rejected_cantina_offline_replay_active",
+    "experiment_execution": "cantina_eip7702_defensive_candidates_frozen_ground_truth_pending",
     "autonomous_cadence": "apify_heartbeat_paused_after_early_rejection",
     "deployment": "not_configured",
     "operational_wallets": "not_justified",
     "capital_movement": "disabled"
   },
   "known_incident_ids": [
-    "INC-DATA-001"
+    "INC-DATA-001",
+    "INC-PLATFORM-001"
   ],
   "owner_only_blockers": []
 }
