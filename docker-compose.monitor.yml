@@ -1,0 +1,21 @@
+services:
+  command-center:
+    build:
+      context: .
+      dockerfile: monitor/Dockerfile
+    environment:
+      ZLOOK_SOURCE_ROOT: /zlook
+      ZLOOK_MONITOR_REFRESH_SECONDS: ${ZLOOK_MONITOR_REFRESH_SECONDS:-3}
+      ZLOOK_MONITOR_MAX_FILE_BYTES: ${ZLOOK_MONITOR_MAX_FILE_BYTES:-8388608}
+    volumes:
+      - ./:/zlook:ro
+    ports:
+      - "127.0.0.1:${ZLOOK_MONITOR_PORT:-3000}:8080"
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
