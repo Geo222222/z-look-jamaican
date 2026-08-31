@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T16:45:44.0046593Z",
+  "updated_at": "2026-08-31T17:24:00Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "Owner strategy directive ARTIFACT-OWNER-CRYPTO-FOCUS-001 keeps the mission, Governor and evidence process unchanged while focusing opportunity work on cryptocurrency markets. TASK-MKT-001 is active: rank and falsify activity-conditioned, execution-aware strategies using public data and zero-capital replay/shadow work. Continuous availability is not treated as edge; weekends remain eligible when activity and net economics support them. EXP-CANTINA-001 candidates remain durably frozen and deferred without lost work.",
+  "checkpoint": "EXP-MKT-001 is complete and reproducibly rejects fixed trend, mean-reversion and breakout families at 20 bps per side on BTC-USD and ETH-USD. No baseline is promoted. TASK-MKT-002 is active because breakout gross return was concentrated in active weekdays; this is explicitly post-hoc and must be tested prospectively with timestamped decisions before any deeper promotion. No orders, credentials, wallet or capital are authorized.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",
@@ -10,7 +10,7 @@
   ],
   "next_task_id": null,
   "active_task_ids": [
-    "TASK-MKT-001"
+    "TASK-MKT-002"
   ],
   "active_automation_ids": [],
   "next_observation_not_before": null,

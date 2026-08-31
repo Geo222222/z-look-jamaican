@@ -91,6 +91,15 @@
       "scope": "Public-data activity segmentation, execution-aware strategy falsification, deterministic replay, and zero-capital shadow selection",
       "production_authority": false,
       "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-MKT-002",
+      "agent_id": "/root",
+      "role": "Crypto Forward Shadow Coordinator",
+      "status": "in_progress",
+      "scope": "Timestamped public-data decisions and after-cost reconciliation for an active-weekday breakout hypothesis; no account, wallet, credential, order or capital",
+      "production_authority": false,
+      "capital_authority_usd": 0
     }
   ]
 }

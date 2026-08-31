@@ -189,13 +189,25 @@
       "id": "TASK-MKT-001",
       "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
       "title": "Establish an activity-conditioned crypto-market replay baseline",
-      "status": "in_progress",
+      "status": "completed",
       "priority_score": 96,
       "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":5},
       "depends_on": ["TASK-BOOT-003","TASK-OPP-001"],
       "acceptance": "Public market data and deterministic replays compare at least three crypto strategy families across activity, liquidity, volatility and time-of-week regimes, with fees, spread, slippage, latency, funding, fill probability and failure costs included; the result selects or rejects a zero-capital shadow experiment.",
       "reversal_condition": "Re-rank if accessible data, venue rules, costs, market structure, Governor authority or measured net edge changes materially.",
-      "updated_at": "2026-08-31T16:45:44.0046593Z"
+      "updated_at": "2026-08-31T17:24:00Z"
+    },
+    {
+      "id": "TASK-MKT-002",
+      "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+      "title": "Run a preregistered active-weekday breakout forward shadow",
+      "status": "in_progress",
+      "priority_score": 94,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":5},
+      "depends_on": ["TASK-MKT-001"],
+      "acceptance": "Timestamp decisions before outcomes for BTC-USD and ETH-USD without orders or credentials; reconcile at least 100 eligible observations or 14 calendar days, apply 20 bps per-side costs, and reject unless both products have positive net expectancy with bounded drawdown.",
+      "reversal_condition": "Stop early for data integrity failure, lookahead, inability to resume from durable state, or a materially changed venue/data contract.",
+      "updated_at": "2026-08-31T17:24:00Z"
     }
   ]
 }
