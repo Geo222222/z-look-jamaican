@@ -20,7 +20,8 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from .experiments import validate_experiment_registry
 from .market_data import validate_market_data_store
-from .operations import validate_capability_registry, validate_execution_receipts
+from .operations import validate_capability_registry, validate_capability_transitions, validate_execution_receipts
+from .shadow_lifecycle import validate_shadow_runtime
 
 
 ROOT_STATES = {
@@ -82,6 +83,7 @@ REQUIRED_JSON_FILES = (
 REQUIRED_JSONL_FILES = (
     "state/transitions.jsonl",
     "state/transactions.jsonl",
+    "state/capability_transitions.jsonl",
     "memory/decisions.jsonl",
     "memory/experiments.jsonl",
     "memory/rejections.jsonl",
@@ -416,6 +418,8 @@ def validate(root: Optional[Path] = None) -> List[str]:
 
     errors.extend(validate_capability_registry(capabilities))
     checks.append("capability_registry")
+    errors.extend(validate_capability_transitions(jsonl_documents.get("state/capability_transitions.jsonl", []), root))
+    checks.append("capability_transition_lineage")
     errors.extend(validate_experiment_registry(experiment_registry, root))
     capability_ids = {item.get("id") for item in capabilities.get("items", [])}
     for item in experiment_registry.get("items", []):
@@ -427,6 +431,8 @@ def validate(root: Optional[Path] = None) -> List[str]:
     checks.append("execution_receipt_integrity")
     errors.extend(validate_market_data_store(root))
     checks.append("market_data_store")
+    errors.extend(validate_shadow_runtime(root))
+    checks.append("shadow_runtime_recovery")
 
     for record in evidence_records:
         expected_digest = record.get("sha256")

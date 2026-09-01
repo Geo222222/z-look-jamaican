@@ -7,6 +7,7 @@ from autonomous_kernel.operations import (
     ExecutionRequest, ReceiptStore, authorize_execution, build_execution_receipt,
     promote_capability, validate_capability_registry,
     validate_execution_receipts,
+    capability_non_success, evidence_bound_promotion,
 )
 
 
@@ -85,6 +86,17 @@ class OperationsTests(unittest.TestCase):
             errors = validate_execution_receipts(root)
             self.assertTrue(any("content hash mismatch" in item for item in errors))
             self.assertTrue(any("realized economics" in item for item in errors))
+
+    def test_capital_and_live_promotion_are_not_available_to_model_path(self):
+        for state in ("CAPITAL_ELIGIBLE", "LIVE"):
+            with self.assertRaises(PermissionError):
+                evidence_bound_promotion(CAPABILITY, state, [{"path": "x"}], "RULE", "2026-09-01T00:00:00Z", Path("."))
+
+    def test_non_success_outcome_preserves_earned_state_and_lineage(self):
+        updated, transition = capability_non_success(CAPABILITY, "SUSPENDED", "data unavailable", ["E-2"], "2026-09-01T00:00:00Z")
+        self.assertEqual(CAPABILITY["state"], updated["state"])
+        self.assertEqual("SUSPENDED", updated["operational_status"])
+        self.assertEqual("SUSPENDED", transition["outcome"])
 
 
 if __name__ == "__main__":

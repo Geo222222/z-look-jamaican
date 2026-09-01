@@ -93,6 +93,8 @@ def validate_capability_registry(document: Mapping[str, Any]) -> list[str]:
             errors.append(f"state/capabilities.json: {capability_id} evidence_ids must be a list")
         if item.get("live_enabled") is not False:
             errors.append(f"state/capabilities.json: {capability_id} live_enabled must remain false")
+        if item.get("operational_status") not in {"ACTIVE", "SUSPENDED", "REJECTED", "REVOKED"}:
+            errors.append(f"state/capabilities.json: {capability_id} has invalid operational_status")
     return errors
 
 
@@ -109,6 +111,77 @@ def promote_capability(item: Mapping[str, Any], new_state: str, evidence_ids: li
     updated["evidence_ids"] = list(dict.fromkeys([*item.get("evidence_ids", []), *evidence_ids]))
     updated["live_enabled"] = False
     return updated
+
+
+def evidence_bound_promotion(item: Mapping[str, Any], new_state: str, evidence: list[Mapping[str, Any]], rule_id: str, transition_at: str, root: Path) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
+    if new_state in {"CAPITAL_ELIGIBLE", "LIVE"}:
+        raise PermissionError("CAPITAL_ELIGIBLE and LIVE require a separate Governor authorization mechanism")
+    if item.get("operational_status") != "ACTIVE":
+        raise ValueError("only ACTIVE capabilities may be promoted")
+    if not rule_id or not transition_at or not evidence:
+        raise ValueError("promotion requires deterministic rule, timestamp, and evidence")
+    verified = []
+    for artifact in evidence:
+        path = (root / str(artifact.get("path", ""))).resolve()
+        try:
+            path.relative_to(root.resolve())
+        except ValueError as exc:
+            raise ValueError("promotion evidence path escapes repository") from exc
+        if not path.is_file():
+            raise ValueError(f"promotion evidence missing: {artifact.get('path')}")
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if digest != artifact.get("sha256"):
+            raise ValueError(f"promotion evidence hash mismatch: {artifact.get('path')}")
+        if not artifact.get("qualifying_test"):
+            raise ValueError("promotion evidence requires qualifying_test")
+        verified.append(dict(artifact))
+    previous = str(item.get("state"))
+    updated = promote_capability(item, new_state, [str(artifact.get("evidence_id")) for artifact in evidence])
+    transition = {
+        "schema_version": 1, "transition_id": f"CAPTRANS-{item.get('id')}-{new_state}",
+        "capability_id": item.get("id"), "transition_at": transition_at,
+        "previous_state": previous, "new_state": new_state, "outcome": "PROMOTED",
+        "deterministic_rule_id": rule_id, "evidence": verified,
+        "approved_by": "deterministic_capability_rule", "model_direct_authority": False,
+    }
+    return updated, transition
+
+
+def capability_non_success(item: Mapping[str, Any], outcome: str, reason: str, evidence_ids: list[str], transition_at: str) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
+    if outcome not in {"SUSPENDED", "REJECTED", "REVOKED"}:
+        raise ValueError("invalid non-success capability outcome")
+    if not reason or not evidence_ids:
+        raise ValueError("non-success outcome requires reason and evidence")
+    updated = dict(item)
+    updated["operational_status"] = outcome
+    updated["live_enabled"] = False
+    transition = {"schema_version": 1, "transition_id": f"CAPTRANS-{item.get('id')}-{outcome}-{transition_at}", "capability_id": item.get("id"), "transition_at": transition_at, "previous_state": item.get("state"), "new_state": item.get("state"), "outcome": outcome, "reason": reason, "evidence_ids": evidence_ids, "model_direct_authority": False}
+    return updated, transition
+
+
+def validate_capability_transitions(records: list[Mapping[str, Any]], root: Path) -> list[str]:
+    errors: list[str] = []
+    ids: set[str] = set()
+    for record in records:
+        transition_id = str(record.get("transition_id", ""))
+        if not transition_id or transition_id in ids:
+            errors.append("state/capability_transitions.jsonl: transition IDs must be present and unique")
+        ids.add(transition_id)
+        if record.get("outcome") == "PROMOTED":
+            previous, new = record.get("previous_state"), record.get("new_state")
+            if previous not in CAPABILITY_STATES or new not in CAPABILITY_STATES or CAPABILITY_STATES.index(new) != CAPABILITY_STATES.index(previous) + 1:
+                errors.append(f"state/capability_transitions.jsonl: {transition_id} skipped lifecycle state")
+            if new in {"CAPITAL_ELIGIBLE", "LIVE"}:
+                errors.append(f"state/capability_transitions.jsonl: {transition_id} uses forbidden capital/live promotion")
+            if not record.get("deterministic_rule_id") or not record.get("transition_at"):
+                errors.append(f"state/capability_transitions.jsonl: {transition_id} missing rule/timestamp")
+            for artifact in record.get("evidence", []):
+                path = root / str(artifact.get("path", ""))
+                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != artifact.get("sha256"):
+                    errors.append(f"state/capability_transitions.jsonl: {transition_id} evidence integrity failed")
+        elif record.get("outcome") not in {"SUSPENDED", "REJECTED", "REVOKED"}:
+            errors.append(f"state/capability_transitions.jsonl: {transition_id} invalid outcome")
+    return errors
 
 
 def authorize_execution(request: ExecutionRequest, capability: Mapping[str, Any], governor: Mapping[str, Any], authorized_at: str) -> Mapping[str, Any]:

@@ -57,7 +57,13 @@ class MonitorSnapshotTests(unittest.TestCase):
         self.assertEqual(snapshot["sections"]["wallets"]["availability"]["state"], "not_earned")
         self.assertEqual(snapshot["sections"]["treasury"]["availability"]["state"], "blocked")
         self.assertFalse(snapshot["sections"]["execution_plane"]["data"]["live_enabled"])
-        self.assertEqual(snapshot["sections"]["accounting_reconciliation"]["data"]["discrepancy_count"], 0)
+        reconciliation = snapshot["sections"]["accounting_reconciliation"]["data"]
+        self.assertEqual(reconciliation["state"], "MATCHED")
+        self.assertTrue(reconciliation["comparison_performed"])
+        self.assertEqual(reconciliation["discrepancy_count"], 0)
+        self.assertEqual(reconciliation["truth_sources"], ["DECLARED_SHADOW_FILL_EVENTS"])
+        self.assertFalse(reconciliation["external_comparison_performed"])
+        self.assertIsNone(reconciliation["external_discrepancy_count"])
         self.assertEqual(snapshot["sections"]["market_data"]["data"]["observation_count"], 2)
         self.assertEqual(snapshot["sections"]["market_data"]["data"]["quality_counts"]["VALID"], 2)
 

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-SHADOW-LIFECYCLE-001",
+  "frozen_at": "2026-09-01T14:43:00Z",
+  "objective": "Qualify one complete non-HOLD zero-capital economic lifecycle through the canonical pre-live contracts; do not estimate strategy edge.",
+  "hypothesis": "A prospectively captured VALID BTC-USD public candle can produce one deterministic BUY-shaped shadow intent, modeled partial fill, economic events, position/P&L projection, declared-shadow reconciliation, immutable receipt, restart recovery, and monitor visibility while actual exposure remains zero.",
+  "lineage": {
+    "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001",
+    "parent_experiment_id": null,
+    "market_data_capability_id": "CAP-MARKET-DATA-QUALITY-001"
+  },
+  "observation_rule": "After frozen_at, capture the latest completed public Coinbase Exchange BTC-USD five-minute candle through the canonical market-data plane; it must not already exist at preregistration time and quality must be VALID.",
+  "decision_rule": {
+    "action": "BUY",
+    "quantity": "0.001",
+    "order_type": "MARKET",
+    "rationale_code": "PREREGISTERED_ZERO_CAPITAL_LIFECYCLE"
+  },
+  "configured_execution_assumptions": {
+    "assumption_id": "ASSUME-EXP-SHADOW-LIFECYCLE-001",
+    "fee_bps": "20",
+    "half_spread_bps": "2",
+    "slippage_bps": "3",
+    "latency_ms": 150,
+    "latency_price_penalty_bps": "1",
+    "fill_ratio": "0.5",
+    "quantity_step": "0.0001",
+    "price_step": "0.01",
+    "minimum_notional": "10",
+    "available_capacity": "0.01",
+    "truth_class": "CONFIGURED_NOT_OBSERVED"
+  },
+  "pass_gate": [
+    "The captured observation is newer than frozen_at and VALID.",
+    "A BUY request is authorized only for SHADOW with capital_effect NONE.",
+    "The deterministic adapter produces exactly one MODELED partial fill with explicit fee/spread/slippage/latency assumptions and no randomness.",
+    "Accounting events reproduce fill quantity, fees, position and modeled P&L.",
+    "Declared-shadow reconciliation is MATCHED while external venue truth remains unavailable.",
+    "Duplicate and staged restart tests pass, receipt integrity passes, monitor exposes the lifecycle, and actual financial exposure remains 0.00."
+  ],
+  "failure_gate": [
+    "Observation predates preregistration, is duplicated for this experiment, or is not VALID.",
+    "Capability or Governor authorization is bypassed.",
+    "Any randomness, credential, signer, venue order, actual fill, wallet action, realized ledger entry, or capital movement occurs.",
+    "Accounting cannot be reproduced or declared-shadow reconciliation diverges.",
+    "Restart produces duplicate events/receipts or loses modeled execution state."
+  ],
+  "capital_used_usd": "0.00",
+  "live_trading": false,
+  "economic_edge_claimed": false
+}

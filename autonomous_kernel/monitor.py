@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 
-from .store import StateValidationError, load_json, load_jsonl, repository_root, validate
+from .store import StateValidationError, load_json, load_jsonl, next_work, repository_root, validate
 
 
 CONTRACT_SCHEMA_VERSION = "1.1.0"
@@ -170,11 +170,22 @@ def monitor_snapshot(root: Optional[Path] = None, observed_at: Optional[str] = N
     evidence = load_jsonl(root / "evidence/sources.jsonl")
     economic_metrics = load_jsonl(root / "metrics/economic.jsonl")
     system_metrics = load_jsonl(root / "metrics/system.jsonl")
+    capability_transitions = load_jsonl(root / "state/capability_transitions.jsonl")
     execution_receipts = []
     receipt_dir = root / "receipts/execution"
     if receipt_dir.is_dir():
         for path in sorted(receipt_dir.glob("*.json")):
             execution_receipts.append(load_json(path))
+    operation_journals = []
+    operation_dir = root / "runtime/shadow_operations"
+    if operation_dir.is_dir():
+        for path in sorted(operation_dir.glob("*.json")):
+            operation_journals.append(load_json(path))
+    replay_checkpoints = []
+    replay_dir = root / "runtime/replays"
+    if replay_dir.is_dir():
+        for path in sorted(replay_dir.glob("*.json")):
+            replay_checkpoints.append(load_json(path))
 
     validation_errors: List[str] = []
     try:
@@ -220,7 +231,7 @@ def monitor_snapshot(root: Optional[Path] = None, observed_at: Optional[str] = N
     )
     section_data["experiment_history"] = _section(root, "MONITOR-EXPERIMENT-HISTORY", ["memory/experiments.jsonl"], observed_at, _latest_timestamp(experiments, ("created_at",)), {"items": experiments}, freshness={"expectation": "append on experiment planning, observation, result, or closure", "state": "event_driven"})
     section_data["experiment_registry"] = _section(root, "MONITOR-EXPERIMENT-REGISTRY", ["state/experiments.json"], observed_at, experiment_registry.get("updated_at"), experiment_registry)
-    section_data["capability_registry"] = _section(root, "MONITOR-CAPABILITY-REGISTRY", ["state/capabilities.json"], observed_at, capability_registry.get("updated_at"), capability_registry)
+    section_data["capability_registry"] = _section(root, "MONITOR-CAPABILITY-REGISTRY", ["state/capabilities.json", "state/capability_transitions.jsonl"], observed_at, max(filter(None, [capability_registry.get("updated_at"), _latest_timestamp(capability_transitions, ("transition_at",))]), default=None), {**capability_registry, "transitions": capability_transitions})
     section_data["decisions"] = _section(root, "MONITOR-SHADOW-DECISIONS", ["state/market_shadow.json"], observed_at, shadow_at, {"experiment_id": active_experiment_id, "prospective": pending, "resolved": resolved, "counts": {"total": len(decisions), "prospective": len(pending), "resolved": len(resolved), "eligible_long": shadow.get("summary", {}).get("eligible_long", 0), "timestamp_violations": len(timestamp_violations)}, "timestamp_violation_ids": timestamp_violations, "shadow_net_return_sum": shadow.get("summary", {}).get("net_return_sum")}, freshness={"expectation": "15-minute shadow heartbeat", "state": heartbeat_state, "age_seconds": age_seconds})
     section_data["evidence_events"] = _section(root, "MONITOR-EVIDENCE-EVENTS", ["evidence/sources.jsonl"], observed_at, _latest_timestamp(evidence, ("captured_at",)), {"items": evidence}, freshness={"expectation": "append when material evidence is captured", "state": "event_driven"})
     section_data["data_quality"] = _section(root, "MONITOR-DATA-QUALITY", ["evidence/sources.jsonl", "state/incidents.json", "state/market_shadow.json"], observed_at, max(filter(None, [incidents.get("updated_at"), shadow_at]), default=None), {"repository_validation": "ok" if not validation_errors else "invalid", "evidence_integrity_check": "passed" if "evidence_artifact_integrity" in validation_checks else "failed_or_unavailable", "timestamp_violations": len(timestamp_violations), "timestamp_violation_ids": timestamp_violations, "resolved_data_quality_incidents": [item for item in incidents.get("items", []) if item.get("type") == "research_data_quality" and str(item.get("status", "")).startswith("resolved")], "open_incidents": [item for item in incidents.get("items", []) if not str(item.get("status", "")).startswith("resolved")]}, availability="available" if not validation_errors and not timestamp_violations else "blocked", reason=None if not validation_errors and not timestamp_violations else "Integrity or prospective timestamp checks failed.")
@@ -234,15 +245,33 @@ def monitor_snapshot(root: Optional[Path] = None, observed_at: Optional[str] = N
     section_data["market_data"] = _section(root, "MONITOR-MARKET-DATA", ["state/market_data.json", *market_paths], observed_at, latest_market_at, {"index": market_data_index, "observation_count": len(market_data_index.get("items", [])), "quality_counts": quality_counts, "raw_normalized_separation": True, "replayable": True, "active_experiment_retrofit": False}, freshness={"expectation": "event-driven captures for future experiments; not the EXP-MKT-002 heartbeat", "state": "event_driven"})
     section_data["opportunities"] = _section(root, "MONITOR-OPPORTUNITIES", ["opportunities/register.json"], observed_at, opportunities.get("updated_at"), opportunities)
     section_data["reflections"] = _section(root, "MONITOR-REFLECTIONS", ["memory/reflections.jsonl"], observed_at, _latest_timestamp(reflections, ("created_at",)), {"items": reflections})
-    section_data["goals_tasks"] = _section(root, "MONITOR-GOALS-TASKS", ["state/objectives.json", "state/backlog.json", "state/agents.json", "state/resume.json"], observed_at, max(filter(None, [objectives.get("updated_at"), backlog.get("updated_at"), agents.get("updated_at"), resume.get("updated_at")]), default=None), {"objectives": objectives.get("items", []), "tasks": backlog.get("items", []), "active_task_ids": resume.get("active_task_ids", []), "next_task_id": resume.get("next_task_id"), "assignments": agents.get("items", [])})
+    section_data["goals_tasks"] = _section(root, "MONITOR-GOALS-TASKS", ["state/objectives.json", "state/backlog.json", "state/agents.json", "state/resume.json"], observed_at, max(filter(None, [objectives.get("updated_at"), backlog.get("updated_at"), agents.get("updated_at"), resume.get("updated_at")]), default=None), {"objectives": objectives.get("items", []), "tasks": backlog.get("items", []), "active_task_ids": resume.get("active_task_ids", []), "next_task_id": resume.get("next_task_id"), "highest_priority_autonomous_next_action": next_work(root), "assignments": agents.get("items", [])})
     totals = _ledger_totals(ledger.get("entries", []))
     earned = bool(ledger.get("entries"))
     section_data["economics"] = _section(root, "MONITOR-ECONOMICS", ["accounting/ledger.json", "metrics/economic.jsonl"], observed_at, max(filter(None, [ledger.get("updated_at"), _latest_timestamp(economic_metrics, ("created_at",))]), default=None), {"currency": ledger.get("currency"), "realized_ledger_entries": ledger.get("entries", []), "realized_totals": totals, "retained_revenue_state": "available" if earned else "not_earned", "economic_metrics": economic_metrics, "shadow_pnl_excluded_from_realized": True}, availability="available" if earned else "not_earned", reason=None if earned else "No realized economic ledger entry has been earned or recorded.")
     section_data["financial_exposure"] = _section(root, "MONITOR-FINANCIAL-EXPOSURE", ["state/current_state.json", "accounting/ledger.json", "state/operational_wallets.json"], observed_at, max(filter(None, [current.get("updated_at"), ledger.get("updated_at"), wallets.get("updated_at")]), default=None), {"recorded_current_exposure_usd": 0, "production_capital_authorized_usd": ledger.get("production_capital_authorized_usd"), "max_concurrent_financial_exposure_usd": current.get("governor", {}).get("max_concurrent_financial_exposure_usd"), "capital_movement": current.get("capabilities", {}).get("capital_movement"), "operational_wallet_count": len(wallets.get("items", [])), "external_untracked_exposure": "unknown"})
     receipt_paths = [str(path.relative_to(root)).replace("\\", "/") for path in sorted(receipt_dir.glob("*.json"))] if receipt_dir.is_dir() else []
-    section_data["execution_plane"] = _section(root, "MONITOR-EXECUTION-PLANE", ["state/capabilities.json", *receipt_paths], observed_at, _latest_timestamp([item.get("execution_result", {}) for item in execution_receipts], ("processed_at",)), {"mode": "PRE_LIVE_ZERO_EXPOSURE", "live_enabled": False, "receipt_count": len(execution_receipts), "receipts": execution_receipts, "provider_adapter": "none_pre_live", "authorization_policy": "zero_exposure_v1"}, availability="available")
-    discrepancies = [item for item in execution_receipts if item.get("accounting", {}).get("reconciliation_state") not in {"NO_EXTERNAL_EFFECT", "RECONCILED"}]
-    section_data["accounting_reconciliation"] = _section(root, "MONITOR-ACCOUNTING-RECONCILIATION", ["accounting/ledger.json", *receipt_paths], observed_at, max(filter(None, [ledger.get("updated_at"), _latest_timestamp([item.get("execution_result", {}) for item in execution_receipts], ("processed_at",))]), default=None), {"authoritative_realized_ledger": "accounting/ledger.json", "execution_receipt_count": len(execution_receipts), "discrepancy_count": len(discrepancies), "discrepancies": discrepancies, "external_venue_truth": "unavailable_pre_live", "shadow_and_simulation_excluded_from_realized": True})
+    operation_paths = [str(path.relative_to(root)).replace("\\", "/") for path in sorted(operation_dir.glob("*.json"))] if operation_dir.is_dir() else []
+    replay_paths = [str(path.relative_to(root)).replace("\\", "/") for path in sorted(replay_dir.glob("*.json"))] if replay_dir.is_dir() else []
+    pending_operations = [item for item in operation_journals if item.get("stage") != "FINALIZED"]
+    section_data["execution_plane"] = _section(root, "MONITOR-EXECUTION-PLANE", ["state/capabilities.json", *receipt_paths, *operation_paths, *replay_paths], observed_at, _latest_timestamp([item.get("execution_result", {}) for item in execution_receipts], ("processed_at",)), {"mode": "PRE_LIVE_ZERO_EXPOSURE", "live_enabled": False, "receipt_count": len(execution_receipts), "receipts": execution_receipts, "operation_journals": operation_journals, "pending_operation_count": len(pending_operations), "pending_operations": pending_operations, "replay_checkpoints": replay_checkpoints, "provider_adapter": "none_pre_live", "shadow_adapter": "deterministic_shadow_v1", "authorization_policy": "zero_exposure_v1"}, availability="available" if not pending_operations else "blocked", reason=None if not pending_operations else "A shadow operation requires deterministic restart recovery.")
+    comparison_receipts = [item for item in execution_receipts if item.get("accounting", {}).get("comparison_performed") is True]
+    truth_sources = sorted({str(item.get("accounting", {}).get("truth_source")) for item in comparison_receipts if item.get("accounting", {}).get("truth_source")})
+    external_comparison_receipts = [item for item in comparison_receipts if str(item.get("accounting", {}).get("truth_source", "")).startswith("VENUE_")]
+    error_receipts = [item for item in execution_receipts if item.get("accounting", {}).get("reconciliation_state") == "ERROR"]
+    diverged_receipts = [item for item in comparison_receipts if item.get("accounting", {}).get("reconciliation_state") == "DIVERGED"]
+    if not execution_receipts:
+        reconciliation_state = "NOT_APPLICABLE"
+    elif error_receipts:
+        reconciliation_state = "ERROR"
+    elif not comparison_receipts:
+        reconciliation_state = "NO_EXTERNAL_TRUTH"
+    elif diverged_receipts:
+        reconciliation_state = "DIVERGED"
+    else:
+        reconciliation_state = "MATCHED"
+    discrepancy_count = len(diverged_receipts) if comparison_receipts else None
+    section_data["accounting_reconciliation"] = _section(root, "MONITOR-ACCOUNTING-RECONCILIATION", ["accounting/ledger.json", *receipt_paths], observed_at, max(filter(None, [ledger.get("updated_at"), _latest_timestamp([item.get("execution_result", {}) for item in execution_receipts], ("processed_at",))]), default=None), {"authoritative_realized_ledger": "accounting/ledger.json", "execution_receipt_count": len(execution_receipts), "state": reconciliation_state, "comparison_performed": bool(comparison_receipts), "comparison_count": len(comparison_receipts), "truth_sources": truth_sources, "discrepancy_count": discrepancy_count, "discrepancies": diverged_receipts, "external_venue_truth": "unavailable_pre_live", "external_comparison_performed": bool(external_comparison_receipts), "external_discrepancy_count": len([item for item in external_comparison_receipts if item.get("accounting", {}).get("reconciliation_state") == "DIVERGED"]) if external_comparison_receipts else None, "shadow_and_simulation_excluded_from_realized": True})
     wallet_state = "available" if wallets.get("items") else "not_earned"
     section_data["wallets"] = _section(root, "MONITOR-OPERATIONAL-WALLETS", ["state/operational_wallets.json"], observed_at, wallets.get("updated_at"), {"public_metadata": wallets.get("items", []), "private_material_exposed": False, "observation": wallets.get("observation"), "decision": wallets.get("decision")}, availability=wallet_state, reason=None if wallets.get("items") else "No operational wallet capability has been economically justified or created.")
     treasury = _parse_treasury(root / "config/treasury_destinations.yaml")

@@ -105,7 +105,7 @@ Every section includes:
 ### Capability registry — `sections.capability_registry`
 
 - Canonical source: mutable authoritative `state/capabilities.json`.
-- Schema: ordered lifecycle, deterministic promotion rule, capability `id`, kind, current state, experiment/evidence relationships, next required evidence, and `live_enabled`.
+- Schema: ordered lifecycle, deterministic promotion rule, capability `id`, kind, current state, operational status, experiment/evidence relationships, next required evidence, `live_enabled`, and append-only evidence-bound transitions.
 - Invariant: promotion advances exactly one state with evidence. Models may recommend but cannot mutate the state around validation. `live_enabled` remains false under the current Governor.
 - Polling: safe and event-driven.
 
@@ -185,6 +185,8 @@ Every section includes:
 
 - Canonical sources: authoritative realized `accounting/ledger.json` and immutable execution receipts.
 - Schema: receipt count, discrepancy count/items, external-venue-truth availability, and explicit exclusion of shadow/simulation from realized economics.
+- Reconciliation state is exactly one of `NOT_APPLICABLE`, `NO_EXTERNAL_TRUTH`, `MATCHED`, `DIVERGED`, or `ERROR`. `discrepancy_count` is `null` unless an authoritative comparison was actually performed. Zero means a performed comparison found zero discrepancies.
+- `truth_sources` identifies what was compared. `DECLARED_SHADOW_FILL_EVENTS` can be `MATCHED` while `external_venue_truth` remains unavailable. `external_comparison_performed` and `external_discrepancy_count` prevent a shadow match from being misrepresented as venue reconciliation.
 - Truth hierarchy: requests are intent; fills are execution truth; venue/account balances are external truth; realized ledger entries require reconciliation. Pre-live no-effect receipts establish zero internal financial effect but do not assert unrelated external balances.
 - Polling: safe and event-driven.
 - Schema: repository-recorded exposure, production authorization, maximum concurrent exposure, capital-movement state, wallet count and `external_untracked_exposure`.
