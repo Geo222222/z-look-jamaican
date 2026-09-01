@@ -1,16 +1,17 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T15:01:00Z",
+  "updated_at": "2026-09-01T15:05:00Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. EXP-SHADOW-LIFECYCLE-001 resolved SUPPORTED_FOR_PIPELINE_ONLY. EXP-MICROSTRUCTURE-001 captured one prospective VALID BTC-USD L2/product/trade bundle and resolved PARTIALLY_SUPPORTED_SINGLE_SNAPSHOT: public spread/depth/rules support conservative bounds at one instant, but fee tier, order latency, rejection, partial-fill probability, actual fills, capital, live readiness, and economic edge remain unearned. TASK-DATA-003 is next.",
+  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. The complete shadow lifecycle is prospectively supported and one public L2 snapshot partially supports conservative observable execution bounds. EXP-MICROSTREAM-001 is now hash-preregistered for a bounded 60-second unauthenticated BTC-USD level2/trade/heartbeat journal with crash, gap, duplicate, replay, integrity, and storage gates. No account, order, signer, wallet, capital, live readiness, or economic edge is authorized.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",
     "PROGRAM-CRYPTO-MARKETS"
   ],
-  "next_task_id": "TASK-DATA-003",
+  "next_task_id": null,
   "active_task_ids": [
-    "TASK-MKT-002"
+    "TASK-MKT-002",
+    "TASK-DATA-003"
   ],
   "active_automation_ids": [
     "crypto-forward-shadow-continuation"

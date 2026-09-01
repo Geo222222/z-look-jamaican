@@ -297,13 +297,13 @@
       "id": "TASK-DATA-003",
       "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
       "title": "Qualify continuous public microstructure evidence and distributional execution bounds",
-      "status": "ready",
+      "status": "in_progress",
       "priority_score": 95,
       "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":4,"reversibility":5,"risk_control":5,"reuse_value":5},
       "depends_on": ["TASK-DATA-002"],
       "acceptance": "A bounded preregistered capture window produces timestamp-ordered, duplicate-safe, crash-recoverable quote/trade/book evidence with provider update-sequence gap detection, staleness classification, deterministic replay, and distributions for spread/depth/slippage proxies; unavailable fee/order/fill truth remains explicitly unqualified.",
       "reversal_condition": "Stop if public update data cannot be captured with stable provenance and gap semantics, storage cost is disproportionate, or credentials, orders, signer, wallet, or capital would be required.",
-      "updated_at": "2026-09-01T15:01:00Z"
+      "updated_at": "2026-09-01T15:05:00Z"
     }
   ]
 }

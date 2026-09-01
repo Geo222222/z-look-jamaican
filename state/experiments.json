@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T15:01:00Z",
+  "updated_at": "2026-09-01T15:05:00Z",
   "authority": "Canonical lifecycle/index; immutable hypotheses and parameters live in hash-pinned preregistration artifacts; observations/results remain in their declared stores.",
   "items": [
     {
@@ -58,6 +58,20 @@
       "failure_gate": "non-prospective, stale, crossed/empty, disabled product, missing sequence/provenance, oversized payload, integrity/rebuild failure, credential/order/signer/wallet/capital access, or misclassification of unavailable execution truth",
       "lineage": {"parent_experiment_id": "EXP-SHADOW-LIFECYCLE-001", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
       "resolution": "PARTIALLY_SUPPORTED_SINGLE_SNAPSHOT"
+    },
+    {
+      "id": "EXP-MICROSTREAM-001",
+      "status": "RUNNING",
+      "hypothesis": "A bounded unauthenticated BTC-USD WebSocket journal can preserve continuous level2, trade, and heartbeat evidence with explicit per-channel sequence, duplicate, restart, integrity, and replay semantics and yield reproducible spread/depth distributions.",
+      "preregistration_path": "artifacts/evidence/market/exp-microstream-001-preregistration.json",
+      "preregistration_sha256": "645cbe2b86b4743136ebbc930230a96224c88876c587f10d9706dd3371ceacae",
+      "observation_store": "state/market_data.json",
+      "resume_command": "python -m experiments.microstream_qualification --root .",
+      "reconciliation": "deterministic replay of the append-only raw public stream must reproduce final book and summary hashes",
+      "evidence_gate": "all required channels, explicit gap/duplicate results, deterministic replay, crash recovery, corruption rejection, bounded storage, distributions, and zero-effect safety pass",
+      "failure_gate": "missing channel/snapshot/update, ambiguous sequence/duplicate state, restart loss, replay divergence, corruption acceptance, resource-bound violation, authentication/account/order/signer/wallet/capital access, or misclassification of unavailable execution truth",
+      "lineage": {"parent_experiment_id": "EXP-MICROSTRUCTURE-001", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
+      "resolution": null
     }
   ]
 }

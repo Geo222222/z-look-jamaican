@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MICROSTREAM-001",
+  "frozen_at": "2026-09-01T15:04:00Z",
+  "objective": "Qualify a bounded continuous public microstructure evidence journal with real gap, duplicate, restart, integrity, and distributional semantics without authentication or financial effects.",
+  "provider": "coinbase_advanced_trade_public_websocket",
+  "endpoint": "wss://advanced-trade-ws.coinbase.com",
+  "instrument": "BTC-USD",
+  "channels": ["level2", "market_trades", "heartbeats"],
+  "official_documentation": [
+    "https://docs.cdp.coinbase.com/coinbase-app/advanced-trade-apis/websocket/websocket-overview",
+    "https://docs.cdp.coinbase.com/coinbase-business/advanced-trade-apis/websocket/websocket-channels"
+  ],
+  "frozen_parameters": {
+    "capture_seconds": 60,
+    "maximum_messages": 100000,
+    "maximum_uncompressed_bytes": 67108864,
+    "socket_open_timeout_seconds": 20,
+    "message_idle_timeout_seconds": 10,
+    "flush_and_fsync_every_messages": 1,
+    "compression": "gzip",
+    "compression_mtime": 0,
+    "test_quantities_base": ["0.001", "0.01"],
+    "distribution_percentiles": [50, 90, 99, 100]
+  },
+  "required_evidence": [
+    "Provider messages are appended to a crash-resumable JSONL journal before aggregation, with receive timestamp, canonical message hash, channel, provider timestamp, and sequence number.",
+    "Duplicate identities are ignored idempotently; conflicting duplicate identities fail closed.",
+    "Sequence numbers are evaluated independently per channel; gaps and out-of-order messages are preserved, never hidden.",
+    "A level2 snapshot must precede applied updates; updates deterministically maintain price levels and reject malformed or negative sizes.",
+    "Finalization produces deterministic gzip bytes, raw stream SHA-256, summary manifest, distributional spread/depth-walk proxies, and a rebuildable market-data index entry.",
+    "Restart and corruption tests pass before the public capture."
+  ],
+  "pass_gate": "At least one level2 snapshot, one subsequent level2 update, one heartbeat, and one market-trades message are captured; no conflicting duplicate occurs; gap/out-of-order counts are explicit; replay reproduces the same final book and summary hash; bundle integrity, restart, stale/idle handling, size bounds, and repository validation pass.",
+  "failure_gate": "Authentication is requested, user/account/order data is accessed, any financial effect occurs, a channel is missing, updates precede snapshot, sequence or duplicate state is ambiguous, byte/message bounds are exceeded without safe finalization, restart loses accepted messages, replay diverges, or corruption is not detected.",
+  "scope_limit": "This experiment may estimate public spread/depth distributions only. It cannot qualify account fee tier, order latency, rejection probability, partial-fill probability, actual fills, strategy edge, capital eligibility, or live readiness.",
+  "capital_used_usd": "0.00",
+  "live_trading": false,
+  "economic_edge_claimed": false
+}

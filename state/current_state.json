@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "system_id": "z-look-jamaican",
-  "updated_at": "2026-09-01T15:01:00Z",
+  "updated_at": "2026-09-01T15:05:00Z",
   "root_state": "DISCOVERY",
   "strategy_stage": "DISCOVERY",
   "mission_objective_id": "MISSION-001",
@@ -10,7 +10,7 @@
     "PROGRAM-OPPORTUNITY-DISCOVERY",
     "PROGRAM-CRYPTO-MARKETS"
   ],
-  "next_task_id": "TASK-DATA-003",
+  "next_task_id": null,
   "governor": {
     "source": "docs/GOVERNOR.md",
     "external_owner_funding_authorized_usd": 0,
