@@ -927,7 +927,12 @@
       "weekday": true,
       "quote_volume": 1620072.9751140634,
       "absolute_log_return": 0.002379425422126695,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788242745,
+      "evaluation_end": 1788242100,
+      "gross_return": 0.0015202128728140085,
+      "transition_cost": 0.002,
+      "net_return": -0.0004797871271859915
     },
     {
       "id": "SHADOW-ETH-USD-1788240300",
@@ -941,7 +946,12 @@
       "weekday": true,
       "quote_volume": 201307.3267079095,
       "absolute_log_return": 0.0019008337034527696,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788242745,
+      "evaluation_end": 1788242100,
+      "gross_return": 0.002562912437188425,
+      "transition_cost": 0.0,
+      "net_return": 0.002562912437188425
     },
     {
       "id": "SHADOW-BTC-USD-1788241500",
@@ -955,7 +965,12 @@
       "weekday": true,
       "quote_volume": 996285.5241003771,
       "absolute_log_return": 0.00015034014802571506,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788249250,
+      "evaluation_end": 1788243000,
+      "gross_return": -0.0024979692000498543,
+      "transition_cost": 0.0,
+      "net_return": -0.0024979692000498543
     },
     {
       "id": "SHADOW-ETH-USD-1788241500",
@@ -969,14 +984,75 @@
       "weekday": true,
       "quote_volume": 385718.5334071155,
       "absolute_log_return": 0.0007452390648744608,
+      "status": "resolved",
+      "resolved_at": 1788249250,
+      "evaluation_end": 1788243000,
+      "gross_return": -0.0022222222222222365,
+      "transition_cost": 0.0,
+      "net_return": -0.0022222222222222365
+    },
+    {
+      "id": "SHADOW-BTC-USD-1788242400",
+      "product": "BTC-USD",
+      "observed_at": 1788242731,
+      "signal_candle_timestamp": 1788242400,
+      "actionable_at": 1788243000,
+      "target_position": 1,
+      "baseline_breakout_target": 1,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 2060372.1321672264,
+      "absolute_log_return": 0.0007577166671719329,
+      "status": "pending"
+    },
+    {
+      "id": "SHADOW-ETH-USD-1788242400",
+      "product": "ETH-USD",
+      "observed_at": 1788242731,
+      "signal_candle_timestamp": 1788242400,
+      "actionable_at": 1788243000,
+      "target_position": 0,
+      "baseline_breakout_target": 1,
+      "active": false,
+      "weekday": true,
+      "quote_volume": 231527.43513371676,
+      "absolute_log_return": 0.0003825100354862048,
+      "status": "pending"
+    },
+    {
+      "id": "SHADOW-BTC-USD-1788248700",
+      "product": "BTC-USD",
+      "observed_at": 1788249247,
+      "signal_candle_timestamp": 1788248700,
+      "actionable_at": 1788249300,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": false,
+      "weekday": true,
+      "quote_volume": 398098.2723026,
+      "absolute_log_return": 0.00038555098874179825,
+      "status": "pending"
+    },
+    {
+      "id": "SHADOW-ETH-USD-1788248700",
+      "product": "ETH-USD",
+      "observed_at": 1788249247,
+      "signal_candle_timestamp": 1788248700,
+      "actionable_at": 1788249300,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 494517.13832802454,
+      "absolute_log_return": 0.0006151530184717731,
       "status": "pending"
     }
   ],
-  "updated_at": "2026-09-01T05:50:01Z",
+  "updated_at": "2026-09-01T07:54:07Z",
   "summary": {
-    "total": 52,
-    "resolved": 48,
-    "eligible_long": 12,
-    "net_return_sum": -0.00390756864350005
+    "total": 56,
+    "resolved": 52,
+    "eligible_long": 13,
+    "net_return_sum": -0.006544634755769708
   }
 }
