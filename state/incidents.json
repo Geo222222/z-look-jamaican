@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T21:36:01.5313588Z",
+  "updated_at": "2026-09-01T15:12:00Z",
   "items": [
     {
       "id": "INC-DATA-001",
@@ -32,6 +32,22 @@
       "evidence": ["ARTIFACT-PLATFORM-CYBER-SAFEGUARD-001","ARTIFACT-CANTINA-EIP7702-CANDIDATES-001","https://help.openai.com/en/articles/20001326-additional-safety-checks-for-biological-and-cybersecurity-requests-in-chatgpt-codex-and-the-api"],
       "owner_action_required": false,
       "reopen_if": "Clearly defensive authorized methods are repeatedly blocked and the economic hypothesis cannot be evaluated through a narrower safe workflow; supported provider verification or OpenAI Support would then be an external owner/provider boundary."
+    },
+    {
+      "id": "INC-DATA-002",
+      "opened_at": "2026-09-01T15:10:29Z",
+      "resolved_at": null,
+      "status": "open_contained",
+      "severity": "low",
+      "type": "research_data_quality",
+      "subject": "EXP-MICROSTREAM-001 Advanced Trade level2 response alias",
+      "impact": "The first 60-second attempt preserved trades and heartbeats but discarded valid L2 messages, then failed its required-channel gate. No capability promotion, economic claim, account access, order, wallet action, or financial effect occurred.",
+      "root_cause": "The documented subscription channel is level2 while provider response messages use l2_data; the collector accepted only the subscription label.",
+      "containment": "Preserved the failed journal/bundle/observation and resolved the attempt as failed instead of appending another window or weakening the gate.",
+      "remediation": "Normalize l2_data to the logical level2 channel while preserving raw provider_channel, journal control/errors, add alias regression tests, and use a separate preregistered attempt/stream ID.",
+      "evidence": ["evidence/audits/EXP-MICROSTREAM-001.json", "artifacts/evidence/market/exp-microstream-001-diagnostic.json"],
+      "owner_action_required": false,
+      "reopen_if": "The provider schema changes again, alias normalization loses raw provenance, or the next bounded attempt misses required channel evidence."
     }
   ]
 }
