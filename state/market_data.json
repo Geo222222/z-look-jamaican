@@ -68,6 +68,19 @@
       "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
     },
     {
+      "observation_id": "OBS-COINBASE-BTC-USD-MICROSTREAM-003",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-003.json",
+      "provider": "coinbase_advanced_trade_public_websocket",
+      "instrument": "BTC-USD",
+      "channel": "microstructure_stream",
+      "source_event_at": 1788286538,
+      "observed_at": 1788286537,
+      "quality_status": "UNAVAILABLE",
+      "content_hash": "2f4b04c2220fcd1b050263c84427fc7be0b9c3eff94eb486b922442e2bcf6d9c",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
       "observation_id": "OBS-COINBASE-ETH-USD-1788272400",
       "path": "artifacts/market_data/observations/OBS-COINBASE-ETH-USD-1788272400.json",
       "provider": "coinbase_exchange_public",

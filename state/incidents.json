@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:11:00Z",
+  "updated_at": "2026-09-01T18:17:00Z",
   "items": [
     {
       "id": "INC-DATA-001",
@@ -42,10 +42,10 @@
       "type": "research_data_quality",
       "subject": "EXP-MICROSTREAM-001 Advanced Trade level2 response alias",
       "impact": "The first 60-second attempt preserved trades and heartbeats but discarded valid L2 messages, then failed its required-channel gate. No capability promotion, economic claim, account access, order, wallet action, or financial effect occurred.",
-      "root_cause": "Attempt 1 confused level2 subscription and l2_data response labels. Attempt 2 fixed that alias but exposed O(n^2) duplicate lookup, discarded connection-sequence-bearing control messages, incorrectly evaluated connection-global sequence per channel, and stored a reconstructible full book in the manifest.",
-      "containment": "Preserved both failed journals/bundles/observations and resolved each attempt as failed instead of appending windows, rewriting evidence, weakening quality, or promoting capability.",
-      "remediation": "Use a journal-rebuilt in-memory identity index, preserve control messages, evaluate connection-global sequence separately from per-channel delivery semantics, keep raw/logical channels, omit reconstructible final-book bodies from manifests, and validate a separate preregistered attempt.",
-      "evidence": ["evidence/audits/EXP-MICROSTREAM-001.json", "artifacts/evidence/market/exp-microstream-001-diagnostic.json", "evidence/audits/EXP-MICROSTREAM-002.json"],
+      "root_cause": "Attempts 1 and 2 exposed channel-alias, ingest-complexity, control-message, sequence-scope, and manifest-size defects. Attempt 3 fixed them and exposed a stable approximately 0.51-second provider-clock lead that the strict zero-tolerance timestamp gate correctly rejected.",
+      "containment": "Preserved all failed journals/bundles/observations and resolved each attempt as failed instead of appending windows, rewriting evidence, weakening unmeasured gates, or promoting capability.",
+      "remediation": "Retain the corrected O(1)/global-sequence/compact implementation and add only an explicit one-second source-clock-ahead tolerance supported by attempt-3 signed-skew evidence, with raw skew metrics and a separate preregistered attempt.",
+      "evidence": ["evidence/audits/EXP-MICROSTREAM-001.json", "artifacts/evidence/market/exp-microstream-001-diagnostic.json", "evidence/audits/EXP-MICROSTREAM-002.json", "evidence/audits/EXP-MICROSTREAM-003.json"],
       "owner_action_required": false,
       "reopen_if": "The provider schema changes again, alias normalization loses raw provenance, or the next bounded attempt misses required channel evidence."
     }
