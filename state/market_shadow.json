@@ -851,7 +851,12 @@
       "weekday": true,
       "quote_volume": 2295687.4346534847,
       "absolute_log_return": 0.0001767214641202486,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788240856,
+      "evaluation_end": 1788240000,
+      "gross_return": -0.0,
+      "transition_cost": 0.0,
+      "net_return": -0.0
     },
     {
       "id": "SHADOW-ETH-USD-1788238500",
@@ -865,7 +870,12 @@
       "weekday": true,
       "quote_volume": 410386.72760990594,
       "absolute_log_return": 0.00014576610235087837,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788240856,
+      "evaluation_end": 1788240000,
+      "gross_return": -0.0010226230078052012,
+      "transition_cost": 0.0,
+      "net_return": -0.0010226230078052012
     },
     {
       "id": "SHADOW-BTC-USD-1788239400",
@@ -894,13 +904,41 @@
       "quote_volume": 153258.0844746714,
       "absolute_log_return": 0.0010551573304743314,
       "status": "pending"
+    },
+    {
+      "id": "SHADOW-BTC-USD-1788240300",
+      "product": "BTC-USD",
+      "observed_at": 1788240841,
+      "signal_candle_timestamp": 1788240300,
+      "actionable_at": 1788240900,
+      "target_position": 1,
+      "baseline_breakout_target": 1,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 1620072.9751140634,
+      "absolute_log_return": 0.002379425422126695,
+      "status": "pending"
+    },
+    {
+      "id": "SHADOW-ETH-USD-1788240300",
+      "product": "ETH-USD",
+      "observed_at": 1788240841,
+      "signal_candle_timestamp": 1788240300,
+      "actionable_at": 1788240900,
+      "target_position": 1,
+      "baseline_breakout_target": 1,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 201307.3267079095,
+      "absolute_log_return": 0.0019008337034527696,
+      "status": "pending"
     }
   ],
-  "updated_at": "2026-09-01T05:18:35Z",
+  "updated_at": "2026-09-01T05:34:01Z",
   "summary": {
-    "total": 48,
-    "resolved": 44,
-    "eligible_long": 8,
-    "net_return_sum": -0.005373313023920736
+    "total": 50,
+    "resolved": 46,
+    "eligible_long": 10,
+    "net_return_sum": -0.0063959360317259375
   }
 }
