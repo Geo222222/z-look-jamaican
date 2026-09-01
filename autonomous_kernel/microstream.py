@@ -17,7 +17,12 @@ from .market_data_quality import classify_market_data
 from .operations import canonical_hash
 
 
-EXPECTED_CHANNELS = {"level2", "market_trades", "heartbeats"}
+CHANNEL_ALIASES = {"l2_data": "level2"}
+EXPECTED_PROVIDER_CHANNELS = {"level2", "l2_data", "market_trades", "heartbeats"}
+
+
+def logical_channel(provider_channel: str) -> str:
+    return CHANNEL_ALIASES.get(provider_channel, provider_channel)
 
 
 def _atomic_bytes(path: Path, content: bytes) -> None:
@@ -64,7 +69,8 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
     latest_provider_at: str | None = None
     for record in records:
         message = record["message"]
-        channel = str(message.get("channel", ""))
+        provider_channel = str(message.get("channel", ""))
+        channel = logical_channel(provider_channel)
         sequence = int(message.get("sequence_num", -1))
         identity = f"{channel}:{sequence}"
         digest = str(record["message_hash"])
@@ -141,20 +147,21 @@ class StreamJournal:
         return records
 
     def ingest(self, message: Mapping[str, Any], received_at_ns: int) -> bool:
-        channel = str(message.get("channel", ""))
-        if channel not in EXPECTED_CHANNELS:
+        provider_channel = str(message.get("channel", ""))
+        if provider_channel not in EXPECTED_PROVIDER_CHANNELS:
             return False
+        channel = logical_channel(provider_channel)
         if not isinstance(message.get("sequence_num"), int) or not message.get("timestamp"):
             raise ValueError("stream message lacks sequence/timestamp provenance")
         digest = canonical_hash(message)
         identity = f"{channel}:{message['sequence_num']}"
         for existing in self.records():
-            existing_identity = f"{existing['message']['channel']}:{existing['message']['sequence_num']}"
+            existing_identity = f"{logical_channel(existing['message']['channel'])}:{existing['message']['sequence_num']}"
             if existing_identity == identity:
                 if existing["message_hash"] != digest:
                     raise RuntimeError(f"conflicting duplicate stream identity {identity}")
                 return False
-        record = {"schema_version": 1, "stream_id": self.stream_id, "received_at_ns": int(received_at_ns), "message_hash": digest, "message": dict(message)}
+        record = {"schema_version": 1, "stream_id": self.stream_id, "received_at_ns": int(received_at_ns), "message_hash": digest, "provider_channel": provider_channel, "logical_channel": channel, "message": dict(message)}
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n")

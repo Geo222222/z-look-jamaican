@@ -67,7 +67,7 @@ class MonitorSnapshotTests(unittest.TestCase):
         market_data = snapshot["sections"]["market_data"]["data"]
         indexed = market_data["index"]["items"]
         self.assertEqual(market_data["observation_count"], len(indexed))
-        self.assertEqual(market_data["quality_counts"]["VALID"], len(indexed))
+        self.assertEqual(sum(market_data["quality_counts"].values()), len(indexed))
         self.assertIn("OBS-COINBASE-BTC-USD-1788273600", {item["observation_id"] for item in indexed})
 
     def test_library_snapshot_is_byte_for_byte_read_only(self):

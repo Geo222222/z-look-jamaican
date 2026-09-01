@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:03:00Z",
+  "updated_at": "2026-09-01T18:06:00Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. EXP-MICROSTREAM-001 failed its required-channel gate because the provider returned l2_data for a level2 subscription and the collector discarded that alias. The failed journal/bundle/observation and diagnostic are preserved; no promotion occurred. TASK-DATA-003 remains active for a separately preregistered alias-normalized retry. No account, order, signer, wallet, capital, live readiness, or economic edge is authorized.",
+  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. EXP-MICROSTREAM-001 remains preserved as FAILED_IMPLEMENTATION_CHANNEL_ALIAS. EXP-MICROSTREAM-002 is separately hash-preregistered with tested raw l2_data to logical level2 normalization and a new stream ID; the same 60-second required-channel, replay, restart, integrity, bound, distributional, and zero-effect gates remain. No account, order, signer, wallet, capital, live readiness, or economic edge is authorized.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",

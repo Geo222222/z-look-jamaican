@@ -50,6 +50,15 @@ class MicrostreamTests(unittest.TestCase):
         self.assertEqual(summary["level2_update_count"], 1)
         self.assertEqual(summary["final_book"]["bids"][0], ("100", "1"))
 
+    def test_provider_l2_data_alias_preserves_raw_and_normalizes_logical_channel(self):
+        aliased = message("l2_data", 0, events=[{"type": "snapshot", "updates": [{"side": "bid", "price_level": "99", "new_quantity": "1"}, {"side": "offer", "price_level": "101", "new_quantity": "1"}]}])
+        self.assertTrue(self.journal.ingest(aliased, 1_000_000_000))
+        record = self.journal.records()[0]
+        self.assertEqual(record["provider_channel"], "l2_data")
+        self.assertEqual(record["logical_channel"], "level2")
+        self.assertEqual(record["message"]["channel"], "l2_data")
+        self.assertEqual(replay_records([record])["channels"], ["level2"])
+
     def test_deterministic_finalize_and_corruption_detection(self):
         self.populate()
         first = self.journal.finalize()
