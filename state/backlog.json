@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T14:15:00Z",
+  "updated_at": "2026-09-01T14:50:00Z",
   "ranking_method": "priority_score is a 0-100 judgment combining information gain, mission value, falsification cost, reversibility, risk, dependency burden, and reuse value; assumptions remain explicit in each task.",
   "items": [
     {
@@ -244,6 +244,18 @@
       "acceptance": "README claims are compared with actual implementation/provenance, unsafe execution paths are rejected, and projection assumptions are not treated as realized economics.",
       "reversal_condition": "Re-audit only when a clean authoritative source or a current capability bottleneck makes a specific component decision-relevant.",
       "updated_at": "2026-09-01T14:15:00Z"
+    },
+    {
+      "id": "TASK-OPS-001",
+      "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+      "title": "Build the canonical zero-exposure pre-live operating slice",
+      "status": "completed",
+      "priority_score": 95,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":5},
+      "depends_on": ["TASK-MKT-003","TASK-MKT-004"],
+      "acceptance": "First-class experiment and capability registries, typed execution, deterministic Governor authorization, immutable idempotent receipts, zero-effect reconciliation, monitor integration, corruption/restart tests, documentation, and clean validation exist without modifying EXP-MKT-002.",
+      "reversal_condition": "Suspend the path if any pre-live request can move capital, any live request is authorized, receipt conflicts overwrite truth, or shadow outcomes enter realized accounting.",
+      "updated_at": "2026-09-01T14:50:00Z"
     }
   ]
 }

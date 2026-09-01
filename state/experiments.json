@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-01T14:30:00Z",
+  "authority": "Canonical lifecycle/index; immutable hypotheses and parameters live in hash-pinned preregistration artifacts; observations/results remain in their declared stores.",
+  "items": [
+    {
+      "id": "EXP-MKT-001",
+      "status": "RESOLVED",
+      "hypothesis": "One fixed crypto spot family retains positive out-of-sample expectancy after conservative costs.",
+      "preregistration_path": "artifacts/evidence/market/exp-mkt-001-preregistration-20260831.json",
+      "preregistration_sha256": "1409c1bf31b87b3335670948cda3ed4f52e2475922a71884d1b1105b0ad7d0ae",
+      "observation_store": "artifacts/evidence/market/exp-mkt-001-result-20260831.json",
+      "resume_command": null,
+      "reconciliation": "deterministic offline replay",
+      "evidence_gate": "positive at 20 bps per side on both products",
+      "failure_gate": "non-positive on either product",
+      "lineage": {"parent_experiment_id": null, "capability_id": "CAP-CRYPTO-ACTIVE-BREAKOUT-001"},
+      "resolution": "REJECTED_BASELINES"
+    },
+    {
+      "id": "EXP-MKT-002",
+      "status": "RUNNING",
+      "hypothesis": "The breakout family has positive prospective net expectancy only during objectively active weekdays.",
+      "preregistration_path": "artifacts/evidence/market/exp-mkt-002-preregistration-20260831.json",
+      "preregistration_sha256": "7ab5aef0e64825315614496fd5bf44c888dacd7f42b07175af9574218b1198a6",
+      "observation_store": "state/market_shadow.json",
+      "resume_command": "python -m experiments.crypto_market_shadow --state state/market_shadow.json",
+      "reconciliation": "next actionable candle open with frozen 20 bps per-side cost",
+      "evidence_gate": "100 eligible prospective observations or 14 calendar days; both products positive with bounded drawdown",
+      "failure_gate": "either product non-positive, timestamp integrity failure, lookahead, or restart failure",
+      "lineage": {"parent_experiment_id": "EXP-MKT-001", "capability_id": "CAP-CRYPTO-ACTIVE-BREAKOUT-001"},
+      "resolution": null
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "receipt_id": "RECEIPT-REQ-QUAL-ZERO-001",
+  "request_hash": "8bca26754a7585651193aabbe50bd83501b1303078a3f231da8bc24c02a0f447",
+  "request": {
+    "request_id": "REQ-QUAL-ZERO-001",
+    "idempotency_key": "QUAL-ZERO-001",
+    "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001",
+    "decision_id": "DEC-QUAL-ZERO-001",
+    "market_observation_id": "OBS-SYNTHETIC-NO-VENUE-001",
+    "mode": "SHADOW",
+    "instrument": "BTC-USD",
+    "side": "HOLD",
+    "order_type": "NONE",
+    "quantity": "0",
+    "limit_price": null,
+    "created_at": "2026-09-01T14:45:00Z",
+    "capital_effect": "NONE",
+    "schema_version": 1
+  },
+  "risk_authorization": {
+    "schema_version": 1,
+    "authorization_id": "AUTH-REQ-QUAL-ZERO-001",
+    "request_id": "REQ-QUAL-ZERO-001",
+    "authorized_at": "2026-09-01T14:45:00Z",
+    "allowed": true,
+    "authorized_mode": "SHADOW",
+    "authorized_financial_exposure_usd": "0.00",
+    "reasons": [],
+    "governor_policy": "zero_exposure_v1"
+  },
+  "execution_result": {
+    "schema_version": 1,
+    "result_id": "RESULT-REQ-QUAL-ZERO-001",
+    "request_id": "REQ-QUAL-ZERO-001",
+    "processed_at": "2026-09-01T14:45:00Z",
+    "status": "SHADOW_RECORDED",
+    "venue_adapter": "none_pre_live",
+    "venue_order_id": null,
+    "fills": [],
+    "observed_venue_truth": false,
+    "capital_moved": false
+  },
+  "accounting": {
+    "schema_version": 1,
+    "accounting_receipt_id": "ACCT-REQ-QUAL-ZERO-001",
+    "request_id": "REQ-QUAL-ZERO-001",
+    "reconciliation_state": "NO_EXTERNAL_EFFECT",
+    "orders_recorded": 0,
+    "fills_recorded": 0,
+    "fees_realized_usd": "0.00",
+    "pnl_realized_usd": "0.00",
+    "financial_exposure_usd": "0.00",
+    "external_truth_available": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "45c956c8f87e179a6c2685b4ddb3ecb4702276fd88efae2f6a453d1ac3cffebe"
+  }
+}

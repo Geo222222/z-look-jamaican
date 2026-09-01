@@ -18,6 +18,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
+from .experiments import validate_experiment_registry
+from .operations import validate_capability_registry, validate_execution_receipts
+
 
 ROOT_STATES = {
     "BOOTSTRAP",
@@ -68,6 +71,8 @@ REQUIRED_JSON_FILES = (
     "state/incidents.json",
     "state/resume.json",
     "state/operational_wallets.json",
+    "state/capabilities.json",
+    "state/experiments.json",
     "opportunities/register.json",
     "accounting/ledger.json",
 )
@@ -401,9 +406,23 @@ def validate(root: Optional[Path] = None) -> List[str]:
     resume = json_documents.get("state/resume.json", {})
     opportunities = json_documents.get("opportunities/register.json", {})
     wallets = json_documents.get("state/operational_wallets.json", {})
+    capabilities = json_documents.get("state/capabilities.json", {})
+    experiment_registry = json_documents.get("state/experiments.json", {})
     ledger = json_documents.get("accounting/ledger.json", {})
     evidence_records = jsonl_documents.get("evidence/sources.jsonl", [])
     evidence_ids = {record.get("id") for record in evidence_records if record.get("id")}
+
+    errors.extend(validate_capability_registry(capabilities))
+    checks.append("capability_registry")
+    errors.extend(validate_experiment_registry(experiment_registry, root))
+    capability_ids = {item.get("id") for item in capabilities.get("items", [])}
+    for item in experiment_registry.get("items", []):
+        capability_id = item.get("lineage", {}).get("capability_id")
+        if capability_id not in capability_ids:
+            errors.append(f"state/experiments.json: {item.get('id')} references unknown capability {capability_id}")
+    checks.append("experiment_registry")
+    errors.extend(validate_execution_receipts(root))
+    checks.append("execution_receipt_integrity")
 
     for record in evidence_records:
         expected_digest = record.get("sha256")

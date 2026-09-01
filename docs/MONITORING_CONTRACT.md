@@ -24,7 +24,7 @@ The top-level schema is:
 {
   "contract": {
     "name": "z-look-jamaican-monitor-snapshot",
-    "schema_version": "1.0.0",
+    "schema_version": "1.1.0",
     "read_only": true,
     "observed_at": "RFC3339 UTC timestamp",
     "availability_states": ["available", "unknown", "not_earned", "blocked", "unavailable"],
@@ -94,6 +94,21 @@ Every section includes:
 - Timestamps: `created_at` is record creation time. The journal is event-driven, not periodic.
 - Polling: safe.
 
+### Experiment registry — `sections.experiment_registry`
+
+- Canonical source: mutable authoritative `state/experiments.json`.
+- Schema: lifecycle status, immutable preregistration path/hash, observation store, restart command, reconciliation method, evidence/failure gates, lineage, and resolution.
+- Relationships: `id` relates to experiment memory and observation state; `lineage.capability_id` relates to `state/capabilities.json.id`.
+- Authority: this is the canonical lifecycle/index. Hash-pinned preregistration artifacts remain parameter authority; declared observation stores remain observation authority.
+- Polling: safe and event-driven.
+
+### Capability registry — `sections.capability_registry`
+
+- Canonical source: mutable authoritative `state/capabilities.json`.
+- Schema: ordered lifecycle, deterministic promotion rule, capability `id`, kind, current state, experiment/evidence relationships, next required evidence, and `live_enabled`.
+- Invariant: promotion advances exactly one state with evidence. Models may recommend but cannot mutate the state around validation. `live_enabled` remains false under the current Governor.
+- Polling: safe and event-driven.
+
 ### Prospective and resolved decisions — `sections.decisions`
 
 - Canonical source: mutable `state/market_shadow.json` for the active shadow experiment.
@@ -148,6 +163,21 @@ Every section includes:
 ### Current financial exposure — `sections.financial_exposure`
 
 - Canonical sources: Governor snapshot, accounting ledger and operational-wallet registry.
+
+### Execution plane — `sections.execution_plane`
+
+- Canonical sources: `state/capabilities.json` and immutable `receipts/execution/*.json` when receipts exist.
+- Schema: operating mode, live-enable state, authorization policy, adapter identity, receipt count, and lossless execution receipts.
+- Receipt relationships: request → risk authorization → execution result → accounting reconciliation, joined by `request_id` and protected by request/content SHA-256 hashes.
+- Current semantics: `PRE_LIVE_ZERO_EXPOSURE`; no venue adapter, fills, capital movement, or live authorization exists.
+- Polling: safe. Receipt creation occurs only through an explicit execution-plane write path, never through the monitor.
+
+### Accounting reconciliation — `sections.accounting_reconciliation`
+
+- Canonical sources: authoritative realized `accounting/ledger.json` and immutable execution receipts.
+- Schema: receipt count, discrepancy count/items, external-venue-truth availability, and explicit exclusion of shadow/simulation from realized economics.
+- Truth hierarchy: requests are intent; fills are execution truth; venue/account balances are external truth; realized ledger entries require reconciliation. Pre-live no-effect receipts establish zero internal financial effect but do not assert unrelated external balances.
+- Polling: safe and event-driven.
 - Schema: repository-recorded exposure, production authorization, maximum concurrent exposure, capital-movement state, wallet count and `external_untracked_exposure`.
 - Current repository-recorded zero is authoritative inside this system because live capital and wallets are absent and limits are zero. Untracked external exposure remains `unknown`.
 - Polling is safe.

@@ -30,6 +30,7 @@ class KernelStateTests(unittest.TestCase):
             "accounting",
             "evidence",
             "artifacts",
+            "receipts",
             "config",
         ):
             shutil.copytree(source / relative, self.root / relative)

@@ -19,6 +19,9 @@ class MonitorSnapshotTests(unittest.TestCase):
     def monitored_files(self):
         paths = [self.root / path for path in REQUIRED_JSON_FILES + REQUIRED_JSONL_FILES]
         paths.extend((self.root / "state/market_shadow.json", self.root / "config/treasury_destinations.yaml"))
+        receipt_dir = self.root / "receipts/execution"
+        if receipt_dir.is_dir():
+            paths.extend(receipt_dir.glob("*.json"))
         return sorted(set(path for path in paths if path.is_file()))
 
     def test_snapshot_has_every_contract_section_and_provenance(self):
@@ -29,9 +32,11 @@ class MonitorSnapshotTests(unittest.TestCase):
             "goals_tasks", "economics", "financial_exposure", "wallets", "treasury",
             "governor", "deployments", "incidents", "runtime_logs",
             "model_provider_qualification",
+            "experiment_registry", "capability_registry", "execution_plane",
+            "accounting_reconciliation",
         }
         self.assertEqual(set(snapshot["sections"]), expected)
-        self.assertEqual(snapshot["contract"]["schema_version"], "1.0.0")
+        self.assertEqual(snapshot["contract"]["schema_version"], "1.1.0")
         self.assertTrue(snapshot["contract"]["read_only"])
         for section in snapshot["sections"].values():
             self.assertIn(section["availability"]["state"], AVAILABILITY_STATES)
@@ -50,6 +55,8 @@ class MonitorSnapshotTests(unittest.TestCase):
         self.assertEqual(snapshot["sections"]["financial_exposure"]["data"]["recorded_current_exposure_usd"], 0)
         self.assertEqual(snapshot["sections"]["wallets"]["availability"]["state"], "not_earned")
         self.assertEqual(snapshot["sections"]["treasury"]["availability"]["state"], "blocked")
+        self.assertFalse(snapshot["sections"]["execution_plane"]["data"]["live_enabled"])
+        self.assertEqual(snapshot["sections"]["accounting_reconciliation"]["data"]["discrepancy_count"], 0)
 
     def test_library_snapshot_is_byte_for_byte_read_only(self):
         paths = self.monitored_files()

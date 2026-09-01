@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-01T14:50:00Z",
+  "lifecycle": ["DISCOVERED", "HYPOTHESIS", "PREREGISTERED", "BACKTEST_SUPPORTED", "PROSPECTIVE_SUPPORTED", "REPLAY_QUALIFIED", "SHADOW_QUALIFIED", "EXECUTION_PLANE_QUALIFIED", "CAPITAL_ELIGIBLE", "LIVE"],
+  "promotion_rule": "Models may recommend; deterministic validation must advance exactly one state with evidence. LIVE additionally requires Governor authority and remains disabled.",
+  "items": [
+    {
+      "id": "CAP-CRYPTO-ACTIVE-BREAKOUT-001",
+      "kind": "economic_mechanism",
+      "state": "PREREGISTERED",
+      "experiment_ids": ["EXP-MKT-002"],
+      "evidence_ids": ["EVIDENCE-EXP-MKT-002-PREREG-001"],
+      "next_required_evidence": "EXP-MKT-002 prospective gate result",
+      "live_enabled": false
+    },
+    {
+      "id": "CAP-MARKET-DATA-QUALITY-001",
+      "kind": "deterministic_infrastructure",
+      "state": "REPLAY_QUALIFIED",
+      "experiment_ids": [],
+      "evidence_ids": ["evidence/audits/TASK-MKT-004.json"],
+      "next_required_evidence": "preregistered consumer replay and failure injection",
+      "live_enabled": false
+    },
+    {
+      "id": "CAP-ZERO-EXPOSURE-EXECUTION-001",
+      "kind": "deterministic_infrastructure",
+      "state": "BACKTEST_SUPPORTED",
+      "experiment_ids": [],
+      "evidence_ids": ["evidence/audits/TASK-MKT-003.json", "EVIDENCE-OPS-ZERO-001"],
+      "next_required_evidence": "repeated prospective shadow consumers and calibrated venue-independent simulation",
+      "live_enabled": false
+    }
+  ]
+}
