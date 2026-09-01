@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "audit_id": "AUDIT-EXP-MICROSTREAM-002",
+  "experiment_id": "EXP-MICROSTREAM-002",
+  "completed_at": "2026-09-01T18:10:00Z",
+  "outcome": "FAILED_PERFORMANCE_AND_SEQUENCE_SCOPE",
+  "positive_evidence": {
+    "required_logical_channels_present": ["level2", "market_trades", "heartbeats"],
+    "raw_l2_data_provenance_preserved": true,
+    "level2_snapshot_count": 1,
+    "level2_update_count": 260,
+    "market_trade_message_count": 65,
+    "heartbeat_message_count": 19,
+    "duplicate_count": 0,
+    "out_of_order_count": 0,
+    "deterministic_replay_hash": "c73a87fc5292f8b90cf6ad01181f337df894c8ea328fd359069accabd65137fc"
+  },
+  "failed_gates": [
+    {
+      "gate": "quality",
+      "observed": "STALE",
+      "cause": "StreamJournal.ingest reread and reparsed the entire growing journal for every message, creating O(n^2) processing delay; final receive time lagged the latest accepted provider timestamp by 40 seconds."
+    },
+    {
+      "gate": "sequence_semantics",
+      "observed": "Per-channel gaps were reported on a connection-global sequence.",
+      "cause": "Advanced Trade sequence_num interleaves channels on one connection. Accepted data messages covered 345 unique values from 0 through 347; missing 4, 6, and 7 align with discarded subscription/control messages. Per-channel skips do not prove dropped data."
+    },
+    {
+      "gate": "bounded_summary",
+      "observed": "The manifest persisted the full final book and expanded to 2,842,827 bytes.",
+      "cause": "Final book state is reproducible from the compressed raw journal and only its hash belongs in the compact manifest."
+    }
+  ],
+  "preserved_artifacts": {
+    "journal": {"path": "runtime/market_stream/COINBASE-BTC-USD-MICROSTREAM-002.jsonl", "sha256": "8db679aee8be8a4c1a92b75675c489e45669a286928c7f814a00bfb24e110b6c"},
+    "compressed": {"path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-002.jsonl.gz", "sha256": "91499e5b4463d6f4078f7c1c8800e1a05752cbe827e727668e1fe4c24e36c762"},
+    "manifest": {"path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-002.manifest.json", "sha256": "95a7d1c7d9a79ee4a6057e1e2159c155ce74b8ec7f77afa443edbfbad10ef76d"},
+    "observation": {"path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-002.json", "sha256": "6ebd0b10122359ed1492effe80af6479887bd1ead7d913950fb6cb3dc78afc97", "quality": "STALE"}
+  },
+  "safety": {"authentication_used": false, "account_or_order_surface_accessed": false, "signer_or_wallet_accessed": false, "capital_used_usd": "0.00", "capability_promotion": false},
+  "recovery_decision": "Preserve and fail this attempt. Replace O(n^2) duplicate lookup with a journal-rebuilt in-memory identity index, persist control messages, evaluate the observed connection-global sequence, omit reconstructible final-book bodies from manifests, add tests, and use a separately preregistered third stream ID."
+}

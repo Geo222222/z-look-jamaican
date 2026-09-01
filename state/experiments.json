@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:06:00Z",
+  "updated_at": "2026-09-01T18:11:00Z",
   "authority": "Canonical lifecycle/index; immutable hypotheses and parameters live in hash-pinned preregistration artifacts; observations/results remain in their declared stores.",
   "items": [
     {
@@ -75,17 +75,17 @@
     },
     {
       "id": "EXP-MICROSTREAM-002",
-      "status": "RUNNING",
+      "status": "RESOLVED",
       "hypothesis": "A tested raw l2_data to logical level2 normalization can preserve provider provenance and allow the bounded public journal to pass required-channel, sequence, replay, restart, integrity, distributional, and zero-effect gates.",
       "preregistration_path": "artifacts/evidence/market/exp-microstream-002-preregistration.json",
       "preregistration_sha256": "939ccb49dcea677ea069869929c070912381bbc1d93dd2130e3b85be57881dc3",
       "observation_store": "state/market_data.json",
-      "resume_command": "python -m experiments.microstream_qualification --root .",
+      "resume_command": null,
       "reconciliation": "raw provider channel/payload provenance plus deterministic logical-channel replay must reproduce final book and summary hashes",
       "evidence_gate": "required logical channels with raw l2_data provenance, explicit gap/duplicate results, deterministic replay, crash recovery, corruption rejection, bounded storage, distributions, and zero-effect safety",
       "failure_gate": "first-attempt mutation, lost alias provenance, missing channel, ambiguous sequence/duplicate state, replay divergence, corruption/restart/bound failure, authentication/account/order/signer/wallet/capital access, or unavailable-truth misclassification",
       "lineage": {"parent_experiment_id": "EXP-MICROSTREAM-001", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
-      "resolution": null
+      "resolution": "FAILED_PERFORMANCE_AND_SEQUENCE_SCOPE"
     }
   ]
 }

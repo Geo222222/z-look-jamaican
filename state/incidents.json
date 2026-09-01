@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T15:12:00Z",
+  "updated_at": "2026-09-01T18:11:00Z",
   "items": [
     {
       "id": "INC-DATA-001",
@@ -42,10 +42,10 @@
       "type": "research_data_quality",
       "subject": "EXP-MICROSTREAM-001 Advanced Trade level2 response alias",
       "impact": "The first 60-second attempt preserved trades and heartbeats but discarded valid L2 messages, then failed its required-channel gate. No capability promotion, economic claim, account access, order, wallet action, or financial effect occurred.",
-      "root_cause": "The documented subscription channel is level2 while provider response messages use l2_data; the collector accepted only the subscription label.",
-      "containment": "Preserved the failed journal/bundle/observation and resolved the attempt as failed instead of appending another window or weakening the gate.",
-      "remediation": "Normalize l2_data to the logical level2 channel while preserving raw provider_channel, journal control/errors, add alias regression tests, and use a separate preregistered attempt/stream ID.",
-      "evidence": ["evidence/audits/EXP-MICROSTREAM-001.json", "artifacts/evidence/market/exp-microstream-001-diagnostic.json"],
+      "root_cause": "Attempt 1 confused level2 subscription and l2_data response labels. Attempt 2 fixed that alias but exposed O(n^2) duplicate lookup, discarded connection-sequence-bearing control messages, incorrectly evaluated connection-global sequence per channel, and stored a reconstructible full book in the manifest.",
+      "containment": "Preserved both failed journals/bundles/observations and resolved each attempt as failed instead of appending windows, rewriting evidence, weakening quality, or promoting capability.",
+      "remediation": "Use a journal-rebuilt in-memory identity index, preserve control messages, evaluate connection-global sequence separately from per-channel delivery semantics, keep raw/logical channels, omit reconstructible final-book bodies from manifests, and validate a separate preregistered attempt.",
+      "evidence": ["evidence/audits/EXP-MICROSTREAM-001.json", "artifacts/evidence/market/exp-microstream-001-diagnostic.json", "evidence/audits/EXP-MICROSTREAM-002.json"],
       "owner_action_required": false,
       "reopen_if": "The provider schema changes again, alias normalization loses raw provenance, or the next bounded attempt misses required channel evidence."
     }
