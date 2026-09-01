@@ -509,7 +509,12 @@
       "weekday": true,
       "quote_volume": 471219.04965008964,
       "absolute_log_return": 0.00040966673629075237,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788232366,
+      "evaluation_end": 1788231600,
+      "gross_return": 0.0,
+      "transition_cost": 0.0,
+      "net_return": 0.0
     },
     {
       "id": "SHADOW-ETH-USD-1788230100",
@@ -523,7 +528,12 @@
       "weekday": true,
       "quote_volume": 273138.5992467635,
       "absolute_log_return": 0.0006584134911860131,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788232366,
+      "evaluation_end": 1788231600,
+      "gross_return": 0.0,
+      "transition_cost": 0.0,
+      "net_return": 0.0
     },
     {
       "id": "SHADOW-BTC-USD-1788231000",
@@ -552,12 +562,40 @@
       "quote_volume": 275505.1226430195,
       "absolute_log_return": 0.0,
       "status": "pending"
+    },
+    {
+      "id": "SHADOW-BTC-USD-1788231900",
+      "product": "BTC-USD",
+      "observed_at": 1788232351,
+      "signal_candle_timestamp": 1788231900,
+      "actionable_at": 1788232500,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 1546004.7064236754,
+      "absolute_log_return": 0.0004302970218633655,
+      "status": "pending"
+    },
+    {
+      "id": "SHADOW-ETH-USD-1788231900",
+      "product": "ETH-USD",
+      "observed_at": 1788232351,
+      "signal_candle_timestamp": 1788231900,
+      "actionable_at": 1788232500,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": false,
+      "weekday": true,
+      "quote_volume": 173780.4823157394,
+      "absolute_log_return": 0.000320432871041808,
+      "status": "pending"
     }
   ],
-  "updated_at": "2026-09-01T02:56:28Z",
+  "updated_at": "2026-09-01T03:12:31Z",
   "summary": {
-    "total": 30,
-    "resolved": 26,
+    "total": 32,
+    "resolved": 28,
     "eligible_long": 2,
     "net_return_sum": 0.0007855436323667177
   }
