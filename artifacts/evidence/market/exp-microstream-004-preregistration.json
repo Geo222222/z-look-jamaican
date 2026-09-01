@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MICROSTREAM-004",
+  "frozen_at": "2026-09-01T18:19:00Z",
+  "parent_experiment_id": "EXP-MICROSTREAM-003",
+  "objective": "Test the otherwise-qualified continuous public stream with the smallest evidence-supported clock-order correction: an explicit one-second source-clock-ahead tolerance.",
+  "frozen_parameters": {
+    "endpoint": "wss://advanced-trade-ws.coinbase.com",
+    "instrument": "BTC-USD",
+    "subscription_channels": ["level2", "market_trades", "heartbeats"],
+    "provider_to_logical_channel": {"l2_data": "level2"},
+    "sequence_scope": "CONNECTION_GLOBAL",
+    "maximum_source_clock_ahead_seconds": 1,
+    "tolerance_basis": {"experiment_id": "EXP-MICROSTREAM-003", "observed_maximum_seconds": 0.5121350288391113},
+    "capture_seconds": 60,
+    "maximum_messages": 100000,
+    "maximum_uncompressed_bytes": 67108864,
+    "message_idle_timeout_seconds": 10,
+    "flush_and_fsync_every_messages": 1,
+    "duplicate_index": "O(1)_memory_rebuilt_from_authoritative_journal_on_restart",
+    "persist_control_messages": true,
+    "manifest_final_book": "HASH_ONLY_REBUILD_FROM_RAW_JOURNAL",
+    "compression": "deterministic_gzip_mtime_zero",
+    "distribution_percentiles": [50, 90, 99, 100]
+  },
+  "pass_gate": "VALID quality with recorded signed skew not exceeding one second; all required channels and controls; no unexplained connection-global gap/out-of-order/conflict; deterministic replay/restart/corruption/compactness/resource gates; zero external effect.",
+  "failure_gate": "Clock lead exceeds one second, any other data/replay/recovery/integrity/bound gate fails, previous attempts mutate, or authentication/account/order/signer/wallet/capital access occurs.",
+  "scope_limit": "Public spread/depth distribution and evidence-plane qualification only; no fee tier, order latency, rejection, partial-fill, actual-fill, economic-edge, capital, or live qualification.",
+  "capital_used_usd": "0.00",
+  "live_trading": false
+}

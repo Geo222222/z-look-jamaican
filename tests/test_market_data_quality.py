@@ -10,6 +10,13 @@ from autonomous_kernel.market_data_quality import (
 
 
 class MarketDataQualityTests(unittest.TestCase):
+    def test_bounded_source_clock_lead_is_explicitly_tolerated(self):
+        result = classify_market_data(provider="test", source_event_at=101, received_at=100, observed_at=100, max_event_age_seconds=10, max_transport_age_seconds=10, max_clock_skew_seconds=1)
+        self.assertEqual(result.status, "VALID")
+        self.assertEqual(result.source_clock_ahead_seconds, 1)
+        self.assertEqual(result.clock_skew_tolerance_seconds, 1)
+        self.assertEqual(result.event_age_seconds, 0)
+
     def classify(self, **overrides):
         values = {
             "provider": "public-venue",

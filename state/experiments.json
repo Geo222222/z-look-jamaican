@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:17:00Z",
+  "updated_at": "2026-09-01T18:20:00Z",
   "authority": "Canonical lifecycle/index; immutable hypotheses and parameters live in hash-pinned preregistration artifacts; observations/results remain in their declared stores.",
   "items": [
     {
@@ -100,6 +100,20 @@
       "failure_gate": "stale or missing evidence, unexplained global gap/out-of-order/duplicate state, replay/integrity/restart/compactness/bound failure, prior-attempt mutation, authentication/account/order/signer/wallet/capital access, or unavailable-truth misclassification",
       "lineage": {"parent_experiment_id": "EXP-MICROSTREAM-002", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
       "resolution": "FAILED_CLOCK_SKEW_TOLERANCE_MISSING"
+    },
+    {
+      "id": "EXP-MICROSTREAM-004",
+      "status": "RUNNING",
+      "hypothesis": "A measured and preregistered one-second source-clock-ahead tolerance can classify the corrected continuous public journal VALID without weakening freshness, sequence, replay, restart, integrity, resource, or zero-effect gates.",
+      "preregistration_path": "artifacts/evidence/market/exp-microstream-004-preregistration.json",
+      "preregistration_sha256": "2b826a2f80ad3cbe749b18adb2910e393a99626143a6ad05a2d051d4674eca99",
+      "observation_store": "state/market_data.json",
+      "resume_command": "python -m experiments.microstream_qualification --root .",
+      "reconciliation": "connection-global replay plus signed clock-skew distribution must reproduce compact summary and remain within one-second tolerance",
+      "evidence_gate": "VALID complete stream, measured skew within tolerance, raw/logical provenance, no unexplained global sequence issue, deterministic replay/recovery/integrity, compact bounded storage, distributions, and zero-effect safety",
+      "failure_gate": "skew above one second, any other data/replay/restart/integrity/compactness/bound failure, prior-attempt mutation, authentication/account/order/signer/wallet/capital access, or unavailable-truth misclassification",
+      "lineage": {"parent_experiment_id": "EXP-MICROSTREAM-003", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
+      "resolution": null
     }
   ]
 }

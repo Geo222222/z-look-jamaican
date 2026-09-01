@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:17:00Z",
+  "updated_at": "2026-09-01T18:20:00Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. EXP-MICROSTREAM-003 fixed ingest and sequence semantics, capturing 1129 contiguous connection-global messages with all channels and a compact manifest, but correctly failed strict timestamp quality because provider time led local receive time by about 0.51 seconds and no clock-skew tolerance was preregistered. All evidence is preserved and no promotion occurred; TASK-DATA-003 remains active for a separately preregistered measured tolerance.",
+  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. Three failed microstream attempts are preserved. EXP-MICROSTREAM-004 is hash-preregistered with the corrected journal plus an explicit one-second source-clock-ahead tolerance supported by EXP-MICROSTREAM-003's measured 0.5122-second maximum. All other gates and zero-authority boundaries are unchanged.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",

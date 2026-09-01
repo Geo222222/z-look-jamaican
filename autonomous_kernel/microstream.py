@@ -64,6 +64,7 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
     channels: set[str] = set()
     level2_snapshots = level2_updates = trade_messages = heartbeat_messages = 0
     spreads: list[Decimal] = []
+    signed_clock_skews: list[Decimal] = []
     latest_provider_at: str | None = None
     for record in records:
         message = record["message"]
@@ -87,6 +88,10 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
         previous_channel = last_sequences.get(channel)
         last_sequences[channel] = max(sequence, previous_channel if previous_channel is not None else sequence)
         timestamp = str(message.get("timestamp", ""))
+        if timestamp:
+            provider_epoch = Decimal(str(datetime.fromisoformat(timestamp.replace("Z", "+00:00")).timestamp()))
+            receive_epoch = Decimal(int(record["received_at_ns"])) / Decimal("1000000000")
+            signed_clock_skews.append(provider_epoch - receive_epoch)
         if timestamp and (latest_provider_at is None or timestamp > latest_provider_at):
             latest_provider_at = timestamp
         if channel == "level2":
@@ -122,7 +127,7 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
         elif channel == "heartbeats":
             heartbeat_messages += 1
     final_book = {"bids": sorted(bids.items(), key=lambda item: Decimal(item[0]), reverse=True), "asks": sorted(asks.items(), key=lambda item: Decimal(item[0]))}
-    return {"schema_version": 1, "record_count": len(records), "unique_message_count": len(identities), "duplicate_count": duplicates, "channels": sorted(channels), "sequence_scope": "CONNECTION_GLOBAL", "last_global_sequence": last_global_sequence, "last_sequences_observed_by_channel": last_sequences, "gaps": gaps, "out_of_order": out_of_order, "level2_snapshot_count": level2_snapshots, "level2_update_count": level2_updates, "market_trade_message_count": trade_messages, "heartbeat_message_count": heartbeat_messages, "latest_provider_at": latest_provider_at, "spread_bps_percentiles": _quantiles(spreads, percentiles), "spread_sample_count": len(spreads), "final_book_hash": canonical_hash(final_book), "final_book": final_book}
+    return {"schema_version": 1, "record_count": len(records), "unique_message_count": len(identities), "duplicate_count": duplicates, "channels": sorted(channels), "sequence_scope": "CONNECTION_GLOBAL", "last_global_sequence": last_global_sequence, "last_sequences_observed_by_channel": last_sequences, "gaps": gaps, "out_of_order": out_of_order, "level2_snapshot_count": level2_snapshots, "level2_update_count": level2_updates, "market_trade_message_count": trade_messages, "heartbeat_message_count": heartbeat_messages, "latest_provider_at": latest_provider_at, "signed_provider_minus_receive_seconds_percentiles": _quantiles(signed_clock_skews, percentiles), "spread_bps_percentiles": _quantiles(spreads, percentiles), "spread_sample_count": len(spreads), "final_book_hash": canonical_hash(final_book), "final_book": final_book}
 
 
 class StreamJournal:
@@ -197,7 +202,7 @@ class StreamJournal:
             raise RuntimeError("stream has no provider timestamp")
         source_at = _iso_epoch(str(latest_at))
         observed_at = max(int(record["received_at_ns"]) // 1_000_000_000 for record in records)
-        quality = classify_market_data(provider="coinbase_advanced_trade_public_websocket", source_event_at=source_at, received_at=observed_at, observed_at=observed_at, max_event_age_seconds=30, max_transport_age_seconds=30).to_dict()
+        quality = classify_market_data(provider="coinbase_advanced_trade_public_websocket", source_event_at=source_at, received_at=observed_at, observed_at=observed_at, max_event_age_seconds=30, max_transport_age_seconds=30, max_clock_skew_seconds=1).to_dict()
         observation_id = f"OBS-{self.stream_id}"
         raw_section = {"provider": "coinbase_advanced_trade_public_websocket", "instrument": "BTC-USD", "channel": "microstructure_stream", "provider_payload": {"manifest_path": manifest_path.relative_to(self.root).as_posix(), "compressed_path": bundle_path.relative_to(self.root).as_posix()}, "source_event_at": source_at, "received_at": observed_at, "raw_stream_sha256": manifest["journal_sha256"], "compressed_sha256": manifest["compressed_sha256"]}
         normalized = {"schema_version": 1, "type": "microstructure_stream_summary", "instrument": "BTC-USD", "raw_observation_id": observation_id, "stream_id": self.stream_id, "summary": {key: value for key, value in summary.items() if key != "final_book"}, "truth_class": "OBSERVED_PUBLIC_MARKET_DATA"}

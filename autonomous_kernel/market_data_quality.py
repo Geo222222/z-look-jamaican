@@ -28,6 +28,8 @@ class MarketDataQuality:
     transport_age_seconds: int | None
     action_permitted: bool
     reasons: tuple[str, ...]
+    source_clock_ahead_seconds: int = 0
+    clock_skew_tolerance_seconds: int = 0
     schema_version: int = 1
 
     def to_dict(self) -> Mapping[str, Any]:
@@ -44,6 +46,7 @@ def classify_market_data(
     observed_at: int,
     max_event_age_seconds: int,
     max_transport_age_seconds: int,
+    max_clock_skew_seconds: int = 0,
 ) -> MarketDataQuality:
     """Classify timestamp/provenance quality; only VALID permits an action."""
     reasons: list[str] = []
@@ -65,28 +68,32 @@ def classify_market_data(
     observed = int(observed_at)
     event_age = observed - source
     transport_age = received - source
-    if source > received:
+    clock_ahead = max(0, source - received)
+    tolerance = max(0, int(max_clock_skew_seconds))
+    if clock_ahead > tolerance:
         reasons.append("source_event_after_receive")
     if received > observed:
         reasons.append("receive_after_observation")
-    if event_age < 0 or transport_age < 0:
+    if event_age < -tolerance or transport_age < -tolerance:
         reasons.append("negative_timestamp_age")
     if reasons:
         return MarketDataQuality(
             UNAVAILABLE, provider_value, source, received, observed,
-            event_age, transport_age, False, tuple(reasons)
+            event_age, transport_age, False, tuple(reasons), clock_ahead, tolerance
         )
+    event_age = max(0, event_age)
+    transport_age = max(0, transport_age)
     if event_age > int(max_event_age_seconds):
         return MarketDataQuality(
             STALE, provider_value, source, received, observed,
-            event_age, transport_age, False, ("event_age_limit_exceeded",)
+            event_age, transport_age, False, ("event_age_limit_exceeded",), clock_ahead, tolerance
         )
     if transport_age > int(max_transport_age_seconds):
         return MarketDataQuality(
             DEGRADED, provider_value, source, received, observed,
-            event_age, transport_age, False, ("transport_age_limit_exceeded",)
+            event_age, transport_age, False, ("transport_age_limit_exceeded",), clock_ahead, tolerance
         )
     return MarketDataQuality(
         VALID, provider_value, source, received, observed,
-        event_age, transport_age, True, ()
+        event_age, transport_age, True, (), clock_ahead, tolerance
     )
