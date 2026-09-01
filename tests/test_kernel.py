@@ -104,6 +104,8 @@ class KernelStateTests(unittest.TestCase):
                 item["status"] = "in_progress"
             elif item["id"] == "TASK-BOOT-004":
                 item["status"] = "ready"
+            else:
+                item["status"] = "completed"
         self._write_json("state/backlog.json", backlog)
         resume = load_json(self.root / "state/resume.json")
         resume["active_task_ids"] = sorted(

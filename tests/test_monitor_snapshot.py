@@ -64,8 +64,11 @@ class MonitorSnapshotTests(unittest.TestCase):
         self.assertEqual(reconciliation["truth_sources"], ["DECLARED_SHADOW_FILL_EVENTS"])
         self.assertFalse(reconciliation["external_comparison_performed"])
         self.assertIsNone(reconciliation["external_discrepancy_count"])
-        self.assertEqual(snapshot["sections"]["market_data"]["data"]["observation_count"], 2)
-        self.assertEqual(snapshot["sections"]["market_data"]["data"]["quality_counts"]["VALID"], 2)
+        market_data = snapshot["sections"]["market_data"]["data"]
+        indexed = market_data["index"]["items"]
+        self.assertEqual(market_data["observation_count"], len(indexed))
+        self.assertEqual(market_data["quality_counts"]["VALID"], len(indexed))
+        self.assertIn("OBS-COINBASE-BTC-USD-1788273600", {item["observation_id"] for item in indexed})
 
     def test_library_snapshot_is_byte_for_byte_read_only(self):
         paths = self.monitored_files()

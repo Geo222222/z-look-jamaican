@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T14:43:00Z",
+  "updated_at": "2026-09-01T14:49:00Z",
   "authority": "Canonical lifecycle/index; immutable hypotheses and parameters live in hash-pinned preregistration artifacts; observations/results remain in their declared stores.",
   "items": [
     {
@@ -33,17 +33,17 @@
     },
     {
       "id": "EXP-SHADOW-LIFECYCLE-001",
-      "status": "RUNNING",
+      "status": "RESOLVED",
       "hypothesis": "A prospectively captured VALID BTC-USD public candle can drive one deterministic non-HOLD shadow intent through the canonical execution and accounting contracts with restart-safe receipts while actual financial exposure remains zero.",
       "preregistration_path": "artifacts/evidence/operations/exp-shadow-lifecycle-001-preregistration.json",
       "preregistration_sha256": "dd4dc932d06ed4ebb218140f97e5b8070224df421d63256178a692133e1cb446",
       "observation_store": "state/market_data.json",
-      "resume_command": "python -m experiments.shadow_lifecycle_qualification --root .",
+      "resume_command": null,
       "reconciliation": "declared shadow fill events only; external venue truth is not available",
       "evidence_gate": "all frozen lifecycle, deterministic replay, restart, accounting, receipt-integrity, monitor-visibility, and zero-exposure gates pass",
       "failure_gate": "any prospective timestamp failure, invalid market evidence, authorization bypass, non-determinism, duplicate economic event, accounting divergence, credential/signer/venue action, or nonzero actual exposure",
       "lineage": {"parent_experiment_id": null, "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001"},
-      "resolution": null
+      "resolution": "SUPPORTED_FOR_PIPELINE_ONLY"
     }
   ]
 }

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "observation_id": "OBS-COINBASE-BTC-USD-1788273600",
+  "observed_at": 1788274042,
+  "raw": {
+    "provider": "coinbase_exchange_public",
+    "instrument": "BTC-USD",
+    "channel": "candles",
+    "provider_payload": [
+      1788273600,
+      "78247.48",
+      "78380.65",
+      "78302.33",
+      "78370.82",
+      "37.99905005"
+    ],
+    "source_event_at": 1788273900,
+    "received_at": 1788274042
+  },
+  "normalized": {
+    "schema_version": 1,
+    "type": "candle",
+    "instrument": "BTC-USD",
+    "interval_seconds": 300,
+    "start_at": 1788273600,
+    "end_at": 1788273900,
+    "open": "78302.33",
+    "high": "78380.65",
+    "low": "78247.48",
+    "close": "78370.82",
+    "volume": "37.99905005",
+    "raw_observation_id": "OBS-COINBASE-BTC-USD-1788273600"
+  },
+  "quality": {
+    "status": "VALID",
+    "provider": "coinbase_exchange_public",
+    "source_event_at": 1788273900,
+    "received_at": 1788274042,
+    "observed_at": 1788274042,
+    "event_age_seconds": 142,
+    "transport_age_seconds": 142,
+    "action_permitted": true,
+    "reasons": [],
+    "schema_version": 1
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "5efef3626bedd22496a440b9d1eb118c95bc4408a11e64a5e11e0ba355816eea"
+  }
+}
