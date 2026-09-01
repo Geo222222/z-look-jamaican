@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:35:00Z",
+  "updated_at": "2026-09-01T18:52:23Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "EXP-MKT-002 continues unchanged and is fresh. EXP-MICROSTREAM-004 qualified the continuous public evidence mechanism after three preserved fail-closed attempts, without further capability promotion. TASK-DATA-004 requires genuinely time-separated windows. The existing 15-minute crypto-forward-shadow-continuation heartbeat is verified ACTIVE and now resumes EXP-MKT-002 plus at most one separately preregistered bounded window when it remains highest-value safe work.",
+  "checkpoint": "EXP-MKT-002 continues unchanged. Consequence-proportional evidence policy and a validated zero-effect background-job boundary now move clock/sample waiting out of interactive cognition. The active heartbeat launches only already-preregistered due jobs and returns immediately; TASK-DATA-004 still requires a separately frozen time-separated calibration schedule before any run is registered.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",

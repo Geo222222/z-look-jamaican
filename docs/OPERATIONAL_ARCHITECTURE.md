@@ -15,6 +15,8 @@ Z Look Jamaican has one intended path:
 - Immutable pre-live operation receipts: `receipts/execution/<request_id>.json`.
 - Realized economic truth: `accounting/ledger.json`; shadow and simulation never enter it as realized outcomes.
 - Observer contract: `python -m autonomous_kernel monitor_snapshot --json`.
+- Evidence burden and machine-labor boundary: `docs/EVIDENCE_POLICY.md`.
+- Bounded background-job registry: `state/background_jobs.json`; derived claims and receipts: `runtime/background_jobs/`.
 
 No parallel execution or accounting path is authoritative.
 

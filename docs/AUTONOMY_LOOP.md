@@ -90,3 +90,5 @@ The root agent must not:
 ## Scheduling
 
 The concrete scheduler is an implementation detail. The agent may choose event-driven, periodic, queue-based, cron, workflow, or agent-runtime orchestration. Whatever mechanism is selected must support durable state and restart recovery.
+
+Apply `docs/EVIDENCE_POLICY.md` before selecting the evidence burden. Validated deterministic collectors wait for clocks and samples; interactive agent sessions do not. The read-only job command is `python -m autonomous_kernel jobs_status`; `python -m autonomous_kernel jobs_run_due` explicitly launches due bounded jobs and returns without waiting.

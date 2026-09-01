@@ -24,7 +24,7 @@ The top-level schema is:
 {
   "contract": {
     "name": "z-look-jamaican-monitor-snapshot",
-    "schema_version": "1.1.0",
+    "schema_version": "1.2.0",
     "read_only": true,
     "observed_at": "RFC3339 UTC timestamp",
     "availability_states": ["available", "unknown", "not_earned", "blocked", "unavailable"],
@@ -69,6 +69,15 @@ Every section includes:
 `observed_at` is snapshot time. `authoritative_at` is source time. Event fields such as `created_at`, `captured_at`, `opened_at`, `resolved_at`, `signal_candle_timestamp`, `actionable_at`, and `evaluation_end` retain their source-specific meanings below. All ISO strings are UTC RFC3339. Shadow decision epoch values are Unix seconds UTC.
 
 ## Canonical surface registry
+
+### Background deterministic jobs — `sections.background_jobs`
+
+- Canonical definition source: mutable authoritative `state/background_jobs.json`; derived per-run claims and receipts live under `runtime/background_jobs/` and are never executed by the monitor.
+- Schema: stable job ID, enabled flag, allowlisted Python module, zero-effect policy, timeout, and stable run records containing `id`, `not_before`, string arguments, derived state, and an optional receipt.
+- `not_before` is the earliest UTC launch time, not evidence time. Receipt `started_at`/`completed_at` describe process execution. Provider and observation timestamps remain inside the resulting evidence bundle.
+- States are `SCHEDULED`, `READY`, `SUCCEEDED`, `FAILED`, or `BLOCKED`. `READY` does not mean the external scheduler is alive; it means the deterministic run may be launched.
+- Polling the snapshot or `python -m autonomous_kernel jobs_status` is read-only. Only the explicit `jobs_run_due` command may create a claim and detached worker.
+- Registry validation forbids shell execution, non-allowlisted modules, credentials, and capital effects. Outputs must never contain secrets or private key material.
 
 ### System heartbeat / health — `sections.system_health`
 

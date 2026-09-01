@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-01T18:50:00Z",
+  "authority": "Immutable bounded job definitions; runtime/background_jobs contains derived execution receipts and claims.",
+  "items": []
+}

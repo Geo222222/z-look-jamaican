@@ -2,7 +2,7 @@
   "schema_version": 1,
   "audit_id": "AUDIT-AUTO-CRYPTO-001",
   "automation_id": "crypto-forward-shadow-continuation",
-  "verified_at": "2026-09-01T18:35:00Z",
+  "verified_at": "2026-09-01T18:52:23Z",
   "kind": "codex_thread_heartbeat",
   "status": "ACTIVE",
   "schedule": "every 15 minutes",
@@ -10,10 +10,12 @@
   "durable_entrypoints": [
     "python -m autonomous_kernel validate",
     "python -m experiments.crypto_market_shadow --state state/market_shadow.json",
+    "python -m autonomous_kernel jobs_run_due",
+    "python -m autonomous_kernel jobs_status",
     "python -m autonomous_kernel next-work"
   ],
-  "scope": "Resume EXP-MKT-002 unchanged and advance at most one separately preregistered time-separated public microstructure window when TASK-DATA-004 remains highest-value safe work.",
+  "scope": "Resume EXP-MKT-002 unchanged; launch already-preregistered bounded jobs without waiting; inspect durable readiness; use proportional evidence and continue independent dependency-DAG work.",
   "safety_constraints": ["no authentication or accounts", "no orders or capital", "no wallet or signer", "no Governor weakening", "no reuse/rewrite of prior stream IDs", "no inference of unavailable fee/order/fill truth"],
-  "verification": "The existing automation was read from its persisted automation.toml and updated successfully through the app automation service; no duplicate automation was created.",
+  "verification": "The existing automation was read from its persisted automation.toml and updated successfully through the app automation service; no duplicate automation was created. The persisted automation.toml SHA-256 after update is 282fe7138384d1c3dc014ae7cd6aeb29cfe3fa39fe84feaa9f21e9e086724602.",
   "external_state_limit": "Repository state records the last verified configuration; live scheduler execution remains external and is rechecked through heartbeat freshness and app automation status."
 }

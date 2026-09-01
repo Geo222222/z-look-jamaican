@@ -19,6 +19,7 @@ from .store import (
     validate,
 )
 from .monitor import monitor_snapshot
+from .background_jobs import execute as execute_job, launch_due as launch_due_jobs, status as background_job_status
 from .predecessor import PredecessorVerificationError, verify_manifest
 
 
@@ -36,6 +37,11 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("recover", help="idempotently roll a prepared state transaction forward")
     monitor_parser = subparsers.add_parser("monitor_snapshot", help="emit the authoritative read-only observer snapshot")
     monitor_parser.add_argument("--json", action="store_true", help="emit JSON (the only supported representation)")
+    subparsers.add_parser("jobs_status", help="read deterministic background-job readiness without mutation")
+    subparsers.add_parser("jobs_run_due", help="launch due bounded jobs and return immediately")
+    execute_parser = subparsers.add_parser("job_execute", help=argparse.SUPPRESS)
+    execute_parser.add_argument("--job-id", required=True)
+    execute_parser.add_argument("--run-id", required=True)
     predecessor_parser = subparsers.add_parser(
         "predecessor_verify", help="verify hashed predecessor evidence without importing or executing it"
     )
@@ -70,6 +76,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             _print(recover_pending(root))
         elif args.command == "monitor_snapshot":
             _print(monitor_snapshot(root))
+        elif args.command == "jobs_status":
+            _print(background_job_status(root))
+        elif args.command == "jobs_run_due":
+            _print(launch_due_jobs(root))
+        elif args.command == "job_execute":
+            _print(execute_job(root, args.job_id, args.run_id))
         elif args.command == "predecessor_verify":
             _print(verify_manifest(args.manifest.resolve(), args.source_root.resolve()))
         elif args.command == "transition":

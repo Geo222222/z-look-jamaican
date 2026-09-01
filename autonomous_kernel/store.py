@@ -23,6 +23,7 @@ from .market_data import validate_market_data_store
 from .microstream import validate_stream_bundles
 from .operations import validate_capability_registry, validate_capability_transitions, validate_execution_receipts
 from .shadow_lifecycle import validate_shadow_runtime
+from .background_jobs import validate_background_jobs
 
 
 ROOT_STATES = {
@@ -77,6 +78,7 @@ REQUIRED_JSON_FILES = (
     "state/capabilities.json",
     "state/experiments.json",
     "state/market_data.json",
+    "state/background_jobs.json",
     "opportunities/register.json",
     "accounting/ledger.json",
 )
@@ -413,6 +415,7 @@ def validate(root: Optional[Path] = None) -> List[str]:
     wallets = json_documents.get("state/operational_wallets.json", {})
     capabilities = json_documents.get("state/capabilities.json", {})
     experiment_registry = json_documents.get("state/experiments.json", {})
+    background_jobs = json_documents.get("state/background_jobs.json", {})
     ledger = json_documents.get("accounting/ledger.json", {})
     evidence_records = jsonl_documents.get("evidence/sources.jsonl", [])
     evidence_ids = {record.get("id") for record in evidence_records if record.get("id")}
@@ -436,6 +439,8 @@ def validate(root: Optional[Path] = None) -> List[str]:
     checks.append("microstructure_stream_bundles")
     errors.extend(validate_shadow_runtime(root))
     checks.append("shadow_runtime_recovery")
+    errors.extend(validate_background_jobs(background_jobs))
+    checks.append("background_job_registry")
 
     for record in evidence_records:
         expected_digest = record.get("sha256")

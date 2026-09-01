@@ -35,9 +35,10 @@ class MonitorSnapshotTests(unittest.TestCase):
             "experiment_registry", "capability_registry", "execution_plane",
             "accounting_reconciliation",
             "market_data",
+            "background_jobs",
         }
         self.assertEqual(set(snapshot["sections"]), expected)
-        self.assertEqual(snapshot["contract"]["schema_version"], "1.1.0")
+        self.assertEqual(snapshot["contract"]["schema_version"], "1.2.0")
         self.assertTrue(snapshot["contract"]["read_only"])
         for section in snapshot["sections"].values():
             self.assertIn(section["availability"]["state"], AVAILABILITY_STATES)

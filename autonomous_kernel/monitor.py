@@ -13,9 +13,10 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 
 from .store import StateValidationError, load_json, load_jsonl, next_work, repository_root, validate
+from .background_jobs import status as background_job_status
 
 
-CONTRACT_SCHEMA_VERSION = "1.1.0"
+CONTRACT_SCHEMA_VERSION = "1.2.0"
 AVAILABILITY_STATES = ("available", "unknown", "not_earned", "blocked", "unavailable")
 
 
@@ -165,6 +166,7 @@ def monitor_snapshot(root: Optional[Path] = None, observed_at: Optional[str] = N
     capability_registry = load_json(root / "state/capabilities.json")
     experiment_registry = load_json(root / "state/experiments.json")
     market_data_index = load_json(root / "state/market_data.json")
+    background_jobs = background_job_status(root, observed_at)
     experiments = load_jsonl(root / "memory/experiments.jsonl")
     reflections = load_jsonl(root / "memory/reflections.jsonl")
     evidence = load_jsonl(root / "evidence/sources.jsonl")
@@ -243,6 +245,7 @@ def monitor_snapshot(root: Optional[Path] = None, observed_at: Optional[str] = N
     latest_market_epoch = max((int(item.get("observed_at", 0)) for item in market_data_index.get("items", [])), default=0)
     latest_market_at = datetime.fromtimestamp(latest_market_epoch, timezone.utc).isoformat().replace("+00:00", "Z") if latest_market_epoch else None
     section_data["market_data"] = _section(root, "MONITOR-MARKET-DATA", ["state/market_data.json", *market_paths], observed_at, latest_market_at, {"index": market_data_index, "observation_count": len(market_data_index.get("items", [])), "quality_counts": quality_counts, "raw_normalized_separation": True, "replayable": True, "active_experiment_retrofit": False}, freshness={"expectation": "event-driven captures for future experiments; not the EXP-MKT-002 heartbeat", "state": "event_driven"})
+    section_data["background_jobs"] = _section(root, "MONITOR-BACKGROUND-JOBS", ["state/background_jobs.json"], observed_at, None, background_jobs, freshness={"expectation": "poll-safe readiness; workers update per-run receipts", "state": "scheduled"})
     section_data["opportunities"] = _section(root, "MONITOR-OPPORTUNITIES", ["opportunities/register.json"], observed_at, opportunities.get("updated_at"), opportunities)
     section_data["reflections"] = _section(root, "MONITOR-REFLECTIONS", ["memory/reflections.jsonl"], observed_at, _latest_timestamp(reflections, ("created_at",)), {"items": reflections})
     section_data["goals_tasks"] = _section(root, "MONITOR-GOALS-TASKS", ["state/objectives.json", "state/backlog.json", "state/agents.json", "state/resume.json"], observed_at, max(filter(None, [objectives.get("updated_at"), backlog.get("updated_at"), agents.get("updated_at"), resume.get("updated_at")]), default=None), {"objectives": objectives.get("items", []), "tasks": backlog.get("items", []), "active_task_ids": resume.get("active_task_ids", []), "next_task_id": resume.get("next_task_id"), "highest_priority_autonomous_next_action": next_work(root), "assignments": agents.get("items", [])})

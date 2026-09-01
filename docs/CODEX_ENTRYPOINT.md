@@ -27,6 +27,8 @@ On receipt of the bootstrap command, the top-level Codex session must:
 
 Use the remaining repository documents as references when their subjects become relevant. Do not spend the bootstrap phase rewriting doctrine that is already sufficient.
 
+Apply `docs/EVIDENCE_POLICY.md` to choose the minimum sufficient evidence for each downstream decision and move validated repetitive collection into deterministic background jobs.
+
 ## Wallet interpretation
 
 Do not ask the owner to create operational wallets.
