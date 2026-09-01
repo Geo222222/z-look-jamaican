@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "audit_id": "AUDIT-EXP-MICROSTREAM-004",
+  "experiment_id": "EXP-MICROSTREAM-004",
+  "completed_at": "2026-09-01T18:22:00Z",
+  "outcome": "SUPPORTED_CONTINUOUS_PUBLIC_EVIDENCE_MECHANISM",
+  "preregistration_sha256": "2b826a2f80ad3cbe749b18adb2910e393a99626143a6ad05a2d051d4674eca99",
+  "observed": {
+    "quality": "VALID",
+    "clock_skew_tolerance_seconds": 1,
+    "source_clock_ahead_seconds_integer": 1,
+    "signed_provider_minus_receive_seconds_percentiles": {"p50": "0.505296", "p90": "0.5081506", "p99": "0.5094341", "maximum": "0.5101565"},
+    "unique_message_count": 1155,
+    "connection_global_sequence_first": 0,
+    "connection_global_sequence_last": 1154,
+    "gaps": 0,
+    "duplicates": 0,
+    "out_of_order": 0,
+    "channels": ["subscriptions", "level2", "market_trades", "heartbeats"],
+    "level2_snapshot_count": 1,
+    "level2_update_count": 933,
+    "market_trade_message_count": 159,
+    "heartbeat_message_count": 59,
+    "spread_sample_count": 934,
+    "spread_bps_percentiles": {"p50": "0.001297771369671147979353755280", "p90": "0.08304659549832953070758164810", "p99": "0.7008192317256194073976401600", "maximum": "1.266598967643976679525155162"},
+    "deterministic_final_book_hash": "3ed043f8d3b2ca86685ae481a08b3e283fc871b0de5b77d85893717d4ca01ada",
+    "uncompressed_network_bytes": 7063294,
+    "manifest_bytes": 1705
+  },
+  "artifacts": {
+    "journal": {"path": "runtime/market_stream/COINBASE-BTC-USD-MICROSTREAM-004.jsonl", "sha256": "d16930cd9df5e3e853d62f1143de3eb9b321aa2fe9999e7061a69d0dac090f76"},
+    "compressed": {"path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-004.jsonl.gz", "sha256": "4f920029c92e47c345c10906aa479e4710ee49bbd18a7e1a46804db49158868f"},
+    "manifest": {"path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-004.manifest.json", "sha256": "dd2462029fdf66513589075b84fc2f12fa723b505e777cd1307f095821bf843c"},
+    "observation": {"path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-004.json", "sha256": "ad00f69acd7477ac4c576ca7b308c5f6a2ac7d6685f70505b8978c5b41644ce6"}
+  },
+  "qualification": {
+    "journal_restart": "PASS",
+    "duplicate_conflict": "PASS",
+    "connection_sequence": "PASS",
+    "raw_logical_channel_provenance": "PASS",
+    "deterministic_replay": "PASS",
+    "corruption_detection": "PASS",
+    "compact_manifest": "PASS",
+    "resource_bounds": "PASS",
+    "zero_effect": "PASS"
+  },
+  "not_qualified": ["spread/depth distribution outside this 60-second window", "cross-provider truth", "account fee tier", "order latency", "rejection probability", "partial-fill probability", "actual fill truth", "strategy edge", "capital eligibility", "live readiness"],
+  "safety": {"authentication_used": false, "account_or_order_surface_accessed": false, "signer_or_wallet_accessed": false, "capital_used_usd": "0.00", "live_enabled": false},
+  "decision": "QUALIFY_EVIDENCE_MECHANISM_ONLY"
+}

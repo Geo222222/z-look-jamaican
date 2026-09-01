@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T15:01:00Z",
+  "updated_at": "2026-09-01T18:23:00Z",
   "ranking_method": "priority_score is a 0-100 judgment combining information gain, mission value, falsification cost, reversibility, risk, dependency burden, and reuse value; assumptions remain explicit in each task.",
   "items": [
     {
@@ -297,13 +297,25 @@
       "id": "TASK-DATA-003",
       "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
       "title": "Qualify continuous public microstructure evidence and distributional execution bounds",
-      "status": "in_progress",
+      "status": "completed",
       "priority_score": 95,
       "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":4,"reversibility":5,"risk_control":5,"reuse_value":5},
       "depends_on": ["TASK-DATA-002"],
       "acceptance": "A bounded preregistered capture window produces timestamp-ordered, duplicate-safe, crash-recoverable quote/trade/book evidence with provider update-sequence gap detection, staleness classification, deterministic replay, and distributions for spread/depth/slippage proxies; unavailable fee/order/fill truth remains explicitly unqualified.",
       "reversal_condition": "Stop if public update data cannot be captured with stable provenance and gap semantics, storage cost is disproportionate, or credentials, orders, signer, wallet, or capital would be required.",
-      "updated_at": "2026-09-01T15:05:00Z"
+      "updated_at": "2026-09-01T18:23:00Z"
+    },
+    {
+      "id": "TASK-DATA-004",
+      "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+      "title": "Measure activity-conditioned microstructure distributions across independent windows",
+      "status": "ready",
+      "priority_score": 94,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":4,"reversibility":5,"risk_control":5,"reuse_value":5},
+      "depends_on": ["TASK-DATA-003"],
+      "acceptance": "Several preregistered time-separated public windows cover different activity/spread/depth regimes and yield reproducible distributions with the qualified journal; they either support or reject configured public-observable bounds without inferring fees, order latency, fill truth, or edge.",
+      "reversal_condition": "Stop if marginal windows do not improve tail estimates, storage/infrastructure cost exceeds information value, provider terms or schemas change, or any authenticated/financial surface would be required.",
+      "updated_at": "2026-09-01T18:23:00Z"
     }
   ]
 }

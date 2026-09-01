@@ -1,17 +1,16 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:20:00Z",
+  "updated_at": "2026-09-01T18:23:00Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. Three failed microstream attempts are preserved. EXP-MICROSTREAM-004 is hash-preregistered with the corrected journal plus an explicit one-second source-clock-ahead tolerance supported by EXP-MICROSTREAM-003's measured 0.5122-second maximum. All other gates and zero-authority boundaries are unchanged.",
+  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. EXP-MICROSTREAM-004 qualified the continuous public evidence mechanism after three preserved fail-closed attempts: 1155 messages, connection-global sequence 0-1154 with no gaps/duplicates/out-of-order events, all data/control channels, VALID measured clock tolerance, deterministic replay, compact manifest, and zero effect. No further capability promotion occurred because only one 60-second regime and one provider are observed. TASK-DATA-004 is next.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",
     "PROGRAM-CRYPTO-MARKETS"
   ],
-  "next_task_id": null,
+  "next_task_id": "TASK-DATA-004",
   "active_task_ids": [
-    "TASK-MKT-002",
-    "TASK-DATA-003"
+    "TASK-MKT-002"
   ],
   "active_automation_ids": [
     "crypto-forward-shadow-continuation"

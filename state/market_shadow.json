@@ -1877,7 +1877,12 @@
       "weekday": true,
       "quote_volume": 10038977.50858309,
       "absolute_log_return": 0.002564294229291675,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788287638,
+      "evaluation_end": 1788274500,
+      "gross_return": 0.0,
+      "transition_cost": 0.0,
+      "net_return": 0.0
     },
     {
       "id": "SHADOW-ETH-USD-1788269700",
@@ -1891,7 +1896,12 @@
       "weekday": true,
       "quote_volume": 2043528.9320194938,
       "absolute_log_return": 0.0029023193819209614,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788287638,
+      "evaluation_end": 1788274500,
+      "gross_return": 0.0,
+      "transition_cost": 0.0,
+      "net_return": 0.0
     },
     {
       "id": "SHADOW-BTC-USD-1788273900",
@@ -1920,12 +1930,40 @@
       "quote_volume": 474335.24532483995,
       "absolute_log_return": 0.0004116459169667603,
       "status": "pending"
+    },
+    {
+      "id": "SHADOW-BTC-USD-1788287100",
+      "product": "BTC-USD",
+      "observed_at": 1788287634,
+      "signal_candle_timestamp": 1788287100,
+      "actionable_at": 1788287700,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 11411233.214220982,
+      "absolute_log_return": 0.0008879877215250181,
+      "status": "pending"
+    },
+    {
+      "id": "SHADOW-ETH-USD-1788287100",
+      "product": "ETH-USD",
+      "observed_at": 1788287634,
+      "signal_candle_timestamp": 1788287100,
+      "actionable_at": 1788287700,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 2946988.477417243,
+      "absolute_log_return": 0.0010063341919918463,
+      "status": "pending"
     }
   ],
-  "updated_at": "2026-09-01T14:51:35Z",
+  "updated_at": "2026-09-01T18:33:54Z",
   "summary": {
-    "total": 102,
-    "resolved": 98,
+    "total": 104,
+    "resolved": 100,
     "eligible_long": 14,
     "net_return_sum": -0.014948554951336276
   }

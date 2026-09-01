@@ -51,7 +51,7 @@ def _quantiles(values: list[Decimal], percentiles: list[int]) -> Mapping[str, st
     return result
 
 
-def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | None = None) -> Mapping[str, Any]:
+def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | None = None, *, collect_distributions: bool = True) -> Mapping[str, Any]:
     percentiles = percentiles or [50, 90, 99, 100]
     bids: dict[str, str] = {}
     asks: dict[str, str] = {}
@@ -115,7 +115,7 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
                         book.pop(price, None)
                     else:
                         book[price] = str(quantity)
-                if bids and asks:
+                if collect_distributions and bids and asks:
                     best_bid = max(Decimal(price) for price in bids)
                     best_ask = min(Decimal(price) for price in asks)
                     if best_bid >= best_ask:
@@ -231,7 +231,7 @@ def validate_stream_bundles(root: Path) -> list[str]:
                 errors.append(f"{compressed_path}: journal hash mismatch")
                 continue
             records = [json.loads(line) for line in raw.decode("utf-8").splitlines()]
-            rebuilt = replay_records(records)
+            rebuilt = replay_records(records, collect_distributions=False)
             if rebuilt["final_book_hash"] != manifest["summary"]["final_book_hash"] or rebuilt["unique_message_count"] != manifest["summary"]["unique_message_count"]:
                 errors.append(f"{compressed_path}: deterministic replay mismatch")
         except (OSError, KeyError, ValueError, RuntimeError, json.JSONDecodeError, gzip.BadGzipFile) as exc:
