@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T16:45:44.0046593Z",
+  "updated_at": "2026-09-01T14:00:00Z",
   "ranking_method": "priority_score is a 0-100 judgment combining information gain, mission value, falsification cost, reversibility, risk, dependency burden, and reuse value; assumptions remain explicit in each task.",
   "items": [
     {
@@ -208,6 +208,30 @@
       "acceptance": "Timestamp decisions before outcomes for BTC-USD and ETH-USD without orders or credentials; reconcile at least 100 eligible observations or 14 calendar days, apply 20 bps per-side costs, and reject unless both products have positive net expectancy with bounded drawdown.",
       "reversal_condition": "Stop early for data integrity failure, lookahead, inability to resume from durable state, or a materially changed venue/data contract.",
       "updated_at": "2026-08-31T17:24:00Z"
+    },
+    {
+      "id": "TASK-MKT-003",
+      "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+      "title": "Audit and qualify EPI/Epinnox predecessor knowledge",
+      "status": "completed",
+      "priority_score": 93,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":5},
+      "depends_on": ["TASK-MKT-001"],
+      "acceptance": "Exact non-secret predecessor sources are hash-pinned, useful concepts and unsafe assumptions are distinguished, focused tests are run, and no predecessor code gains runtime authority.",
+      "reversal_condition": "Re-audit a source when its manifest hash or Git provenance changes materially.",
+      "updated_at": "2026-09-01T14:00:00Z"
+    },
+    {
+      "id": "TASK-MKT-004",
+      "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+      "title": "Qualify a minimal deterministic market-data quality contract",
+      "status": "completed",
+      "priority_score": 91,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":5},
+      "depends_on": ["TASK-MKT-003"],
+      "acceptance": "An independently implemented, venue-neutral contract classifies unavailable, stale, degraded, and valid market observations from explicit timestamp/provenance inputs; it fails closed, has tests, and does not modify EXP-MKT-002.",
+      "reversal_condition": "Defer if no future experiment or execution gate consumes source freshness or timestamp-chain evidence.",
+      "updated_at": "2026-09-01T14:00:00Z"
     }
   ]
 }

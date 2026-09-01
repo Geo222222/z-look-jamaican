@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-MKT-004",
+  "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+  "status": "SUCCESS",
+  "completed_at": "2026-09-01T14:00:00Z",
+  "hypothesis": "A minimal venue-neutral timestamp/provenance contract can fail closed on bad market data without importing predecessor runtime code or changing the active experiment.",
+  "implementation": [
+    "autonomous_kernel/market_data_quality.py",
+    "tests/test_market_data_quality.py",
+    "docs/MARKET_DATA_QUALITY.md"
+  ],
+  "observed_result": "The pure contract distinguishes VALID, DEGRADED, STALE, and UNAVAILABLE; only VALID permits downstream action. Missing provenance, impossible timestamp order, excess event age, and excess transport age fail closed.",
+  "safety": {
+    "network_access": false,
+    "writes": false,
+    "experiment_advancement": false,
+    "wallet_or_signer_access": false,
+    "order_or_capital_action": false,
+    "exp_mkt_002_modified": false
+  },
+  "decision": "qualified_for_future_preregistered_consumers_not_midstream_EXP-MKT-002",
+  "reversal_conditions": [
+    "A future venue requires stronger provenance fields.",
+    "Tests reveal an invalid timestamp chain can pass.",
+    "A consumer attempts to treat DEGRADED, STALE, or UNAVAILABLE as actionable."
+  ],
+  "owner_action_required": false
+}

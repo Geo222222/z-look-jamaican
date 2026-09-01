@@ -19,6 +19,7 @@ from .store import (
     validate,
 )
 from .monitor import monitor_snapshot
+from .predecessor import PredecessorVerificationError, verify_manifest
 
 
 def _print(value: Any) -> None:
@@ -35,6 +36,11 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("recover", help="idempotently roll a prepared state transaction forward")
     monitor_parser = subparsers.add_parser("monitor_snapshot", help="emit the authoritative read-only observer snapshot")
     monitor_parser.add_argument("--json", action="store_true", help="emit JSON (the only supported representation)")
+    predecessor_parser = subparsers.add_parser(
+        "predecessor_verify", help="verify hashed predecessor evidence without importing or executing it"
+    )
+    predecessor_parser.add_argument("--manifest", type=Path, required=True)
+    predecessor_parser.add_argument("--source-root", type=Path, required=True)
 
     transition_parser = subparsers.add_parser("transition", help="record an allowed root-state transition")
     transition_parser.add_argument("--to", required=True, dest="new_state")
@@ -64,6 +70,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             _print(recover_pending(root))
         elif args.command == "monitor_snapshot":
             _print(monitor_snapshot(root))
+        elif args.command == "predecessor_verify":
+            _print(verify_manifest(args.manifest.resolve(), args.source_root.resolve()))
         elif args.command == "transition":
             record = transition(args.new_state, args.trigger, args.decision_id, args.evidence, root)
             _print({"status": "ok", "transition": record})
@@ -75,7 +83,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     except StateValidationError as exc:
         _print({"status": "invalid", "errors": exc.errors})
         return 2
-    except (KeyError, RuntimeError, ValueError) as exc:
+    except (KeyError, RuntimeError, ValueError, PredecessorVerificationError) as exc:
         _print({"status": "error", "error": str(exc)})
         return 2
     return 0
