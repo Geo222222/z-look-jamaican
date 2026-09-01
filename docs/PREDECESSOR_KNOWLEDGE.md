@@ -8,6 +8,8 @@ The named `epi_trade` directory is a wiped/reseeded Git worktree with no commits
 
 `epinnox-llm` contributes architectural hypotheses—tick ingest, strategy plug-ins, deterministic risk guards, an execution broker, observability, and bounded local-LLM cognition—but its worktree is also dirty and those claims are not yet implementation-qualified. `epi-calc-appr` is a simple projection calculator whose fixed profit and fee assumptions are unsuitable as economic evidence.
 
+A follow-on implementation check found a material documentation gap. The Git-tracked `epinnox-llm/src/` is primarily a local-LLM subsystem, while substantial later `binance_trader/` exchange and strategy code is untracked in the dirty worktree. The exchange clients expose direct signed order methods without a current-Governor request boundary. They are evidence of prior integration work, not reusable execution authority. Exact inspected files are pinned in `evidence/predecessors/epinnox_llm_manifest.json`; the disposition is in `evidence/audits/TASK-MKT-005.json`.
+
 Secret-bearing and operational artifacts are outside the evidence boundary. Credentials, environment files, databases, logs, account data, and private material must not be read, copied, hashed into public reports, or imported.
 
 ## What earned continued investigation
@@ -42,3 +44,5 @@ python -m autonomous_kernel predecessor_verify `
 Hash drift means the historical source changed and conclusions must be requalified. The verifier performs no writes and executes no predecessor code.
 
 The detailed disposition is `evidence/audits/TASK-MKT-003.json`. The next independent adaptation target is a minimal data-quality contract for future market observations. It must be tested in isolation and must not alter EXP-MKT-002 parameters, observations, decisions, cadence, or state.
+
+That adaptation is now qualified in `evidence/audits/TASK-MKT-004.json` and remains deliberately unwired from the running experiment. The active economic priority is still prospective evidence collection, not broader trading-platform construction.
