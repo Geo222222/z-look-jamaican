@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-21T20:27:04.1613287Z",
+  "updated_at": "2026-09-01T18:35:00Z",
   "items": [
     {
       "id": "AUTO-EXP-OPP-001",
@@ -21,7 +21,25 @@
       "pause_reason": "EXP-OPP-001 rejected early after the feature-gap and contribution-margin gates failed; additional daily samples would not change the decision.",
       "rollback": "Pause or delete the app automation; repository experiment state and evidence remain intact.",
       "completion_condition": "Seven valid date-distinct collector-revision-2 snapshots are classified and the automation is paused."
+    },
+    {
+      "id": "AUTO-CRYPTO-001",
+      "kind": "codex_thread_heartbeat",
+      "external_id": "crypto-forward-shadow-continuation",
+      "status": "active",
+      "created_at": "2026-08-31T17:30:37Z",
+      "schedule": "every 15 minutes",
+      "purpose": "Resume the durable crypto-market program without conversation dependence.",
+      "scope": "Validate first; continue EXP-MKT-002 unchanged; then advance at most one preregistered time-separated public microstructure window when TASK-DATA-004 remains highest safe work; persist and checkpoint evidence.",
+      "prohibited": ["authentication or accounts", "orders or capital", "wallets or signers", "Governor changes", "prior stream ID reuse", "unavailable fee/order/fill inference"],
+      "last_success_at": "2026-09-01T18:33:54Z",
+      "health": "active; current EXP-MKT-002 heartbeat is fresh and repository resume state is valid",
+      "last_verified_at": "2026-09-01T18:35:00Z",
+      "evidence": "evidence/audits/AUTO-CRYPTO-001.json",
+      "prompt_entrypoint": "python -m autonomous_kernel validate",
+      "rollback": "Pause the app automation; all experiment and stream evidence remains immutable and independently resumable.",
+      "completion_condition": "Pause or replace when EXP-MKT-002 and the time-separated calibration program are resolved or a higher-value durable cadence supersedes them."
     }
   ],
-  "observation": "No pre-existing repository deployment was found. One Codex thread heartbeat is now registered for the active read-only experiment; it is not a product or financial deployment."
+  "observation": "No product or financial deployment exists. One rejected discovery heartbeat is paused and one zero-capital crypto-market continuation heartbeat is active."
 }
