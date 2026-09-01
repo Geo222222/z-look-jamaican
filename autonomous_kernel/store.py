@@ -20,6 +20,7 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from .experiments import validate_experiment_registry
 from .market_data import validate_market_data_store
+from .microstream import validate_stream_bundles
 from .operations import validate_capability_registry, validate_capability_transitions, validate_execution_receipts
 from .shadow_lifecycle import validate_shadow_runtime
 
@@ -431,6 +432,8 @@ def validate(root: Optional[Path] = None) -> List[str]:
     checks.append("execution_receipt_integrity")
     errors.extend(validate_market_data_store(root))
     checks.append("market_data_store")
+    errors.extend(validate_stream_bundles(root))
+    checks.append("microstructure_stream_bundles")
     errors.extend(validate_shadow_runtime(root))
     checks.append("shadow_runtime_recovery")
 
