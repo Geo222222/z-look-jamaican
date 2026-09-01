@@ -51,6 +51,10 @@ Each immutable observation bundle contains separate `raw`, `normalized`, and `qu
 
 The index is deterministically rebuildable from valid bundles. A crash after bundle persistence but before index replacement leaves a recoverable orphan, not silently authoritative partial state. ID conflicts and bundle tampering fail closed. The initial public Coinbase candle capture qualifies this storage path only; it does not calibrate execution realism or modify EXP-MKT-002.
 
+Microstructure bundles use the same immutable store and raw/normalized/quality contract. They preserve public L2 book sequence and timestamp, product rules, ticker, recent trades, exact HTTP payload hashes, request/receive timing, derived spread, deterministic depth-walk VWAP, and bounded capacity. A REST snapshot reports sequence gaps as `NOT_APPLICABLE_SNAPSHOT_ONLY`; it must never imply contiguous update coverage. Public market-data HTTP duration is not order latency, and public depth is not actual fill truth.
+
+Execution-realism evaluation keeps three classes separate: `OBSERVED` public venue facts, `CONFIGURED` experiment assumptions, and `MODELED` shadow results. A field can be matched, conservative for one snapshot, rejected by observed facts, or `UNAVAILABLE_FOR_QUALIFICATION`. Single-snapshot support cannot establish distributions, fee tier, rejection probability, partial-fill probability, capital eligibility, live readiness, or strategy edge.
+
 ## Recovery and observation
 
 Repository validation verifies experiment preregistration hashes, experiment/capability relationships, live-disable invariants, Governor limits, evidence integrity, wallets, and accounting boundaries. Receipt persistence is atomic and idempotent. The monitor reads registries and receipts without invoking recovery, experiments, schedulers, signers, wallets, or network access.

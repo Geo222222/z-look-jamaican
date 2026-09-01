@@ -192,6 +192,8 @@ class MarketDataStore:
                     "observed_at": document["observed_at"],
                     "quality_status": document["quality"]["status"],
                     "content_hash": document["integrity"]["content_hash"],
+                    "provider_sequence": document["normalized"].get("book_sequence"),
+                    "sequence_gap_state": "NOT_APPLICABLE_SNAPSHOT_ONLY" if document["normalized"].get("type") == "microstructure_snapshot" else "UNSUPPORTED_BY_CHANNEL",
                 })
         index = {"schema_version": 1, "authority": "immutable bundles listed here; index is deterministically rebuildable", "items": items}
         _atomic_json(self.index_path, index)

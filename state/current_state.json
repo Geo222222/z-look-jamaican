@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "system_id": "z-look-jamaican",
-  "updated_at": "2026-09-01T14:58:00Z",
+  "updated_at": "2026-09-01T15:01:00Z",
   "root_state": "DISCOVERY",
   "strategy_stage": "DISCOVERY",
   "mission_objective_id": "MISSION-001",
@@ -10,7 +10,7 @@
     "PROGRAM-OPPORTUNITY-DISCOVERY",
     "PROGRAM-CRYPTO-MARKETS"
   ],
-  "next_task_id": null,
+  "next_task_id": "TASK-DATA-003",
   "governor": {
     "source": "docs/GOVERNOR.md",
     "external_owner_funding_authorized_usd": 0,
@@ -80,7 +80,7 @@
     "execution_plane": "zero_exposure_prospective_supported_live_disabled",
     "accounting_reconciliation": "declared_shadow_matched_external_truth_unavailable_realized_ledger_unchanged"
     ,
-    "market_data_plane": "provider_neutral_raw_normalized_shadow_qualified"
+    "market_data_plane": "provider_neutral_raw_normalized_shadow_qualified_microstructure_single_snapshot_partial"
   },
   "known_incident_ids": [
     "INC-DATA-001",

@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 from autonomous_kernel.market_data import MarketDataStore, build_microstructure_observation, validate_market_data_store
+from autonomous_kernel.execution_realism import evaluate_public_assumptions
 
 
 class MicrostructureObservationTests(unittest.TestCase):
@@ -56,6 +57,13 @@ class MicrostructureObservationTests(unittest.TestCase):
             self.assertEqual(persisted, store.persist(self.build()))
             self.assertEqual(validate_market_data_store(root), [])
             self.assertEqual(store.rebuild_index()["items"][0]["channel"], "microstructure_snapshot")
+            self.assertEqual(store.rebuild_index()["items"][0]["sequence_gap_state"], "NOT_APPLICABLE_SNAPSHOT_ONLY")
+
+    def test_assumption_evaluation_separates_observed_and_unavailable(self):
+        evaluation = evaluate_public_assumptions(self.build(), {"half_spread_bps": "200", "slippage_bps": "100", "quantity_step": "0.0001", "price_step": "0.01", "minimum_notional_usd": "10", "available_capacity_base": "0.01", "fee_bps": "20", "latency_ms": "150", "fill_ratio": "0.5"})
+        self.assertEqual(evaluation["fields"]["price_step"]["result"], "MATCHED")
+        self.assertEqual(evaluation["fields"]["fee_bps"]["result"], "UNAVAILABLE_FOR_QUALIFICATION")
+        self.assertFalse(evaluation["capital_or_live_authority_earned"])
 
 
 if __name__ == "__main__":

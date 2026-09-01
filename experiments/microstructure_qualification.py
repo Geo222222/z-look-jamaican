@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from autonomous_kernel.market_data import MarketDataStore, build_microstructure_observation
+from autonomous_kernel.execution_realism import evaluate_public_assumptions
 
 
 FROZEN_AT_EPOCH = 1788274500
@@ -62,7 +63,8 @@ def capture(root: Path) -> dict:
     if product.get("status") != "online" or product.get("trading_disabled") is True:
         raise RuntimeError("product is not publicly reported as trade-enabled")
     persisted = MarketDataStore(root).persist(document)
-    return {"experiment_id": "EXP-MICROSTRUCTURE-001", "observation_id": persisted["observation_id"], "quality": persisted["quality"]["status"], "total_raw_bytes": total_bytes, "normalized": persisted["normalized"]}
+    evaluation = evaluate_public_assumptions(persisted, {"half_spread_bps": "2", "slippage_bps": "3", "quantity_step": "0.0001", "price_step": "0.01", "minimum_notional_usd": "10", "available_capacity_base": "0.01", "fee_bps": "20", "latency_ms": "150", "fill_ratio": "0.5"})
+    return {"experiment_id": "EXP-MICROSTRUCTURE-001", "observation_id": persisted["observation_id"], "quality": persisted["quality"]["status"], "total_raw_bytes": total_bytes, "normalized": persisted["normalized"], "assumption_evaluation": evaluation}
 
 
 def main() -> int:

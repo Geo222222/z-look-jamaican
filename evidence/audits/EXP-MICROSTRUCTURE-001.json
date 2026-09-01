@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "audit_id": "AUDIT-EXP-MICROSTRUCTURE-001",
+  "experiment_id": "EXP-MICROSTRUCTURE-001",
+  "completed_at": "2026-09-01T15:00:00Z",
+  "code_commit_at_capture": "bf1f55ecece09e66af7cdbf17df553cc5c15eb79",
+  "preregistration": {
+    "path": "artifacts/evidence/market/exp-microstructure-001-preregistration.json",
+    "sha256": "e18f234b00988aa950e2b157f97d91cdc79fd44ca5106b3d113bca686bc121e5",
+    "frozen_at": "2026-09-01T14:55:00Z"
+  },
+  "observation": {
+    "observation_id": "OBS-COINBASE-BTC-USD-MICRO-135395387999",
+    "provider": "coinbase_exchange_public",
+    "instrument": "BTC-USD",
+    "book_sequence": 135395387999,
+    "provider_source_at": "2026-09-01T14:58:38.168081692Z",
+    "prospective_to_preregistration": true,
+    "quality": "VALID",
+    "parsed_raw_http_bytes": 1171134,
+    "immutable_bundle_bytes": 3882287,
+    "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICRO-135395387999.json",
+    "sha256": "3c7d9f8fc709ca5d9d6bb051fb255956e3e08239f0257dde9196dfc84bb69c46"
+  },
+  "observed_facts": {
+    "best_bid": "78189.64",
+    "best_ask": "78189.65",
+    "quoted_spread_bps": "0.001278941731990214305231850074",
+    "maximum_depth_walk_slippage_bps": "0.1429459372180333330562293091",
+    "depth_sufficient_for_0_001_and_0_01_btc_both_sides": true,
+    "ask_capacity_within_5_bps_btc": "15.91541438",
+    "bid_capacity_within_5_bps_btc": "11.58540928",
+    "base_increment": "0.00000001",
+    "quote_increment": "0.01",
+    "minimum_market_funds_usd": "1",
+    "product_status": "online",
+    "trading_disabled": false,
+    "recent_trade_count": 100,
+    "recent_trade_id_min": 1087231820,
+    "recent_trade_id_max": 1087231919
+  },
+  "assumption_evaluation": {
+    "result": "PARTIALLY_CALIBRATED_SINGLE_SNAPSHOT",
+    "half_spread_bps": "SUPPORTED_AS_CONSERVATIVE_BOUND_SINGLE_SNAPSHOT",
+    "slippage_bps": "SUPPORTED_AS_CONSERVATIVE_BOUND_SINGLE_SNAPSHOT",
+    "quantity_step": "SUPPORTED_CONSERVATIVE_NOT_VENUE_EXACT",
+    "price_step": "MATCHED",
+    "minimum_notional_usd": "SUPPORTED_CONSERVATIVE_NOT_VENUE_EXACT",
+    "available_capacity_base": "SUPPORTED_SINGLE_SNAPSHOT",
+    "fee_bps": "UNAVAILABLE_FOR_QUALIFICATION",
+    "order_latency_ms": "UNAVAILABLE_FOR_QUALIFICATION",
+    "fill_ratio": "UNAVAILABLE_FOR_QUALIFICATION",
+    "rejection_probability": "UNAVAILABLE_FOR_QUALIFICATION",
+    "actual_fill_truth": "UNAVAILABLE_FOR_QUALIFICATION"
+  },
+  "sequence_semantics": {
+    "provider_sequence_preserved": true,
+    "gap_state": "NOT_APPLICABLE_SNAPSHOT_ONLY",
+    "reason": "A REST L2 snapshot anchors one sequence but does not expose every intervening update; contiguous gap detection requires a qualified WebSocket/update stream."
+  },
+  "safety": {
+    "authentication_used": false,
+    "account_surface_accessed": false,
+    "order_submitted": false,
+    "signer_accessed": false,
+    "wallet_action": false,
+    "capital_used_usd": "0.00",
+    "capital_or_live_authority_earned": false,
+    "economic_edge_evidence": false
+  },
+  "decision": "PARTIALLY_SUPPORTED_SINGLE_SNAPSHOT",
+  "next_bottleneck": "Repeated timestamp-ordered public microstructure evidence with update-stream gap detection and distributional calibration; authenticated fee tier and real order/fill truth remain outside current authority."
+}
