@@ -547,7 +547,12 @@
       "weekday": true,
       "quote_volume": 1323587.8158631867,
       "absolute_log_return": 4.758419932478635e-05,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788233343,
+      "evaluation_end": 1788232500,
+      "gross_return": -0.0,
+      "transition_cost": 0.0,
+      "net_return": -0.0
     },
     {
       "id": "SHADOW-ETH-USD-1788231000",
@@ -561,7 +566,12 @@
       "weekday": true,
       "quote_volume": 275505.1226430195,
       "absolute_log_return": 0.0,
-      "status": "pending"
+      "status": "resolved",
+      "resolved_at": 1788233343,
+      "evaluation_end": 1788232500,
+      "gross_return": 0.0,
+      "transition_cost": 0.0,
+      "net_return": 0.0
     },
     {
       "id": "SHADOW-BTC-USD-1788231900",
@@ -590,12 +600,40 @@
       "quote_volume": 173780.4823157394,
       "absolute_log_return": 0.000320432871041808,
       "status": "pending"
+    },
+    {
+      "id": "SHADOW-BTC-USD-1788232800",
+      "product": "BTC-USD",
+      "observed_at": 1788233339,
+      "signal_candle_timestamp": 1788232800,
+      "actionable_at": 1788233400,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 506231.5031884956,
+      "absolute_log_return": 0.000796178487496014,
+      "status": "pending"
+    },
+    {
+      "id": "SHADOW-ETH-USD-1788232800",
+      "product": "ETH-USD",
+      "observed_at": 1788233339,
+      "signal_candle_timestamp": 1788232800,
+      "actionable_at": 1788233400,
+      "target_position": 0,
+      "baseline_breakout_target": 0,
+      "active": true,
+      "weekday": true,
+      "quote_volume": 430525.8519972652,
+      "absolute_log_return": 0.0010668528248070257,
+      "status": "pending"
     }
   ],
-  "updated_at": "2026-09-01T03:12:31Z",
+  "updated_at": "2026-09-01T03:28:59Z",
   "summary": {
-    "total": 32,
-    "resolved": 28,
+    "total": 34,
+    "resolved": 30,
     "eligible_long": 2,
     "net_return_sum": 0.0007855436323667177
   }
