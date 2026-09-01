@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import tempfile
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -60,6 +61,75 @@ def build_candle_observation(
         "raw": raw, "normalized": normalized, "quality": quality,
         "integrity": {"algorithm": "sha256", "content_hash": canonical_hash(content)},
     }
+
+
+def _depth_walk(levels: list[list[Any]], quantity: str, reference_price: Decimal) -> Mapping[str, str | bool]:
+    remaining = Decimal(quantity)
+    total_quantity = Decimal("0")
+    total_notional = Decimal("0")
+    for level in levels:
+        price, available = Decimal(str(level[0])), Decimal(str(level[1]))
+        taken = min(remaining, available)
+        total_quantity += taken
+        total_notional += taken * price
+        remaining -= taken
+        if remaining == 0:
+            break
+    if total_quantity == 0:
+        return {"requested_quantity": quantity, "filled_quantity": "0", "sufficient_depth": False, "vwap": "0", "slippage_bps": "0"}
+    vwap = total_notional / total_quantity
+    slippage = abs(vwap - reference_price) / reference_price * Decimal("10000")
+    return {"requested_quantity": quantity, "filled_quantity": str(total_quantity), "sufficient_depth": remaining == 0, "vwap": str(vwap), "slippage_bps": str(slippage)}
+
+
+def build_microstructure_observation(
+    *, observation_id: str, provider: str, instrument: str, payloads: Mapping[str, Any],
+    payload_hashes: Mapping[str, str], request_started_at: Mapping[str, int],
+    received_at: Mapping[str, int], request_duration_ms: Mapping[str, int], observed_at: int, max_event_age_seconds: int,
+    max_transport_age_seconds: int, test_quantities: list[str], depth_bands_bps: list[str],
+) -> Mapping[str, Any]:
+    product, book, ticker, trades = (payloads[name] for name in ("product_rules", "level2_book", "ticker", "recent_trades"))
+    bids = sorted(book.get("bids", []), key=lambda item: Decimal(str(item[0])), reverse=True)
+    asks = sorted(book.get("asks", []), key=lambda item: Decimal(str(item[0])))
+    if not bids or not asks:
+        raise ValueError("microstructure book requires bids and asks")
+    best_bid, best_ask = Decimal(str(bids[0][0])), Decimal(str(asks[0][0]))
+    if best_bid >= best_ask:
+        raise ValueError("microstructure book is crossed or locked")
+    midpoint = (best_bid + best_ask) / Decimal("2")
+    spread_bps = (best_ask - best_bid) / midpoint * Decimal("10000")
+    source_iso = str(book.get("time", ""))
+    if not source_iso:
+        raise ValueError("book provider timestamp is required")
+    from datetime import datetime
+    source_event_at = int(datetime.fromisoformat(source_iso.replace("Z", "+00:00")).timestamp())
+    final_received_at = max(int(value) for value in received_at.values())
+    quality = classify_market_data(provider=provider, source_event_at=source_event_at, received_at=final_received_at, observed_at=int(observed_at), max_event_age_seconds=int(max_event_age_seconds), max_transport_age_seconds=int(max_transport_age_seconds)).to_dict()
+    depth = {quantity: {"buy": _depth_walk(asks, quantity, best_ask), "sell": _depth_walk(bids, quantity, best_bid)} for quantity in test_quantities}
+    band_depth: dict[str, Mapping[str, str]] = {}
+    for band in depth_bands_bps:
+        fraction = Decimal(band) / Decimal("10000")
+        bid_floor, ask_ceiling = best_bid * (Decimal("1") - fraction), best_ask * (Decimal("1") + fraction)
+        band_depth[band] = {
+            "bid_base_quantity": str(sum((Decimal(str(level[1])) for level in bids if Decimal(str(level[0])) >= bid_floor), Decimal("0"))),
+            "ask_base_quantity": str(sum((Decimal(str(level[1])) for level in asks if Decimal(str(level[0])) <= ask_ceiling), Decimal("0"))),
+        }
+    raw = {"provider": provider, "instrument": instrument, "channel": "microstructure_snapshot", "provider_payload": dict(payloads), "payload_sha256": dict(payload_hashes), "request_started_at": dict(request_started_at), "received_at_by_surface": dict(received_at), "request_duration_ms": dict(request_duration_ms), "source_event_at": source_event_at, "received_at": final_received_at}
+    normalized = {
+        "schema_version": 1, "type": "microstructure_snapshot", "instrument": instrument,
+        "raw_observation_id": observation_id, "book_sequence": int(book["sequence"]),
+        "book_time": source_iso, "best_bid": str(best_bid), "best_ask": str(best_ask),
+        "midpoint": str(midpoint), "quoted_spread_bps": str(spread_bps),
+        "depth_walks": depth, "depth_bands_bps": band_depth,
+        "product_rules": {key: product.get(key) for key in ("id", "base_increment", "quote_increment", "min_market_funds", "status", "post_only", "limit_only", "cancel_only", "trading_disabled", "auction_mode")},
+        "ticker": {key: ticker.get(key) for key in ("trade_id", "price", "size", "time", "bid", "ask", "volume")},
+        "recent_trade_count": len(trades), "recent_trade_id_min": min((int(item["trade_id"]) for item in trades), default=None), "recent_trade_id_max": max((int(item["trade_id"]) for item in trades), default=None),
+        "market_data_http_duration_ms": dict(request_duration_ms),
+        "unavailable_for_qualification": ["account_tier_fee_bps", "order_round_trip_latency", "rejection_probability", "partial_fill_probability", "actual_fill_truth"],
+        "truth_class": "OBSERVED_PUBLIC_MARKET_DATA",
+    }
+    content = {"raw": raw, "normalized": normalized, "quality": quality}
+    return {"schema_version": 1, "observation_id": observation_id, "observed_at": int(observed_at), "raw": raw, "normalized": normalized, "quality": quality, "integrity": {"algorithm": "sha256", "content_hash": canonical_hash(content)}}
 
 
 def validate_observation(document: Mapping[str, Any]) -> list[str]:

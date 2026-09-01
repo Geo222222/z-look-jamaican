@@ -1,16 +1,17 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T14:49:00Z",
+  "updated_at": "2026-09-01T14:58:00Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "EXP-MKT-002 continues unchanged. EXP-SHADOW-LIFECYCLE-001 passed its prospective complete zero-capital lifecycle gate and resolved SUPPORTED_FOR_PIPELINE_ONLY. The execution capability earned exactly one transition to PROSPECTIVE_SUPPORTED; execution realism and economic edge remain unearned. TASK-DATA-002 is the next bottleneck. No orders, credentials, signer, wallet action, or capital are authorized.",
+  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. EXP-SHADOW-LIFECYCLE-001 resolved SUPPORTED_FOR_PIPELINE_ONLY and the execution capability earned PROSPECTIVE_SUPPORTED. EXP-MICROSTRUCTURE-001 is now hash-preregistered to calibrate only public-observable BTC-USD spread, depth, precision, minimum-notional, and capacity facts; fees, order latency, rejection, partial fills, actual fills, capital, and live remain unearned.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",
     "PROGRAM-CRYPTO-MARKETS"
   ],
-  "next_task_id": "TASK-DATA-002",
+  "next_task_id": null,
   "active_task_ids": [
-    "TASK-MKT-002"
+    "TASK-MKT-002",
+    "TASK-DATA-002"
   ],
   "active_automation_ids": [
     "crypto-forward-shadow-continuation"

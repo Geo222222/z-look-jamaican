@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T14:49:00Z",
+  "updated_at": "2026-09-01T14:58:00Z",
   "lifecycle": ["DISCOVERED", "HYPOTHESIS", "PREREGISTERED", "BACKTEST_SUPPORTED", "PROSPECTIVE_SUPPORTED", "REPLAY_QUALIFIED", "SHADOW_QUALIFIED", "EXECUTION_PLANE_QUALIFIED", "CAPITAL_ELIGIBLE", "LIVE"],
   "promotion_rule": "Models may recommend; deterministic validation must advance exactly one state with evidence. LIVE additionally requires Governor authority and remains disabled.",
   "items": [
@@ -19,7 +19,7 @@
       "kind": "deterministic_infrastructure",
       "state": "SHADOW_QUALIFIED",
       "operational_status": "ACTIVE",
-      "experiment_ids": [],
+      "experiment_ids": ["EXP-MICROSTRUCTURE-001"],
       "evidence_ids": ["evidence/audits/TASK-MKT-004.json", "EVIDENCE-DATA-PLANE-001"],
       "next_required_evidence": "preregistered multi-capture consumer, provider failure handling, and cross-provider reconciliation",
       "live_enabled": false

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T14:49:00Z",
+  "updated_at": "2026-09-01T14:58:00Z",
   "authority": "Canonical lifecycle/index; immutable hypotheses and parameters live in hash-pinned preregistration artifacts; observations/results remain in their declared stores.",
   "items": [
     {
@@ -44,6 +44,20 @@
       "failure_gate": "any prospective timestamp failure, invalid market evidence, authorization bypass, non-determinism, duplicate economic event, accounting divergence, credential/signer/venue action, or nonzero actual exposure",
       "lineage": {"parent_experiment_id": null, "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001"},
       "resolution": "SUPPORTED_FOR_PIPELINE_ONLY"
+    },
+    {
+      "id": "EXP-MICROSTRUCTURE-001",
+      "status": "RUNNING",
+      "hypothesis": "One prospective public BTC-USD L2 book/trade/product snapshot can calibrate or reject observable spread, depth, precision, minimum-notional, and capacity assumptions while correctly leaving fee tier, order latency, rejection, partial-fill, and actual-fill truth unqualified.",
+      "preregistration_path": "artifacts/evidence/market/exp-microstructure-001-preregistration.json",
+      "preregistration_sha256": "e18f234b00988aa950e2b157f97d91cdc79fd44ca5106b3d113bca686bc121e5",
+      "observation_store": "state/market_data.json",
+      "resume_command": "python -m experiments.microstructure_qualification --root .",
+      "reconciliation": "compare OBSERVED public book/product facts with CONFIGURED shadow assumptions; no external order/fill/account truth",
+      "evidence_gate": "prospective VALID immutable bundle plus deterministic spread/depth/rule calculations and explicit unavailable classifications",
+      "failure_gate": "non-prospective, stale, crossed/empty, disabled product, missing sequence/provenance, oversized payload, integrity/rebuild failure, credential/order/signer/wallet/capital access, or misclassification of unavailable execution truth",
+      "lineage": {"parent_experiment_id": "EXP-SHADOW-LIFECYCLE-001", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
+      "resolution": null
     }
   ]
 }

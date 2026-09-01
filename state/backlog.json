@@ -285,13 +285,13 @@
       "id": "TASK-DATA-002",
       "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
       "title": "Calibrate or reject shadow execution assumptions from public venue microstructure",
-      "status": "ready",
+      "status": "in_progress",
       "priority_score": 96,
       "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":4,"reversibility":5,"risk_control":5,"reuse_value":5},
       "depends_on": ["TASK-DATA-001","TASK-OPS-002"],
       "acceptance": "A preregistered zero-capital experiment captures only the public quote, trade, order-book, fee/rule, timestamp, precision, minimum-notional, and depth evidence needed to calibrate or reject explicit deterministic execution assumptions; observed facts, configured assumptions, and modeled outputs remain distinct.",
       "reversal_condition": "Stop or redesign if public data lacks stable provenance, cannot support timestamp-order and gap checks, or would require credentials, orders, signer access, capital, or contamination of EXP-MKT-002.",
-      "updated_at": "2026-09-01T14:49:00Z"
+      "updated_at": "2026-09-01T14:58:00Z"
     }
   ]
 }

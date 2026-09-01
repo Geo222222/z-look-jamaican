@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MICROSTRUCTURE-001",
+  "frozen_at": "2026-09-01T14:55:00Z",
+  "objective": "Calibrate or reject only the public-observable components of the deterministic shadow execution assumptions without credentials, orders, signer access, wallets, or capital.",
+  "provider": "coinbase_exchange_public",
+  "instrument": "BTC-USD",
+  "public_surfaces": [
+    {"name": "product_rules", "url": "https://api.exchange.coinbase.com/products/BTC-USD"},
+    {"name": "level2_book", "url": "https://api.exchange.coinbase.com/products/BTC-USD/book?level=2"},
+    {"name": "ticker", "url": "https://api.exchange.coinbase.com/products/BTC-USD/ticker"},
+    {"name": "recent_trades", "url": "https://api.exchange.coinbase.com/products/BTC-USD/trades?limit=100"}
+  ],
+  "official_documentation": [
+    "https://docs.cdp.coinbase.com/api-reference/exchange-api/rest-api/products/get-product-book",
+    "https://docs.cdp.coinbase.com/api-reference/exchange-api/rest-api/products/get-product-trades",
+    "https://docs.cdp.coinbase.com/api-reference/exchange-api/rest-api/products/get-single-product",
+    "https://docs.cdp.coinbase.com/api-reference/exchange-api/rest-api/products/get-product-ticker"
+  ],
+  "frozen_parameters": {
+    "book_level": 2,
+    "trade_limit": 100,
+    "test_quantities_base": ["0.001", "0.01"],
+    "depth_bands_bps": ["5", "10"],
+    "request_timeout_seconds": 20,
+    "maximum_total_raw_bytes": 25165824,
+    "maximum_event_age_seconds": 30,
+    "maximum_transport_age_seconds": 30
+  },
+  "configured_assumptions_under_test": {
+    "half_spread_bps": "2",
+    "slippage_bps": "3",
+    "quantity_step": "0.0001",
+    "price_step": "0.01",
+    "minimum_notional_usd": "10",
+    "available_capacity_base": "0.01",
+    "fee_bps": "20",
+    "latency_ms": 150,
+    "fill_ratio": "0.5"
+  },
+  "qualification_rules": [
+    "Persist exact parsed public payloads and SHA-256 hashes for every HTTP response with request start, receive, provider source, and observation timestamps.",
+    "Classify the bundle VALID only when the book provider timestamp is post-preregistration, timestamps are ordered, the product is online and trade-enabled, book sequence is present, both sides are nonempty, best bid is below best ask, and age thresholds pass.",
+    "Compute quoted spread and deterministic depth-walk VWAP/slippage for both sides at each frozen test quantity using Decimal arithmetic and no randomness.",
+    "Compare price increment, base increment, and minimum market funds with configured assumptions as observed venue facts.",
+    "Do not qualify account-tier fees, order latency, rejection probability, partial-fill probability, or actual fill truth from public REST data; report them UNAVAILABLE_FOR_QUALIFICATION.",
+    "A successful capture may calibrate individual assumption fields but cannot promote capital eligibility, live readiness, or strategy edge."
+  ],
+  "failure_rules": [
+    "Any endpoint requires authentication, returns malformed data, exceeds the frozen size bound, or lacks required provenance.",
+    "The provider timestamp is not prospective, the book is crossed/empty, product trading is disabled, quality is not VALID, or immutable persistence/integrity/rebuild fails.",
+    "Any order, account, credential, signer, wallet, balance, or capital surface is accessed."
+  ],
+  "capital_used_usd": "0.00",
+  "live_trading": false,
+  "economic_edge_claimed": false
+}
