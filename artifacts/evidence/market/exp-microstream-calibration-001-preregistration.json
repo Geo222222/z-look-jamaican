@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MICROSTREAM-CALIBRATION-001",
+  "task_id": "TASK-DATA-004",
+  "frozen_at": "2026-09-01T18:56:00Z",
+  "claim_class": "MODEL_CALIBRATION",
+  "downstream_decision": "Determine whether four time-separated public windows provide enough regime variation to retain, revise, or reject configured public-observable spread/depth bounds; no capability promotion is automatic.",
+  "hypothesis": "Four deterministic 60-second BTC-USD public microstructure windows separated by six hours provide non-redundant message-rate, trade-rate, spread, and sequence-quality observations without credentials or capital.",
+  "provider": "coinbase_advanced_trade_public_websocket",
+  "instrument": "BTC-USD",
+  "schedule": [
+    {"run_id": "RUN-MICROCAL-001-A", "stream_id": "COINBASE-BTC-USD-MICROSTREAM-CAL-001-A", "not_before": "2026-09-01T19:15:00Z"},
+    {"run_id": "RUN-MICROCAL-001-B", "stream_id": "COINBASE-BTC-USD-MICROSTREAM-CAL-001-B", "not_before": "2026-09-02T01:15:00Z"},
+    {"run_id": "RUN-MICROCAL-001-C", "stream_id": "COINBASE-BTC-USD-MICROSTREAM-CAL-001-C", "not_before": "2026-09-02T07:15:00Z"},
+    {"run_id": "RUN-MICROCAL-001-D", "stream_id": "COINBASE-BTC-USD-MICROSTREAM-CAL-001-D", "not_before": "2026-09-02T13:15:00Z"}
+  ],
+  "bounds": {"capture_seconds": 60, "timeout_seconds": 90, "max_messages": 100000, "max_uncompressed_bytes": 67108864, "clock_skew_seconds": 1},
+  "required_gates_per_window": ["VALID quality", "level2 snapshot and update", "market trade message", "heartbeat message", "no unexplained connection-global sequence gap", "no out-of-order sequence", "deterministic replay and hash integrity", "no authentication, order, signer, wallet, or capital effect"],
+  "qualification_gate": "All four immutable windows complete their per-window gates and at least two empirically distinct activity strata exist by preregistered descriptive features: unique message count, market-trade message count, and spread percentiles. Otherwise record insufficient regime diversity without adding windows automatically.",
+  "failure_gate": "Any credential/account/order/signer/wallet/capital use, corrupted or non-replayable evidence, unexplained sequence failure, stale evidence, resource-bound breach, or mutation/reuse of an earlier stream ID.",
+  "stop_rule": "Stop after four windows. Do not extend merely to obtain favorable distributions. A later schedule requires a new downstream decision and freeze.",
+  "truth_limits": ["public market data only", "no fee tier", "no order latency", "no rejection or partial-fill truth", "no actual fill truth", "no strategy expectancy", "no capital eligibility"],
+  "randomness": "NONE"
+}

@@ -7,6 +7,7 @@ monitor. Jobs execute only allowlisted Python modules with no shell expansion.
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import subprocess
 import sys
@@ -47,7 +48,7 @@ def _atomic(path: Path, document: Mapping[str, Any]) -> None:
             os.unlink(temporary)
 
 
-def validate_background_jobs(document: Mapping[str, Any]) -> list[str]:
+def validate_background_jobs(document: Mapping[str, Any], root: Path | None = None) -> list[str]:
     errors: list[str] = []
     if document.get("schema_version") != 1:
         errors.append("state/background_jobs.json: schema_version must be 1")
@@ -62,6 +63,18 @@ def validate_background_jobs(document: Mapping[str, Any]) -> list[str]:
             errors.append(f"state/background_jobs.json: {job_id} module is not allowlisted")
         if job.get("shell") is not False or job.get("capital_effect") != "NONE" or job.get("credentials_allowed") is not False:
             errors.append(f"state/background_jobs.json: {job_id} violates zero-effect job policy")
+        if root is not None:
+            relative = str(job.get("preregistration_path", ""))
+            target = (root / relative).resolve()
+            try:
+                target.relative_to(root.resolve())
+            except ValueError:
+                errors.append(f"state/background_jobs.json: {job_id} preregistration escapes repository")
+            else:
+                if not target.is_file():
+                    errors.append(f"state/background_jobs.json: {job_id} preregistration is missing")
+                elif hashlib.sha256(target.read_bytes()).hexdigest() != job.get("preregistration_sha256"):
+                    errors.append(f"state/background_jobs.json: {job_id} preregistration hash mismatch")
         for run in job.get("runs", []):
             run_id = str(run.get("id", ""))
             if not run_id or run_id in seen_runs:

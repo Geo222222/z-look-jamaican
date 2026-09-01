@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:23:00Z",
+  "updated_at": "2026-09-01T18:56:00Z",
   "authority": "Canonical lifecycle/index; immutable hypotheses and parameters live in hash-pinned preregistration artifacts; observations/results remain in their declared stores.",
   "items": [
     {
@@ -114,6 +114,20 @@
       "failure_gate": "skew above one second, any other data/replay/restart/integrity/compactness/bound failure, prior-attempt mutation, authentication/account/order/signer/wallet/capital access, or unavailable-truth misclassification",
       "lineage": {"parent_experiment_id": "EXP-MICROSTREAM-003", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
       "resolution": "SUPPORTED_CONTINUOUS_PUBLIC_EVIDENCE_MECHANISM"
+    },
+    {
+      "id": "EXP-MICROSTREAM-CALIBRATION-001",
+      "status": "RUNNING",
+      "hypothesis": "Four deterministic 60-second BTC-USD public microstructure windows separated by six hours provide non-redundant activity, spread, and sequence-quality evidence without credentials or capital.",
+      "preregistration_path": "artifacts/evidence/market/exp-microstream-calibration-001-preregistration.json",
+      "preregistration_sha256": "fb9524ddc8ac2fd1b7e078dd5c0eae6d7369849c190915c7e2131a1d6049d639",
+      "observation_store": "state/market_data.json",
+      "resume_command": "python -m autonomous_kernel jobs_run_due",
+      "reconciliation": "Each immutable stream replays to its manifest hash; cross-window distributions remain public market observations only.",
+      "evidence_gate": "Four frozen time-separated runs pass individual integrity gates and produce at least two descriptive activity strata; no automatic capability promotion.",
+      "failure_gate": "Any zero-effect boundary breach, corrupt/non-replayable stream, unexplained sequence failure, stale evidence, resource breach, or prior-ID mutation.",
+      "lineage": {"parent_experiment_id": "EXP-MICROSTREAM-004", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
+      "resolution": null
     }
   ]
 }

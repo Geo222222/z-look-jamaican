@@ -1,6 +1,26 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:50:00Z",
+  "updated_at": "2026-09-01T18:56:00Z",
   "authority": "Immutable bounded job definitions; runtime/background_jobs contains derived execution receipts and claims.",
-  "items": []
+  "items": [
+    {
+      "id": "JOB-MICROSTREAM-CALIBRATION-001",
+      "enabled": true,
+      "task_id": "TASK-DATA-004",
+      "experiment_id": "EXP-MICROSTREAM-CALIBRATION-001",
+      "preregistration_path": "artifacts/evidence/market/exp-microstream-calibration-001-preregistration.json",
+      "preregistration_sha256": "fb9524ddc8ac2fd1b7e078dd5c0eae6d7369849c190915c7e2131a1d6049d639",
+      "module": "experiments.microstream_qualification",
+      "shell": false,
+      "capital_effect": "NONE",
+      "credentials_allowed": false,
+      "timeout_seconds": 90,
+      "runs": [
+        {"id": "RUN-MICROCAL-001-A", "not_before": "2026-09-01T19:15:00Z", "args": ["--stream-id", "COINBASE-BTC-USD-MICROSTREAM-CAL-001-A", "--experiment-id", "EXP-MICROSTREAM-CALIBRATION-001"]},
+        {"id": "RUN-MICROCAL-001-B", "not_before": "2026-09-02T01:15:00Z", "args": ["--stream-id", "COINBASE-BTC-USD-MICROSTREAM-CAL-001-B", "--experiment-id", "EXP-MICROSTREAM-CALIBRATION-001"]},
+        {"id": "RUN-MICROCAL-001-C", "not_before": "2026-09-02T07:15:00Z", "args": ["--stream-id", "COINBASE-BTC-USD-MICROSTREAM-CAL-001-C", "--experiment-id", "EXP-MICROSTREAM-CALIBRATION-001"]},
+        {"id": "RUN-MICROCAL-001-D", "not_before": "2026-09-02T13:15:00Z", "args": ["--stream-id", "COINBASE-BTC-USD-MICROSTREAM-CAL-001-D", "--experiment-id", "EXP-MICROSTREAM-CALIBRATION-001"]}
+      ]
+    }
+  ]
 }

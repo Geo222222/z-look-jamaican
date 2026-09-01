@@ -32,6 +32,16 @@ class BackgroundJobTests(unittest.TestCase):
         bad["items"][0]["credentials_allowed"] = True
         self.assertTrue(validate_background_jobs(bad))
 
+    def test_preregistration_hash_is_enforced_when_root_is_supplied(self):
+        artifact = self.root / "freeze.json"
+        artifact.write_text("{}", encoding="utf-8")
+        import hashlib
+        self.registry["items"][0]["preregistration_path"] = "freeze.json"
+        self.registry["items"][0]["preregistration_sha256"] = hashlib.sha256(artifact.read_bytes()).hexdigest()
+        self.assertEqual(validate_background_jobs(self.registry, self.root), [])
+        artifact.write_text('{"changed":true}', encoding="utf-8")
+        self.assertTrue(any("hash mismatch" in error for error in validate_background_jobs(self.registry, self.root)))
+
     def test_status_is_read_only(self):
         before = {p.relative_to(self.root).as_posix(): p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
         result = status(self.root, "2026-01-02T00:00:00Z")

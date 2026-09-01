@@ -439,7 +439,7 @@ def validate(root: Optional[Path] = None) -> List[str]:
     checks.append("microstructure_stream_bundles")
     errors.extend(validate_shadow_runtime(root))
     checks.append("shadow_runtime_recovery")
-    errors.extend(validate_background_jobs(background_jobs))
+    errors.extend(validate_background_jobs(background_jobs, root))
     checks.append("background_job_registry")
 
     for record in evidence_records:

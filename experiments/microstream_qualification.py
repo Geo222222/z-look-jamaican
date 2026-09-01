@@ -20,8 +20,10 @@ MAX_MESSAGES = 100_000
 MAX_BYTES = 67_108_864
 
 
-async def capture(root: Path) -> dict:
-    journal = StreamJournal(root, STREAM_ID)
+async def capture(root: Path, stream_id: str = STREAM_ID, experiment_id: str = "EXP-MICROSTREAM-004") -> dict:
+    if not stream_id.startswith("COINBASE-BTC-USD-MICROSTREAM-"):
+        raise ValueError("stream ID is outside the bounded Coinbase BTC-USD namespace")
+    journal = StreamJournal(root, stream_id)
     accepted = len(journal.records())
     total_bytes = sum(len(json.dumps(record, separators=(",", ":"))) for record in journal.records())
     loop = asyncio.get_running_loop()
@@ -55,14 +57,16 @@ async def capture(root: Path) -> dict:
         raise RuntimeError("required snapshot/update/trade/heartbeat evidence missing")
     if finalized["observation"]["quality"]["status"] != "VALID":
         raise RuntimeError(f"finalized stream quality is {finalized['observation']['quality']['status']}")
-    return {"experiment_id": "EXP-MICROSTREAM-004", "stream_id": STREAM_ID, "accepted_messages": accepted, "uncompressed_bytes": total_bytes, "summary": {key: value for key, value in summary.items() if key != "final_book"}, "observation_id": finalized["observation"]["observation_id"], "quality": finalized["observation"]["quality"]["status"], "authentication_used": False, "capital_used_usd": "0.00"}
+    return {"experiment_id": experiment_id, "stream_id": stream_id, "accepted_messages": accepted, "uncompressed_bytes": total_bytes, "summary": {key: value for key, value in summary.items() if key != "final_book"}, "observation_id": finalized["observation"]["observation_id"], "quality": finalized["observation"]["quality"]["status"], "authentication_used": False, "capital_used_usd": "0.00"}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument("--stream-id", default=STREAM_ID)
+    parser.add_argument("--experiment-id", default="EXP-MICROSTREAM-004")
     args = parser.parse_args()
-    print(json.dumps(asyncio.run(capture(args.root.resolve())), sort_keys=True))
+    print(json.dumps(asyncio.run(capture(args.root.resolve(), args.stream_id, args.experiment_id)), sort_keys=True))
     return 0
 
 

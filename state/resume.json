@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:52:23Z",
+  "updated_at": "2026-09-01T18:56:00Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "EXP-MKT-002 continues unchanged. Consequence-proportional evidence policy and a validated zero-effect background-job boundary now move clock/sample waiting out of interactive cognition. The active heartbeat launches only already-preregistered due jobs and returns immediately; TASK-DATA-004 still requires a separately frozen time-separated calibration schedule before any run is registered.",
+  "checkpoint": "EXP-MKT-002 continues unchanged. EXP-MICROSTREAM-CALIBRATION-001 is frozen before observation with four six-hour-separated zero-effect runs. The validated background worker will collect them without interactive waiting; no run is eligible before 2026-09-01T19:15:00Z and the experiment stops after four windows.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",
