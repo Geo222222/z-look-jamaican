@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "authority": "immutable bundles listed here; index is deterministically rebuildable",
+  "items": [
+    {
+      "observation_id": "OBS-COINBASE-BTC-USD-1788272400",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-1788272400.json",
+      "provider": "coinbase_exchange_public",
+      "instrument": "BTC-USD",
+      "channel": "candles",
+      "source_event_at": 1788272700,
+      "observed_at": 1788272957,
+      "quality_status": "VALID",
+      "content_hash": "9c3127aa29eb58c2a2c8e7ea994afdeb3d6ee1ea0ef20cb6b1dfa480c65aca2a"
+    },
+    {
+      "observation_id": "OBS-COINBASE-ETH-USD-1788272400",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-ETH-USD-1788272400.json",
+      "provider": "coinbase_exchange_public",
+      "instrument": "ETH-USD",
+      "channel": "candles",
+      "source_event_at": 1788272700,
+      "observed_at": 1788272957,
+      "quality_status": "VALID",
+      "content_hash": "a15226e8d30e58cd93826e041dfd5999a0f64b007b45b8f753405bc9001570c0"
+    }
+  ]
+}

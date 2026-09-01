@@ -9,6 +9,7 @@ Z Look Jamaican has one intended path:
 - Experiment lifecycle/index: `state/experiments.json`.
 - Immutable hypotheses and parameters: each experiment's hash-pinned preregistration artifact.
 - Active EXP-MKT-002 observations: `state/market_shadow.json`, unchanged by this architecture.
+- Future experiment market-data index: `state/market_data.json`; immutable raw/normalized bundles live under `artifacts/market_data/observations/`.
 - Capability lifecycle: `state/capabilities.json`.
 - Typed execution/risk/accounting contracts: `autonomous_kernel/operations.py`.
 - Immutable pre-live operation receipts: `receipts/execution/<request_id>.json`.
@@ -43,6 +44,12 @@ One immutable receipt contains the request, risk authorization, execution result
 - Accounting ledger: reconciled realized economic truth.
 
 The current execution plane deliberately stops before a venue adapter. Venue-specific precision, minimum notional, fee schedules, latency, partial fills, rejection behavior, capacity, and balance reconciliation must be independently calibrated before adapter qualification.
+
+## Market-data plane
+
+Each immutable observation bundle contains separate `raw`, `normalized`, and `quality` sections. Raw data retains provider identity and the provider-shaped payload. Normalized data uses stable candle fields and points back to `raw_observation_id`. Quality uses the independently qualified source/receive/observe timestamp chain. A content hash covers all three sections.
+
+The index is deterministically rebuildable from valid bundles. A crash after bundle persistence but before index replacement leaves a recoverable orphan, not silently authoritative partial state. ID conflicts and bundle tampering fail closed. The initial public Coinbase candle capture qualifies this storage path only; it does not calibrate execution realism or modify EXP-MKT-002.
 
 ## Recovery and observation
 

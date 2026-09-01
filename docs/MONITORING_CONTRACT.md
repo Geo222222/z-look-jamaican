@@ -112,6 +112,15 @@ Every section includes:
 ### Prospective and resolved decisions — `sections.decisions`
 
 - Canonical source: mutable `state/market_shadow.json` for the active shadow experiment.
+
+### Market-data plane — `sections.market_data`
+
+- Canonical sources: rebuildable authoritative `state/market_data.json` and its declared immutable observation bundles.
+- Schema: lossless index, observation count, quality counts, raw/normalized separation, replayability, and explicit EXP-MKT-002 retrofit state.
+- Each bundle separates provider payload/provenance from normalized values, retains source/receive/observe timestamps, links normalized data to `raw_observation_id`, records the deterministic quality result, and protects content with SHA-256.
+- Authority: immutable bundles are observation truth; the index is deterministic and recoverable. Orphan bundles may be recovered by rebuilding the index; corrupt bundles fail closed.
+- Freshness: event-driven for future preregistered experiments. It is not the existing EXP-MKT-002 observer and polling never captures data.
+- Polling: safe.
 - Schema: `experiment_id`, `prospective`, `resolved`, `counts`, `timestamp_violation_ids`, and `shadow_net_return_sum`.
 - Stable decision ID: `SHADOW-{product}-{signal_candle_timestamp}`. It relates to `experiment_id` and product.
 - Common decision fields: `product`; `observed_at` (Unix seconds when durably decided); `signal_candle_timestamp` (five-minute candle start); `actionable_at` (earliest modeled action boundary and must exceed observation); target/baseline target; activity/weekday inputs; and `status`.

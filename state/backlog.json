@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T14:50:00Z",
+  "updated_at": "2026-09-01T15:00:00Z",
   "ranking_method": "priority_score is a 0-100 judgment combining information gain, mission value, falsification cost, reversibility, risk, dependency burden, and reuse value; assumptions remain explicit in each task.",
   "items": [
     {
@@ -256,6 +256,18 @@
       "acceptance": "First-class experiment and capability registries, typed execution, deterministic Governor authorization, immutable idempotent receipts, zero-effect reconciliation, monitor integration, corruption/restart tests, documentation, and clean validation exist without modifying EXP-MKT-002.",
       "reversal_condition": "Suspend the path if any pre-live request can move capital, any live request is authorized, receipt conflicts overwrite truth, or shadow outcomes enter realized accounting.",
       "updated_at": "2026-09-01T14:50:00Z"
+    },
+    {
+      "id": "TASK-DATA-001",
+      "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+      "title": "Build and qualify the canonical provider-neutral market-data plane",
+      "status": "completed",
+      "priority_score": 94,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":5},
+      "depends_on": ["TASK-MKT-004","TASK-OPS-001"],
+      "acceptance": "Immutable raw/normalized public observations preserve timestamp provenance and lineage, quality fails closed, storage is replayable/idempotent/recoverable, monitor integration exists, and EXP-MKT-002 remains unchanged.",
+      "reversal_condition": "Suspend if raw lineage, timestamp order, content integrity, provider identity, or deterministic index recovery cannot be established.",
+      "updated_at": "2026-09-01T15:00:00Z"
     }
   ]
 }

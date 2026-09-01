@@ -34,6 +34,7 @@ class MonitorSnapshotTests(unittest.TestCase):
             "model_provider_qualification",
             "experiment_registry", "capability_registry", "execution_plane",
             "accounting_reconciliation",
+            "market_data",
         }
         self.assertEqual(set(snapshot["sections"]), expected)
         self.assertEqual(snapshot["contract"]["schema_version"], "1.1.0")
@@ -57,6 +58,8 @@ class MonitorSnapshotTests(unittest.TestCase):
         self.assertEqual(snapshot["sections"]["treasury"]["availability"]["state"], "blocked")
         self.assertFalse(snapshot["sections"]["execution_plane"]["data"]["live_enabled"])
         self.assertEqual(snapshot["sections"]["accounting_reconciliation"]["data"]["discrepancy_count"], 0)
+        self.assertEqual(snapshot["sections"]["market_data"]["data"]["observation_count"], 2)
+        self.assertEqual(snapshot["sections"]["market_data"]["data"]["quality_counts"]["VALID"], 2)
 
     def test_library_snapshot_is_byte_for_byte_read_only(self):
         paths = self.monitored_files()

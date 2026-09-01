@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from .experiments import validate_experiment_registry
+from .market_data import validate_market_data_store
 from .operations import validate_capability_registry, validate_execution_receipts
 
 
@@ -73,6 +74,7 @@ REQUIRED_JSON_FILES = (
     "state/operational_wallets.json",
     "state/capabilities.json",
     "state/experiments.json",
+    "state/market_data.json",
     "opportunities/register.json",
     "accounting/ledger.json",
 )
@@ -423,6 +425,8 @@ def validate(root: Optional[Path] = None) -> List[str]:
     checks.append("experiment_registry")
     errors.extend(validate_execution_receipts(root))
     checks.append("execution_receipt_integrity")
+    errors.extend(validate_market_data_store(root))
+    checks.append("market_data_store")
 
     for record in evidence_records:
         expected_digest = record.get("sha256")
