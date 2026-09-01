@@ -42,10 +42,11 @@ class MicrostreamTests(unittest.TestCase):
 
     def test_replay_detects_gaps_and_reproduces_book(self):
         self.populate()
-        gap = message("heartbeats", 9, "1970-01-01T00:16:42Z", [{"heartbeat_counter": "3"}])
+        gap = message("heartbeats", 13, "1970-01-01T00:16:42Z", [{"heartbeat_counter": "3"}])
         self.journal.ingest(gap, 5_000_000_000)
         summary = replay_records(self.journal.records())
-        self.assertEqual(summary["gaps"], [{"channel": "heartbeats", "after": 7, "before": 9, "missing": 1}])
+        self.assertEqual(summary["gaps"], [{"scope": "connection", "after": 11, "before": 13, "missing": 1}])
+        self.assertEqual(summary["sequence_scope"], "CONNECTION_GLOBAL")
         self.assertEqual(summary["level2_snapshot_count"], 1)
         self.assertEqual(summary["level2_update_count"], 1)
         self.assertEqual(summary["final_book"]["bids"][0], ("100", "1"))
@@ -58,6 +59,13 @@ class MicrostreamTests(unittest.TestCase):
         self.assertEqual(record["logical_channel"], "level2")
         self.assertEqual(record["message"]["channel"], "l2_data")
         self.assertEqual(replay_records([record])["channels"], ["level2"])
+
+    def test_control_messages_preserve_connection_sequence(self):
+        self.journal.ingest(message("l2_data", 0, events=[{"type": "snapshot", "updates": [{"side": "bid", "price_level": "99", "new_quantity": "1"}, {"side": "offer", "price_level": "101", "new_quantity": "1"}]}]), 1)
+        self.journal.ingest(message("subscriptions", 1, events=[{"subscriptions": {"level2": ["BTC-USD"]}}]), 2)
+        summary = replay_records(self.journal.records())
+        self.assertEqual(summary["gaps"], [])
+        self.assertIn("subscriptions", summary["channels"])
 
     def test_deterministic_finalize_and_corruption_detection(self):
         self.populate()

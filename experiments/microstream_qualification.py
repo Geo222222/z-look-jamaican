@@ -14,7 +14,7 @@ from autonomous_kernel.microstream import StreamJournal
 
 
 ENDPOINT = "wss://advanced-trade-ws.coinbase.com"
-STREAM_ID = "COINBASE-BTC-USD-MICROSTREAM-002"
+STREAM_ID = "COINBASE-BTC-USD-MICROSTREAM-003"
 CAPTURE_SECONDS = 60
 MAX_MESSAGES = 100_000
 MAX_BYTES = 67_108_864
@@ -43,6 +43,8 @@ async def capture(root: Path) -> dict:
             if total_bytes > MAX_BYTES:
                 raise RuntimeError("stream exceeded preregistered byte bound")
             message = json.loads(raw)
+            if message.get("type") == "error" or message.get("channel") == "errors":
+                raise RuntimeError(f"provider stream error: {message}")
             if journal.ingest(message, time.time_ns()):
                 accepted += 1
     finalized = journal.finalize([50, 90, 99, 100])
@@ -51,7 +53,9 @@ async def capture(root: Path) -> dict:
         raise RuntimeError("required public channel missing")
     if summary["level2_snapshot_count"] < 1 or summary["level2_update_count"] < 1 or summary["market_trade_message_count"] < 1 or summary["heartbeat_message_count"] < 1:
         raise RuntimeError("required snapshot/update/trade/heartbeat evidence missing")
-    return {"experiment_id": "EXP-MICROSTREAM-002", "stream_id": STREAM_ID, "accepted_messages": accepted, "uncompressed_bytes": total_bytes, "summary": {key: value for key, value in summary.items() if key != "final_book"}, "observation_id": finalized["observation"]["observation_id"], "quality": finalized["observation"]["quality"]["status"], "authentication_used": False, "capital_used_usd": "0.00"}
+    if finalized["observation"]["quality"]["status"] != "VALID":
+        raise RuntimeError(f"finalized stream quality is {finalized['observation']['quality']['status']}")
+    return {"experiment_id": "EXP-MICROSTREAM-003", "stream_id": STREAM_ID, "accepted_messages": accepted, "uncompressed_bytes": total_bytes, "summary": {key: value for key, value in summary.items() if key != "final_book"}, "observation_id": finalized["observation"]["observation_id"], "quality": finalized["observation"]["quality"]["status"], "authentication_used": False, "capital_used_usd": "0.00"}
 
 
 def main() -> int:

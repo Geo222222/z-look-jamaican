@@ -18,9 +18,6 @@ from .operations import canonical_hash
 
 
 CHANNEL_ALIASES = {"l2_data": "level2"}
-EXPECTED_PROVIDER_CHANNELS = {"level2", "l2_data", "market_trades", "heartbeats"}
-
-
 def logical_channel(provider_channel: str) -> str:
     return CHANNEL_ALIASES.get(provider_channel, provider_channel)
 
@@ -59,6 +56,7 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
     bids: dict[str, str] = {}
     asks: dict[str, str] = {}
     last_sequences: dict[str, int] = {}
+    last_global_sequence: int | None = None
     identities: dict[str, str] = {}
     gaps: list[Mapping[str, int | str]] = []
     out_of_order: list[Mapping[str, int | str]] = []
@@ -72,7 +70,7 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
         provider_channel = str(message.get("channel", ""))
         channel = logical_channel(provider_channel)
         sequence = int(message.get("sequence_num", -1))
-        identity = f"{channel}:{sequence}"
+        identity = str(sequence)
         digest = str(record["message_hash"])
         if identity in identities:
             if identities[identity] != digest:
@@ -81,12 +79,13 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
             continue
         identities[identity] = digest
         channels.add(channel)
-        previous = last_sequences.get(channel)
-        if previous is not None and sequence > previous + 1:
-            gaps.append({"channel": channel, "after": previous, "before": sequence, "missing": sequence - previous - 1})
-        elif previous is not None and sequence < previous:
-            out_of_order.append({"channel": channel, "previous": previous, "observed": sequence})
-        last_sequences[channel] = max(sequence, previous if previous is not None else sequence)
+        if last_global_sequence is not None and sequence > last_global_sequence + 1:
+            gaps.append({"scope": "connection", "after": last_global_sequence, "before": sequence, "missing": sequence - last_global_sequence - 1})
+        elif last_global_sequence is not None and sequence < last_global_sequence:
+            out_of_order.append({"scope": "connection", "previous": last_global_sequence, "observed": sequence})
+        last_global_sequence = max(sequence, last_global_sequence if last_global_sequence is not None else sequence)
+        previous_channel = last_sequences.get(channel)
+        last_sequences[channel] = max(sequence, previous_channel if previous_channel is not None else sequence)
         timestamp = str(message.get("timestamp", ""))
         if timestamp and (latest_provider_at is None or timestamp > latest_provider_at):
             latest_provider_at = timestamp
@@ -123,7 +122,7 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
         elif channel == "heartbeats":
             heartbeat_messages += 1
     final_book = {"bids": sorted(bids.items(), key=lambda item: Decimal(item[0]), reverse=True), "asks": sorted(asks.items(), key=lambda item: Decimal(item[0]))}
-    return {"schema_version": 1, "record_count": len(records), "unique_message_count": len(identities), "duplicate_count": duplicates, "channels": sorted(channels), "last_sequences": last_sequences, "gaps": gaps, "out_of_order": out_of_order, "level2_snapshot_count": level2_snapshots, "level2_update_count": level2_updates, "market_trade_message_count": trade_messages, "heartbeat_message_count": heartbeat_messages, "latest_provider_at": latest_provider_at, "spread_bps_percentiles": _quantiles(spreads, percentiles), "spread_sample_count": len(spreads), "final_book_hash": canonical_hash(final_book), "final_book": final_book}
+    return {"schema_version": 1, "record_count": len(records), "unique_message_count": len(identities), "duplicate_count": duplicates, "channels": sorted(channels), "sequence_scope": "CONNECTION_GLOBAL", "last_global_sequence": last_global_sequence, "last_sequences_observed_by_channel": last_sequences, "gaps": gaps, "out_of_order": out_of_order, "level2_snapshot_count": level2_snapshots, "level2_update_count": level2_updates, "market_trade_message_count": trade_messages, "heartbeat_message_count": heartbeat_messages, "latest_provider_at": latest_provider_at, "spread_bps_percentiles": _quantiles(spreads, percentiles), "spread_sample_count": len(spreads), "final_book_hash": canonical_hash(final_book), "final_book": final_book}
 
 
 class StreamJournal:
@@ -131,6 +130,18 @@ class StreamJournal:
         self.root = root.resolve()
         self.stream_id = stream_id
         self.path = self.root / "runtime/market_stream" / f"{stream_id}.jsonl"
+        self._identities: dict[str, str] | None = None
+
+    def _identity_index(self) -> dict[str, str]:
+        if self._identities is None:
+            self._identities = {}
+            for record in self.records():
+                identity = str(record["message"]["sequence_num"])
+                digest = str(record["message_hash"])
+                if identity in self._identities and self._identities[identity] != digest:
+                    raise RuntimeError(f"conflicting duplicate stream identity {identity}")
+                self._identities[identity] = digest
+        return self._identities
 
     def records(self) -> list[Mapping[str, Any]]:
         if not self.path.is_file():
@@ -148,25 +159,25 @@ class StreamJournal:
 
     def ingest(self, message: Mapping[str, Any], received_at_ns: int) -> bool:
         provider_channel = str(message.get("channel", ""))
-        if provider_channel not in EXPECTED_PROVIDER_CHANNELS:
-            return False
+        if not provider_channel:
+            raise ValueError("stream message lacks channel provenance")
         channel = logical_channel(provider_channel)
         if not isinstance(message.get("sequence_num"), int) or not message.get("timestamp"):
             raise ValueError("stream message lacks sequence/timestamp provenance")
         digest = canonical_hash(message)
-        identity = f"{channel}:{message['sequence_num']}"
-        for existing in self.records():
-            existing_identity = f"{logical_channel(existing['message']['channel'])}:{existing['message']['sequence_num']}"
-            if existing_identity == identity:
-                if existing["message_hash"] != digest:
-                    raise RuntimeError(f"conflicting duplicate stream identity {identity}")
-                return False
+        identity = str(message["sequence_num"])
+        identities = self._identity_index()
+        if identity in identities:
+            if identities[identity] != digest:
+                raise RuntimeError(f"conflicting duplicate stream identity {identity}")
+            return False
         record = {"schema_version": 1, "stream_id": self.stream_id, "received_at_ns": int(received_at_ns), "message_hash": digest, "provider_channel": provider_channel, "logical_channel": channel, "message": dict(message)}
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n")
             handle.flush()
             os.fsync(handle.fileno())
+        identities[identity] = digest
         return True
 
     def finalize(self, percentiles: list[int] | None = None) -> Mapping[str, Any]:
@@ -176,7 +187,8 @@ class StreamJournal:
         compressed = gzip.compress(raw, mtime=0)
         bundle_path = self.root / "artifacts/market_data/streams" / f"{self.stream_id}.jsonl.gz"
         _atomic_bytes(bundle_path, compressed)
-        manifest = {"schema_version": 1, "stream_id": self.stream_id, "journal_sha256": hashlib.sha256(raw).hexdigest(), "compressed_sha256": hashlib.sha256(compressed).hexdigest(), "compressed_path": bundle_path.relative_to(self.root).as_posix(), "summary": summary, "integrity": {"algorithm": "sha256"}}
+        compact_summary = {key: value for key, value in summary.items() if key != "final_book"}
+        manifest = {"schema_version": 1, "stream_id": self.stream_id, "journal_sha256": hashlib.sha256(raw).hexdigest(), "compressed_sha256": hashlib.sha256(compressed).hexdigest(), "compressed_path": bundle_path.relative_to(self.root).as_posix(), "summary": compact_summary, "integrity": {"algorithm": "sha256"}}
         manifest["integrity"]["content_hash"] = canonical_hash({key: value for key, value in manifest.items() if key != "integrity"})
         manifest_path = self.root / "artifacts/market_data/streams" / f"{self.stream_id}.manifest.json"
         _atomic_json(manifest_path, manifest)

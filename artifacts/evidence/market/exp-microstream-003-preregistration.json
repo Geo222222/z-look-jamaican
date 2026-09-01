@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MICROSTREAM-003",
+  "frozen_at": "2026-09-01T18:13:00Z",
+  "parent_experiment_id": "EXP-MICROSTREAM-002",
+  "objective": "Qualify the bounded public stream after fixing only the two falsified implementation assumptions: duplicate-lookup complexity and connection-global sequence scope.",
+  "frozen_parameters": {
+    "endpoint": "wss://advanced-trade-ws.coinbase.com",
+    "instrument": "BTC-USD",
+    "subscription_channels": ["level2", "market_trades", "heartbeats"],
+    "provider_to_logical_channel": {"l2_data": "level2"},
+    "sequence_scope": "CONNECTION_GLOBAL",
+    "capture_seconds": 60,
+    "maximum_messages": 100000,
+    "maximum_uncompressed_bytes": 67108864,
+    "message_idle_timeout_seconds": 10,
+    "flush_and_fsync_every_messages": 1,
+    "duplicate_index": "O(1)_memory_rebuilt_from_authoritative_journal_on_restart",
+    "persist_control_messages": true,
+    "manifest_final_book": "HASH_ONLY_REBUILD_FROM_RAW_JOURNAL",
+    "compression": "deterministic_gzip_mtime_zero",
+    "distribution_percentiles": [50, 90, 99, 100]
+  },
+  "pass_gate": "Fresh VALID result; required logical level2 snapshot/update, market-trades and heartbeat messages; raw provider and control channels preserved; connection-global gaps/out-of-order/duplicates explicit; deterministic replay, restart, corruption, resource bounds, compact manifest and zero-effect gates pass.",
+  "failure_gate": "Stale/degraded/unavailable quality, missing required evidence, unexplained connection-global gap, out-of-order ambiguity, replay/integrity/restart divergence, manifest includes final book body, resource bound violation, prior-attempt mutation, or authentication/account/order/signer/wallet/capital access.",
+  "scope_limit": "Public spread/depth distribution evidence only; no fee tier, order latency, rejection, partial-fill, actual-fill, economic-edge, capital, or live qualification.",
+  "capital_used_usd": "0.00",
+  "live_trading": false
+}

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:11:00Z",
+  "updated_at": "2026-09-01T18:14:00Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. EXP-MICROSTREAM-002 preserved all required logical channels and raw l2_data provenance but failed quality and sequence-semantics gates: O(n^2) duplicate lookup caused 40-second staleness, and provider sequence_num is connection-global rather than independently contiguous per channel. The stale bundle is preserved, no promotion occurred, and TASK-DATA-003 remains active for a separately preregistered bounded correction.",
+  "checkpoint": "EXP-MKT-002 continues on its frozen cadence. Two failed microstream attempts are immutable evidence. EXP-MICROSTREAM-003 is hash-preregistered with O(1) journal idempotency, raw control-message preservation, connection-global sequence analysis, compact hash-only manifests, and a new stream ID. It retains the same 60-second fresh/replay/restart/integrity/bound/zero-effect gates and grants no execution or capital authority.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",

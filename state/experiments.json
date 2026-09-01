@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:11:00Z",
+  "updated_at": "2026-09-01T18:14:00Z",
   "authority": "Canonical lifecycle/index; immutable hypotheses and parameters live in hash-pinned preregistration artifacts; observations/results remain in their declared stores.",
   "items": [
     {
@@ -86,6 +86,20 @@
       "failure_gate": "first-attempt mutation, lost alias provenance, missing channel, ambiguous sequence/duplicate state, replay divergence, corruption/restart/bound failure, authentication/account/order/signer/wallet/capital access, or unavailable-truth misclassification",
       "lineage": {"parent_experiment_id": "EXP-MICROSTREAM-001", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
       "resolution": "FAILED_PERFORMANCE_AND_SEQUENCE_SCOPE"
+    },
+    {
+      "id": "EXP-MICROSTREAM-003",
+      "status": "RUNNING",
+      "hypothesis": "O(1) journal idempotency rebuilt from raw evidence, control-message preservation, connection-global sequence analysis, and compact hash-only manifests can produce a fresh, bounded, deterministic public microstructure stream qualification.",
+      "preregistration_path": "artifacts/evidence/market/exp-microstream-003-preregistration.json",
+      "preregistration_sha256": "d3e237c938489e6a0fa8f4d48d860a66cd6a16ba878c88ebb9589dba16073044",
+      "observation_store": "state/market_data.json",
+      "resume_command": "python -m experiments.microstream_qualification --root .",
+      "reconciliation": "connection-global raw/control/data replay must reproduce compact summary and final-book hash",
+      "evidence_gate": "fresh required-channel stream, raw/logical provenance, explicit global sequence results, deterministic replay, crash recovery, corruption rejection, compact bounded storage, distributions, and zero-effect safety",
+      "failure_gate": "stale or missing evidence, unexplained global gap/out-of-order/duplicate state, replay/integrity/restart/compactness/bound failure, prior-attempt mutation, authentication/account/order/signer/wallet/capital access, or unavailable-truth misclassification",
+      "lineage": {"parent_experiment_id": "EXP-MICROSTREAM-002", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
+      "resolution": null
     }
   ]
 }
