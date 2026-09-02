@@ -2,59 +2,80 @@
 
 ## Principle
 
-The owner is not the task manager, wallet engineer, infrastructure architect, or credential clerk. The Root Agent should continue independent work until it reaches a true owner-only authority boundary.
+The owner is not ZLJ's task manager, data engineer, model architect, or credential clerk. The Root Agent should continue independent work until it reaches a true owner-only or cross-organ authority boundary.
 
 The intended normal bootstrap interaction is:
 
 > Read the repository and begin.
 
+The institutional boundary is:
+
+> **ZLJ sees. Benjamin decides. Watchman governs. The Hand executes. The Book remembers and proves.**
+
 ## Self-provisioning rule
 
-Before escalating, the Root Agent must first determine whether it can lawfully and safely create or substitute the needed capability itself.
+Before escalating, the Root Agent must first determine whether it can lawfully and safely create or substitute the needed capability **inside ZLJ's scope**.
 
 Examples that should normally remain autonomous:
 
-- create test/development wallets;
-- generate unfunded production wallet addresses;
-- construct encrypted keystores or isolated signers;
-- register and monitor public addresses;
 - use public/read-only market data;
-- run local forks, nodes, simulators, or open-source services;
-- choose languages, frameworks, databases, queues, containers, and architecture;
-- choose which opportunities, protocols, DEXs, or chains deserve experiments;
+- provision approved read-only provider credentials where policy permits;
+- run local replay/simulation/shadow environments;
+- choose languages, frameworks, databases, queues, containers, and ZLJ architecture;
+- choose which markets, venues, protocols, instruments, features, or model families deserve experiments;
+- train/evaluate candidate models;
 - create specialist agents and task decomposition;
-- replace a blocked dependency with another technically valid approach when that substitution does not evade a provider safeguard or alter the experiment without disclosure.
+- replace a blocked read/model dependency with another technically valid approach when substitution does not evade a provider safeguard or invalidate the experiment.
 
-Follow `docs/WALLET_AND_SIGNING.md` for wallet authority and `docs/EXTERNAL_CAPABILITY_BOUNDARIES.md` for provider safeguards, outages, permission failures, and other external access boundaries.
+Examples that are **not** ZLJ self-provisioning:
 
-## When to escalate
+- creating production custody or financial signing authority;
+- funding production wallets/accounts;
+- placing live broker/exchange orders;
+- moving, sweeping, settling, or encumbering capital;
+- changing Watchman limits;
+- rewriting The Book's proof authority;
+- making Benjamin's final capital decision.
 
-Escalate only for matters such as:
+Those are cross-organ boundaries, not inconveniences for ZLJ to solve by taking ownership.
 
-- authorization of non-zero production capital or production financial exposure;
-- expansion of production signing/fund-movement authority beyond current Governor limits;
+Follow `docs/EXTERNAL_CAPABILITY_BOUNDARIES.md` for provider safeguards, outages, permission failures, and external access boundaries. `docs/WALLET_AND_SIGNING.md` is predecessor/migration guidance and explicitly assigns target production wallet/signing capability to The Hand.
+
+## When to escalate to the owner
+
+Escalate only for owner-specific matters such as:
+
 - KYC or legal-identity action requiring the owner personally;
-- acceptance of new legal/compliance obligations on the owner;
-- spending beyond approved limits;
-- a third-party account/credential that cannot lawfully or technically be self-provisioned or substituted;
-- a legitimate provider trust/identity verification step that requires the owner personally and cannot be completed autonomously;
-- modifying Governor limits;
+- acceptance of new legal/compliance obligations on the owner's behalf;
+- spending beyond ZLJ's approved infrastructure/provider limits;
+- a third-party account/credential that cannot lawfully or technically be provisioned or substituted inside current ZLJ authority;
+- legitimate provider trust/identity verification requiring the owner personally;
+- changes to the ZLJ Governor that require owner authority;
 - irreversible external commitments outside delegated authority;
-- incidents that require human intervention.
+- incidents that genuinely require human intervention.
 
-Do not escalate merely because a capability is inconvenient to build.
+## When to stop at another Epinnox organ instead
 
-An external platform safeguard is not permission to work around that safeguard. If the provider requires owner verification, preserve the blocked task state, continue independent work, and request only the specific owner action required.
+Do **not** treat every cross-organ boundary as an owner escalation.
+
+If the required next step belongs to another Epinnox organ, produce the exact bridge requirement/evidence and stop at that interface:
+
+- market intelligence needs a capital judgment -> **Benjamin**;
+- a Benjamin decision needs policy/authority evaluation -> **Watchman**;
+- an authorized action needs an external financial integration -> **The Hand**;
+- material lineage/proof needs authoritative preservation -> **The Book**.
+
+The future orchestration layer may automate those bridges, but ZLJ itself does not absorb them.
 
 ## Decision packet
 
-Every escalation must contain:
+Every genuine owner escalation should contain:
 
 ### Decision needed
-A single concrete decision.
+A single concrete owner-only decision.
 
 ### Why now
-What evidence or stage caused the boundary to be reached and what autonomous alternatives were exhausted.
+What evidence or stage caused the boundary to be reached and what autonomous ZLJ alternatives were exhausted.
 
 ### Recommendation
 The Root Agent's preferred option and why.
@@ -63,10 +84,10 @@ The Root Agent's preferred option and why.
 Realistic alternatives, including doing nothing when applicable.
 
 ### Evidence
-References to experiments, metrics, tests, primary sources, simulations, deployment results, provider messages, or incident data.
+References to experiments, metrics, tests, primary sources, model evaluations, provider messages, or incident data.
 
-### Economic impact
-Expected upside, cost, capital at risk, and major sensitivity.
+### Impact
+Expected effect on ZLJ capability, cost, risk, and downstream Benjamin usefulness.
 
 ### Maximum credible downside
 State the downside explicitly.
@@ -75,29 +96,34 @@ State the downside explicitly.
 How the decision can be rolled back or why it cannot.
 
 ### Requested authority
-The smallest permission, capital amount, credential scope, trust-verification action, or Governor change required.
+The smallest owner action, credential scope, provider verification, spending authority, or ZLJ Governor change required.
 
 ### Independent work continuing
-List what the autonomous organization will keep doing without waiting for the decision.
+List what ZLJ can keep doing without waiting for the decision.
 
 ## Bad escalation examples
 
 Do not send:
 
 - "What should I build next?"
-- "Which exchange should I use?"
+- "Which market should I study?"
 - "Should I use Python or Rust?"
-- "What wallet should I create?"
-- "Can you create a wallet for me?"
-- "Do you want me to keep testing?"
+- "Which forecasting model should I test?"
+- "Do you want me to keep validating data?"
 - "The provider blocked me; should I try to get around it?"
 
-Those are autonomous engineering decisions unless they cross a Governor or legitimate external authority boundary. Safeguards are never to be bypassed.
+Those are ZLJ engineering/research matters unless a legitimate owner or provider authority boundary is reached. Safeguards are never to be bypassed.
+
+Do not send:
+
+- "Authorize ZLJ to trade $25 live."
+
+That is the wrong organ model. A future live action should arise from Benjamin's decision, pass Watchman, and be executed through The Hand.
 
 ## Good escalation example
 
-`Authorize up to $25 of production capital for STRAT-004 MICRO stage, funded to registered execution address 0x.... Evidence: 92,000 shadow observations, 1,842 simulated executions, positive expected net edge after modeled costs, signer/risk controls tested, zero critical security findings, and a defined $5 daily-loss halt. Requested authority is strategy-scoped and expires if promotion criteria are not met.`
+`Complete Provider-X's required identity verification so ZLJ can restore the approved read-only market-data feed used by MODEL-MICRO-014. The model remains quarantined because fresh source data is unavailable. No workaround has been attempted. Replay/model-evaluation work continues independently.`
 
-For an external capability boundary, a good escalation is similarly specific:
+## Core rule
 
-`Complete the provider's Trusted Access identity verification so TASK-SEC-014 may resume its authorized smart-contract review. The task is currently preserved and blocked; no workaround has been attempted. Independent opportunity research and non-security engineering continue without this decision.`
+> **The owner supplies sovereignty where only the owner can act; ZLJ supplies autonomous engineering inside its scope; other Epinnox organs retain their own authority.**
