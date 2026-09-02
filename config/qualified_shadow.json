@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "program_id": "QUALIFIED-MARKET-SHADOW-V1",
+  "handoff_mode": "PERCEPTION_ACCEPTANCE_ONLY",
+  "target_position": 0,
+  "strategy_id": "PERCEPTION-PIPELINE-QUALIFICATION-V1",
+  "rationale_code": "NO_TRADING_SIGNAL_PERCEPTION_ACCEPTANCE",
+  "actionable_delay_seconds": 1,
+  "max_event_age_seconds": 30,
+  "max_transport_age_seconds": 30,
+  "capital_effect": "NONE",
+  "execution_authority": false
+}
