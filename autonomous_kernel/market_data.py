@@ -230,4 +230,12 @@ def validate_market_data_store(root: Path) -> list[str]:
         errors.extend(f"{item.get('path')}: {error}" for error in validate_observation(document))
         if document.get("integrity", {}).get("content_hash") != item.get("content_hash"):
             errors.append(f"state/market_data.json: index hash mismatch for {item.get('observation_id')}")
+
+    qualified_shadow_path = root / "state/qualified_market_shadow.json"
+    if qualified_shadow_path.is_file():
+        # Imported lazily to avoid an import cycle: qualified_shadow consumes the
+        # market qualification contract, while canonical validation starts here.
+        from .qualified_shadow import validate_qualified_shadow_state
+
+        errors.extend(validate_qualified_shadow_state(root))
     return errors
