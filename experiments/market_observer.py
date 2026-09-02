@@ -6,8 +6,45 @@ import argparse
 import asyncio
 import json
 from pathlib import Path
+from typing import Any, Mapping, Optional
 
-from autonomous_kernel.market_observer import run_observer_daemon, run_observer_once
+from autonomous_kernel.market_observer import ObserverConfig, run_observer_once
+from autonomous_kernel.observer_storage import (
+    compact_successful_raw_journal,
+    observer_storage_status,
+    persist_storage_block,
+)
+
+
+async def _guarded_tick(root: Path) -> Mapping[str, Any]:
+    storage = observer_storage_status(root)
+    if not storage["allowed"]:
+        persist_storage_block(root, storage)
+        return {
+            "status": "BLOCKED_STORAGE",
+            "observer_id": ObserverConfig.load(root).observer_id,
+            "storage": storage,
+        }
+
+    result = dict(await run_observer_once(root))
+    result["storage_before"] = storage
+    if result.get("status") == "CAPTURED":
+        stream_id = str(result["window"]["stream_id"])
+        result["raw_journal_cleanup"] = compact_successful_raw_journal(root, stream_id)
+    return result
+
+
+async def _guarded_daemon(root: Path, max_cycles: Optional[int]) -> list[Mapping[str, Any]]:
+    config = ObserverConfig.load(root)
+    results: list[Mapping[str, Any]] = []
+    cycles = 0
+    while max_cycles is None or cycles < max_cycles:
+        results.append(await _guarded_tick(root))
+        cycles += 1
+        if max_cycles is not None and cycles >= max_cycles:
+            break
+        await asyncio.sleep(config.cadence_seconds)
+    return results
 
 
 def main() -> int:
@@ -17,11 +54,13 @@ def main() -> int:
     parser.add_argument("--max-cycles", type=int, default=None)
     args = parser.parse_args()
     root = args.root.resolve()
+    if args.max_cycles is not None and args.max_cycles <= 0:
+        parser.error("--max-cycles must be positive")
 
     if args.mode == "once":
-        result = asyncio.run(run_observer_once(root))
+        result = asyncio.run(_guarded_tick(root))
     else:
-        result = asyncio.run(run_observer_daemon(root, max_cycles=args.max_cycles))
+        result = asyncio.run(_guarded_daemon(root, args.max_cycles))
     print(json.dumps(result, sort_keys=True))
     return 0
 
