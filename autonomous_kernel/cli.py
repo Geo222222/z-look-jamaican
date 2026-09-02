@@ -8,6 +8,9 @@ import sys
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
+from .monitor import monitor_snapshot
+from .predecessor import PredecessorVerificationError, verify_manifest
+from .qualified_shadow import ShadowDecisionProposal, record_qualified_shadow_decision
 from .store import (
     StateValidationError,
     next_work,
@@ -18,8 +21,6 @@ from .store import (
     update_task,
     validate,
 )
-from .monitor import monitor_snapshot
-from .predecessor import PredecessorVerificationError, verify_manifest
 
 
 def _print(value: Any) -> None:
@@ -51,6 +52,22 @@ def build_parser() -> argparse.ArgumentParser:
     task_parser = subparsers.add_parser("task-status", help="update a backlog task and refresh the resume pointer")
     task_parser.add_argument("--task-id", required=True)
     task_parser.add_argument("--status", required=True)
+
+    qualified_shadow_parser = subparsers.add_parser(
+        "qualified_shadow_record",
+        help="persist one prospective zero-capital shadow decision bound to qualified market observations",
+    )
+    qualified_shadow_parser.add_argument("--decision-id", required=True)
+    qualified_shadow_parser.add_argument("--product", required=True)
+    qualified_shadow_parser.add_argument("--observed-at", type=int, required=True)
+    qualified_shadow_parser.add_argument("--actionable-at", type=int, required=True)
+    qualified_shadow_parser.add_argument("--target-position", type=int, choices=(-1, 0, 1), required=True)
+    qualified_shadow_parser.add_argument("--strategy-id", required=True)
+    qualified_shadow_parser.add_argument("--rationale-code", required=True)
+    qualified_shadow_parser.add_argument("--signal-candle-timestamp", type=int)
+    qualified_shadow_parser.add_argument("--observation-id", action="append", required=True)
+    qualified_shadow_parser.add_argument("--max-event-age-seconds", type=int, required=True)
+    qualified_shadow_parser.add_argument("--max-transport-age-seconds", type=int, required=True)
     return parser
 
 
@@ -78,6 +95,25 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif args.command == "task-status":
             task, candidate = update_task(args.task_id, args.status, root)
             _print({"status": "ok", "task": task, "next_work": candidate})
+        elif args.command == "qualified_shadow_record":
+            proposal = ShadowDecisionProposal(
+                decision_id=args.decision_id,
+                product=args.product,
+                observed_at=args.observed_at,
+                actionable_at=args.actionable_at,
+                target_position=args.target_position,
+                strategy_id=args.strategy_id,
+                rationale_code=args.rationale_code,
+                signal_candle_timestamp=args.signal_candle_timestamp,
+            )
+            decision = record_qualified_shadow_decision(
+                root,
+                proposal,
+                args.observation_id,
+                max_event_age_seconds=args.max_event_age_seconds,
+                max_transport_age_seconds=args.max_transport_age_seconds,
+            )
+            _print({"status": "ok", "decision": decision})
         else:
             parser.error(f"unknown command: {args.command}")
     except StateValidationError as exc:
