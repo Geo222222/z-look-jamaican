@@ -7,7 +7,7 @@ name = "z-look-autonomous-kernel"
 version = "0.1.0"
 description = "Minimal durable operating kernel for autonomous economic experiments"
 requires-python = ">=3.9"
-dependencies = ["websockets>=12,<18"]
+dependencies = ["websockets>=12,<18", "cryptography>=43"]
 
 [project.scripts]
 autokernel = "autonomous_kernel.cli:main"
