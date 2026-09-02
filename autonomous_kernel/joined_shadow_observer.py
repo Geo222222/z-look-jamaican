@@ -14,10 +14,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Optional
 
+from .market_observation_qualification import QUALIFIED, qualification_snapshot
 from .qualified_shadow import (
     ShadowDecisionProposal,
     load_qualified_shadow_state,
     record_qualified_shadow_decision,
+    validate_qualified_shadow_state,
 )
 
 
@@ -111,6 +113,27 @@ def _joined_result(status: str, window_id: str, observation_id: str, decision: M
     }
 
 
+def _verify_existing_join(root: Path, decision_id: str) -> None:
+    state_errors = validate_qualified_shadow_state(root)
+    if state_errors:
+        raise RuntimeError("existing joined-shadow state failed validation: " + "; ".join(state_errors))
+    snapshot = qualification_snapshot(root, {"decisions": []})
+    evidence = snapshot["shadow_evidence"]
+    audit = next(
+        (
+            item
+            for item in evidence.get("decisions", [])
+            if item.get("decision_id") == decision_id
+            and item.get("source_state") == "state/qualified_market_shadow.json"
+        ),
+        None,
+    )
+    if audit is None or audit.get("state") != QUALIFIED:
+        raise RuntimeError("existing observer-window join no longer qualifies")
+    if evidence.get("certification_state") != QUALIFIED:
+        raise RuntimeError("joined-shadow certification is blocked; refusing idempotent success")
+
+
 def join_observer_window(
     root: Path,
     window: Mapping[str, Any],
@@ -138,14 +161,6 @@ def join_observer_window(
     if not window_id or not stream_id or not observation_id:
         raise ValueError("observer window requires window_id, stream_id, and observation_id")
 
-    decision_id = f"JOIN-{window_id}"
-    existing = _existing_join(root, decision_id)
-    if existing is not None:
-        bound_ids = [str(item.get("observation_id", "")) for item in existing.get("market_evidence", [])]
-        if bound_ids != [observation_id]:
-            raise RuntimeError("existing observer-window join points to different market evidence")
-        return _joined_result("ALREADY_JOINED_NEUTRAL_PERCEPTION", window_id, observation_id, existing)
-
     observation = _load_observation(root, observation_id)
     if observation.get("observation_id") != observation_id:
         raise ValueError("observer window/observation identity mismatch")
@@ -155,6 +170,16 @@ def join_observer_window(
         raise ValueError("observer handoff requires a canonical microstructure stream summary observation")
     if str(normalized.get("stream_id", "")) != stream_id:
         raise ValueError("observer window stream_id does not match immutable observation")
+
+    decision_id = f"JOIN-{window_id}"
+    existing = _existing_join(root, decision_id)
+    if existing is not None:
+        bound_ids = [str(item.get("observation_id", "")) for item in existing.get("market_evidence", [])]
+        if bound_ids != [observation_id]:
+            raise RuntimeError("existing observer-window join points to different market evidence")
+        _verify_existing_join(root, decision_id)
+        return _joined_result("ALREADY_JOINED_NEUTRAL_PERCEPTION", window_id, observation_id, existing)
+
     if observation.get("quality", {}).get("status") != "VALID":
         return {
             "status": "SKIPPED_OBSERVATION_NOT_VALID",
