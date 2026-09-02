@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from autonomous_kernel.market_data import MarketDataStore, build_candle_observation
+from autonomous_kernel.market_data import MarketDataStore, build_candle_observation, validate_market_data_store
 from autonomous_kernel.market_observation_qualification import BLOCKED, QUALIFIED, qualification_snapshot
 from autonomous_kernel.qualified_shadow import (
     STATE_RELATIVE_PATH,
@@ -112,7 +112,7 @@ class QualifiedShadowTests(unittest.TestCase):
                 )
             self.assertFalse((root / STATE_RELATIVE_PATH).exists())
 
-    def test_target_position_tampering_breaks_evidence_bond_and_certification(self):
+    def test_target_position_tampering_breaks_evidence_bond_and_canonical_validation(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             item = candle()
@@ -135,6 +135,9 @@ class QualifiedShadowTests(unittest.TestCase):
             self.assertEqual(1, evidence["successor_blocked_count"])
             reasons = evidence["decisions"][0]["reasons"]
             self.assertIn("market_evidence_bond_hash_mismatch", reasons)
+
+            canonical_errors = validate_market_data_store(root)
+            self.assertTrue(any("qualified shadow decision hash mismatch" in error for error in canonical_errors))
 
     def test_retry_is_idempotent_and_conflicting_decision_id_fails(self):
         with tempfile.TemporaryDirectory() as directory:
