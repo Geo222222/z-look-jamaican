@@ -5,7 +5,7 @@ import json
 import os
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Mapping, Sequence
+from typing import Mapping, Optional, Sequence
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -46,7 +46,7 @@ def _aware(value: datetime, field: str) -> None:
         raise BookBridgeError(f"{field} must be timezone-aware")
 
 
-def _iso(value: datetime | None) -> str | None:
+def _iso(value: Optional[datetime]) -> Optional[str]:
     if value is None:
         return None
     _aware(value, "timestamp")
@@ -114,13 +114,13 @@ class ZLJBookSigner:
         payload_digest: str,
         privacy_class: str = "CONFIDENTIAL_EVIDENCE",
         visibility_scope: Sequence[str] = ("INSTITUTION",),
-        payload_ref: str | None = None,
-        correlation_id: str | None = None,
-        causation_receipt_id: str | None = None,
+        payload_ref: Optional[str] = None,
+        correlation_id: Optional[str] = None,
+        causation_receipt_id: Optional[str] = None,
         evidence_receipt_ids: Sequence[str] = (),
-        source_event_at: datetime | None = None,
-        valid_from: datetime | None = None,
-        valid_until: datetime | None = None,
+        source_event_at: Optional[datetime] = None,
+        valid_from: Optional[datetime] = None,
+        valid_until: Optional[datetime] = None,
     ) -> dict[str, object]:
         if not receipt_id or not subject_id:
             raise BookBridgeError("receipt_id and subject_id are required")
@@ -195,7 +195,7 @@ class ZLJBookSigner:
         return {**body, "signature": base64.b64encode(signature).decode("ascii")}
 
 
-def load_zlj_book_signer_from_env(env: Mapping[str, str] | None = None) -> ZLJBookSigner:
+def load_zlj_book_signer_from_env(env: Optional[Mapping[str, str]] = None) -> ZLJBookSigner:
     source = os.environ if env is None else env
     key_id = source.get("ZLJ_BOOK_KEY_ID", "")
     private_key_b64 = source.get("ZLJ_BOOK_ED25519_PRIVATE_KEY_B64", "")
