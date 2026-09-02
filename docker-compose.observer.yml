@@ -1,0 +1,23 @@
+services:
+  market-observer:
+    build:
+      context: .
+      dockerfile: observer/Dockerfile
+    restart: unless-stopped
+    init: true
+    read_only: true
+    environment:
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ./config:/app/config:ro
+      - ./state:/app/state
+      - ./runtime:/app/runtime
+      - ./artifacts:/app/artifacts
+      - ./evidence:/app/evidence
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 30s
