@@ -194,3 +194,15 @@ def join_observer_window(
         raise
 
     return _joined_result("JOINED_NEUTRAL_PERCEPTION", window_id, observation_id, decision)
+
+
+def validate_joined_shadow_policy(root: Path) -> list[str]:
+    """Validate the canonical neutral handoff policy without performing a handoff."""
+    path = root.resolve() / DEFAULT_POLICY_PATH
+    if not path.is_file():
+        return [f"missing required joined-shadow policy: {DEFAULT_POLICY_PATH}"]
+    try:
+        JoinedShadowPolicy.load(root.resolve(), path)
+    except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        return [f"{DEFAULT_POLICY_PATH}: {exc}"]
+    return []
