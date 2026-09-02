@@ -1,5 +1,6 @@
 import asyncio
 import unittest
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 from experiments.market_observer import _guarded_tick
@@ -31,7 +32,7 @@ class MarketObserverEntrypointTests(unittest.TestCase):
         ) as join_window, patch(
             "experiments.market_observer.compact_successful_raw_journal", return_value=compacted
         ) as compact:
-            result = asyncio.run(_guarded_tick(__import__("pathlib").Path(".").resolve()))
+            result = asyncio.run(_guarded_tick(Path(".").resolve()))
 
         run_once.assert_awaited_once()
         join_window.assert_called_once()
@@ -60,7 +61,7 @@ class MarketObserverEntrypointTests(unittest.TestCase):
             "experiments.market_observer.compact_successful_raw_journal",
             return_value={"status": "COMPACTED", "stream_id": "STREAM-TEST"},
         ) as compact:
-            result = asyncio.run(_guarded_tick(__import__("pathlib").Path(".").resolve()))
+            result = asyncio.run(_guarded_tick(Path(".").resolve()))
 
         self.assertEqual("CAPTURED", result["status"])
         self.assertEqual("ERROR", result["joined_shadow_handoff"]["status"])
