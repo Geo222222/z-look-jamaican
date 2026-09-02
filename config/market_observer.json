@@ -16,6 +16,8 @@
   "lease_timeout_seconds": 180,
   "maximum_consecutive_failures_before_degraded": 3,
   "maximum_window_history": 512,
+  "maximum_observer_storage_bytes": 10737418240,
+  "minimum_free_disk_bytes": 2147483648,
   "network_policy": "PUBLIC_READ_ONLY",
   "authentication_allowed": false,
   "orders_allowed": false,
