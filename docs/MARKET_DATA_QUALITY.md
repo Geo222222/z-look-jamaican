@@ -41,7 +41,7 @@ Snapshot-only and non-sequenced channels are explicitly `NOT_APPLICABLE`; they a
 
 ## Evidence-bound shadow observations
 
-`bind_shadow_decision` creates a prospective cryptographic bond between a shadow decision and the exact qualified market observations it consumed. Each binding preserves:
+`bind_shadow_decision` creates a prospective cryptographic bond between a shadow decision and the exact qualified market observations it consumed. Each observation binding preserves:
 
 - observation ID;
 - provider and instrument;
@@ -52,23 +52,89 @@ Snapshot-only and non-sequenced channels are explicitly `NOT_APPLICABLE`; they a
 - consumption-time quality result; and
 - sequence-integrity result when applicable.
 
-The complete binding set is hashed into `market_evidence_bond`. Monitoring re-computes the bond, reloads the immutable observations, verifies the bound hashes and metadata, and re-runs qualification at the original decision timestamp. Naming an observation ID is therefore not sufficient evidence by itself.
+Evidence-bond schema version 2 also binds the decision semantics that the evidence supported:
+
+- decision ID and product;
+- observation and actionable timestamps;
+- signal-candle timestamp when applicable;
+- target position;
+- strategy ID and rationale code;
+- explicit freshness policy;
+- zero-capital effect; and
+- absence of execution authority.
+
+Changing the target, strategy attribution, rationale, timing, freshness limits, authority, or any bound market observation after creation changes the expected bond hash and blocks qualification.
+
+The complete decision/evidence core is hashed into `market_evidence_bond`. Monitoring re-computes the bond, reloads the immutable observations, verifies the bound hashes and metadata, and re-runs qualification at the original decision timestamp. Naming an observation ID is therefore not sufficient evidence by itself.
 
 A candle used as signal evidence must also match the decision's recorded signal-candle timestamp.
+
+## Successor qualified shadow state
+
+New evidence-bound decisions belong to `state/qualified_market_shadow.json`, owned by program `QUALIFIED-MARKET-SHADOW-V1` in mode `zero_capital_evidence_bound_shadow`.
+
+This state is deliberately separate from `state/market_shadow.json`. The latter remains the historical EXP-MKT-002 state and is not modified by the successor writer.
+
+`autonomous_kernel.qualified_shadow.record_qualified_shadow_decision` accepts an explicit decision proposal and explicit immutable observation IDs. It does not fetch data, invent a signal, select a strategy, execute an order, access a wallet, sign anything, or move capital. Before persistence it requires:
+
+1. a strictly prospective decision (`actionable_at > observed_at`);
+2. a target position of `-1`, `0`, or `1`;
+3. explicit strategy and rationale identifiers;
+4. explicit positive event-age and transport-age limits;
+5. one or more unique observation IDs already present in the immutable market-data store;
+6. instrument agreement between every observation and the decision;
+7. successful consumption-time market-data qualification; and
+8. signal-candle agreement for candle evidence when a signal timestamp is declared.
+
+Persistence is atomic and idempotent for the same decision content. Reusing a decision ID with different content is an error. Each persisted decision also carries a full `decision_content_hash`, so canonical validation detects mutation outside the writer even before certification is considered.
+
+The writer snapshots the bytes of `state/market_shadow.json` and verifies they remain unchanged. It therefore has no authority to retrofit or rewrite EXP-MKT-002.
+
+The command-line entry point is:
+
+```text
+python -m autonomous_kernel qualified_shadow_record \
+  --decision-id <id> \
+  --product <instrument> \
+  --observed-at <epoch-seconds> \
+  --actionable-at <future-epoch-seconds> \
+  --target-position <-1|0|1> \
+  --strategy-id <strategy-id> \
+  --rationale-code <rationale-code> \
+  --observation-id <immutable-observation-id> \
+  --max-event-age-seconds <explicit-limit> \
+  --max-transport-age-seconds <explicit-limit>
+```
+
+`--signal-candle-timestamp` is supplied when candle evidence is part of the declared signal lineage. Additional `--observation-id` arguments may bind multiple observations to the same decision.
+
+This command is a persistence/qualification boundary, not a strategy engine. An upstream deterministic or model-governed strategy component must separately earn the authority to propose the target and rationale.
 
 ## Monitoring and certification
 
 The authoritative monitor exposes the complete read-only qualification audit under `sections.market_data.data.qualification`.
 
-The market plane reports observation quality, sequence-integrity states, immutable-store validation, and stream-bundle replay validation. The shadow-evidence plane separately reports legacy unjoined decisions, prospectively joined decisions, qualified joins, blocked joins, and the resulting certification state.
+The market plane reports observation quality, sequence-integrity states, immutable-store validation, and stream-bundle replay validation. The shadow-evidence plane separately reports:
 
-Prospective joined-shadow certification is earned only when at least one decision was originally bound to qualified evidence and every joined decision remains verifiable. Missing, stale, tampered, mismatched, or sequence-invalid evidence blocks qualification.
+- legacy decision count and `LEGACY_UNJOINED` decisions;
+- successor decision count;
+- successor joined, qualified, and blocked counts;
+- all joined/qualified/blocked counts across the audit; and
+- the resulting successor certification state.
+
+A bound object appearing in legacy EXP-MKT-002 input may be audited for integrity, but it cannot earn successor certification. Certification is earned only from decisions originally persisted through the successor evidence-bound state.
+
+Successor joined-shadow certification becomes `QUALIFIED` only when at least one successor decision is evidence-bound, every successor joined decision independently re-qualifies, the immutable market-data store validates, and all preserved stream bundles validate. Missing, stale, tampered, mismatched, sequence-invalid, or semantically altered evidence makes certification `BLOCKED`.
+
+With an empty successor state the certification remains `NOT_EARNED`. That is the correct current state until a genuine fresh observation is consumed prospectively by a real successor decision.
+
+Canonical durable-state validation also traverses the successor state through the market/evidence lineage. A mutated `decision_content_hash`, missing evidence bond, unauthorized capital effect, execution-authority drift, duplicate decision ID, or summary inconsistency therefore causes repository validation to fail closed.
 
 ## EXP-MKT-002 boundary
 
 EXP-MKT-002 is intentionally not retrofitted to this contract mid-experiment. Changing its observation schema or gate while it is running would contaminate the preregistered forward test. Existing decisions that never recorded a market-evidence bond are reported as `LEGACY_UNJOINED`; matching them to later-discovered data is forbidden.
 
-Future experiments and shadow strategies may preregister this contract before their first observation. Their decisions can then earn `QUALIFIED` joined-shadow status prospectively.
+Future experiments and shadow strategies may preregister this contract before their first observation. Their decisions can then earn `QUALIFIED` joined-shadow status prospectively through the successor state.
 
 ## Venue neutrality
 
