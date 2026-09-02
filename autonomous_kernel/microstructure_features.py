@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, Optional, Sequence
 
 from .microstream import logical_channel
 
@@ -21,7 +21,7 @@ def _quantiles(values: list[Decimal], percentiles: Sequence[int]) -> Mapping[str
 
 def _buy_slippage_bps(
     asks: Mapping[str, str], midpoint: Decimal, quote_notional: Decimal
-) -> Decimal | None:
+) -> Optional[Decimal]:
     remaining_quote = quote_notional
     base_acquired = Decimal("0")
     quote_spent = Decimal("0")
@@ -46,7 +46,7 @@ def _buy_slippage_bps(
 
 def _sell_slippage_bps(
     bids: Mapping[str, str], midpoint: Decimal, quote_notional: Decimal
-) -> Decimal | None:
+) -> Optional[Decimal]:
     base_target = quote_notional / midpoint
     remaining_base = base_target
     base_sold = Decimal("0")
