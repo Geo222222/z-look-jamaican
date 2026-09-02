@@ -1,12 +1,12 @@
 """Read-only qualification and evidence binding for market observations.
 
-The contract is venue-neutral.  It verifies observation integrity, re-evaluates
+The contract is venue-neutral. It verifies observation integrity, re-evaluates
 freshness at the moment an observation is consumed, enforces sequence integrity
 for sequenced microstructure streams, and creates deterministic evidence bonds
 between market observations and prospective shadow decisions.
 
 It never performs network access, trading, signing, wallet mutation, or capital
-movement.  Existing shadow history without an original evidence bond is reported
+movement. Existing shadow history without an original evidence bond is reported
 as legacy-unjoined and is never retroactively upgraded.
 """
 
@@ -26,6 +26,7 @@ QUALIFIED = "QUALIFIED"
 BLOCKED = "BLOCKED"
 NOT_APPLICABLE = "NOT_APPLICABLE"
 LEGACY_UNJOINED = "LEGACY_UNJOINED"
+NOT_EARNED = "NOT_EARNED"
 
 
 def sequence_integrity(observation: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -134,6 +135,15 @@ def qualify_observation(
     }
 
 
+def _bond_content(decision: Mapping[str, Any], bindings: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
+    return {
+        "decision_id": str(decision.get("id", "")),
+        "decision_observed_at": int(decision.get("observed_at", 0) or 0),
+        "actionable_at": int(decision.get("actionable_at", 0) or 0),
+        "market_evidence": list(bindings),
+    }
+
+
 def bind_shadow_decision(
     decision: Mapping[str, Any],
     observations: Sequence[Mapping[str, Any]],
@@ -143,7 +153,7 @@ def bind_shadow_decision(
 ) -> Mapping[str, Any]:
     """Create a deterministic prospective evidence bond for a shadow decision.
 
-    The returned decision is a copy.  Callers remain responsible for persisting it
+    The returned decision is a copy. Callers remain responsible for persisting it
     atomically with their own prospective shadow state.
     """
     decision_id = str(decision.get("id", ""))
@@ -197,16 +207,10 @@ def bind_shadow_decision(
 
     result = dict(decision)
     result["market_evidence"] = bindings
-    bond_content = {
-        "decision_id": decision_id,
-        "decision_observed_at": int(observed_at),
-        "actionable_at": int(decision["actionable_at"]),
-        "market_evidence": bindings,
-    }
     result["market_evidence_bond"] = {
         "schema_version": 1,
         "algorithm": "sha256",
-        "content_hash": canonical_hash(bond_content),
+        "content_hash": canonical_hash(_bond_content(result, bindings)),
     }
     return result
 
@@ -221,11 +225,24 @@ def _load_observation(root: Path, observation_id: str) -> Mapping[str, Any] | No
         return None
 
 
-def _binding_ids(decision: Mapping[str, Any]) -> list[str]:
-    bindings = decision.get("market_evidence")
-    if not isinstance(bindings, list):
+def _bindings(decision: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    value = decision.get("market_evidence")
+    if not isinstance(value, list):
         return []
-    return [str(item.get("observation_id")) for item in bindings if isinstance(item, Mapping) and item.get("observation_id")]
+    return [item for item in value if isinstance(item, Mapping)]
+
+
+def _verify_evidence_bond(decision: Mapping[str, Any]) -> list[str]:
+    bindings = _bindings(decision)
+    if not bindings:
+        return ["market_evidence_missing"]
+    bond = decision.get("market_evidence_bond", {})
+    if bond.get("schema_version") != 1 or bond.get("algorithm") != "sha256":
+        return ["market_evidence_bond_metadata_invalid"]
+    expected = canonical_hash(_bond_content(decision, bindings))
+    if bond.get("content_hash") != expected:
+        return ["market_evidence_bond_hash_mismatch"]
+    return []
 
 
 def qualification_snapshot(
@@ -272,8 +289,8 @@ def qualification_snapshot(
     decision_audits = []
     joined = qualified_joined = blocked_joined = legacy = 0
     for decision in shadow.get("decisions", []):
-        ids = _binding_ids(decision)
-        if not ids:
+        bindings = _bindings(decision)
+        if not bindings:
             legacy += 1
             decision_audits.append(
                 {
@@ -287,12 +304,26 @@ def qualification_snapshot(
 
         joined += 1
         binding_results = []
-        reasons = []
-        for observation_id in ids:
+        reasons = _verify_evidence_bond(decision)
+        observation_ids = []
+        for binding in bindings:
+            observation_id = str(binding.get("observation_id", ""))
+            observation_ids.append(observation_id)
             observation = _load_observation(root, observation_id)
             if observation is None:
                 reasons.append(f"missing_market_observation:{observation_id}")
                 continue
+            if binding.get("content_hash") != observation.get("integrity", {}).get("content_hash"):
+                reasons.append(f"bound_observation_hash_mismatch:{observation_id}")
+            if binding.get("provider") != observation.get("raw", {}).get("provider"):
+                reasons.append(f"bound_provider_mismatch:{observation_id}")
+            if binding.get("instrument") != observation.get("normalized", {}).get("instrument"):
+                reasons.append(f"bound_instrument_mismatch:{observation_id}")
+            if binding.get("channel") != observation.get("raw", {}).get("channel"):
+                reasons.append(f"bound_channel_mismatch:{observation_id}")
+            if int(binding.get("consumed_at", -1)) != int(decision.get("observed_at", -2)):
+                reasons.append(f"bound_consumption_time_mismatch:{observation_id}")
+
             qualification = qualify_observation(
                 observation,
                 consumed_at=int(decision["observed_at"]),
@@ -302,8 +333,12 @@ def qualification_snapshot(
             binding_results.append(qualification)
             if qualification["state"] != QUALIFIED:
                 reasons.extend(qualification["reasons"])
+            if binding.get("quality_state") != qualification["consumption_quality"].get("status"):
+                reasons.append(f"bound_quality_state_mismatch:{observation_id}")
+            if binding.get("sequence_state") != qualification["sequence_integrity"].get("state"):
+                reasons.append(f"bound_sequence_state_mismatch:{observation_id}")
 
-        state = QUALIFIED if not reasons and len(binding_results) == len(ids) else BLOCKED
+        state = QUALIFIED if not reasons and len(binding_results) == len(bindings) else BLOCKED
         if state == QUALIFIED:
             qualified_joined += 1
         else:
@@ -312,7 +347,7 @@ def qualification_snapshot(
             {
                 "decision_id": decision.get("id"),
                 "state": state,
-                "observation_ids": ids,
+                "observation_ids": observation_ids,
                 "bindings": binding_results,
                 "reasons": reasons,
             }
@@ -351,7 +386,7 @@ def qualification_snapshot(
             "certification_state": (
                 QUALIFIED
                 if joined > 0 and blocked_joined == 0 and not store_errors and not stream_errors
-                else "NOT_EARNED" if joined == 0 else BLOCKED
+                else NOT_EARNED if joined == 0 else BLOCKED
             ),
             "decisions": decision_audits,
         },
