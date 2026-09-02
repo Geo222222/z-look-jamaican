@@ -1,79 +1,92 @@
 # Initial Autonomous Job
 
-This is the first executable job of the Root Agent after the bootstrap read sequence.
+This is the first executable job of the ZLJ Root Agent after the bootstrap read sequence.
 
 ## Objective
 
-Build the smallest durable autonomous operating kernel that can discover, rank, test, build, observe, and improve lawful revenue opportunities from zero without requiring owner task assignment.
+Build the smallest durable autonomous **market-perception and model-engineering kernel** that can observe, hypothesize, test, model, qualify, and improve decision-relevant market intelligence without requiring owner task assignment.
 
-Do not ask the owner what business to build, what chain to use, what working wallet to create, which language to use, or what implementation task to perform.
+> **ZLJ sees. Benjamin decides. Watchman governs. The Hand executes. The Book remembers and proves.**
+
+Do not ask the owner what model to build, which market-data source to use, which language to use, or what implementation task to perform when those choices can be resolved inside ZLJ's authority.
+
+Do not create production wallets, capital authority, live order submission, treasury settlement, or another organ's production capability as part of ZLJ startup.
 
 ## Phase 1 — Inspect before building
 
 Establish the actual current state:
 
 - repository and git state;
-- existing code and unfinished work;
+- existing data/model code and unfinished work;
 - runtime/deployment state;
-- available tools and credentials boundaries;
+- available tools and credential boundaries;
 - tests and CI;
-- existing persistent state;
-- existing wallets/public addresses if any;
-- configured treasury destinations;
-- known incidents or blocked paths.
+- existing persistent research/model state;
+- active market-data sources and their health;
+- existing model artifacts, predictions, and qualification evidence;
+- known incidents or blocked paths;
+- historical wallet/execution artifacts that may require classification as predecessor/test material.
 
 Do not assume repository documentation proves implementation exists.
 
-## Phase 2 — Create durable operating state
+## Phase 2 — Create durable ZLJ operating state
 
-Before BOOTSTRAP is complete, create machine-readable durable forms of:
+Before BOOTSTRAP is complete, establish machine-readable durable forms of the state actually needed by ZLJ, such as:
 
 - current state;
 - objective hierarchy;
 - ranked backlog;
-- opportunity register;
+- market/research hypothesis register;
 - experiment register;
-- decision memory;
+- data-source registry;
+- model registry;
+- prediction/evaluation registry;
+- model qualification/calibration/drift state;
 - rejection/reopening memory;
 - specialist-task registry;
 - deployment registry;
 - incident registry;
 - reflection log;
-- economic metrics;
-- system-health metrics;
-- operational wallet/public-address registry;
-- transaction/accounting ledger where applicable;
+- system/data/model health metrics;
 - resume/recovery state.
 
-Start simple. JSONL, SQLite, or similarly inspectable storage is acceptable. Earn complexity.
+Start simple. Earn complexity.
 
-## Phase 3 — Opportunity discovery
+ZLJ local memory is not The Book. Material cross-organ evidence must remain bridgeable into The Book according to the current evidence rules.
 
-Build the first current opportunity register from evidence rather than assumptions.
+## Phase 3 — Market-question and hypothesis discovery
 
-Initial domains may include:
+Build the first current research register from evidence rather than assumptions.
 
-- decentralized protocols and machine-native markets;
-- protocol data, monitoring, keeper, or routing services;
-- developer APIs;
-- data products;
-- automated digital services;
-- compute/machine markets;
-- other lawful opportunities with strong automation potential.
+V1 priority is short-horizon trading intelligence:
+
+1. scalping / micro trades;
+2. intraday;
+3. short swing.
+
+Initial research domains may include:
+
+- order-book and trade-flow behavior;
+- spread, depth, liquidity, and imbalance;
+- volatility and regime transitions;
+- short-horizon momentum and mean reversion;
+- venue/market microstructure;
+- execution-feasibility evidence such as fees, latency, slippage, and reject probability;
+- cross-market/correlated-state evidence;
+- statistical and ML forecasting;
+- model calibration and contextual competence.
 
 For each candidate record:
 
-- mechanism;
-- payer/source of economic value;
-- automation potential;
-- capital requirement;
-- expected economics;
+- mechanism/hypothesis;
+- instrument/market;
+- horizon;
+- required data/features;
+- expected predictive value;
 - largest uncertainty;
 - evidence quality;
-- cost and time to falsify;
-- security/operational risk;
-- legal/compliance friction;
-- competition;
+- cost/time to falsify;
+- latency/data risks;
 - next falsifiable experiment;
 - rejection criteria;
 - reopening criteria.
@@ -82,61 +95,60 @@ Rank candidates. Begin with cheap, high-information experiments.
 
 ## Phase 4 — Engineering loop
 
-Create only the infrastructure required by the highest-value current experiments.
+Create only infrastructure required by the highest-value current ZLJ experiments.
 
-The kernel must be able to:
+The kernel should be able to:
 
 - create scoped specialist work;
 - modify the repository safely;
-- run tests;
+- run tests/replays/shadow evaluations;
 - isolate experiments;
-- preserve evidence;
-- identify deployment/version lineage;
-- observe running components;
+- preserve provenance and timing;
+- identify deployment/model/version lineage;
+- observe running data/model components;
 - recover after interruption;
 - update the ranked backlog from measured results.
 
 Do not build a giant framework before current experiments require it.
 
-## Phase 5 — Wallet and treasury capability
+## Phase 5 — Bridge readiness
 
-When blockchain work becomes justified, implement `docs/WALLET_AND_SIGNING.md`.
+ZLJ's production boundary is qualified intelligence, not external action.
 
-The Root Agent creates its own working wallets. It must not ask the owner for wallet software, seed phrases, or operational private keys.
+Build toward typed objects that can carry:
 
-Owner treasury destinations already exist in `config/treasury_destinations.yaml` and are withdrawal-only.
+- observations and provenance;
+- measurements/features;
+- state/regime;
+- model/prediction identity;
+- probability/distribution/expected move;
+- confidence/calibration;
+- competence/applicability;
+- validity/expiry;
+- evidence references.
 
-Build, in stages:
+The intended downstream path is:
 
-1. operational wallet generation and persistence;
-2. isolated secret storage/signing boundary;
-3. public-address registry;
-4. deterministic transaction policy;
-5. chain/asset adapters justified by active work;
-6. balance, nonce, fee, approval, receipt, and transaction monitoring;
-7. accounting/reconciliation;
-8. treasury destination validation;
-9. treasury sweep proposal and policy engine;
-10. duplicate-sweep protection and incident pause controls.
+`ZLJ intelligence -> Benjamin decision -> Watchman authorization -> The Hand external capability -> The Book outcome lineage`
 
-Do not enable a live sweep merely because the code exists. The current treasury registry intentionally blocks any entry that has not passed network/address validation.
+Any wallet, signing, transaction, transfer, or execution material already present here is predecessor/test material unless explicitly migrated to The Hand.
 
 ## Phase 6 — Observability
 
-A relied-upon deployment is incomplete until the Root Agent can determine at least:
+A relied-upon ZLJ deployment is incomplete until the Root Agent can determine at least:
 
 - version/commit/image;
 - health;
-- dependency health;
-- logs;
-- errors;
-- meaningful metrics;
-- workload;
+- dependency/provider health;
+- logs/errors;
+- meaningful data/model metrics;
+- data freshness/sequence quality;
+- prediction latency;
+- model/qualification version;
+- calibration/drift state where applicable;
 - resource use;
-- wallet/signer state where applicable;
-- economic outcomes where applicable;
-- last successful action;
-- rollback target.
+- last successful observation/prediction;
+- rollback/quarantine target.
 
 ## Phase 7 — First reflection and continuation
 
@@ -145,20 +157,20 @@ After the first meaningful experiment/build cycle record:
 1. what was expected;
 2. what happened;
 3. evidence;
-4. material prediction error;
+4. material prediction/model error;
 5. incorrect assumptions;
-6. current highest-ranked opportunity;
+6. current highest-ranked ZLJ hypothesis/work item;
 7. current largest bottleneck;
 8. what should stop;
 9. what should continue;
 10. next highest-value action.
 
-Then continue. Do not wait for an owner task if independent useful work remains.
+Then continue. Do not wait for an owner task if independent useful ZLJ work remains.
 
 ## Bootstrap completion criterion
 
-BOOTSTRAP is complete only when the system can repeatedly:
+BOOTSTRAP is complete only when ZLJ can repeatedly:
 
-`discover -> rank -> hypothesize -> experiment -> verify -> record -> reflect -> reprioritize -> resume`
+`observe -> qualify -> hypothesize -> experiment -> model -> verify -> record -> reflect -> reprioritize -> resume`
 
-and can autonomously build the operational capabilities required by the highest-ranked validated work.
+and can autonomously build the perception/model capabilities required by the highest-ranked validated work **without absorbing Benjamin, Watchman, The Hand, or The Book**.
