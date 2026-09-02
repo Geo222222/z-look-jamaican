@@ -166,6 +166,9 @@ def monitor_snapshot(root: Optional[Path] = None, observed_at: Optional[str] = N
     capability_registry = load_json(root / "state/capabilities.json")
     experiment_registry = load_json(root / "state/experiments.json")
     market_data_index = load_json(root / "state/market_data.json")
+    market_observer_state = load_json(root / "state/market_observer.json")
+    qualified_shadow_state = load_json(root / "state/qualified_market_shadow.json")
+    qualified_shadow_policy = load_json(root / "config/qualified_shadow.json")
     experiments = load_jsonl(root / "memory/experiments.jsonl")
     reflections = load_jsonl(root / "memory/reflections.jsonl")
     evidence = load_jsonl(root / "evidence/sources.jsonl")
@@ -244,12 +247,20 @@ def monitor_snapshot(root: Optional[Path] = None, observed_at: Optional[str] = N
     latest_market_epoch = max((int(item.get("observed_at", 0)) for item in market_data_index.get("items", [])), default=0)
     latest_market_at = datetime.fromtimestamp(latest_market_epoch, timezone.utc).isoformat().replace("+00:00", "Z") if latest_market_epoch else None
     market_qualification = qualification_snapshot(root, shadow)
+    joined_shadow_certification = market_qualification["shadow_evidence"]["certification_state"]
+    observer_windows = market_observer_state.get("windows", [])
     section_data["market_data"] = _section(
         root,
         "MONITOR-MARKET-DATA",
-        ["state/market_data.json", *market_paths],
+        [
+            "state/market_data.json",
+            "state/market_observer.json",
+            "state/qualified_market_shadow.json",
+            "config/qualified_shadow.json",
+            *market_paths,
+        ],
         observed_at,
-        latest_market_at,
+        max(filter(None, [latest_market_at, market_observer_state.get("updated_at")]), default=None),
         {
             "index": market_data_index,
             "observation_count": len(market_data_index.get("items", [])),
@@ -258,9 +269,37 @@ def monitor_snapshot(root: Optional[Path] = None, observed_at: Optional[str] = N
             "replayable": True,
             "active_experiment_retrofit": False,
             "qualification": market_qualification,
-            "joined_shadow_certification": market_qualification["shadow_evidence"]["certification_state"],
+            "joined_shadow_certification": joined_shadow_certification,
+            "continuous_observer": {
+                "observer_id": market_observer_state.get("observer_id"),
+                "status": market_observer_state.get("status"),
+                "last_attempt_at": market_observer_state.get("last_attempt_at"),
+                "last_success_at": market_observer_state.get("last_success_at"),
+                "next_eligible_at": market_observer_state.get("next_eligible_at"),
+                "window_count": len(observer_windows),
+                "consecutive_failures": int(market_observer_state.get("consecutive_failures", 0) or 0),
+                "active_window": market_observer_state.get("active_window"),
+            },
+            "joined_shadow_runtime": {
+                "program_id": qualified_shadow_state.get("program_id"),
+                "mode": qualified_shadow_state.get("mode"),
+                "updated_at": qualified_shadow_state.get("updated_at"),
+                "decision_count": len(qualified_shadow_state.get("decisions", [])),
+                "summary": qualified_shadow_state.get("summary"),
+                "certification_state": joined_shadow_certification,
+                "handoff_policy": {
+                    "handoff_mode": qualified_shadow_policy.get("handoff_mode"),
+                    "target_position": qualified_shadow_policy.get("target_position"),
+                    "strategy_id": qualified_shadow_policy.get("strategy_id"),
+                    "rationale_code": qualified_shadow_policy.get("rationale_code"),
+                    "max_event_age_seconds": qualified_shadow_policy.get("max_event_age_seconds"),
+                    "max_transport_age_seconds": qualified_shadow_policy.get("max_transport_age_seconds"),
+                    "capital_effect": qualified_shadow_policy.get("capital_effect"),
+                    "execution_authority": qualified_shadow_policy.get("execution_authority"),
+                },
+            },
         },
-        freshness={"expectation": "event-driven captures for future experiments; consumption-time freshness is re-evaluated before evidence can qualify", "state": "event_driven"},
+        freshness={"expectation": "observer captures are event-driven by the runtime cadence; each joined observation is re-qualified at consumption time", "state": "event_driven"},
     )
     section_data["opportunities"] = _section(root, "MONITOR-OPPORTUNITIES", ["opportunities/register.json"], observed_at, opportunities.get("updated_at"), opportunities)
     section_data["reflections"] = _section(root, "MONITOR-REFLECTIONS", ["memory/reflections.jsonl"], observed_at, _latest_timestamp(reflections, ("created_at",)), {"items": reflections})
