@@ -1,16 +1,16 @@
 """Prospective zero-capital shadow decisions with mandatory market-evidence bonds.
 
-This module is deliberately separate from EXP-MKT-002.  It does not fetch market
+This module is deliberately separate from EXP-MKT-002. It does not fetch market
 information, choose a trading strategy, execute orders, move capital, or mutate
-the frozen experiment state.  A caller supplies an explicit decision proposal
-and immutable observation IDs.  The observations must already exist in the
+the frozen experiment state. A caller supplies an explicit decision proposal
+and immutable observation IDs. The observations must already exist in the
 canonical market-data store and must qualify at the proposal's observation time.
 """
 
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -146,9 +146,6 @@ def record_qualified_shadow_decision(
     if len(set(observation_ids)) != len(observation_ids):
         raise ValueError("duplicate observation IDs are not permitted in one evidence bond")
 
-    legacy_path = root / "state/market_shadow.json"
-    legacy_before = legacy_path.read_bytes() if legacy_path.is_file() else None
-
     observations = [_load_observation(root, observation_id) for observation_id in observation_ids]
     decision = dict(proposal.to_decision())
     decision["freshness_policy"] = {
@@ -164,26 +161,34 @@ def record_qualified_shadow_decision(
         )
     )
     bound["decision_content_hash"] = canonical_hash(
-        {key: value for key, value in bound.items() if key not in {"decision_content_hash"}}
+        {key: value for key, value in bound.items() if key != "decision_content_hash"}
     )
 
-    state = dict(load_qualified_shadow_state(root))
-    decisions = [dict(item) for item in state.get("decisions", [])]
-    existing = next((item for item in decisions if item.get("id") == proposal.decision_id), None)
-    if existing is not None:
-        if existing.get("decision_content_hash") != bound["decision_content_hash"]:
-            raise RuntimeError("qualified shadow decision ID conflict")
-        return existing
+    # Imported lazily so the durable-state control plane can validate this module
+    # without creating an import cycle during module initialization.
+    from .store import writer_lock
 
-    decisions.append(bound)
-    decisions.sort(key=lambda item: (int(item.get("observed_at", 0)), str(item.get("id", ""))))
-    state["decisions"] = decisions
-    state["updated_at"] = int(proposal.observed_at)
-    state["summary"] = _summarize(decisions)
-    _atomic_json(root / STATE_RELATIVE_PATH, state)
+    with writer_lock(root):
+        legacy_path = root / "state/market_shadow.json"
+        legacy_before = legacy_path.read_bytes() if legacy_path.is_file() else None
 
-    if legacy_before is not None and legacy_path.read_bytes() != legacy_before:
-        raise RuntimeError("legacy EXP-MKT-002 state changed during successor shadow persistence")
+        state = dict(load_qualified_shadow_state(root))
+        decisions = [dict(item) for item in state.get("decisions", [])]
+        existing = next((item for item in decisions if item.get("id") == proposal.decision_id), None)
+        if existing is not None:
+            if existing.get("decision_content_hash") != bound["decision_content_hash"]:
+                raise RuntimeError("qualified shadow decision ID conflict")
+            return existing
+
+        decisions.append(bound)
+        decisions.sort(key=lambda item: (int(item.get("observed_at", 0)), str(item.get("id", ""))))
+        state["decisions"] = decisions
+        state["updated_at"] = int(proposal.observed_at)
+        state["summary"] = _summarize(decisions)
+        _atomic_json(root / STATE_RELATIVE_PATH, state)
+
+        if legacy_before is not None and legacy_path.read_bytes() != legacy_before:
+            raise RuntimeError("legacy EXP-MKT-002 state changed during successor shadow persistence")
     return bound
 
 
