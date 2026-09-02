@@ -126,7 +126,7 @@ class MarketObservationQualificationTests(unittest.TestCase):
     def test_shadow_decision_binds_exact_fresh_evidence(self):
         bound = bind_shadow_decision(decision(), [candle()])
         self.assertEqual("OBS-CANDLE-1", bound["market_evidence"][0]["observation_id"])
-        self.assertEqual(QUALIFIED, bound["market_evidence"][0]["quality_state"])
+        self.assertEqual("VALID", bound["market_evidence"][0]["quality_state"])
         self.assertTrue(bound["market_evidence_bond"]["content_hash"])
 
     def test_wrong_signal_candle_cannot_be_bound(self):
