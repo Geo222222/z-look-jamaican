@@ -146,21 +146,24 @@ class MarketObservationQualificationTests(unittest.TestCase):
             self.assertEqual(NOT_EARNED, snapshot["shadow_evidence"]["certification_state"])
             self.assertEqual(LEGACY_UNJOINED, snapshot["shadow_evidence"]["decisions"][0]["state"])
 
-    def test_prospective_join_is_qualified_and_tampering_is_detected(self):
+    def test_legacy_bound_join_is_audited_but_cannot_earn_successor_certification(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             item = candle()
             MarketDataStore(root).persist(item)
             bound = bind_shadow_decision(decision(), [item])
             snapshot = qualification_snapshot(root, {"decisions": [bound]})
-            self.assertEqual(QUALIFIED, snapshot["shadow_evidence"]["certification_state"])
+            self.assertEqual(NOT_EARNED, snapshot["shadow_evidence"]["certification_state"])
             self.assertEqual(1, snapshot["shadow_evidence"]["qualified_joined_count"])
+            self.assertEqual(0, snapshot["shadow_evidence"]["successor_joined_count"])
+            self.assertEqual(QUALIFIED, snapshot["shadow_evidence"]["decisions"][0]["state"])
 
             tampered = dict(bound)
             tampered["market_evidence"] = [dict(bound["market_evidence"][0])]
             tampered["market_evidence"][0]["content_hash"] = "tampered"
             tampered_snapshot = qualification_snapshot(root, {"decisions": [tampered]})
-            self.assertEqual(BLOCKED, tampered_snapshot["shadow_evidence"]["certification_state"])
+            self.assertEqual(NOT_EARNED, tampered_snapshot["shadow_evidence"]["certification_state"])
+            self.assertEqual(BLOCKED, tampered_snapshot["shadow_evidence"]["decisions"][0]["state"])
             reasons = tampered_snapshot["shadow_evidence"]["decisions"][0]["reasons"]
             self.assertIn("market_evidence_bond_hash_mismatch", reasons)
             self.assertTrue(any(reason.startswith("bound_observation_hash_mismatch") for reason in reasons))
