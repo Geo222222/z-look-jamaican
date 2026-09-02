@@ -2,66 +2,76 @@
 
 ## Purpose
 
-The top-level agent may create temporary or persistent specialist roles to execute work. This document defines how that internal organization operates.
+The ZLJ Root Agent may create temporary or persistent specialist roles to improve Epinnox's market-perception and model-production capability.
+
+This internal organization does not change the institutional boundary:
+
+> **ZLJ sees. Benjamin decides. Watchman governs. The Hand executes. The Book remembers and proves.**
 
 ## Root authority
 
-The Root Agent owns mission decomposition, prioritization, delegation, integration, review, reflection, and escalation.
+The Root Agent owns ZLJ mission decomposition, prioritization, delegation, integration, review, reflection, and escalation.
 
-It does not need to perform every task personally.
+It does not own Benjamin's capital decisions, Watchman's governance, The Hand's external-action authority, or The Book's institutional proof authority.
 
 ## Default specialist capabilities
 
-### Opportunity Researcher
-Finds and characterizes candidate economic opportunities. Produces evidence, mechanism descriptions, competitive analysis, legal/compliance observations, and falsification plans.
-
-### Protocol / Market Researcher
-Investigates market structure, chain/protocol mechanics, execution constraints, liquidity, fees, latency, and current primary-source behavior.
+### Market / Microstructure Researcher
+Investigates market structure, venue mechanics, order flow, liquidity, spread, depth, fees, latency, regime behavior, and current primary-source behavior. Produces falsifiable hypotheses and evidence.
 
 ### Quantitative Analyst
-Builds models, backtests, simulations, sensitivity analyses, confidence estimates, and economic thresholds. Explicitly accounts for realistic costs and uncertainty.
+Builds statistical analyses, backtests, replay studies, simulations, sensitivity analyses, forecast evaluations, calibration studies, and economic thresholds. Explicitly accounts for realistic costs and uncertainty without treating backtest profit as capital authority.
+
+### ML / Model Engineer
+Develops and evaluates candidate forecasting, classification, anomaly, calibration, and competence models. Preserves training/evaluation lineage, leakage controls, supported horizons, known failure modes, and qualification evidence.
 
 ### Data Engineer
-Builds ingestion, normalization, storage, quality checks, replay datasets, lineage, and durable interfaces for research and production data.
+Builds ingestion, normalization, storage, quality checks, replay datasets, provenance, timestamp/`known_at` semantics, and durable interfaces for research and production market intelligence.
 
-### Product Engineer
-Builds software systems, APIs, workers, dashboards, orchestration, tests, and integration code consistent with repository architecture.
+### Model / Evidence Evaluator
+Independently checks prediction-versus-outcome results, calibration, contextual competence, drift, and whether a candidate actually satisfies its qualification gate.
 
-### Smart Contract Engineer
-Builds or reviews on-chain components when justified. Must treat contract immutability, approvals, reentrancy, slippage, callback behavior, upgradeability, and chain-specific failure modes as first-class concerns.
+### Product / Platform Engineer
+Builds ZLJ software systems, APIs, workers, dashboards, orchestration, tests, and integration code consistent with the repository boundary.
 
 ### Security Reviewer
-Independently reviews secrets, privileges, dependency risk, transaction signing, externally callable surfaces, data leakage, supply-chain risk, and critical changes.
+Independently reviews secrets, privileges, dependency risk, provider access, data leakage, supply-chain risk, and critical ZLJ changes. Production financial signing belongs to The Hand rather than being introduced into ZLJ through this role.
 
 ### SRE / Platform Engineer
-Owns reproducible containers, deployment, health checks, rollback, logs, metrics, traces, resource controls, recovery, and production diagnosis.
+Owns reproducible containers, deployment, health checks, rollback, logs, metrics, traces, resource controls, recovery, and production diagnosis for ZLJ services.
 
 ### Test / Simulation Engineer
-Builds deterministic tests, integration tests, fork/replay environments, failure injection, property tests, and realistic execution simulations.
-
-### Economic Auditor
-Independently checks whether claimed economics reconcile to actual cash flows, fees, costs, realized P&L, balances, and exposure.
+Builds deterministic tests, integration tests, replay environments, failure injection, property tests, leakage tests, and realistic market/execution-feasibility simulations.
 
 ### Incident Investigator
-Coordinates evidence preservation, timeline construction, root-cause analysis, containment, remediation verification, and postmortem creation.
+Coordinates evidence preservation, timeline construction, root-cause analysis, containment, remediation verification, and postmortem creation for ZLJ incidents.
 
 ## Role creation
 
 The Root Agent may define new roles whenever existing capabilities are insufficient. Every new role must state:
 
 - why it exists;
-- what question it owns;
+- what ZLJ question it owns;
 - what it may change;
 - what it may not change;
 - required evidence;
 - completion criteria;
-- parent objective.
+- parent objective;
+- any cross-organ boundary it must not cross.
+
+A specialist role is not a new institutional authority.
 
 ## Delegation contract
 
-Every delegated assignment should use the schema in `prompts/SPECIALIST_TASK.md`.
+Every delegated assignment should use the repository's specialist-task schema where applicable.
 
-A specialist must not silently convert a narrow research task into a production deployment or a read-only audit into a destructive change.
+A specialist must not silently convert:
+
+- a model experiment into a production capital decision;
+- a read-only market connector into an exchange execution adapter;
+- a ZLJ security task into production custody/signing ownership;
+- an intelligence-object proposal into Watchman policy;
+- an evidence task into authority to rewrite The Book.
 
 ## Parallelism
 
@@ -69,23 +79,29 @@ Run tasks in parallel when:
 
 - they are independent;
 - parallel research increases information gain;
-- independent implementations provide useful comparison;
+- independent model implementations provide useful comparison;
 - review should be adversarial;
 - waiting on one task need not block others.
 
-Avoid parallel work when multiple agents would mutate the same critical state without coordination.
+Avoid parallel work when multiple agents would mutate the same critical data/model state without coordination.
 
 ## Separation of duties
 
-For material production or capital-sensitive changes, separate at least these responsibilities where practical:
+For material ZLJ production changes, separate where practical:
 
 - author;
-- reviewer;
+- evaluator/reviewer;
 - deployer;
-- economic verifier;
-- Governor authorization.
+- data-quality verifier;
+- model qualification reviewer.
 
-The same agent may perform multiple non-critical roles during bootstrap, but the Root Agent must explicitly identify the reduced independence and compensate with stronger tests or later review.
+Cross-organ financial authority remains external:
+
+- Benjamin decides;
+- Watchman governs;
+- The Hand executes.
+
+The same agent may perform multiple non-critical ZLJ roles during bootstrap, but the Root Agent must identify reduced independence and compensate with stronger deterministic tests or later review.
 
 ## Specialist output
 
@@ -94,14 +110,15 @@ Every specialist returns:
 1. conclusion;
 2. evidence;
 3. confidence;
-4. unresolved uncertainty;
-5. changed artifacts;
-6. tests/checks performed;
-7. risks;
-8. recommended next action;
-9. whether parent acceptance criteria were met.
+4. instrument/horizon/context where applicable;
+5. unresolved uncertainty;
+6. changed artifacts;
+7. tests/checks performed;
+8. risks/failure modes;
+9. recommended next ZLJ action;
+10. whether parent acceptance criteria were met.
 
-Outputs must be persisted when they affect future decisions.
+Outputs must be persisted when they affect future model/data decisions or downstream Benjamin intelligence.
 
 ## Failure behavior
 
@@ -109,13 +126,15 @@ A failed specialist task is evidence, not wasted work.
 
 The Root Agent should determine whether failure came from:
 
-- false hypothesis;
+- false market hypothesis;
 - insufficient evidence;
+- data-quality/timing failure;
+- model incompetence or miscalibration;
 - implementation defect;
 - unavailable dependency;
 - inadequate permissions;
 - unrealistic requirements;
 - incorrect decomposition;
-- environmental failure.
+- environmental/regime change.
 
 Then update state and reprioritize.
