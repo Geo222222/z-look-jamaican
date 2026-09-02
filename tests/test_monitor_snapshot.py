@@ -18,7 +18,15 @@ class MonitorSnapshotTests(unittest.TestCase):
 
     def monitored_files(self):
         paths = [self.root / path for path in REQUIRED_JSON_FILES + REQUIRED_JSONL_FILES]
-        paths.extend((self.root / "state/market_shadow.json", self.root / "config/treasury_destinations.yaml"))
+        paths.extend(
+            (
+                self.root / "state/market_shadow.json",
+                self.root / "state/market_observer.json",
+                self.root / "state/qualified_market_shadow.json",
+                self.root / "config/qualified_shadow.json",
+                self.root / "config/treasury_destinations.yaml",
+            )
+        )
         receipt_dir = self.root / "receipts/execution"
         if receipt_dir.is_dir():
             paths.extend(receipt_dir.glob("*.json"))
@@ -80,6 +88,23 @@ class MonitorSnapshotTests(unittest.TestCase):
         )
         self.assertEqual("NOT_EARNED", market_data["joined_shadow_certification"])
         self.assertGreaterEqual(qualification["market_plane"]["sequence_counts"]["QUALIFIED"], 1)
+
+        observer = market_data["continuous_observer"]
+        self.assertEqual("PUBLIC-MICROSTRUCTURE-OBSERVER-001", observer["observer_id"])
+        self.assertEqual("IDLE", observer["status"])
+        self.assertEqual(0, observer["window_count"])
+        self.assertIsNone(observer["last_success_at"])
+        self.assertEqual(0, observer["consecutive_failures"])
+
+        runtime = market_data["joined_shadow_runtime"]
+        self.assertEqual("QUALIFIED-MARKET-SHADOW-V1", runtime["program_id"])
+        self.assertEqual("zero_capital_evidence_bound_shadow", runtime["mode"])
+        self.assertEqual(0, runtime["decision_count"])
+        self.assertEqual("NOT_EARNED", runtime["certification_state"])
+        self.assertEqual("PERCEPTION_ACCEPTANCE_ONLY", runtime["handoff_policy"]["handoff_mode"])
+        self.assertEqual(0, runtime["handoff_policy"]["target_position"])
+        self.assertEqual("NONE", runtime["handoff_policy"]["capital_effect"])
+        self.assertFalse(runtime["handoff_policy"]["execution_authority"])
 
     def test_library_snapshot_is_byte_for_byte_read_only(self):
         paths = self.monitored_files()
