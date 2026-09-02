@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from typing import Any, Mapping, Optional
 
+from autonomous_kernel.joined_shadow_observer import join_observer_window
 from autonomous_kernel.market_observer import ObserverConfig, run_observer_once
 from autonomous_kernel.observer_storage import (
     compact_successful_raw_journal,
@@ -29,6 +30,17 @@ async def _guarded_tick(root: Path) -> Mapping[str, Any]:
     result = dict(await run_observer_once(root))
     result["storage_before"] = storage
     if result.get("status") == "CAPTURED":
+        try:
+            result["joined_shadow_handoff"] = join_observer_window(root, result["window"])
+        except Exception as exc:
+            # A handoff defect must never fabricate a successor decision or
+            # rewrite a successful public capture as market-data success/failure.
+            # The explicit error remains visible to supervision and monitoring.
+            result["joined_shadow_handoff"] = {
+                "status": "ERROR",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            }
         stream_id = str(result["window"]["stream_id"])
         result["raw_journal_cleanup"] = compact_successful_raw_journal(root, stream_id)
     return result
