@@ -13,4 +13,4 @@ dependencies = ["websockets>=12,<18", "cryptography>=43"]
 autokernel = "autonomous_kernel.cli:main"
 
 [tool.setuptools]
-packages = ["autonomous_kernel", "experiments"]
+packages = ["autonomous_kernel", "autonomous_kernel.observation", "experiments"]
