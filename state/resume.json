@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:35:00Z",
+  "updated_at": "2026-09-02T15:50:00Z",
   "root_state": "DISCOVERY",
-  "checkpoint": "EXP-MKT-002 continues unchanged and is fresh. EXP-MICROSTREAM-004 qualified the continuous public evidence mechanism after three preserved fail-closed attempts, without further capability promotion. TASK-DATA-004 requires genuinely time-separated windows. The existing 15-minute crypto-forward-shadow-continuation heartbeat is verified ACTIVE and now resumes EXP-MKT-002 plus at most one separately preregistered bounded window when it remains highest-value safe work.",
+  "checkpoint": "EXP-MKT-002 remains unchanged. The continuous public market observer infrastructure is qualified on codex/continuous-market-observer with bounded independent windows, preregistration, single-writer lease/recovery, deterministic nanosecond-safe replay, public spread/depth/imbalance/book-impact proxy distributions, durable audits, storage circuit breakers, verified compaction, and a hardened restartable Docker daemon. The deployment manifest is ready but was not started from GitHub because repository access cannot start the owner's host runtime. TASK-DATA-004 therefore remains open and requires several genuinely time-separated public windows before any configured public-observable bounds can be supported or rejected. Canonical activation: docker compose -f docker-compose.observer.yml up -d --build.",
   "active_program_ids": [
     "PROGRAM-BOOTSTRAP-KERNEL",
     "PROGRAM-OPPORTUNITY-DISCOVERY",
