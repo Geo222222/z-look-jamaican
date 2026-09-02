@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from autonomous_kernel.joined_shadow_observer import JoinedShadowPolicy, join_observer_window
-from autonomous_kernel.market_data import MarketDataStore
+from autonomous_kernel.market_data import MarketDataStore, validate_market_data_store
 from autonomous_kernel.market_data_quality import classify_market_data
 from autonomous_kernel.market_observation_qualification import QUALIFIED, qualification_snapshot
 from autonomous_kernel.operations import canonical_hash
@@ -153,6 +153,25 @@ class JoinedShadowObserverTests(unittest.TestCase):
             write_policy(root, execution_authority=True)
             with self.assertRaisesRegex(ValueError, "financial or execution authority"):
                 JoinedShadowPolicy.load(root)
+
+    def test_full_kernel_requires_successor_state_and_handoff_policy(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            state = root / "state"
+            state.mkdir(parents=True, exist_ok=True)
+            (state / "current_state.json").write_text("{}\n", encoding="utf-8")
+            MarketDataStore(root).rebuild_index()
+
+            errors = validate_market_data_store(root)
+
+            self.assertIn(
+                "missing required successor shadow state: state/qualified_market_shadow.json",
+                errors,
+            )
+            self.assertIn(
+                "missing required joined-shadow policy: config/qualified_shadow.json",
+                errors,
+            )
 
 
 if __name__ == "__main__":
