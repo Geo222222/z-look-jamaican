@@ -1,8 +1,8 @@
 """Join a fresh public observer window into successor zero-capital shadow state.
 
-This is an integration/acceptance handoff, not a trading strategy.  It records a
+This is an integration/acceptance handoff, not a trading strategy. It records a
 neutral target (0) whose meaning is: the perception pipeline accepted this exact
-qualified market observation prospectively.  It has no execution authority and
+qualified market observation prospectively. It has no execution authority and
 makes no claim of economic edge.
 """
 
@@ -14,7 +14,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Optional
 
-from .qualified_shadow import ShadowDecisionProposal, record_qualified_shadow_decision
+from .qualified_shadow import (
+    ShadowDecisionProposal,
+    load_qualified_shadow_state,
+    record_qualified_shadow_decision,
+)
 
 
 DEFAULT_POLICY_PATH = "config/qualified_shadow.json"
@@ -86,6 +90,27 @@ def _load_observation(root: Path, observation_id: str) -> Mapping[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _existing_join(root: Path, decision_id: str) -> Mapping[str, Any] | None:
+    state = load_qualified_shadow_state(root)
+    return next((item for item in state.get("decisions", []) if item.get("id") == decision_id), None)
+
+
+def _joined_result(status: str, window_id: str, observation_id: str, decision: Mapping[str, Any]) -> Mapping[str, Any]:
+    return {
+        "status": status,
+        "window_id": window_id,
+        "observation_id": observation_id,
+        "decision_id": decision["id"],
+        "target_position": decision["target_position"],
+        "strategy_id": decision["strategy_id"],
+        "rationale_code": decision["rationale_code"],
+        "consumed_at": decision["observed_at"],
+        "market_evidence_bond": decision["market_evidence_bond"],
+        "capital_effect": decision["capital_effect"],
+        "execution_authority": decision["execution_authority"],
+    }
+
+
 def join_observer_window(
     root: Path,
     window: Mapping[str, Any],
@@ -112,6 +137,14 @@ def join_observer_window(
     if not window_id or not observation_id:
         raise ValueError("observer window requires window_id and observation_id")
 
+    decision_id = f"JOIN-{window_id}"
+    existing = _existing_join(root, decision_id)
+    if existing is not None:
+        bound_ids = [str(item.get("observation_id", "")) for item in existing.get("market_evidence", [])]
+        if bound_ids != [observation_id]:
+            raise RuntimeError("existing observer-window join points to different market evidence")
+        return _joined_result("ALREADY_JOINED_NEUTRAL_PERCEPTION", window_id, observation_id, existing)
+
     observation = _load_observation(root, observation_id)
     if observation.get("observation_id") != observation_id:
         raise ValueError("observer window/observation identity mismatch")
@@ -124,7 +157,7 @@ def join_observer_window(
 
     now = _epoch_now() if consumed_at is None else int(consumed_at)
     proposal = ShadowDecisionProposal(
-        decision_id=f"JOIN-{window_id}",
+        decision_id=decision_id,
         product=str(observation.get("normalized", {}).get("instrument", "")),
         observed_at=now,
         actionable_at=now + policy.actionable_delay_seconds,
@@ -153,16 +186,4 @@ def join_observer_window(
             }
         raise
 
-    return {
-        "status": "JOINED_NEUTRAL_PERCEPTION",
-        "window_id": window_id,
-        "observation_id": observation_id,
-        "decision_id": decision["id"],
-        "target_position": decision["target_position"],
-        "strategy_id": decision["strategy_id"],
-        "rationale_code": decision["rationale_code"],
-        "consumed_at": now,
-        "market_evidence_bond": decision["market_evidence_bond"],
-        "capital_effect": decision["capital_effect"],
-        "execution_authority": decision["execution_authority"],
-    }
+    return _joined_result("JOINED_NEUTRAL_PERCEPTION", window_id, observation_id, decision)
