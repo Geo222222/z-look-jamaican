@@ -86,7 +86,7 @@ This state is deliberately separate from `state/market_shadow.json`. The latter 
 7. successful consumption-time market-data qualification; and
 8. signal-candle agreement for candle evidence when a signal timestamp is declared.
 
-Persistence is atomic and idempotent for the same decision content. Reusing a decision ID with different content is an error. Each persisted decision also carries a full `decision_content_hash`, so canonical validation detects mutation outside the writer even before certification is considered.
+Persistence is atomic, serialized by the kernel writer lease, and idempotent for the same decision content. Reusing a decision ID with different content is an error. Each persisted decision also carries a full `decision_content_hash`, so canonical validation detects mutation outside the writer even before certification is considered.
 
 The writer snapshots the bytes of `state/market_shadow.json` and verifies they remain unchanged. It therefore has no authority to retrofit or rewrite EXP-MKT-002.
 
@@ -110,6 +110,37 @@ python -m autonomous_kernel qualified_shadow_record \
 
 This command is a persistence/qualification boundary, not a strategy engine. An upstream deterministic or model-governed strategy component must separately earn the authority to propose the target and rationale.
 
+## Operational observer handoff
+
+The continuous observer now has a deliberately neutral acceptance handoff. `config/qualified_shadow.json` preregisters the only allowed v1 behavior:
+
+- handoff mode `PERCEPTION_ACCEPTANCE_ONLY`;
+- target position `0`;
+- strategy ID `PERCEPTION-PIPELINE-QUALIFICATION-V1`;
+- rationale `NO_TRADING_SIGNAL_PERCEPTION_ACCEPTANCE`;
+- explicit 30-second event-age and transport-age limits;
+- capital effect `NONE`; and
+- execution authority `false`.
+
+`experiments/market_observer.py` invokes `autonomous_kernel.joined_shadow_observer.join_observer_window` only after `run_observer_once` returns a successful `CAPTURED` window. The handoff accepts only the canonical immutable `microstructure_stream_summary` for the same stream ID. It then re-evaluates freshness and sequence integrity at consumption time and, when qualified, writes a target-0 evidence-bound successor decision.
+
+The operational order is:
+
+```text
+public capture
+  -> immutable stream/observation validation
+  -> consumption-time freshness + sequence qualification
+  -> neutral target-0 successor evidence bond
+  -> successor-state validation / monitor certification
+  -> verified raw-journal compaction
+```
+
+A stale first handoff is skipped and creates no successor decision. A handoff implementation/configuration error is reported separately and does not turn a successful public capture into a false market-data failure or a trading action. Raw-journal compaction still follows its independent verification contract.
+
+Retries are keyed by observer window identity. A retry may return `ALREADY_JOINED_NEUTRAL_PERCEPTION` only after revalidating the existing successor state, the exact bound immutable observation, the evidence bond, and current successor certification. Corrupted or semantically altered joined state fails closed rather than masquerading as an idempotent success.
+
+This target-0 handoff proves the perception-to-evidence-to-decision join. It does **not** constitute a BUY, SELL, HOLD strategy recommendation, an economic-edge claim, an execution request, or authority to move capital.
+
 ## Monitoring and certification
 
 The authoritative monitor exposes the complete read-only qualification audit under `sections.market_data.data.qualification`.
@@ -126,9 +157,9 @@ A bound object appearing in legacy EXP-MKT-002 input may be audited for integrit
 
 Successor joined-shadow certification becomes `QUALIFIED` only when at least one successor decision is evidence-bound, every successor joined decision independently re-qualifies, the immutable market-data store validates, and all preserved stream bundles validate. Missing, stale, tampered, mismatched, sequence-invalid, or semantically altered evidence makes certification `BLOCKED`.
 
-With an empty successor state the certification remains `NOT_EARNED`. That is the correct current state until a genuine fresh observation is consumed prospectively by a real successor decision.
+With an empty successor state the certification remains `NOT_EARNED`. That remains the repository's correct runtime state until the owner's active observer produces a genuine fresh window and the operational handoff consumes it prospectively. Tests may prove the transition synthetically; synthetic fixtures do not earn runtime certification.
 
-Canonical durable-state validation also traverses the successor state through the market/evidence lineage. A mutated `decision_content_hash`, missing evidence bond, unauthorized capital effect, execution-authority drift, duplicate decision ID, or summary inconsistency therefore causes repository validation to fail closed.
+Canonical durable-state validation also requires the successor state and neutral handoff policy in a full kernel repository. Deleting either, mutating a `decision_content_hash`, removing an evidence bond, introducing capital effect, enabling execution authority, duplicating a decision ID, corrupting the policy, or making the summary inconsistent therefore causes repository validation to fail closed.
 
 ## EXP-MKT-002 boundary
 
