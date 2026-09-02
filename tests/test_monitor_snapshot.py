@@ -70,6 +70,17 @@ class MonitorSnapshotTests(unittest.TestCase):
         self.assertEqual(market_data["observation_count"], len(indexed))
         self.assertEqual(sum(market_data["quality_counts"].values()), len(indexed))
         self.assertIn("OBS-COINBASE-BTC-USD-1788273600", {item["observation_id"] for item in indexed})
+        qualification = market_data["qualification"]
+        self.assertTrue(qualification["policy"]["venue_neutral"])
+        self.assertTrue(qualification["policy"]["fail_closed"])
+        self.assertFalse(qualification["policy"]["retroactive_evidence_binding_permitted"])
+        self.assertEqual("NOT_EARNED", qualification["shadow_evidence"]["certification_state"])
+        self.assertEqual(
+            qualification["shadow_evidence"]["decision_count"],
+            qualification["shadow_evidence"]["legacy_unjoined_count"],
+        )
+        self.assertEqual("NOT_EARNED", market_data["joined_shadow_certification"])
+        self.assertGreaterEqual(qualification["market_plane"]["sequence_counts"]["QUALIFIED"], 1)
 
     def test_library_snapshot_is_byte_for_byte_read_only(self):
         paths = self.monitored_files()
