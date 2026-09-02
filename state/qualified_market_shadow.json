@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "program_id": "QUALIFIED-MARKET-SHADOW-V1",
+  "mode": "zero_capital_evidence_bound_shadow",
+  "authority": "Prospective zero-capital shadow decisions only; no execution authority.",
+  "legacy_experiment_state_mutable": false,
+  "updated_at": null,
+  "decisions": [],
+  "summary": {
+    "total": 0,
+    "pending": 0,
+    "resolved": 0,
+    "nonzero_target": 0,
+    "evidence_bound": 0
+  }
+}
