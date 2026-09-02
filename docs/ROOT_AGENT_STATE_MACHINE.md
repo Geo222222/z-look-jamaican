@@ -73,13 +73,13 @@ Current evidence says the hypothesis/model/capability should not consume more wo
 
 Market hypotheses and models use the progression defined by `docs/ZERO_TO_REVENUE.md` (historical filename):
 
-`DISCOVERY -> RESEARCH -> REPLAY/BACKTEST -> SHADOW -> ZLJ_READY -> BENJAMIN_SHADOW -> GOVERNED_EPinnox_USE -> SCALE_INTELLIGENCE`
+`DISCOVERY -> RESEARCH -> REPLAY/BACKTEST -> SHADOW -> ZLJ_READY -> BENJAMIN_SHADOW -> GOVERNED_EPINNOX_USE -> SCALE_INTELLIGENCE`
 
 Interpret the later stages correctly:
 
 - `ZLJ_READY` means a data/model capability is qualified to produce intelligence.
 - `BENJAMIN_SHADOW` means Benjamin may consume it in shadow decisions.
-- `GOVERNED_EPinnox_USE` means any real capital use occurs only through Benjamin -> Watchman -> The Hand.
+- `GOVERNED_EPINNOX_USE` means any real capital use occurs only through Benjamin -> Watchman -> The Hand.
 - No ZLJ state grants production wallet, signing, order, transfer, or settlement authority.
 
 ## Required transition evidence
