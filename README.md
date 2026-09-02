@@ -1,47 +1,100 @@
 # Z Look Jamaican
 
-Autonomous economic engineering bootstrap repository.
+> **ZLJ sees. Benjamin decides. Watchman governs. The Hand executes. The Book remembers and proves.**
 
-The repository exists to let a top-level Codex agent start from zero, discover lawful machine-operated economic opportunities, build the infrastructure required to test them, operate validated systems, measure realized outcomes, and continuously improve without requiring the owner to manage implementation work.
+Z Look Jamaican (ZLJ) is Epinnox's **market-perception, market-state, research, and model-production system**. Its job is to observe the financial world, transform raw observations into qualified intelligence objects, test and calibrate models, and make those objects available to Benjamin.
 
-## Start command
+ZLJ does **not** own capital decisions, capital authorization, portfolio governance, custody, external money movement, or authoritative institutional memory.
 
-The intended owner instruction is:
+## Place in Epinnox
 
-> Read the repository and begin.
+```text
+MARKETS / DATA / RESEARCH
+          |
+          v
+         ZLJ
+ observation -> features -> state -> models -> intelligence objects
+          |
+          v
+      BENJAMIN
+ decision intelligence
+          |
+          v
+      WATCHMAN
+ governance / authorization
+          |
+          v
+      THE HAND
+ authorized external action
+          |
+          v
+       THE BOOK
+ authoritative evidence / memory / proof
+```
 
-That is the bootstrap contract. Codex should read the governing files, inspect the repository/runtime, establish durable state, and begin work in the same session.
+The bridge from ZLJ to Benjamin is intentionally typed and evidence-bearing. ZLJ may produce observations, measurements, market-state objects, regime classifications, forecasts, model predictions, opportunity evidence, calibration records, and model-competence records. Benjamin determines what those objects mean for capital.
 
-## Core operating model
+## V1 mission
 
-The Root Agent owns:
+The first Epinnox benchmark is short-horizon trading intelligence:
 
-- opportunity discovery and ranking;
+1. scalping / micro trades;
+2. intraday trading;
+3. short swing trading.
+
+Long-horizon portfolio and investment intelligence comes later. ZLJ therefore prioritizes the data quality, latency, microstructure, price-action, liquidity, volatility, regime, forecasting, calibration, and model-evaluation capabilities required to support those horizons.
+
+## Internal autonomy
+
+ZLJ may remain highly autonomous **inside its own responsibility**. The Root Agent may discover useful perception/model work, design experiments, build data and model infrastructure, qualify candidate models, monitor data quality, detect drift, and improve the ZLJ engineering system without waiting for implementation tickets.
+
+That autonomy does not make ZLJ the Epinnox decision-maker or executor.
+
+## What ZLJ owns
+
+- market and approved external-data ingestion;
+- normalization, provenance, freshness, and quality;
+- deterministic market measurements and derived features;
+- market structure and microstructure state;
+- regime/state classification;
 - research and falsification experiments;
-- architecture and implementation;
-- specialist-agent delegation;
-- testing, deployment, observability, and recovery;
-- operational wallet creation and signing infrastructure;
-- economic accounting and evidence;
-- ongoing reprioritization.
+- machine-learning model development and qualification;
+- forecasts, predictions, confidence, calibration, drift, and competence evidence;
+- shadow/replay evaluation of market hypotheses;
+- production of typed intelligence objects for Benjamin;
+- observability of ZLJ's own data/model services.
 
-The owner does not provide implementation tickets and does not provision the agent's working wallets.
+## What ZLJ does not own
 
-## Wallet and treasury model
+- `TRADE / NO TRADE` capital decisions — **Benjamin**;
+- portfolio sizing or capital intent — **Benjamin**;
+- policy, mandate, limits, compliance, or final authorization — **Watchman**;
+- broker/exchange orders, transfers, signing, custody, settlement, or other external money actions — **The Hand**;
+- authoritative cross-system evidence, decision history, execution history, or public testimony — **The Book**.
 
-There are two distinct wallet domains.
+Any historical wallet, signing, sweep, or execution machinery that remains in this repository is not constitutional production authority. It may be retained as predecessor evidence, test infrastructure, or migration input, but production external-action ownership belongs to The Hand.
 
-### Operational wallets
+## Operating loop
 
-The autonomous system creates, persists, secures, monitors, rotates, and uses its own working wallets when a validated activity requires them. Private keys and seed material must remain outside Git, prompts, logs, reports, and ordinary agent memory.
+Within the ZLJ boundary:
 
-### Owner treasury destinations
+`observe -> qualify -> derive -> hypothesize -> model -> test -> calibrate -> publish intelligence object -> measure outcome -> improve`
 
-The owner supplies withdrawal-only destination addresses in `config/treasury_destinations.yaml`.
+The loop ends at qualified intelligence. It does not silently continue into capital decision or execution.
 
-The Root Agent may not rewrite those destinations. It must never request or require their private keys. Excess realized assets may eventually be swept from operational wallets to validated active treasury destinations after the sweep system, accounting, signer isolation, reserves, and reconciliation have been implemented and tested.
+## Evidence rule
 
-The current registry includes owner-provided BTC, DOGE, ETH, and a TRON-USDT entry. The TRON-USDT entry is intentionally blocked pending address-format validation.
+Every material intelligence object should make it possible to answer:
+
+- what was observed;
+- where it came from;
+- when it was knowable;
+- which code/model version produced it;
+- whether it is observation, derivation, inference, hypothesis, or prediction;
+- how fresh it is;
+- what horizon it applies to;
+- how the producer has performed in comparable conditions;
+- what invalidates or expires it.
 
 ## Bootstrap read order
 
@@ -49,32 +102,28 @@ Read these first:
 
 1. `AGENTS.md`
 2. `docs/CODEX_ENTRYPOINT.md`
-3. `docs/GOVERNOR.md`
-4. `docs/WALLET_AND_SIGNING.md`
-5. `config/treasury_destinations.yaml`
-6. `docs/STARTUP_JOB.md`
-7. `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml`
-8. `prompts/ROOT_AGENT.md`
+3. `docs/MISSION.md`
+4. `docs/CONSTITUTION.md`
+5. `docs/GOVERNOR.md`
+6. `docs/DECISION_PROTOCOL.md`
+7. `docs/MEMORY_AND_EVIDENCE.md`
+8. `docs/STARTUP_JOB.md`
+9. `bootstrap/ROOT_AGENT_BOOTSTRAP.yaml`
+10. `prompts/ROOT_AGENT.md`
 
-Then inspect the remaining docs only as needed for the active program. Higher-order Governor rules override lower-level operating guidance.
-
-## Operating loop
-
-`observe -> research -> rank -> hypothesize -> build minimum experiment -> test -> measure -> record -> reflect -> keep / improve / suspend / reject -> repeat`
-
-AI reasoning belongs in the control plane. Deterministic code must enforce transaction construction, signing policy, accounting, risk limits, destination allowlists, and execution-critical safety checks.
+Where older text describes ZLJ as owning capital, wallets, treasury, external execution, or economic allocation, this README plus `AGENTS.md`, `docs/MISSION.md`, and `docs/CONSTITUTION.md` define the current ownership boundary. Such older capability language must be interpreted as historical/predecessor or test-only until migrated into the appropriate Epinnox organ.
 
 ## First milestone
 
-The first milestone is not live profit. It is a durable autonomous kernel that can:
+The milestone is not simply profit. It is a durable market-intelligence system that can:
 
 - resume from repository/runtime state rather than chat history;
-- maintain a ranked opportunity register;
-- create and verify experiments;
-- build reusable capabilities only when justified;
-- create and safely operate working wallets when required;
-- maintain auditable economic state;
-- monitor deployments and failures;
-- independently determine the next useful action.
+- ingest and qualify live market observations;
+- preserve provenance and freshness;
+- produce reproducible market-state and prediction objects;
+- evaluate predictions against later outcomes without leakage;
+- measure calibration, drift, latency, and regime-specific competence;
+- publish bounded intelligence objects for Benjamin;
+- fail closed when data or model qualification is insufficient.
 
-Live economic activity must be grounded in evidence, measured costs, deterministic controls, and the limits defined by the Governor.
+**ZLJ sees. It does not decide or execute capital.**
