@@ -133,9 +133,10 @@ def join_observer_window(
             "observation_id": window.get("observation_id"),
         }
     window_id = str(window.get("window_id", ""))
+    stream_id = str(window.get("stream_id", ""))
     observation_id = str(window.get("observation_id", ""))
-    if not window_id or not observation_id:
-        raise ValueError("observer window requires window_id and observation_id")
+    if not window_id or not stream_id or not observation_id:
+        raise ValueError("observer window requires window_id, stream_id, and observation_id")
 
     decision_id = f"JOIN-{window_id}"
     existing = _existing_join(root, decision_id)
@@ -148,6 +149,12 @@ def join_observer_window(
     observation = _load_observation(root, observation_id)
     if observation.get("observation_id") != observation_id:
         raise ValueError("observer window/observation identity mismatch")
+    normalized = observation.get("normalized", {})
+    raw = observation.get("raw", {})
+    if normalized.get("type") != "microstructure_stream_summary" or raw.get("channel") != "microstructure_stream":
+        raise ValueError("observer handoff requires a canonical microstructure stream summary observation")
+    if str(normalized.get("stream_id", "")) != stream_id:
+        raise ValueError("observer window stream_id does not match immutable observation")
     if observation.get("quality", {}).get("status") != "VALID":
         return {
             "status": "SKIPPED_OBSERVATION_NOT_VALID",
@@ -158,7 +165,7 @@ def join_observer_window(
     now = _epoch_now() if consumed_at is None else int(consumed_at)
     proposal = ShadowDecisionProposal(
         decision_id=decision_id,
-        product=str(observation.get("normalized", {}).get("instrument", "")),
+        product=str(normalized.get("instrument", "")),
         observed_at=now,
         actionable_at=now + policy.actionable_delay_seconds,
         target_position=policy.target_position,
