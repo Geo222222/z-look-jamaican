@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "observer_id": "PUBLIC-MICROSTRUCTURE-OBSERVER-001",
+  "status": "IDLE",
+  "updated_at": null,
+  "active_window": null,
+  "last_attempt_at": null,
+  "last_success_at": null,
+  "next_eligible_at": null,
+  "consecutive_failures": 0,
+  "windows": [],
+  "failures": [],
+  "authority": "Public read-only market observation only. No authentication, accounts, orders, wallets, signers, capital, or capability promotion."
+}
