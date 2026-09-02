@@ -14,6 +14,7 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 
 from .store import StateValidationError, load_json, load_jsonl, next_work, repository_root, validate
 from .background_jobs import status as background_job_status
+from .market_observation_qualification import qualification_snapshot
 
 
 CONTRACT_SCHEMA_VERSION = "1.2.0"
@@ -244,7 +245,25 @@ def monitor_snapshot(root: Optional[Path] = None, observed_at: Optional[str] = N
         quality_counts[quality] = quality_counts.get(quality, 0) + 1
     latest_market_epoch = max((int(item.get("observed_at", 0)) for item in market_data_index.get("items", [])), default=0)
     latest_market_at = datetime.fromtimestamp(latest_market_epoch, timezone.utc).isoformat().replace("+00:00", "Z") if latest_market_epoch else None
-    section_data["market_data"] = _section(root, "MONITOR-MARKET-DATA", ["state/market_data.json", *market_paths], observed_at, latest_market_at, {"index": market_data_index, "observation_count": len(market_data_index.get("items", [])), "quality_counts": quality_counts, "raw_normalized_separation": True, "replayable": True, "active_experiment_retrofit": False}, freshness={"expectation": "event-driven captures for future experiments; not the EXP-MKT-002 heartbeat", "state": "event_driven"})
+    market_qualification = qualification_snapshot(root, shadow)
+    section_data["market_data"] = _section(
+        root,
+        "MONITOR-MARKET-DATA",
+        ["state/market_data.json", *market_paths],
+        observed_at,
+        latest_market_at,
+        {
+            "index": market_data_index,
+            "observation_count": len(market_data_index.get("items", [])),
+            "quality_counts": quality_counts,
+            "raw_normalized_separation": True,
+            "replayable": True,
+            "active_experiment_retrofit": False,
+            "qualification": market_qualification,
+            "joined_shadow_certification": market_qualification["shadow_evidence"]["certification_state"],
+        },
+        freshness={"expectation": "event-driven captures for future experiments; consumption-time freshness is re-evaluated before evidence can qualify", "state": "event_driven"},
+    )
     section_data["background_jobs"] = _section(root, "MONITOR-BACKGROUND-JOBS", ["state/background_jobs.json"], observed_at, None, background_jobs, freshness={"expectation": "poll-safe readiness; workers update per-run receipts", "state": "scheduled"})
     section_data["opportunities"] = _section(root, "MONITOR-OPPORTUNITIES", ["opportunities/register.json"], observed_at, opportunities.get("updated_at"), opportunities)
     section_data["reflections"] = _section(root, "MONITOR-REFLECTIONS", ["memory/reflections.jsonl"], observed_at, _latest_timestamp(reflections, ("created_at",)), {"items": reflections})
