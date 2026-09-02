@@ -1,154 +1,118 @@
 # Wallet, Signing, and Treasury Lifecycle
 
-## Core principle
+> **Ownership clarification:** this file remains because ZLJ previously explored wallet/signing infrastructure. Under the current Epinnox architecture, production wallet, signing, transfer, settlement, and treasury-action capability belongs to **The Hand**, not ZLJ.
 
-The autonomous system creates and controls its own working wallets. The owner provides only final treasury withdrawal destinations.
+This document therefore describes **predecessor/test knowledge and the boundary that must be preserved when capability is migrated or integrated with The Hand**. It does not grant ZLJ production custody or capital-moving authority.
 
-Operational wallet custody and owner treasury custody must remain separate.
+## Epinnox ownership rule
 
-## Operational wallets
+> **ZLJ sees. Benjamin decides. Watchman governs. The Hand executes. The Book remembers and proves.**
 
-When blockchain work is justified, the Root Agent must autonomously:
+Production financial write paths follow:
 
-1. determine the required chain/account model;
-2. create a purpose-specific working wallet;
-3. generate keys using a cryptographically secure implementation appropriate to the chain;
-4. persist private material only inside an encrypted or isolated secret boundary;
-5. never expose private material in Git, prompts, logs, reports, ordinary memory, or analytics;
-6. register only public addresses and non-secret metadata in durable state;
-7. build deterministic signing and destination policy around the key;
-8. test transaction construction and signing in local forks, simulations, testnets, or other safe environments when practical;
-9. monitor balances, nonces, approvals, transactions, receipts, fees, and signer health;
-10. rotate, quarantine, or replace keys when required;
-11. preserve accounting and recovery state across restarts.
+`Benjamin decision -> Watchman authorization -> The Hand capability/adaptor -> external financial system -> execution/outcome receipt -> The Book`
 
-Operational wallets are working capital identities. They are not treasury wallets.
+ZLJ may observe public/read-only wallet, chain, venue, or market state where that information is useful to market intelligence. It may also use isolated test fixtures, simulations, testnets, zero-value signing tests, or predecessor code for engineering evidence where permitted.
+
+It must not treat those facilities as production action authority.
+
+## The Hand's wallet/custody responsibility
+
+When production blockchain or custody capability is justified, The Hand is the organ that should own the operational implementation for:
+
+1. purpose-specific wallet/custody identities;
+2. private-key or signer isolation;
+3. deterministic transaction construction;
+4. allowed chain/account/asset policy;
+5. destination policy;
+6. nonce/replay/idempotency protection;
+7. transaction simulation/preflight where supported;
+8. balance, approval, receipt, and signer-health monitoring;
+9. key rotation/quarantine/recovery;
+10. durable execution and reconciliation receipts.
+
+Benjamin does not hold the keys. Watchman does not construct transactions. ZLJ does not execute them.
 
 ## Wallet classes
 
-Use least privilege and separate purpose where appropriate:
+Where The Hand eventually requires separate capabilities, least privilege may distinguish:
 
 - research/test wallet;
-- observation identity;
-- revenue-receiving wallet;
+- observation identity where authentication is unavoidable;
 - production execution wallet;
 - fee/gas wallet;
-- settlement/sweep wallet.
+- settlement/sweep wallet;
+- other purpose-specific custody identities.
 
 Do not collapse every function into one hot wallet merely for convenience.
 
 ## Owner treasury destinations
 
-Owner withdrawal destinations are defined in:
+Historical ZLJ configuration may contain owner withdrawal destination metadata such as `config/treasury_destinations.yaml`.
 
-`config/treasury_destinations.yaml`
+That file is not a constitutional declaration that ZLJ owns treasury settlement. Any future production use must be adopted by the appropriate The Hand/Watchman contract and independently validated there.
 
-These entries are public destination metadata, not operational credentials.
+No agent should:
 
-The Root Agent:
+- request treasury private keys;
+- infer or silently replace a destination;
+- route funds to an unverified destination;
+- expose private material in Git, prompts, logs, reports, ordinary model memory, or analytics.
 
-- must never request or require the private keys for owner treasury destinations;
-- must not modify or replace owner treasury addresses;
-- must not infer a replacement address;
-- must validate network/address compatibility before the first transfer;
-- must refuse to use any destination marked blocked, invalid, disabled, or pending validation;
-- must reconcile every sweep from source wallet to confirmed receipt state.
+## Treasury action architecture
 
-Current owner-provided destinations include BTC, DOGE, ETH, and a TRON-USDT entry. The TRON-USDT entry is blocked pending address validation because the supplied value uses EVM `0x` encoding rather than the normal Tron mainnet address representation.
+The target ownership model is:
 
-## Treasury sweep architecture
+`Benjamin capital intent -> Watchman policy/authorization -> The Hand treasury capability -> isolated signer/provider -> external rail -> receipt/reconciliation -> The Book`
 
-Preferred path:
-
-`AI control plane -> sweep proposal -> deterministic treasury policy -> isolated signer -> network -> receipt/reconciliation`
-
-A treasury sweep subsystem should enforce at minimum:
+A treasury capability in The Hand should enforce at minimum:
 
 - active destination allowlist;
-- chain and asset match;
-- preflight address validation;
-- minimum sweep threshold;
-- operating reserve;
-- network-fee reserve;
-- maximum single-transfer value;
-- cumulative daily limits where configured;
+- chain/asset/account compatibility;
+- preflight validation;
+- reserves and available-balance checks supplied from authoritative financial state;
+- maximum action value and cumulative limits from Watchman policy;
 - transaction simulation/preflight where supported;
-- nonce/replay protection;
+- nonce/replay/idempotency protection;
 - confirmation policy;
 - receipt reconciliation;
-- duplicate-sweep prevention;
+- duplicate-action prevention;
 - emergency pause state;
-- durable audit record.
-
-## Sweep policy
-
-The agent should retain enough working capital to keep validated operations functioning while avoiding unnecessary accumulation in hot wallets.
-
-A sweep decision should distinguish:
-
-- gross receipts;
-- realized net profit;
-- liabilities;
-- pending settlement;
-- working capital;
-- gas/network reserve;
-- funds already committed to open obligations;
-- excess sweepable balance.
-
-Only excess sweepable balance is eligible for treasury transfer.
-
-Do not sweep funds whose economic state is uncertain, disputed, pending, or required to satisfy known obligations.
+- durable evidence linkage.
 
 ## Signing boundary
 
-Private keys must not be directly available to every specialist agent, process, or container.
+Private keys must not be directly available to Benjamin, ZLJ models, general-purpose reasoning agents, or every specialist process.
 
 Preferred design:
 
-`reasoning/control plane -> deterministic transaction request -> policy/risk gate -> isolated signer -> network`
+`Watchman-authorized action -> The Hand deterministic request -> capability policy -> isolated signer/provider -> external system`
 
-The isolated signer should enforce machine-readable constraints including:
+The Hand may choose among technically equivalent adapters only where the authorization and policy explicitly permit that routing. It may not change the economic intent merely because a different integration is available.
 
-- allowed chain IDs;
-- allowed asset/contracts;
-- allowed destinations;
-- maximum transaction value;
-- cumulative exposure limits;
-- allowed function selectors where practical;
-- nonce/deadline validity;
-- current operating stage;
-- emergency pause state.
+## Token approvals and comparable permissions
 
-The LLM must not be the sole enforcement mechanism.
+Approvals, mandates, standing instructions, API trading permissions, and other durable financial write privileges are capital permissions. They belong within The Hand's governed capability inventory and Watchman's authority model.
 
-## Token approvals
-
-Token approvals are capital permissions. The system must:
-
-- minimize approval amount and duration where practical;
-- inventory active approvals;
-- monitor unexpected allowance changes;
-- revoke obsolete approvals when justified;
-- include approval exposure in risk accounting.
+They must be minimized, inventoried, monitored, and revoked when no longer justified.
 
 ## Compromise behavior
 
-On suspected wallet, signer, RPC, dependency, contract, or destination compromise:
+On suspected wallet, signer, provider, credential, contract, or destination compromise:
 
 1. stop affected write paths;
-2. disable or isolate the signer where possible;
+2. disable or isolate the affected The Hand capability where possible;
 3. preserve evidence without exposing secrets;
-4. identify assets, approvals, transactions, and destinations affected;
+4. identify assets, permissions, transactions, and destinations affected;
 5. prevent additional loss;
-6. rotate or replace operational keys as appropriate;
+6. rotate or replace credentials/keys as appropriate;
 7. independently review remediation;
-8. reconcile chain state before resuming.
+8. reconcile external state before resuming;
+9. preserve the incident and recovery lineage in The Book.
 
-## Invariants
+## ZLJ invariant
 
-- The Root Agent owns operational-wallet engineering.
-- Owner treasury addresses are withdrawal-only destinations.
-- Treasury private keys never enter the autonomous system.
-- The Root Agent cannot rewrite the treasury registry.
-- A blocked or invalid destination cannot receive funds.
-- Every capital-moving action must pass deterministic policy and accounting controls.
+- ZLJ may study and observe wallet/chain state.
+- ZLJ may retain predecessor/test wallet engineering for reproducibility.
+- ZLJ does not own production wallet custody, signing, transfer, sweep, or settlement authority.
+- Production external financial actions belong to The Hand after Watchman authorization.
