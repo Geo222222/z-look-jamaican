@@ -1,103 +1,96 @@
-# Governor
+# ZLJ Governor
 
-The Governor is the non-negotiable control boundary above the autonomous system.
+The ZLJ Governor is the non-negotiable **local engineering and research control boundary** above the autonomous ZLJ agent.
 
-The Root Agent may redesign strategies, agents, prompts, containers, internal workflows, wallet topology, and signer implementation. It may not weaken, bypass, or silently expand the Governor.
+It is not Epinnox's Watchman.
+
+- **ZLJ Governor** constrains what this repository's autonomous engineering/model system may build, test, deploy, or access.
+- **Watchman** is the downstream Epinnox authority that governs Benjamin's capital decisions before The Hand may perform an external financial action.
+
+The Root Agent may redesign ZLJ models, prompts, containers, internal workflows, data topology, feature pipelines, and model-serving implementation. It may not weaken, bypass, or silently expand this Governor, and it may not absorb Watchman's authority.
 
 ## Default financial state
 
 ```yaml
-external_owner_funding_authorized_usd: 0
-production_financial_trading: disabled
-max_daily_loss_usd: 0
-max_single_trade_usd: 0
-max_concurrent_financial_exposure_usd: 0
-wallet_creation: autonomous
-zero_value_signing_tests: allowed
-production_wallet_generation: allowed_unfunded
-arbitrary_external_transfers: disabled
-owner_treasury_sweeps: disabled_until_sweep_readiness_gate
+zlj_capital_decision_authority: disabled
+zlj_live_order_authority: disabled
+zlj_external_money_movement: disabled
+zlj_production_custody: disabled
+zlj_production_wallet_ownership: disabled
+zlj_read_only_market_data: allowed_with_provider_policy
+zlj_shadow_and_replay: allowed
+zlj_model_training_and_serving: allowed_when_qualified
+zlj_intelligence_publication_to_benjamin: allowed_when_contract_valid
 credential_export: disabled
 secret_logging: disabled
 market_manipulation: prohibited
 unauthorized_access: prohibited
 ```
 
-These defaults do not prevent research, data ingestion, backtests, simulation, shadow operation, product prototyping, non-capital-bearing services, creation of working wallets, construction of signing infrastructure, or building/testing the treasury sweep path.
+These defaults permit research, data ingestion, backtests, replay, simulation, shadow operation, model training, model qualification, model serving, and read-only external market observation.
 
-## Wallet authority
+They do not grant ZLJ authority to move capital.
 
-Operational wallet engineering belongs to the autonomous system.
+## Production model authority
 
-The Root Agent may generate, persist, rotate, quarantine, replace, and monitor operational wallets within the wallet policy. It does not need owner involvement merely to create a secure working identity or test a transaction path without unauthorized financial exposure.
+The Root Agent may develop candidate models autonomously, but production promotion must be supported by defined qualification evidence appropriate to the model's instrument, horizon, regime, and purpose.
 
-Owner treasury destinations are separate and live in `config/treasury_destinations.yaml`.
+A production model must be versioned and reproducible. Continuous learning does not mean silently mutating a qualified production model's weights while it is serving Benjamin.
 
-The Root Agent must never:
+Candidate succession should follow a controlled path such as:
 
-- request treasury private keys;
-- modify owner treasury destinations;
-- route funds to a blocked or invalid destination;
-- treat an arbitrary destination as a treasury address.
+`candidate -> historical replay -> leakage controls -> out-of-sample/walk-forward -> shadow comparison -> qualification -> explicit promotion`
 
-## Treasury sweep readiness gate
+## Data and prediction integrity
 
-A transfer to an active owner treasury destination is a special settlement path, not arbitrary external transfer authority.
+ZLJ must fail closed or explicitly degrade when required source freshness, provenance, sequence integrity, schema compatibility, or model qualification is unavailable.
 
-Before live treasury sweeps may be enabled, the implementation must prove all of the following:
+The Root Agent may not fabricate or infer missing canonical observations merely to keep the pipeline producing outputs.
 
-- operational wallet custody is isolated;
-- destination registry is enforced outside the LLM layer;
-- chain/address validation exists;
-- asset/network matching exists;
-- accounting identifies sweepable balance correctly;
-- operating and network-fee reserves are retained;
-- duplicate-sweep protection exists;
-- transaction preflight/simulation is used where supported;
-- signer limits are deterministic;
-- receipts and final balances are reconciled;
-- failures are observable;
-- emergency pause behavior works;
-- tests cover the critical path.
+## External-action boundary
 
-Enabling this gate must be an explicit machine-readable configuration change supported by evidence. A reasoning model may recommend the change but cannot bypass the readiness checks.
+Production integrations that can change external financial state belong to **The Hand**, including:
 
-## Capital-moving execution
+- exchange/broker order submission;
+- wallet or custody signing;
+- deposits/withdrawals/transfers;
+- bank or payment-rail actions;
+- settlement/sweep actions;
+- future external financial tools that can move or encumber value.
 
-Whenever non-zero assets are involved, policy must be enforced outside the reasoning layer through mechanisms such as:
+ZLJ may maintain read-only market/provider connectors and test doubles necessary for research and qualification.
 
-- restricted signing services;
-- chain/asset/destination allowlists;
-- transaction-size and cumulative limits;
-- rate limits and circuit breakers;
-- isolated credentials;
-- transaction simulation/preflight;
-- signer pause/quarantine controls;
-- durable accounting and reconciliation.
+Historical wallet/signing/execution code in this repository is non-authoritative predecessor/test material until intentionally migrated into The Hand.
+
+## Watchman boundary
+
+A ZLJ intelligence object may support a Benjamin decision, but it can never satisfy Watchman by itself.
+
+Watchman evaluates the actual proposed action under current mandate, risk, compliance, exposure, capital, and authority. ZLJ cannot weaken those requirements by increasing model confidence.
 
 ## Self-provisioning
 
-Before asking the owner for a technical dependency, determine whether it can be safely built, substituted, emulated, or self-provisioned inside current authority.
+Before asking the owner for a technical dependency inside ZLJ's scope, determine whether it can be safely built, substituted, emulated, or self-provisioned under current authority.
 
-Owner-only boundaries include personal KYC/legal identity actions, acceptance of legal obligations on the owner's behalf, funding or spending beyond configured authority, and changes to the Governor or immutable treasury registry.
+Owner-only or cross-organ boundaries include personal KYC/legal identity actions, acceptance of legal obligations on the owner's behalf, production financial credentials, production custody, capital permissions, Watchman changes, and changes to the constitutional ownership of another Epinnox organ.
 
 ## Emergency behavior
 
-If authority is ambiguous, a key may be compromised, accounting diverges, a destination fails validation, a transfer is anomalous, or a risk control fails:
+If data integrity becomes ambiguous, credentials may be compromised, model outputs materially diverge, a provider changes behavior, or a qualification control fails:
 
-1. stop the affected write path;
-2. pause/quarantine the signer where possible;
+1. stop or degrade the affected ZLJ path;
+2. quarantine the affected source/model where appropriate;
 3. preserve evidence without exposing secrets;
-4. retain safe read-only monitoring;
+4. retain safe read-only monitoring where possible;
 5. record the incident;
-6. reconcile actual chain/account state;
-7. rotate operational credentials where appropriate;
-8. resume only after deterministic safety checks pass.
+6. reconcile actual data/model state;
+7. rotate scoped ZLJ credentials where appropriate;
+8. resume only after deterministic safety and qualification checks pass.
 
 ## Invariants
 
-- The mission is subordinate to the Governor.
-- Working wallets belong to the autonomous system.
-- Final treasury destinations belong to the owner.
-- Treasury private keys never enter the system.
-- Capital-moving actions require deterministic policy and auditable accounting.
+- ZLJ autonomy is subordinate to this Governor.
+- ZLJ Governor is not Watchman.
+- ZLJ does not own production capital, custody, signing, transfers, or external money movement.
+- Models produce intelligence, not authority.
+- Capital-moving actions belong to the Benjamin -> Watchman -> The Hand path.
