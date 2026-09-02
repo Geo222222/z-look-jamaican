@@ -27,6 +27,7 @@ BLOCKED = "BLOCKED"
 NOT_APPLICABLE = "NOT_APPLICABLE"
 LEGACY_UNJOINED = "LEGACY_UNJOINED"
 NOT_EARNED = "NOT_EARNED"
+QUALIFIED_SHADOW_PATH = "state/qualified_market_shadow.json"
 
 
 def sequence_integrity(observation: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -135,13 +136,25 @@ def qualify_observation(
     }
 
 
-def _bond_content(decision: Mapping[str, Any], bindings: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
+def _decision_core(decision: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Immutable decision semantics that must remain bound to market evidence."""
     return {
         "decision_id": str(decision.get("id", "")),
+        "product": str(decision.get("product", "")),
         "decision_observed_at": int(decision.get("observed_at", 0) or 0),
         "actionable_at": int(decision.get("actionable_at", 0) or 0),
-        "market_evidence": list(bindings),
+        "signal_candle_timestamp": decision.get("signal_candle_timestamp"),
+        "target_position": decision.get("target_position"),
+        "strategy_id": decision.get("strategy_id"),
+        "rationale_code": decision.get("rationale_code"),
+        "capital_effect": decision.get("capital_effect"),
+        "execution_authority": decision.get("execution_authority"),
+        "freshness_policy": decision.get("freshness_policy"),
     }
+
+
+def _bond_content(decision: Mapping[str, Any], bindings: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
+    return {"decision": _decision_core(decision), "market_evidence": list(bindings)}
 
 
 def bind_shadow_decision(
@@ -165,6 +178,9 @@ def bind_shadow_decision(
         raise ValueError("shadow decision must remain prospective")
     if not observations:
         raise ValueError("shadow decision requires at least one market observation")
+    observation_ids = [str(item.get("observation_id", "")) for item in observations]
+    if not all(observation_ids) or len(set(observation_ids)) != len(observation_ids):
+        raise ValueError("shadow decision evidence must contain unique observation IDs")
 
     bindings = []
     for observation in observations:
@@ -208,7 +224,7 @@ def bind_shadow_decision(
     result = dict(decision)
     result["market_evidence"] = bindings
     result["market_evidence_bond"] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "algorithm": "sha256",
         "content_hash": canonical_hash(_bond_content(result, bindings)),
     }
@@ -237,12 +253,106 @@ def _verify_evidence_bond(decision: Mapping[str, Any]) -> list[str]:
     if not bindings:
         return ["market_evidence_missing"]
     bond = decision.get("market_evidence_bond", {})
-    if bond.get("schema_version") != 1 or bond.get("algorithm") != "sha256":
+    if bond.get("schema_version") != 2 or bond.get("algorithm") != "sha256":
         return ["market_evidence_bond_metadata_invalid"]
     expected = canonical_hash(_bond_content(decision, bindings))
     if bond.get("content_hash") != expected:
         return ["market_evidence_bond_hash_mismatch"]
     return []
+
+
+def _load_successor_shadow(root: Path) -> Mapping[str, Any]:
+    path = root / QUALIFIED_SHADOW_PATH
+    if not path.is_file():
+        return {"schema_version": 1, "program_id": "QUALIFIED-MARKET-SHADOW-V1", "decisions": []}
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {"schema_version": 0, "program_id": "INVALID", "decisions": []}
+    return document
+
+
+def _audit_decision(
+    root: Path,
+    decision: Mapping[str, Any],
+    *,
+    source_state: str,
+    legacy_source: bool,
+    max_event_age_seconds: int,
+    max_transport_age_seconds: int,
+) -> Mapping[str, Any]:
+    bindings = _bindings(decision)
+    if not bindings:
+        if legacy_source:
+            return {
+                "decision_id": decision.get("id"),
+                "source_state": source_state,
+                "state": LEGACY_UNJOINED,
+                "reason": "decision predates prospective market-evidence binding; no retroactive upgrade permitted",
+                "observation_ids": [],
+                "bindings": [],
+                "reasons": [],
+            }
+        return {
+            "decision_id": decision.get("id"),
+            "source_state": source_state,
+            "state": BLOCKED,
+            "reason": "successor shadow decision requires an original market-evidence bond",
+            "observation_ids": [],
+            "bindings": [],
+            "reasons": ["market_evidence_missing"],
+        }
+
+    binding_results = []
+    reasons = _verify_evidence_bond(decision)
+    observation_ids = []
+    for binding in bindings:
+        observation_id = str(binding.get("observation_id", ""))
+        observation_ids.append(observation_id)
+        observation = _load_observation(root, observation_id)
+        if observation is None:
+            reasons.append(f"missing_market_observation:{observation_id}")
+            continue
+        if binding.get("content_hash") != observation.get("integrity", {}).get("content_hash"):
+            reasons.append(f"bound_observation_hash_mismatch:{observation_id}")
+        if binding.get("provider") != observation.get("raw", {}).get("provider"):
+            reasons.append(f"bound_provider_mismatch:{observation_id}")
+        if binding.get("instrument") != observation.get("normalized", {}).get("instrument"):
+            reasons.append(f"bound_instrument_mismatch:{observation_id}")
+        if binding.get("channel") != observation.get("raw", {}).get("channel"):
+            reasons.append(f"bound_channel_mismatch:{observation_id}")
+        if int(binding.get("consumed_at", -1)) != int(decision.get("observed_at", -2)):
+            reasons.append(f"bound_consumption_time_mismatch:{observation_id}")
+
+        qualification = qualify_observation(
+            observation,
+            consumed_at=int(decision["observed_at"]),
+            max_event_age_seconds=max_event_age_seconds,
+            max_transport_age_seconds=max_transport_age_seconds,
+        )
+        binding_results.append(qualification)
+        if qualification["state"] != QUALIFIED:
+            reasons.extend(qualification["reasons"])
+        if binding.get("quality_state") != qualification["consumption_quality"].get("status"):
+            reasons.append(f"bound_quality_state_mismatch:{observation_id}")
+        if binding.get("sequence_state") != qualification["sequence_integrity"].get("state"):
+            reasons.append(f"bound_sequence_state_mismatch:{observation_id}")
+
+        normalized = observation.get("normalized", {})
+        signal_timestamp = decision.get("signal_candle_timestamp")
+        if normalized.get("type") == "candle" and signal_timestamp is not None:
+            if int(normalized.get("start_at", -1)) != int(signal_timestamp):
+                reasons.append(f"bound_signal_candle_mismatch:{observation_id}")
+
+    state = QUALIFIED if not reasons and len(binding_results) == len(bindings) else BLOCKED
+    return {
+        "decision_id": decision.get("id"),
+        "source_state": source_state,
+        "state": state,
+        "observation_ids": observation_ids,
+        "bindings": binding_results,
+        "reasons": reasons,
+    }
 
 
 def qualification_snapshot(
@@ -257,6 +367,7 @@ def qualification_snapshot(
     if shadow is None:
         shadow_path = root / "state/market_shadow.json"
         shadow = json.loads(shadow_path.read_text(encoding="utf-8")) if shadow_path.is_file() else {"decisions": []}
+    successor = _load_successor_shadow(root)
 
     store_errors = validate_market_data_store(root)
     stream_errors = validate_stream_bundles(root)
@@ -287,82 +398,71 @@ def qualification_snapshot(
         )
 
     decision_audits = []
-    joined = qualified_joined = blocked_joined = legacy = 0
+    legacy_unjoined = 0
+    total_joined = qualified_joined = blocked_joined = 0
+    successor_joined = successor_qualified = successor_blocked = 0
+
     for decision in shadow.get("decisions", []):
-        bindings = _bindings(decision)
-        if not bindings:
-            legacy += 1
-            decision_audits.append(
-                {
-                    "decision_id": decision.get("id"),
-                    "state": LEGACY_UNJOINED,
-                    "reason": "decision predates prospective market-evidence binding; no retroactive upgrade permitted",
-                    "observation_ids": [],
-                }
-            )
-            continue
-
-        joined += 1
-        binding_results = []
-        reasons = _verify_evidence_bond(decision)
-        observation_ids = []
-        for binding in bindings:
-            observation_id = str(binding.get("observation_id", ""))
-            observation_ids.append(observation_id)
-            observation = _load_observation(root, observation_id)
-            if observation is None:
-                reasons.append(f"missing_market_observation:{observation_id}")
-                continue
-            if binding.get("content_hash") != observation.get("integrity", {}).get("content_hash"):
-                reasons.append(f"bound_observation_hash_mismatch:{observation_id}")
-            if binding.get("provider") != observation.get("raw", {}).get("provider"):
-                reasons.append(f"bound_provider_mismatch:{observation_id}")
-            if binding.get("instrument") != observation.get("normalized", {}).get("instrument"):
-                reasons.append(f"bound_instrument_mismatch:{observation_id}")
-            if binding.get("channel") != observation.get("raw", {}).get("channel"):
-                reasons.append(f"bound_channel_mismatch:{observation_id}")
-            if int(binding.get("consumed_at", -1)) != int(decision.get("observed_at", -2)):
-                reasons.append(f"bound_consumption_time_mismatch:{observation_id}")
-
-            qualification = qualify_observation(
-                observation,
-                consumed_at=int(decision["observed_at"]),
-                max_event_age_seconds=max_event_age_seconds,
-                max_transport_age_seconds=max_transport_age_seconds,
-            )
-            binding_results.append(qualification)
-            if qualification["state"] != QUALIFIED:
-                reasons.extend(qualification["reasons"])
-            if binding.get("quality_state") != qualification["consumption_quality"].get("status"):
-                reasons.append(f"bound_quality_state_mismatch:{observation_id}")
-            if binding.get("sequence_state") != qualification["sequence_integrity"].get("state"):
-                reasons.append(f"bound_sequence_state_mismatch:{observation_id}")
-
-        state = QUALIFIED if not reasons and len(binding_results) == len(bindings) else BLOCKED
-        if state == QUALIFIED:
-            qualified_joined += 1
-        else:
-            blocked_joined += 1
-        decision_audits.append(
-            {
-                "decision_id": decision.get("id"),
-                "state": state,
-                "observation_ids": observation_ids,
-                "bindings": binding_results,
-                "reasons": reasons,
-            }
+        audit = _audit_decision(
+            root,
+            decision,
+            source_state="state/market_shadow.json",
+            legacy_source=True,
+            max_event_age_seconds=max_event_age_seconds,
+            max_transport_age_seconds=max_transport_age_seconds,
         )
+        decision_audits.append(audit)
+        if audit["state"] == LEGACY_UNJOINED:
+            legacy_unjoined += 1
+        else:
+            total_joined += 1
+            if audit["state"] == QUALIFIED:
+                qualified_joined += 1
+            else:
+                blocked_joined += 1
+
+    for decision in successor.get("decisions", []):
+        audit = _audit_decision(
+            root,
+            decision,
+            source_state=QUALIFIED_SHADOW_PATH,
+            legacy_source=False,
+            max_event_age_seconds=max_event_age_seconds,
+            max_transport_age_seconds=max_transport_age_seconds,
+        )
+        decision_audits.append(audit)
+        successor_joined += 1 if _bindings(decision) else 0
+        if _bindings(decision):
+            total_joined += 1
+        if audit["state"] == QUALIFIED:
+            successor_qualified += 1
+            qualified_joined += 1
+        elif audit["state"] == BLOCKED:
+            successor_blocked += 1
+            blocked_joined += 1
 
     prospective_join_state = NOT_APPLICABLE
-    if joined:
-        prospective_join_state = QUALIFIED if blocked_joined == 0 else BLOCKED
+    if successor_joined:
+        prospective_join_state = QUALIFIED if successor_blocked == 0 and successor_qualified == successor_joined else BLOCKED
+
+    certification_state = NOT_EARNED
+    if successor_joined > 0:
+        certification_state = (
+            QUALIFIED
+            if successor_blocked == 0
+            and successor_qualified == successor_joined
+            and not store_errors
+            and not stream_errors
+            else BLOCKED
+        )
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "policy": {
             "venue_neutral": True,
             "fail_closed": True,
             "retroactive_evidence_binding_permitted": False,
+            "successor_shadow_state": QUALIFIED_SHADOW_PATH,
             "max_event_age_seconds": int(max_event_age_seconds),
             "max_transport_age_seconds": int(max_transport_age_seconds),
         },
@@ -377,17 +477,18 @@ def qualification_snapshot(
             "observations": observation_audits,
         },
         "shadow_evidence": {
-            "decision_count": len(shadow.get("decisions", [])),
-            "legacy_unjoined_count": legacy,
-            "prospectively_joined_count": joined,
+            "decision_count": len(shadow.get("decisions", [])) + len(successor.get("decisions", [])),
+            "legacy_decision_count": len(shadow.get("decisions", [])),
+            "successor_decision_count": len(successor.get("decisions", [])),
+            "legacy_unjoined_count": legacy_unjoined,
+            "prospectively_joined_count": total_joined,
             "qualified_joined_count": qualified_joined,
             "blocked_joined_count": blocked_joined,
+            "successor_joined_count": successor_joined,
+            "successor_qualified_count": successor_qualified,
+            "successor_blocked_count": successor_blocked,
             "prospective_join_state": prospective_join_state,
-            "certification_state": (
-                QUALIFIED
-                if joined > 0 and blocked_joined == 0 and not store_errors and not stream_errors
-                else NOT_EARNED if joined == 0 else BLOCKED
-            ),
+            "certification_state": certification_state,
             "decisions": decision_audits,
         },
     }
