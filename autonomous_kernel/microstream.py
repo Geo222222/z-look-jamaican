@@ -36,8 +36,37 @@ def _atomic_bytes(path: Path, content: bytes) -> None:
             os.unlink(temporary)
 
 
+def _iso_decimal_epoch(value: str) -> Decimal:
+    """Parse timezone-aware RFC3339 timestamps without losing nanosecond precision."""
+    normalized = str(value).strip()
+    if normalized.endswith("Z"):
+        normalized = normalized[:-1] + "+00:00"
+    head, separator, remainder = normalized.partition(".")
+    if not separator:
+        parsed = datetime.fromisoformat(normalized)
+        if parsed.tzinfo is None:
+            raise ValueError("provider timestamp must be timezone-aware")
+        return Decimal(str(parsed.timestamp()))
+
+    plus_index = remainder.rfind("+")
+    minus_index = remainder.rfind("-")
+    offset_index = max(plus_index, minus_index)
+    if offset_index < 0:
+        raise ValueError("provider timestamp must be timezone-aware")
+    fraction = remainder[:offset_index]
+    offset = remainder[offset_index:]
+    if not fraction.isdigit():
+        raise ValueError("provider timestamp has invalid fractional seconds")
+    parsed_whole = datetime.fromisoformat(head + offset)
+    if parsed_whole.tzinfo is None:
+        raise ValueError("provider timestamp must be timezone-aware")
+    whole_epoch = Decimal(str(int(parsed_whole.timestamp())))
+    fractional = Decimal("0." + fraction) if fraction else Decimal("0")
+    return whole_epoch + fractional
+
+
 def _iso_epoch(value: str) -> int:
-    return int(datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp())
+    return int(_iso_decimal_epoch(value))
 
 
 def _quantiles(values: list[Decimal], percentiles: list[int]) -> Mapping[str, str]:
@@ -89,7 +118,7 @@ def replay_records(records: list[Mapping[str, Any]], percentiles: list[int] | No
         last_sequences[channel] = max(sequence, previous_channel if previous_channel is not None else sequence)
         timestamp = str(message.get("timestamp", ""))
         if timestamp:
-            provider_epoch = Decimal(str(datetime.fromisoformat(timestamp.replace("Z", "+00:00")).timestamp()))
+            provider_epoch = _iso_decimal_epoch(timestamp)
             receive_epoch = Decimal(int(record["received_at_ns"])) / Decimal("1000000000")
             signed_clock_skews.append(provider_epoch - receive_epoch)
         if timestamp and (latest_provider_at is None or timestamp > latest_provider_at):
