@@ -231,11 +231,19 @@ def validate_market_data_store(root: Path) -> list[str]:
         if document.get("integrity", {}).get("content_hash") != item.get("content_hash"):
             errors.append(f"state/market_data.json: index hash mismatch for {item.get('observation_id')}")
 
+    full_kernel = (root / "state/current_state.json").is_file()
     qualified_shadow_path = root / "state/qualified_market_shadow.json"
-    if qualified_shadow_path.is_file():
+    if full_kernel and not qualified_shadow_path.is_file():
+        errors.append("missing required successor shadow state: state/qualified_market_shadow.json")
+    elif qualified_shadow_path.is_file():
         # Imported lazily to avoid an import cycle: qualified_shadow consumes the
         # market qualification contract, while canonical validation starts here.
         from .qualified_shadow import validate_qualified_shadow_state
 
         errors.extend(validate_qualified_shadow_state(root))
+
+    if full_kernel:
+        from .joined_shadow_observer import validate_joined_shadow_policy
+
+        errors.extend(validate_joined_shadow_policy(root))
     return errors
