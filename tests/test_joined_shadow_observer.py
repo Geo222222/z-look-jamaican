@@ -124,6 +124,21 @@ class JoinedShadowObserverTests(unittest.TestCase):
             self.assertEqual(1005, retry["consumed_at"])
             self.assertEqual(first["market_evidence_bond"], retry["market_evidence_bond"])
 
+    def test_corrupted_existing_join_is_rejected_on_retry(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_policy(root)
+            MarketDataStore(root).persist(stream_observation())
+            join_observer_window(root, window(), consumed_at=1005)
+
+            state_path = root / STATE_RELATIVE_PATH
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            state["decisions"][0]["target_position"] = 1
+            state_path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(RuntimeError, "failed validation"):
+                join_observer_window(root, window(), consumed_at=1100)
+
     def test_stale_first_handoff_is_skipped_without_successor_decision(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
