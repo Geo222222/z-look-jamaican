@@ -22,11 +22,41 @@ ZLJ intelligence for Benjamin
 
 Z9 owns representation of broader market context: cross-instrument structure, market breadth, volatility, liquidity, correlation, venue dislocation, spot/derivative basis and an explicitly non-causal lead/lag proxy. Z9 owns **no** trade intent, capital sizing, mandate/risk authorization, credential use, order placement, settlement, or authoritative cross-system proof.
 
-A Z9 frame is derived only from exact Z2 frames. Every source frame ID and SHA-256 content hash is part of the Z9 content hash. A source whose `known_at_ns` or cutoff is later than the requested Z9 cutoff is rejected rather than silently filtered.
+A Z9 frame is derived only from exact Z2 frames. Every source frame ID and SHA-256 content hash is part of the Z9 content hash. Future-known Z2 frames are ineligible for operational materialization, and the builder independently rejects any source that violates its point-in-time cutoff.
 
 ## Provider neutrality
 
 Z9 joins canonical economic instrument identities, never provider symbols. Venue/provider-specific parsing remains below Z2. Spot/derivative relationships require matching asset class, base asset and quote asset; no symbol-string guessing is permitted.
+
+## Authoritative operational materialization
+
+Z9 has one canonical runtime path for producing context from durable Z2 evidence:
+
+```text
+durable Z2 representation store
+        ↓ validate the complete indexed store
+select every INSTRUMENT_STATE where
+    known_at_ns  <= T
+    cutoff_at_ns <= T
+        ↓ deterministic instrument/time ordering
+retain admissible history for return/volatility/correlation/lead-lag
+        ↓
+build_market_context(..., cutoff_at_ns=T)
+        ↓
+verify exact source IDs + content hashes + instrument lineage
+        ↓
+persist immutable MARKET_CONTEXT
+        ↓
+re-read artifact + validate Z9 store
+```
+
+The operational entrypoint is `materialize_market_context`. It does not allow a caller to cherry-pick an arbitrary subset of durable frames. The complete Z2 store is validated before selection; a corrupted indexed Z2 artifact blocks materialization. Repeating the same cutoff against the same durable evidence is idempotent.
+
+CLI entrypoint:
+
+```bash
+python -m autonomous_kernel context_materialize --cutoff-at-ns <T>
+```
 
 ## Context content
 
@@ -68,20 +98,49 @@ final_weight_i =
   / Σ(z8_weight × context_multiplier)
 ```
 
-Every model must supply a versioned, hashable `ModelContextProfile` declaring its feature dependencies, preferred/adverse regimes and diversity group. No hidden model-family heuristic exists. Missing a profile fails closed.
+## Governed ModelContextProfile registry
 
-The contextual receipt binds the base Z8 receipt, base Z8 prediction, exact Z9 context, complete profile set, component predictions, all factor values, final weights and reason codes. The final contextual prediction remains a normal Z3 prediction so Z6 can resolve it without learning a second outcome truth model.
+A `ModelContextProfile` is policy evidence, not a caller hint. Each exact model version may have immutable profile versions declaring:
+
+- Z9 feature dependencies;
+- preferred regimes;
+- adverse regimes;
+- diversity group;
+- profile version and content hash.
+
+Profile existence and profile authority are separate. Registration creates an immutable artifact bound to the exact Z5 `model_ref`, model-definition hash and model-artifact hash. Activation is a separate append-only event with evidence references. A later profile version does not rewrite an earlier one.
+
+```text
+exact Z5 model identity
+        ↓
+immutable ModelContextProfile artifact
+        ↓ PROFILE_REGISTERED
+append-only profile event journal
+        ↓ explicit evidence
+PROFILE_ACTIVATED
+        ↓
+active policy as-of time T
+```
+
+Canonical contextual assembly does **not** accept a caller-supplied `profiles` collection. It resolves exactly one active registered profile for every contributing model from durable state. Missing or ambiguous profile authority fails closed.
+
+Profile authority must be strictly prior to an assembly: `activated_at_ns < assembly_at_ns`. This prevents a profile activated later with the same timestamp from retroactively changing the meaning of an already-recorded contextual receipt.
+
+The contextual receipt binds the exact profile-set hash and each contributor's profile hash. Lineage validation re-resolves the historically active registered profiles at the causal policy cutoff and verifies those hashes, so a syntactically valid but unregistered profile cannot explain a Z9 weight adjustment.
 
 ## Durability
 
 ```text
-artifacts/market_data/contexts/<context_id>.json  immutable Z9 context
-state/market_context.json                         rebuildable discovery index
-memory/contextual_assemblies.jsonl                append-only hash chain
-state/contextual_assembly_journal.json            rebuildable journal head
+artifacts/market_data/contexts/<context_id>.json   immutable Z9 context
+state/market_context.json                          rebuildable discovery index
+artifacts/model_context_profiles/<profile_id>.json immutable context policy artifacts
+memory/model_context_profile_events.jsonl          append-only registration/activation chain
+state/model_context_profiles.json                  rebuildable profile projection
+memory/contextual_assemblies.jsonl                 append-only contextual receipt chain
+state/contextual_assembly_journal.json             rebuildable contextual journal head
 ```
 
-A persisted Z9 context requires every source Z2 frame to already be durably stored. The canonical contextual service requires the context artifact before it can influence assembly.
+A persisted Z9 context requires every source Z2 frame to already be durably stored. The canonical contextual service requires the context artifact and governed active model-context profiles before context can influence assembly.
 
 ## Operations
 
@@ -91,7 +150,7 @@ Read-only status:
 python -m autonomous_kernel context_status
 ```
 
-Full kernel validation also validates the Z9 store, contextual journal and Z8→Z9 lineage.
+Full kernel validation validates the Z9 store, model-context profile registry, contextual journal and complete Z8→Z9 lineage.
 
 ## Certification
 
