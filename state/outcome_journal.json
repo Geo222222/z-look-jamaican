@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "outcome_contract_version": "1.0",
+  "authority": "append-only independently resolved prediction outcomes",
+  "entry_count": 0,
+  "last_sequence": null,
+  "last_entry_hash": null
+}
