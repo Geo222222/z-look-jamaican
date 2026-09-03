@@ -63,23 +63,32 @@ def _frame_ref(frame: RepresentationFrame) -> ExperienceSourceFrame:
     )
 
 
-def _feature_status(frames: Sequence[RepresentationFrame], context: MarketContextFrame) -> Dict[str, str]:
+def _aggregate_status(items: Sequence[RepresentationFrame], *, incomplete: bool = False) -> str:
+    if not items:
+        return "UNAVAILABLE"
+    if incomplete:
+        return "DEGRADED" if any(item.status in {"QUALIFIED", "DEGRADED"} for item in items) else "UNAVAILABLE"
+    if all(item.status == "QUALIFIED" for item in items):
+        return "QUALIFIED"
+    if any(item.status in {"QUALIFIED", "DEGRADED"} for item in items):
+        return "DEGRADED"
+    return "UNAVAILABLE"
+
+
+def _feature_status(
+    frames: Sequence[RepresentationFrame],
+    context: MarketContextFrame,
+    *,
+    incomplete: bool,
+) -> Dict[str, str]:
     spot = [frame for frame in frames if frame.instrument.market_type == "SPOT"]
     derivatives = [frame for frame in frames if frame.instrument.market_type in {"PERPETUAL", "FUTURE"}]
-
-    def aggregate(items: Sequence[RepresentationFrame]) -> str:
-        if not items:
-            return "UNAVAILABLE"
-        if all(item.status == "QUALIFIED" for item in items):
-            return "QUALIFIED"
-        if any(item.status in {"QUALIFIED", "DEGRADED"} for item in items):
-            return "DEGRADED"
-        return "UNAVAILABLE"
-
     market_wide = context.status if context.status in {"QUALIFIED", "DEGRADED", "UNAVAILABLE"} else "UNAVAILABLE"
+    if incomplete and market_wide == "QUALIFIED":
+        market_wide = "DEGRADED"
     return {
-        "SPOT_MICROSTRUCTURE": aggregate(spot),
-        "DERIVATIVE_MICROSTRUCTURE": aggregate(derivatives),
+        "SPOT_MICROSTRUCTURE": _aggregate_status(spot, incomplete=incomplete),
+        "DERIVATIVE_MICROSTRUCTURE": _aggregate_status(derivatives, incomplete=incomplete),
         # Funding/OI/liquidation/term-structure are deliberately not inferred
         # from order-book/trade frames. A later derivative-state capture phase
         # must earn these families explicitly.
@@ -105,6 +114,11 @@ def build_market_experience(
     The builder rejects rather than filters future-known source frames, contexts,
     or graph versions. Future realized paths/outcomes belong in a separate
     outcome object and must never mutate this frame.
+
+    A timescale may not be backed by a representation containing information
+    from before that view's declared start; doing so would contaminate a short
+    question with a longer history. Sources that start late or end before T are
+    retained only as degraded/incomplete evidence.
     """
     if not economic_root_id:
         raise MarketExperienceError("economic_root_id is required")
@@ -132,24 +146,29 @@ def build_market_experience(
     known_values = [graph.known_at_ns, context.known_at_ns]
     overall_states = []
     for spec in specs:
+        view_start = cutoff_at_ns - spec.lookback_ns
         frames = tuple(timescale_frames.get(spec.timescale, ()))
         ids = [frame.frame_id for frame in frames]
         if len(ids) != len(set(ids)):
             raise MarketExperienceError("duplicate source frame id in timescale")
+        incomplete = False
         for frame in frames:
             if frame.instrument.canonical_id not in allowed_instruments:
                 raise MarketExperienceError("source frame instrument is outside economic root graph")
             if frame.cutoff_at_ns > cutoff_at_ns or frame.known_at_ns > cutoff_at_ns:
                 raise MarketExperienceError("lookahead source frame rejected")
-            # A source representation may include a longer observation history;
-            # the view lookback is an experience/selection contract and does not
-            # fabricate a shorter Z2 frame than the caller actually supplied.
+            if frame.window_start_ns < view_start:
+                raise MarketExperienceError("source frame contains information before timescale view start")
+            if frame.window_start_ns > view_start or frame.cutoff_at_ns < cutoff_at_ns:
+                incomplete = True
             all_hashes.append(frame.content_hash())
             known_values.append(frame.known_at_ns)
 
-        family_status = _feature_status(frames, context)
+        family_status = _feature_status(frames, context, incomplete=incomplete)
         if not frames:
             status = "UNAVAILABLE"
+        elif incomplete:
+            status = "DEGRADED" if any(frame.status in {"QUALIFIED", "DEGRADED"} for frame in frames) else "UNAVAILABLE"
         elif all(frame.status == "QUALIFIED" for frame in frames) and context.status == "QUALIFIED":
             status = "QUALIFIED"
         elif any(frame.status in {"QUALIFIED", "DEGRADED"} for frame in frames) and context.status != "UNAVAILABLE":
@@ -161,7 +180,7 @@ def build_market_experience(
             ExperienceView(
                 timescale=spec.timescale,
                 lookback_ns=spec.lookback_ns,
-                window_start_ns=cutoff_at_ns - spec.lookback_ns,
+                window_start_ns=view_start,
                 cutoff_at_ns=cutoff_at_ns,
                 status=status,
                 source_frames=tuple(_frame_ref(frame) for frame in frames),
