@@ -422,7 +422,7 @@ def run_qualification(source_root: Path) -> Mapping[str, Any]:
                 "evidence_class": "RESEARCH_ONLY",
                 "claim_ceiling": prereg["scope"]["claim_ceiling"],
                 "capital_effect": "NONE",
-                "live_execution": false,
+                "live_execution": False,
             },
             "dataset": {
                 "stream_id": STREAM_ID,
@@ -465,10 +465,10 @@ def run_qualification(source_root: Path) -> Mapping[str, Any]:
             "qualification": {
                 "decision": decision,
                 "reasons": list(reasons),
-                "broad_historical_qualification": false,
-                "walk_forward_qualification": false,
-                "prospective_shadow_qualification": false,
-                "contextual_qualification": false,
+                "broad_historical_qualification": False,
+                "walk_forward_qualification": False,
+                "prospective_shadow_qualification": False,
+                "contextual_qualification": False,
             },
         }
         report = dict(report_body)
