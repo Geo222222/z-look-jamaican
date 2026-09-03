@@ -15,4 +15,4 @@ zlj-canonicalize = "autonomous_kernel.observation.materialize:main"
 zlj-represent = "autonomous_kernel.representation.materialize:main"
 
 [tool.setuptools]
-packages = ["autonomous_kernel", "autonomous_kernel.observation", "autonomous_kernel.representation", "experiments"]
+packages = ["autonomous_kernel", "autonomous_kernel.observation", "autonomous_kernel.representation", "autonomous_kernel.prediction", "experiments"]
