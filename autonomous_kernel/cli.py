@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
+from .assembly.context_profiles import validate_context_profile_registry
 from .assembly.contextual_journal import validate_contextual_assembly_journal
 from .assembly.contextual_lineage import validate_contextual_assembly_lineage
 from .assembly.journal import validate_assembly_journal
@@ -35,6 +36,7 @@ def _validate_learning_state_or_raise(root: Path) -> Sequence[str]:
         ("assembly_journal", validate_assembly_journal),
         ("assembly_lineage", validate_assembly_lineage),
         ("market_context_store", validate_market_context_store),
+        ("context_profile_registry", validate_context_profile_registry),
         ("contextual_assembly_journal", validate_contextual_assembly_journal),
         ("contextual_assembly_lineage", validate_contextual_assembly_lineage),
     )

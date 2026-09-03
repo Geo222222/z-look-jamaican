@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, List, Mapping
+from typing import Dict, List
 
 from ..context.store import MarketContextStore
 from ..prediction.contracts import Prediction
 from ..prediction.journal import PredictionJournal, validate_prediction_journal
+from .context_profiles import ModelContextProfileRegistry, ModelContextProfileRegistryError, profile_set_hash, validate_context_profile_registry
 from .contracts import AssemblyReceipt
 from .contextual import ContextualAssemblyReceipt
 from .contextual_journal import ContextualAssemblyJournal, ContextualAssemblyJournalError, validate_contextual_assembly_journal
@@ -49,6 +50,24 @@ def validate_contextual_receipt_lineage(root: Path, receipt: ContextualAssemblyR
         prediction_id = str(contributor.get("component_prediction_id", "")); prediction = predictions.get(prediction_id)
         if prediction is None: errors.append("component prediction missing: %s" % prediction_id)
         elif prediction.content_hash() != contributor.get("component_prediction_hash"): errors.append("component prediction hash mismatch: %s" % prediction_id)
+
+    registry_errors = validate_context_profile_registry(root)
+    if registry_errors:
+        errors.append("context-profile registry invalid: " + "; ".join(registry_errors))
+    else:
+        model_refs = [str(item.get("model_ref", "")) for item in receipt.contributors]
+        try:
+            profiles = ModelContextProfileRegistry(root).active_profiles(model_refs, as_of_ns=receipt.assembly_at_ns)
+        except ModelContextProfileRegistryError as exc:
+            profiles = (); errors.append("context-profile lineage unavailable: %s" % exc)
+        if profiles:
+            expected_hashes = {profile.model_ref: profile.content_hash() for profile in profiles}
+            if profile_set_hash(profiles) != receipt.context_profile_set_hash:
+                errors.append("context-profile set hash mismatch")
+            for contributor in receipt.contributors:
+                model_ref = str(contributor.get("model_ref", ""))
+                if contributor.get("context_profile_hash") != expected_hashes.get(model_ref):
+                    errors.append("context-profile hash mismatch for %s" % model_ref)
     return errors
 
 
