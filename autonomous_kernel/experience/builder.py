@@ -54,6 +54,7 @@ def _frame_ref(frame: RepresentationFrame) -> ExperienceSourceFrame:
     return ExperienceSourceFrame(
         frame_id=frame.frame_id,
         frame_hash=frame.content_hash(),
+        representation_type=frame.representation_type,
         instrument_id=frame.instrument.canonical_id,
         market_type=frame.instrument.market_type,
         window_start_ns=frame.window_start_ns,
@@ -75,25 +76,83 @@ def _aggregate_status(items: Sequence[RepresentationFrame], *, incomplete: bool 
     return "UNAVAILABLE"
 
 
+def _aggregate_family_status(statuses: Sequence[str]) -> str:
+    values = tuple(status for status in statuses if status in {"QUALIFIED", "DEGRADED", "UNAVAILABLE"})
+    if not values:
+        return "UNAVAILABLE"
+    if all(status == "QUALIFIED" for status in values):
+        return "QUALIFIED"
+    if any(status in {"QUALIFIED", "DEGRADED"} for status in values):
+        return "DEGRADED"
+    return "UNAVAILABLE"
+
+
+def _derivative_family_status(
+    frames: Sequence[RepresentationFrame],
+    family: str,
+    *,
+    incomplete: bool,
+) -> str:
+    statuses = []
+    for frame in frames:
+        feature_status = frame.state.get("feature_family_status")
+        if not isinstance(feature_status, Mapping):
+            statuses.append("UNAVAILABLE")
+            continue
+        status = str(feature_status.get(family, "UNAVAILABLE"))
+        if status not in {"QUALIFIED", "DEGRADED", "UNAVAILABLE"}:
+            status = "UNAVAILABLE"
+        if (frame.status == "DEGRADED" or incomplete) and status == "QUALIFIED":
+            status = "DEGRADED"
+        if frame.status == "UNAVAILABLE":
+            status = "UNAVAILABLE"
+        statuses.append(status)
+    return _aggregate_family_status(statuses)
+
+
 def _feature_status(
     frames: Sequence[RepresentationFrame],
     context: MarketContextFrame,
     *,
     incomplete: bool,
 ) -> Dict[str, str]:
-    spot = [frame for frame in frames if frame.instrument.market_type == "SPOT"]
-    derivatives = [frame for frame in frames if frame.instrument.market_type in {"PERPETUAL", "FUTURE"}]
+    spot_micro = [
+        frame
+        for frame in frames
+        if frame.representation_type == "INSTRUMENT_STATE" and frame.instrument.market_type == "SPOT"
+    ]
+    derivative_micro = [
+        frame
+        for frame in frames
+        if frame.representation_type == "INSTRUMENT_STATE"
+        and frame.instrument.market_type in {"PERPETUAL", "FUTURE"}
+    ]
+    derivative_state = [
+        frame
+        for frame in frames
+        if frame.representation_type == "DERIVATIVE_STATE"
+        and frame.instrument.market_type in {"PERPETUAL", "FUTURE"}
+    ]
     market_wide = context.status if context.status in {"QUALIFIED", "DEGRADED", "UNAVAILABLE"} else "UNAVAILABLE"
     if incomplete and market_wide == "QUALIFIED":
         market_wide = "DEGRADED"
     return {
-        "SPOT_MICROSTRUCTURE": _aggregate_status(spot, incomplete=incomplete),
-        "DERIVATIVE_MICROSTRUCTURE": _aggregate_status(derivatives, incomplete=incomplete),
-        # Funding/OI/liquidation/term-structure are deliberately not inferred
-        # from order-book/trade frames. A later derivative-state capture phase
-        # must earn these families explicitly.
-        "DERIVATIVE_POSITIONING": "UNAVAILABLE",
-        "DERIVATIVE_FINANCING": "UNAVAILABLE",
+        "SPOT_MICROSTRUCTURE": _aggregate_status(spot_micro, incomplete=incomplete),
+        "DERIVATIVE_MICROSTRUCTURE": _aggregate_status(derivative_micro, incomplete=incomplete),
+        "DERIVATIVE_POSITIONING": _derivative_family_status(
+            derivative_state, "OPEN_INTEREST", incomplete=incomplete
+        ),
+        "DERIVATIVE_FINANCING": _derivative_family_status(
+            derivative_state, "FUNDING", incomplete=incomplete
+        ),
+        "DERIVATIVE_LIQUIDATIONS": _derivative_family_status(
+            derivative_state, "LIQUIDATIONS", incomplete=incomplete
+        ),
+        "MARK_INDEX_DIVERGENCE": _derivative_family_status(
+            derivative_state, "MARK_INDEX", incomplete=incomplete
+        ),
+        # Cross-contract curve state is not inferred from one derivative frame.
+        # A later empirical relationship/term-structure phase must earn it.
         "TERM_STRUCTURE": "UNAVAILABLE",
         "MARKET_WIDE_CONTEXT": market_wide,
     }
