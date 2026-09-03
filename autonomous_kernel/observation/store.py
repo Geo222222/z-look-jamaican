@@ -52,6 +52,22 @@ def _observation_set_hash(content_hashes: Sequence[str]) -> str:
     return canonical_hash({"content_hashes": list(content_hashes)})
 
 
+def _deterministic_gzip(raw: bytes) -> bytes:
+    """Return gzip bytes whose header is stable across supported Python versions.
+
+    Python's gzip.compress(..., mtime=0) has used different OS-header behavior
+    across interpreter releases. That makes identical canonical JSONL produce
+    different compressed hashes even though the market semantics are identical.
+    The gzip OS field is metadata, not market truth, so normalize it to RFC 1952's
+    unknown value (255) after compression while preserving the deflate payload.
+    """
+    compressed = bytearray(gzip.compress(raw, compresslevel=9, mtime=0))
+    if len(compressed) < 10 or compressed[0:2] != b"\x1f\x8b":
+        raise RuntimeError("gzip encoder returned an invalid header")
+    compressed[9] = 255
+    return bytes(compressed)
+
+
 class CanonicalBatchStore:
     """Durable, deterministic canonical-observation batches.
 
@@ -90,7 +106,7 @@ class CanonicalBatchStore:
             for value in wires
         ]
         raw = ("\n".join(lines) + "\n").encode("utf-8")
-        compressed = gzip.compress(raw, mtime=0)
+        compressed = _deterministic_gzip(raw)
         data_path = self.directory / (batch_id + ".jsonl.gz")
         manifest_path = self.directory / (batch_id + ".manifest.json")
 
