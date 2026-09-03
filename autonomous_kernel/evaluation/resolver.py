@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 from decimal import Decimal
 from pathlib import Path
-from typing import Mapping, Optional, Sequence, Tuple
+from typing import Optional, Sequence, Tuple
 
 from ..prediction.contracts import Prediction, PredictionContractError
 from ..prediction.factory import PredictionFactoryError, representation_target_price
@@ -43,10 +43,7 @@ def _prediction_from_journal(root: Path, prediction_id: str) -> Tuple[Prediction
     return prediction, entry_hash, journaled_at_ns
 
 
-def select_resolution_frame(
-    prediction: Prediction,
-    frames: Sequence[RepresentationFrame],
-) -> Optional[RepresentationFrame]:
+def select_resolution_frame(prediction: Prediction, frames: Sequence[RepresentationFrame]) -> Optional[RepresentationFrame]:
     """Select the first independently knowable qualified frame in the fixed v1 window."""
     eligible = []
     upper = prediction.resolves_at_ns + MAX_RESOLUTION_LAG_NS_V1
@@ -76,6 +73,9 @@ def resolve_prediction(
     A resolution frame is selected solely by the fixed v1 policy. If no frame
     exists and the resolution window is still open, no final outcome is emitted.
     Once the window closes, missing qualified evidence becomes UNRESOLVABLE.
+
+    `decided_at_ns` is the deterministic instant the outcome first became
+    knowable, not the later process retry time. This makes retries byte-stable.
     """
     root = root.resolve()
     prediction, entry_hash, journaled_at_ns = _prediction_from_journal(root, prediction_id)
@@ -113,7 +113,7 @@ def resolve_prediction(
             target_resolves_at_ns=prediction.resolves_at_ns,
             max_resolution_lag_ns=MAX_RESOLUTION_LAG_NS_V1,
             resolution_policy_id=RESOLUTION_POLICY_ID,
-            decided_at_ns=now,
+            decided_at_ns=selected.known_at_ns,
             reference_price=prediction.reference_price,
             reference_price_source=prediction.reference_price_source,
             resolution_frame_id=selected.frame_id,
@@ -142,7 +142,7 @@ def resolve_prediction(
         target_resolves_at_ns=prediction.resolves_at_ns,
         max_resolution_lag_ns=MAX_RESOLUTION_LAG_NS_V1,
         resolution_policy_id=RESOLUTION_POLICY_ID,
-        decided_at_ns=now,
+        decided_at_ns=window_closes + 1,
         reference_price=prediction.reference_price,
         reference_price_source=prediction.reference_price_source,
         resolution_frame_id=None,
