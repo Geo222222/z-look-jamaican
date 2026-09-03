@@ -1,0 +1,93 @@
+from __future__ import annotations
+
+import json
+import os
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from autonomous_kernel.operator import (
+    OperatorCommandError,
+    append_operator_receipt,
+    command_catalog,
+    execute_operator_command,
+    operator_snapshot,
+    validate_operator_journal,
+)
+from autonomous_kernel.operator.journal import receipt_for_request_id
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class OperatorConsoleContractTests(unittest.TestCase):
+    def test_catalog_exposes_governed_and_locked_authority(self):
+        catalog = command_catalog()
+        commands = {item["command_id"]: item for item in catalog["commands"]}
+        self.assertEqual("AVAILABLE", commands["VALIDATE_KERNEL"]["state"])
+        self.assertEqual("MUTATING", commands["MATERIALIZE_CONTEXT"]["control_class"])
+        for command_id in ("LIVE_EXECUTION", "CAPITAL_AUTHORIZATION", "ORDER_PLACEMENT"):
+            self.assertEqual("LOCKED", commands[command_id]["state"])
+            self.assertEqual("CONSTITUTIONALLY_LOCKED", commands[command_id]["control_class"])
+
+    def test_operator_snapshot_has_exact_z1_through_z9_story_and_claim_ceiling(self):
+        snapshot = operator_snapshot(ROOT)
+        self.assertEqual("zlj-operator-console", snapshot["contract"]["name"])
+        self.assertEqual(["Z1", "Z2", "Z3", "Z4", "Z5", "Z6", "Z7", "Z8", "Z9"], [stage["id"] for stage in snapshot["stages"]])
+        self.assertEqual("NONE", snapshot["system"]["capital_authority"])
+        self.assertEqual("LOCKED_FALSE", snapshot["system"]["live_execution"])
+        self.assertEqual("NOT_EARNED", snapshot["certification"]["z8_historical"]["decision"])
+        self.assertEqual("CERTIFIED", snapshot["certification"]["z9"]["construction"])
+        self.assertEqual("DATA_BLOCKED", snapshot["certification"]["z9"]["contextual_performance"])
+
+    def test_locked_and_unavailable_controls_fail_before_domain_execution(self):
+        with self.assertRaises(OperatorCommandError):
+            execute_operator_command(ROOT, {"command_id": "LIVE_EXECUTION", "confirm": True, "request_id": "REQ-LOCKED"})
+        with self.assertRaises(OperatorCommandError):
+            execute_operator_command(ROOT, {"command_id": "CODE_CHANGE", "confirm": True, "request_id": "REQ-CODE"})
+
+    def test_mutating_control_requires_external_server_gate(self):
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("ZLOOK_OPERATOR_MUTATIONS_ENABLED", None)
+            with self.assertRaisesRegex(OperatorCommandError, "mutations are disabled"):
+                execute_operator_command(ROOT, {"command_id": "RECOVER_PENDING", "confirm": True, "request_id": "REQ-GATED"})
+
+    def test_operator_receipts_are_hash_chained_idempotency_addressable_and_tamper_evident(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            receipt = {
+                "receipt_version": "1.0",
+                "request_id": "REQ-001",
+                "command_id": "TEST_MUTATION",
+                "control_class": "MUTATING",
+                "started_at_ns": 10,
+                "completed_at_ns": 11,
+                "parameters": {"x": 1},
+                "result": {"ok": True},
+                "capital_effect": "NONE",
+                "execution_effect": "NONE",
+            }
+            entry = append_operator_receipt(root, receipt)
+            self.assertEqual([], validate_operator_journal(root))
+            self.assertEqual(entry["entry_hash"], receipt_for_request_id(root, "REQ-001")["entry_hash"])
+            with self.assertRaises(Exception):
+                append_operator_receipt(root, receipt)
+            path = root / "memory/operator_commands.jsonl"
+            value = json.loads(path.read_text(encoding="utf-8"))
+            value["receipt"]["parameters"]["x"] = 2
+            path.write_text(json.dumps(value) + "\n", encoding="utf-8")
+            self.assertTrue(validate_operator_journal(root))
+
+    def test_read_only_validation_does_not_write_operator_receipt(self):
+        path = ROOT / "memory/operator_commands.jsonl"
+        before = path.read_text(encoding="utf-8") if path.is_file() else None
+        result = execute_operator_command(ROOT, {"command_id": "VALIDATE_KERNEL"})
+        after = path.read_text(encoding="utf-8") if path.is_file() else None
+        self.assertEqual("READ_ONLY_QUERY_NOT_JOURNALED", result["durability"])
+        self.assertEqual(before, after)
+        self.assertIn("operator_journal", result["receipt"]["result"]["checks"])
+
+
+if __name__ == "__main__":
+    unittest.main()

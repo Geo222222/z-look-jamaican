@@ -5,7 +5,7 @@ import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Optional, Sequence
 
 SUPPORTED_SCHEMA = "1.0.0"
 VALID_AVAILABILITY = {"available", "unknown", "not_earned", "blocked", "unavailable"}
@@ -29,7 +29,7 @@ class ContractSnapshot:
 
     def section(self, name: str) -> Mapping[str, Any]:
         return self.sections.get(name, {
-            "availability": {"state": "unavailable", "reason": f"Section {name!r} is absent from the contract."},
+            "availability": {"state": "unavailable", "reason": "Section %r is absent from the contract." % name},
             "freshness": {"state": "unknown", "expectation": "unknown"},
             "provenance": {"source": "contract_absent", "source_id": name, "paths": [], "integrity": {"algorithm": "sha256", "by_path": {}}},
             "data": {},
@@ -46,39 +46,65 @@ def validate_snapshot(payload: Mapping[str, Any]) -> ContractSnapshot:
     if contract.get("name") != "z-look-jamaican-monitor-snapshot":
         raise MonitorContractError("unexpected monitor contract name")
     if contract.get("schema_version") != SUPPORTED_SCHEMA:
-        raise MonitorContractError(f"unsupported monitor contract schema: {contract.get('schema_version')!r}")
+        raise MonitorContractError("unsupported monitor contract schema: %r" % contract.get("schema_version"))
     if contract.get("read_only") is not True:
         raise MonitorContractError("monitor contract does not assert read_only=true")
     for name, section in sections.items():
         if not isinstance(section, Mapping):
-            raise MonitorContractError(f"section {name!r} is not an object")
+            raise MonitorContractError("section %r is not an object" % name)
         state = (section.get("availability") or {}).get("state")
         if state not in VALID_AVAILABILITY:
-            raise MonitorContractError(f"section {name!r} has invalid availability state {state!r}")
+            raise MonitorContractError("section %r has invalid availability state %r" % (name, state))
     return ContractSnapshot(payload)
 
 
-def invoke_snapshot(root: Path) -> ContractSnapshot:
+def _invoke_json(root: Path, args: Sequence[str], *, timeout: Optional[float] = None) -> Mapping[str, Any]:
     env = os.environ.copy()
     env["PYTHONPATH"] = str(root) + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
     proc = subprocess.run(
-        [os.getenv("ZLOOK_PYTHON", "python"), "-m", "autonomous_kernel", "monitor_snapshot", "--json"],
+        [os.getenv("ZLOOK_PYTHON", "python"), "-m", "autonomous_kernel"] + list(args),
         cwd=root,
         env=env,
         stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
-        timeout=float(os.getenv("ZLOOK_MONITOR_COMMAND_TIMEOUT_SECONDS", "15")),
+        timeout=timeout or float(os.getenv("ZLOOK_MONITOR_COMMAND_TIMEOUT_SECONDS", "15")),
         check=False,
     )
     if proc.returncode != 0:
-        raise MonitorContractError(f"monitor_snapshot failed ({proc.returncode}): {proc.stderr.strip()[:1000]}")
+        detail = proc.stdout.strip() or proc.stderr.strip()
+        raise MonitorContractError("kernel command failed (%d): %s" % (proc.returncode, detail[:2000]))
     try:
         payload = json.loads(proc.stdout)
     except json.JSONDecodeError as exc:
-        raise MonitorContractError(f"monitor_snapshot emitted invalid JSON: {exc}") from exc
-    return validate_snapshot(payload)
+        raise MonitorContractError("kernel command emitted invalid JSON: %s" % exc) from exc
+    if not isinstance(payload, Mapping):
+        raise MonitorContractError("kernel command output is not an object")
+    return payload
+
+
+def invoke_snapshot(root: Path) -> ContractSnapshot:
+    return validate_snapshot(_invoke_json(root, ["monitor_snapshot", "--json"]))
+
+
+def invoke_operator_snapshot(root: Path) -> Mapping[str, Any]:
+    payload = _invoke_json(root, ["operator_snapshot"], timeout=float(os.getenv("ZLOOK_OPERATOR_SNAPSHOT_TIMEOUT_SECONDS", "20")))
+    if (payload.get("contract") or {}).get("name") != "zlj-operator-console":
+        raise MonitorContractError("unexpected operator snapshot contract")
+    return payload
+
+
+def invoke_operator_catalog(root: Path) -> Mapping[str, Any]:
+    return _invoke_json(root, ["operator_catalog"])
+
+
+def invoke_operator_command(root: Path, request: Mapping[str, Any]) -> Mapping[str, Any]:
+    return _invoke_json(
+        root,
+        ["operator_command", "--request-json", json.dumps(dict(request), sort_keys=True, separators=(",", ":"))],
+        timeout=float(os.getenv("ZLOOK_OPERATOR_COMMAND_TIMEOUT_SECONDS", "30")),
+    )
 
 
 def availability(section: Mapping[str, Any]) -> str:
@@ -152,10 +178,7 @@ def overview_view(snapshot: ContractSnapshot) -> Mapping[str, Any]:
             "external_untracked_exposure": exd.get("external_untracked_exposure"),
             "next_task_id": gd.get("next_task_id"),
         },
-        "availability": {
-            name: availability(snapshot.section(name))
-            for name in snapshot.sections
-        },
+        "availability": {name: availability(snapshot.section(name)) for name in snapshot.sections},
         "data_quality": dqd,
         "top_opportunities": opportunity_items[:8],
         "recent_evidence": evidence_items[-12:][::-1],

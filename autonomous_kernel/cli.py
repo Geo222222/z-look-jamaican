@@ -19,6 +19,7 @@ from .context.store import validate_market_context_store
 from .evaluation.journal import validate_outcome_journal
 from .models.registry import validate_model_registry
 from .monitor import monitor_snapshot
+from .operator import OperatorCommandError, execute_operator_command, operator_catalog, operator_snapshot, validate_operator_journal
 from .predecessor import PredecessorVerificationError, verify_manifest
 from .qualified_shadow import ShadowDecisionProposal, record_qualified_shadow_decision
 from .store import StateValidationError, next_work, recover_pending, repository_root, status_summary, transition, update_task, validate
@@ -39,6 +40,7 @@ def _validate_learning_state_or_raise(root: Path) -> Sequence[str]:
         ("context_profile_registry", validate_context_profile_registry),
         ("contextual_assembly_journal", validate_contextual_assembly_journal),
         ("contextual_assembly_lineage", validate_contextual_assembly_lineage),
+        ("operator_journal", validate_operator_journal),
     )
     for name, validator in validators:
         errors = validator(root)
@@ -52,11 +54,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="autokernel", description="Operate validated durable autonomous state")
     parser.add_argument("--root", type=Path, default=repository_root(), help="repository root (defaults to package root)")
     subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("validate", help="validate schemas, references, Governor snapshots, governed learning state, and Z9 context")
+    subparsers.add_parser("validate", help="validate schemas, references, Governor snapshots, governed learning state, Z9 context, and operator receipts")
     subparsers.add_parser("status", help="show a machine-readable resume summary")
     subparsers.add_parser("context_status", help="show read-only Z9 market-context status")
     materialize_parser = subparsers.add_parser("context_materialize", help="materialize authoritative Z9 context from durable Z2 history at cutoff T")
     materialize_parser.add_argument("--cutoff-at-ns", type=int, required=True)
+    subparsers.add_parser("operator_snapshot", help="emit the Z1-Z9 operator-console snapshot")
+    subparsers.add_parser("operator_catalog", help="emit the stable operator control catalog")
+    operator_command = subparsers.add_parser("operator_command", help="execute one governed operator command request")
+    operator_command.add_argument("--request-json", required=True)
     subparsers.add_parser("next-work", help="select the highest-scored ready task whose dependencies are complete")
     subparsers.add_parser("recover", help="idempotently roll a prepared state transaction forward")
     monitor_parser = subparsers.add_parser("monitor_snapshot", help="emit the authoritative read-only observer snapshot")
@@ -88,32 +94,75 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
-    parser = build_parser(); args = parser.parse_args(argv); root = args.root.resolve()
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    root = args.root.resolve()
     try:
         if args.command == "validate":
-            checks = validate(root); checks.extend(_validate_learning_state_or_raise(root)); _print({"status": "ok", "root": str(root), "checks": checks})
+            checks = validate(root)
+            checks.extend(_validate_learning_state_or_raise(root))
+            _print({"status": "ok", "root": str(root), "checks": checks})
         elif args.command == "status":
-            _validate_learning_state_or_raise(root); _print(status_summary(root))
+            _validate_learning_state_or_raise(root)
+            _print(status_summary(root))
         elif args.command == "context_status":
             _print(market_context_status(root))
         elif args.command == "context_materialize":
             result = materialize_market_context(root, cutoff_at_ns=args.cutoff_at_ns)
             _print({"status": "ok", "context": result.context.to_wire(), "selected_frame_count": len(result.selected_frame_ids), "selected_instrument_ids": list(result.selected_instrument_ids)})
-        elif args.command == "next-work": _print({"status": "ok", "next_work": next_work(root)})
+        elif args.command == "operator_snapshot":
+            _print(operator_snapshot(root))
+        elif args.command == "operator_catalog":
+            _print(operator_catalog())
+        elif args.command == "operator_command":
+            request = json.loads(args.request_json)
+            if not isinstance(request, dict):
+                raise ValueError("operator request JSON must be an object")
+            _print(execute_operator_command(root, request))
+        elif args.command == "next-work":
+            _print({"status": "ok", "next_work": next_work(root)})
         elif args.command == "recover":
-            result = recover_pending(root); _validate_learning_state_or_raise(root); _print(result)
-        elif args.command == "monitor_snapshot": _print(monitor_snapshot(root))
-        elif args.command == "predecessor_verify": _print(verify_manifest(args.manifest.resolve(), args.source_root.resolve()))
-        elif args.command == "transition": _print({"status": "ok", "transition": transition(args.new_state, args.trigger, args.decision_id, args.evidence, root)})
+            result = recover_pending(root)
+            _validate_learning_state_or_raise(root)
+            _print(result)
+        elif args.command == "monitor_snapshot":
+            _print(monitor_snapshot(root))
+        elif args.command == "predecessor_verify":
+            _print(verify_manifest(args.manifest.resolve(), args.source_root.resolve()))
+        elif args.command == "transition":
+            _print({"status": "ok", "transition": transition(args.new_state, args.trigger, args.decision_id, args.evidence, root)})
         elif args.command == "task-status":
-            task, candidate = update_task(args.task_id, args.status, root); _print({"status": "ok", "task": task, "next_work": candidate})
+            task, candidate = update_task(args.task_id, args.status, root)
+            _print({"status": "ok", "task": task, "next_work": candidate})
         elif args.command == "qualified_shadow_record":
-            proposal = ShadowDecisionProposal(decision_id=args.decision_id, product=args.product, observed_at=args.observed_at, actionable_at=args.actionable_at, target_position=args.target_position, strategy_id=args.strategy_id, rationale_code=args.rationale_code, signal_candle_timestamp=args.signal_candle_timestamp)
-            decision = record_qualified_shadow_decision(root, proposal, args.observation_id, max_event_age_seconds=args.max_event_age_seconds, max_transport_age_seconds=args.max_transport_age_seconds); _print({"status": "ok", "decision": decision})
-        else: parser.error("unknown command: %s" % args.command)
-    except StateValidationError as exc: _print({"status": "invalid", "errors": exc.errors}); return 2
-    except (KeyError, RuntimeError, ValueError, PredecessorVerificationError) as exc: _print({"status": "error", "error": str(exc)}); return 2
+            proposal = ShadowDecisionProposal(
+                decision_id=args.decision_id,
+                product=args.product,
+                observed_at=args.observed_at,
+                actionable_at=args.actionable_at,
+                target_position=args.target_position,
+                strategy_id=args.strategy_id,
+                rationale_code=args.rationale_code,
+                signal_candle_timestamp=args.signal_candle_timestamp,
+            )
+            decision = record_qualified_shadow_decision(
+                root,
+                proposal,
+                args.observation_id,
+                max_event_age_seconds=args.max_event_age_seconds,
+                max_transport_age_seconds=args.max_transport_age_seconds,
+            )
+            _print({"status": "ok", "decision": decision})
+        else:
+            parser.error("unknown command: %s" % args.command)
+    except StateValidationError as exc:
+        _print({"status": "invalid", "errors": exc.errors})
+        return 2
+    except (KeyError, RuntimeError, ValueError, OperatorCommandError, PredecessorVerificationError) as exc:
+        _print({"status": "error", "error": str(exc)})
+        return 2
     return 0
 
 
-if __name__ == "__main__": sys.exit(main())
+if __name__ == "__main__":
+    sys.exit(main())

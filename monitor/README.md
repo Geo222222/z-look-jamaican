@@ -1,41 +1,27 @@
-# Z Look Jamaican Command Center
+# ZLJ Operator Console
 
-Read-only frontend bound exclusively to the authoritative monitoring contract introduced by `c63ff73010b9da43617c9292461182e83168bdf6`.
+The former read-only monitor is now the browser surface for the ZLJ Operator Console. It preserves all existing monitor endpoints while adding Z1–Z9 stage, certification, and governed control APIs.
 
-The monitor does **not** scan or infer repository schemas. Every refresh executes:
+## Safe default
+
+`docker-compose.monitor.yml` remains **read-only**. The repository is mounted `:ro` and operator mutations are not enabled. This mode supports the complete visual console plus read-only operations such as kernel validation.
 
 ```bash
-python -m autonomous_kernel monitor_snapshot --json
+docker compose -f docker-compose.monitor.yml up --build
 ```
 
-and accepts only contract `z-look-jamaican-monitor-snapshot` schema `1.0.0` with `read_only=true`.
+Open `http://127.0.0.1:3000`.
 
-## Run
+## Governed control
 
-From the repository root:
+The browser never mutates kernel files directly. Commands flow through:
 
-```powershell
-Copy-Item .env.monitor.example .env.monitor
-docker compose --env-file .env.monitor -f docker-compose.monitor.yml up -d --build
+```text
+browser → FastAPI → autokernel operator_command → domain service → receipt
 ```
 
-Open `http://localhost:3000`.
+A mutating command additionally requires `ZLOOK_OPERATOR_MUTATIONS_ENABLED=true` to be set outside the UI **and** a writable source root. Do not enable this on the existing read-only monitor deployment. A dedicated operator deployment profile should be introduced only when its filesystem, authentication, and authorization controls are explicitly designed and certified.
 
-## Surfaces
+`LIVE_EXECUTION`, `CAPITAL_AUTHORIZATION`, and `ORDER_PLACEMENT` are constitutionally locked in ZLJ regardless of operator mode.
 
-- Overview
-- Opportunities
-- Experiments and prospective/resolved decisions
-- Evidence, data quality, reflections
-- Operational-wallet public metadata only
-- Treasury destination/readiness state
-- Governor, exposure, realized economics
-- Deployments and model/provider qualification state
-- Runtime logs and incidents
-- Provenance, freshness, SHA-256 integrity, authority timestamps
-
-## Safety boundary
-
-The container mounts the repository read-only, drops Linux capabilities, uses `no-new-privileges`, and exposes only GET/HEAD/OPTIONS HTTP methods. It does not import mutation functions or gain access to signer/private-key material.
-
-Availability is never coerced to zero/empty. The UI preserves the contract states: `available`, `unknown`, `not_earned`, `blocked`, and `unavailable`.
+See `docs/ZLJ_OPERATOR_CONSOLE.md` for the complete control and visual contract.
