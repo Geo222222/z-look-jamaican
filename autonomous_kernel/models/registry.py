@@ -4,7 +4,7 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Mapping, Sequence, Tuple
 
 from ..operations import canonical_hash
 from ..store import writer_lock
@@ -83,14 +83,7 @@ def _atomic_json(path: Path, value: Mapping[str, Any]) -> None:
             os.unlink(temporary)
 
 
-def _event_body(
-    sequence: int,
-    event_type: str,
-    model_ref: str,
-    occurred_at_ns: int,
-    payload: Mapping[str, Any],
-    previous_hash: str,
-) -> Dict[str, Any]:
+def _event_body(sequence: int, event_type: str, model_ref: str, occurred_at_ns: int, payload: Mapping[str, Any], previous_hash: str) -> Dict[str, Any]:
     return {
         "schema_version": 1,
         "sequence": int(sequence),
@@ -102,14 +95,7 @@ def _event_body(
     }
 
 
-def _event_wire(
-    sequence: int,
-    event_type: str,
-    model_ref: str,
-    occurred_at_ns: int,
-    payload: Mapping[str, Any],
-    previous_hash: str,
-) -> Dict[str, Any]:
+def _event_wire(sequence: int, event_type: str, model_ref: str, occurred_at_ns: int, payload: Mapping[str, Any], previous_hash: str) -> Dict[str, Any]:
     body = _event_body(sequence, event_type, model_ref, occurred_at_ns, payload, previous_hash)
     value = dict(body)
     value["event_hash"] = canonical_hash(body)
@@ -276,15 +262,7 @@ class ModelRegistry:
             _atomic_json(self.state_path, projection)
             return projection
 
-    def register(
-        self,
-        definition: ModelDefinition,
-        *,
-        artifact_hash: str,
-        code_ref: str,
-        training_data_refs: Sequence[str] = (),
-        occurred_at_ns: int,
-    ) -> Mapping[str, Any]:
+    def register(self, definition: ModelDefinition, *, artifact_hash: str, code_ref: str, training_data_refs: Sequence[str] = (), occurred_at_ns: int) -> Mapping[str, Any]:
         artifact = _digest(artifact_hash, "artifact_hash")
         if not code_ref:
             raise ModelRegistryError("code_ref is required")
@@ -317,23 +295,14 @@ class ModelRegistry:
                 }
                 if expected != payload:
                     raise ModelRegistryError("model_ref already registered with different artifact identity")
-                if self.state() != state:
-                    _atomic_json(self.state_path, state)
+                _atomic_json(self.state_path, state)
                 return existing
             event = self._append_event(events, "MODEL_REGISTERED", definition.model_ref, int(occurred_at_ns), payload)
             projection = _project_events(tuple(events) + (event,))
             _atomic_json(self.state_path, projection)
             return projection["models"][definition.model_ref]
 
-    def transition(
-        self,
-        model_ref: str,
-        target_state: str,
-        *,
-        evidence_kind: str,
-        evidence_refs: Sequence[str],
-        occurred_at_ns: int,
-    ) -> Mapping[str, Any]:
+    def transition(self, model_ref: str, target_state: str, *, evidence_kind: str, evidence_refs: Sequence[str], occurred_at_ns: int) -> Mapping[str, Any]:
         if target_state not in MODEL_STATES:
             raise ModelRegistryError("unknown target model state")
         expected_kind = EVIDENCE_KIND_BY_TARGET.get(target_state)
@@ -356,18 +325,12 @@ class ModelRegistry:
                 raise ModelRegistryError("model transition time cannot move backwards")
             if target_state == current:
                 if record.get("last_evidence_kind") == evidence_kind and record.get("last_evidence_refs") == list(refs):
-                    if self.state() != state:
-                        _atomic_json(self.state_path, state)
+                    _atomic_json(self.state_path, state)
                     return record
                 raise ModelRegistryError("same-state transition with different evidence is not idempotent")
             if target_state not in ALLOWED_TRANSITIONS[current]:
                 raise ModelRegistryError("illegal model transition: %s -> %s" % (current, target_state))
-            payload = {
-                "from_state": current,
-                "to_state": target_state,
-                "evidence_kind": evidence_kind,
-                "evidence_refs": list(refs),
-            }
+            payload = {"from_state": current, "to_state": target_state, "evidence_kind": evidence_kind, "evidence_refs": list(refs)}
             event = self._append_event(events, "MODEL_TRANSITION", model_ref, int(occurred_at_ns), payload)
             projection = _project_events(tuple(events) + (event,))
             _atomic_json(self.state_path, projection)
@@ -390,14 +353,7 @@ class ModelRegistry:
             return state not in {"QUARANTINED", "SUPERSEDED"}
         raise ModelRegistryError("unknown eligibility purpose")
 
-    def _append_event(
-        self,
-        events: Sequence[Mapping[str, Any]],
-        event_type: str,
-        model_ref: str,
-        occurred_at_ns: int,
-        payload: Mapping[str, Any],
-    ) -> Mapping[str, Any]:
+    def _append_event(self, events: Sequence[Mapping[str, Any]], event_type: str, model_ref: str, occurred_at_ns: int, payload: Mapping[str, Any]) -> Mapping[str, Any]:
         previous_hash = str(events[-1]["event_hash"]) if events else "GENESIS"
         event = _event_wire(len(events), event_type, model_ref, occurred_at_ns, payload, previous_hash)
         self.events_path.parent.mkdir(parents=True, exist_ok=True)
@@ -410,25 +366,20 @@ class ModelRegistry:
 
 def validate_model_registry(root: Path, *, require_state: bool = True) -> List[str]:
     registry = ModelRegistry(root)
-    errors: List[str] = []
     try:
         events = registry.events()
     except ModelRegistryError as exc:
         return [str(exc)]
-    errors.extend(_validate_event_chain(events))
+    errors = _validate_event_chain(events)
     if errors:
         return errors
-
     projected = _project_events(events)
     if not registry.state_path.is_file():
-        if require_state and (root / "state/current_state.json").is_file():
-            errors.append("missing required state file: state/model_registry.json")
-        return errors
+        return ["missing required state file: state/model_registry.json"] if require_state and (root / "state/current_state.json").is_file() else []
     try:
         state = registry.state()
     except (json.JSONDecodeError, ModelRegistryError) as exc:
-        errors.append("model registry state unreadable: %s" % exc)
-        return errors
+        return ["model registry state unreadable: %s" % exc]
     if state != projected:
-        errors.append("model registry projection differs from append-only transition source; rebuild required")
-    return errors
+        return ["model registry projection differs from append-only transition source; rebuild required"]
+    return []
