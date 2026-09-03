@@ -64,6 +64,56 @@ def _scalar_family(item: Optional[CanonicalObservation], field: str) -> Mapping[
     }
 
 
+def _liquidation_groups(items: Sequence[CanonicalObservation]) -> Mapping[str, Mapping[str, Any]]:
+    grouped: Dict[Tuple[str, str], Dict[str, Any]] = {}
+    for item in items:
+        payload = normalize_payload(item.event_type, item.payload)
+        key = (item.provider, item.venue)
+        group = grouped.setdefault(
+            key,
+            {
+                "provider": item.provider,
+                "venue": item.venue,
+                "event_count": 0,
+                "reported_buy_size": Decimal("0"),
+                "reported_sell_size": Decimal("0"),
+                "reported_unknown_size": Decimal("0"),
+                "reported_price_times_size": Decimal("0"),
+            },
+        )
+        size = _decimal(payload["size"])
+        price = _decimal(payload["price"])
+        side = str(payload["side"])
+        group["event_count"] += 1
+        if side == "BUY":
+            group["reported_buy_size"] += size
+        elif side == "SELL":
+            group["reported_sell_size"] += size
+        else:
+            group["reported_unknown_size"] += size
+        # This is deliberately named price_times_size, not notional. Until a
+        # contract rule proves what `size` means, the product is not promoted to
+        # an economic quote-notional claim.
+        group["reported_price_times_size"] += price * size
+
+    output: Dict[str, Mapping[str, Any]] = {}
+    for (provider, venue), group in sorted(grouped.items()):
+        group_id = f"{provider}:{venue}"
+        output[group_id] = {
+            "provider": provider,
+            "venue": venue,
+            "event_count": int(group["event_count"]),
+            "reported_buy_size": _text(group["reported_buy_size"]),
+            "reported_sell_size": _text(group["reported_sell_size"]),
+            "reported_unknown_size": _text(group["reported_unknown_size"]),
+            "reported_price_times_size": _text(group["reported_price_times_size"]),
+            "size_unit_semantics": "PROVIDER_NATIVE_UNSPECIFIED",
+            "normalized_economic_unit": None,
+            "cross_provider_comparable": False,
+        }
+    return output
+
+
 def build_derivative_state(
     observations: Sequence[CanonicalObservation],
     *,
@@ -121,25 +171,10 @@ def build_derivative_state(
             raise DerivativeStateError("mark/index prices must be positive")
         mark_index_divergence_bps = (mark_value - index_value) / index_value * Decimal("10000")
 
-    liquidation_buy_size = Decimal("0")
-    liquidation_sell_size = Decimal("0")
-    liquidation_unknown_size = Decimal("0")
-    liquidation_quote_notional = Decimal("0")
-    for item in liquidations:
-        payload = normalize_payload(item.event_type, item.payload)
-        size = _decimal(payload["size"])
-        price = _decimal(payload["price"])
-        side = str(payload["side"])
-        if side == "BUY":
-            liquidation_buy_size += size
-        elif side == "SELL":
-            liquidation_sell_size += size
-        else:
-            liquidation_unknown_size += size
-        liquidation_quote_notional += price * size
-
-    mark_index_status = "QUALIFIED" if mark is not None and index is not None else "DEGRADED" if mark is not None or index is not None else "UNAVAILABLE"
+    liquidation_groups = _liquidation_groups(liquidations)
     liquidation_status = "QUALIFIED" if liquidations else "UNAVAILABLE"
+    cross_provider_aggregate_status = "UNAVAILABLE" if len(liquidation_groups) > 1 else "NOT_REQUIRED"
+    mark_index_status = "QUALIFIED" if mark is not None and index is not None else "DEGRADED" if mark is not None or index is not None else "UNAVAILABLE"
     feature_family_status = {
         "FUNDING": "QUALIFIED" if funding is not None else "UNAVAILABLE",
         "OPEN_INTEREST": "QUALIFIED" if open_interest is not None else "UNAVAILABLE",
@@ -177,16 +212,16 @@ def build_derivative_state(
             "status": liquidation_status,
             "truth_class": "PROVIDER_REPORTED_SIDE_UNINTERPRETED",
             "event_count": len(liquidations),
-            "reported_buy_size": _text(liquidation_buy_size),
-            "reported_sell_size": _text(liquidation_sell_size),
-            "reported_unknown_size": _text(liquidation_unknown_size),
-            "reported_price_times_size": _text(liquidation_quote_notional),
+            "provider_venue_groups": liquidation_groups,
+            "cross_provider_aggregate_status": cross_provider_aggregate_status,
+            "cross_provider_aggregate": None,
             "size_unit_semantics": "PROVIDER_NATIVE_UNSPECIFIED",
-            "cross_venue_comparable": False,
+            "cross_provider_comparable": False,
         },
         "comparability": {
             "open_interest_cross_venue_comparable": False,
             "liquidation_size_cross_venue_comparable": False,
+            "spot_derivative_amount_comparable": False,
             "reason": "CANONICAL_UNIT_NORMALIZATION_NOT_YET_QUALIFIED",
         },
         "input_quality": {
@@ -207,6 +242,7 @@ def build_derivative_state(
             "lookahead_policy": "HARD_REJECT_IF_SOURCE_KNOWN_AFTER_CUTOFF",
             "missing_family_policy": "UNAVAILABLE_NOT_SYNTHESIZED",
             "open_interest_unit_policy": "PROVIDER_NATIVE_UNSPECIFIED_NO_CROSS_VENUE_COMPARISON",
+            "liquidation_unit_policy": "PARTITION_BY_PROVIDER_VENUE_NO_CROSS_PROVIDER_SUM",
             "liquidation_side_policy": "PROVIDER_REPORTED_SIDE_UNINTERPRETED",
         },
         state=state,
