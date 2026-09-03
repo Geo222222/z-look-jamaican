@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Optional, Sequence
 
 from .assembly.journal import validate_assembly_journal
+from .assembly.lineage import validate_assembly_lineage
 from .evaluation.journal import validate_outcome_journal
 from .models.registry import validate_model_registry
 from .monitor import monitor_snapshot
@@ -44,6 +45,10 @@ def _validate_learning_state_or_raise(root: Path) -> Sequence[str]:
     if assembly_errors:
         raise StateValidationError(assembly_errors)
     checks.append("assembly_journal")
+    lineage_errors = validate_assembly_lineage(root)
+    if lineage_errors:
+        raise StateValidationError(lineage_errors)
+    checks.append("assembly_lineage")
     return checks
 
 
