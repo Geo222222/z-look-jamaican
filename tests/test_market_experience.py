@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
@@ -161,7 +162,12 @@ def _timescale_frames(*, cutoff: int = T, micro_start_adjust: int = 0):
     return result
 
 
-def _experience(*, cutoff: int = T, micro_start_adjust: int = 0, micro_lookback: int | None = None) -> MarketExperienceFrame:
+def _experience(
+    *,
+    cutoff: int = T,
+    micro_start_adjust: int = 0,
+    micro_lookback: Optional[int] = None,
+) -> MarketExperienceFrame:
     specs = _specs() if micro_lookback is None else _specs(micro_lookback)
     frames = _timescale_frames(cutoff=cutoff, micro_start_adjust=micro_start_adjust)
     if micro_lookback is not None:
