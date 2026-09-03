@@ -7,7 +7,7 @@ import os
 import tempfile
 from collections import Counter
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, Sequence
+from typing import Any, Dict, List, Mapping, Sequence
 
 from ..operations import canonical_hash
 from .contracts import CanonicalObservation, ObservationContractError
@@ -48,10 +48,14 @@ def _sha256_hex(value: str) -> str:
     return value.lower()
 
 
+def _observation_set_hash(content_hashes: Sequence[str]) -> str:
+    return canonical_hash({"content_hashes": list(content_hashes)})
+
+
 class CanonicalBatchStore:
     """Durable, deterministic canonical-observation batches.
 
-    Canonical batches are derived data.  Their manifest always binds them back
+    Canonical batches are derived data. Their manifest always binds them back
     to immutable source evidence, so they can be rebuilt without claiming to be
     the provider's original bytes.
     """
@@ -102,7 +106,7 @@ class CanonicalBatchStore:
             "path": data_path.relative_to(self.root).as_posix(),
             "canonical_jsonl_sha256": hashlib.sha256(raw).hexdigest(),
             "compressed_sha256": hashlib.sha256(compressed).hexdigest(),
-            "observation_set_hash": canonical_hash(content_hashes),
+            "observation_set_hash": _observation_set_hash(content_hashes),
             "record_count": len(observations),
             "event_counts": dict(sorted(event_counts.items())),
             "instrument_ids": sorted({item.instrument.canonical_id for item in observations}),
@@ -198,7 +202,7 @@ def _validate_manifest_and_batch(root: Path, manifest_path: Path, manifest: Mapp
         return errors
 
     content_hashes: List[str] = []
-    event_counts: Counter[str] = Counter()
+    event_counts = Counter()
     instrument_ids = set()
     providers = set()
     venues = set()
@@ -223,7 +227,7 @@ def _validate_manifest_and_batch(root: Path, manifest_path: Path, manifest: Mapp
 
     if record_count != manifest.get("record_count"):
         errors.append("canonical batch record_count mismatch")
-    if canonical_hash(content_hashes) != manifest.get("observation_set_hash"):
+    if _observation_set_hash(content_hashes) != manifest.get("observation_set_hash"):
         errors.append("canonical observation_set_hash mismatch")
     if dict(sorted(event_counts.items())) != manifest.get("event_counts"):
         errors.append("canonical event_counts mismatch")
