@@ -11,7 +11,7 @@ from ..representation.contracts import RepresentationFrame
 from .economic_graph import EconomicInstrumentGraph, EconomicRelationshipType, InstrumentRole
 
 
-RELATIONSHIP_STATE_SCHEMA_VERSION = "1.0"
+RELATIONSHIP_STATE_SCHEMA_VERSION = "1.1"
 RELATIONSHIP_STATE_STATUSES = {"QUALIFIED", "DEGRADED", "UNAVAILABLE"}
 
 
@@ -70,25 +70,6 @@ def _spread_bps(frame: RepresentationFrame) -> Optional[Decimal]:
         return None
     value = aggregate.get("cross_venue_spread_bps")
     return None if value is None else _decimal(value)
-
-
-def _depth_quote_notional(frame: RepresentationFrame, band_bps: int = 10) -> Decimal:
-    total = Decimal("0")
-    venues = frame.state.get("venue_states")
-    if not isinstance(venues, Mapping):
-        return total
-    for venue_state in venues.values():
-        if not isinstance(venue_state, Mapping):
-            continue
-        book = venue_state.get("book")
-        if not isinstance(book, Mapping) or book.get("status") != "QUALIFIED":
-            continue
-        bands = book.get("depth_bands_bps")
-        band = bands.get(str(band_bps)) if isinstance(bands, Mapping) else None
-        if isinstance(band, Mapping):
-            total += max(Decimal("0"), _decimal(band.get("bid_quote_notional", "0")))
-            total += max(Decimal("0"), _decimal(band.get("ask_quote_notional", "0")))
-    return total
 
 
 def _returns(frames: Sequence[RepresentationFrame]) -> Tuple[Tuple[int, Decimal], ...]:
@@ -197,9 +178,7 @@ def _latest_derivative_family(frame: Optional[RepresentationFrame], family: str)
     return dict(value)
 
 
-def _oi_change(
-    derivative_states: Sequence[RepresentationFrame],
-) -> Mapping[str, Any]:
+def _oi_change(derivative_states: Sequence[RepresentationFrame]) -> Mapping[str, Any]:
     valid = []
     for frame in sorted(derivative_states, key=lambda item: (item.known_at_ns, item.frame_id)):
         if frame.representation_type != "DERIVATIVE_STATE":
@@ -252,7 +231,7 @@ class EconomicRelationshipState:
     source_frame_ids: Tuple[str, ...]
     source_frame_hashes: Tuple[str, ...]
     state: Mapping[str, Any]
-    builder_version: str = "economic-relationship-state-v1"
+    builder_version: str = "economic-relationship-state-v1.1"
     schema_version: str = RELATIONSHIP_STATE_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
@@ -320,7 +299,7 @@ def build_spot_derivative_relationship_state(
     minimum_lag_pairs: int = 4,
     lag_margin: Any = "0.10",
     liquidity_depth_band_bps: int = 10,
-    builder_version: str = "economic-relationship-state-v1",
+    builder_version: str = "economic-relationship-state-v1.1",
 ) -> EconomicRelationshipState:
     relationships = {item.relationship_id: item for item in graph.relationships}
     relationship = relationships.get(relationship_id)
@@ -360,9 +339,17 @@ def build_spot_derivative_relationship_state(
     structure_latest = None if not structures else max(structures, key=lambda frame: (frame.known_at_ns, frame.frame_id))
     spot_mid = _midpoint(spot_latest)
     derivative_mid = _midpoint(derivative_latest)
+
+    quote_units_match = spot_node.instrument.quote_asset == derivative_node.instrument.quote_asset
     basis_bps = None
-    if spot_mid is not None and derivative_mid is not None and spot_mid > 0:
+    basis_reason = None
+    if not quote_units_match:
+        basis_reason = "QUOTE_UNIT_MISMATCH_REQUIRES_NORMALIZATION_PROOF"
+    elif spot_mid is None or derivative_mid is None or spot_mid <= 0:
+        basis_reason = "PRICE_EVIDENCE_UNAVAILABLE"
+    else:
         basis_bps = (derivative_mid / spot_mid - Decimal("1")) * Decimal("10000")
+
     annualized_basis = None
     if basis_bps is not None and derivative_node.role is InstrumentRole.DATED_FUTURE:
         annualized_basis = _annualized_basis(basis_bps, derivative_node.instrument.expiry, cutoff_at_ns)
@@ -391,14 +378,14 @@ def build_spot_derivative_relationship_state(
 
     spot_spread = _spread_bps(spot_latest)
     derivative_spread = _spread_bps(derivative_latest)
-    spot_depth = _depth_quote_notional(spot_latest, liquidity_depth_band_bps)
-    derivative_depth = _depth_quote_notional(derivative_latest, liquidity_depth_band_bps)
-    depth_ratio = None if spot_depth <= 0 else derivative_depth / spot_depth
     spread_ratio = None if spot_spread is None or spot_spread <= 0 or derivative_spread is None else derivative_spread / spot_spread
 
     state = {
         "basis": {
             "status": "QUALIFIED" if basis_bps is not None else "UNAVAILABLE",
+            "reason": basis_reason,
+            "spot_quote_unit": spot_node.instrument.quote_asset,
+            "derivative_quote_unit": derivative_node.instrument.quote_asset,
             "basis_bps": _text(basis_bps),
             "annualized_basis_bps": _text(annualized_basis),
             "annualized_status": "QUALIFIED" if annualized_basis is not None else "UNAVAILABLE",
@@ -410,12 +397,16 @@ def build_spot_derivative_relationship_state(
         },
         "lagged_association": lagged,
         "relative_liquidity": {
+            "spread_comparison_status": "QUALIFIED" if spread_ratio is not None else "UNAVAILABLE",
             "spot_spread_bps": _text(spot_spread),
             "derivative_spread_bps": _text(derivative_spread),
             "derivative_to_spot_spread_ratio": _text(spread_ratio),
-            "spot_depth_quote_notional": _text(spot_depth),
-            "derivative_depth_quote_notional": _text(derivative_depth),
-            "derivative_to_spot_depth_ratio": _text(depth_ratio),
+            "depth_comparison_status": "UNAVAILABLE",
+            "depth_comparison_reason": "SPOT_DERIVATIVE_AMOUNT_NORMALIZATION_NOT_QUALIFIED",
+            "spot_depth_normalized_notional": None,
+            "derivative_depth_normalized_notional": None,
+            "derivative_to_spot_depth_ratio": None,
+            "requested_depth_band_bps": liquidity_depth_band_bps,
         },
         "derivative_structure": {
             "funding": _latest_derivative_family(structure_latest, "funding"),
@@ -423,6 +414,13 @@ def build_spot_derivative_relationship_state(
             "open_interest_change": _oi_change(structures),
             "mark_index": _latest_derivative_family(structure_latest, "mark_index"),
             "liquidations": _latest_derivative_family(structure_latest, "liquidations"),
+        },
+        "unit_air_gap": {
+            "price_basis_directly_comparable": quote_units_match,
+            "spot_derivative_amounts_directly_comparable": False,
+            "cross_venue_open_interest_directly_comparable": False,
+            "cross_venue_liquidation_size_directly_comparable": False,
+            "rule": "NUMERIC_EQUALITY_NEVER_IMPLIES_ECONOMIC_UNIT_COMPATIBILITY",
         },
         "truth_boundaries": {
             "lagged_association_is_causality": False,
