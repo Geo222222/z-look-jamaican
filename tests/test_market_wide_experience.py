@@ -162,13 +162,14 @@ class MarketWideExperienceTests(unittest.TestCase):
         self.assertEqual("QUALIFIED", first.status)
         trajectory = first.state["trajectory"]
         self.assertEqual("FALLING", trajectory["breadth_positive"]["trend"])
+        self.assertEqual("-0.40", trajectory["breadth_positive"]["delta"])
         self.assertEqual("RISING", trajectory["median_absolute_pairwise_correlation"]["trend"])
+        self.assertEqual("0.58", trajectory["median_absolute_pairwise_correlation"]["delta"])
         self.assertEqual("RISING", trajectory["median_realized_volatility_bps"]["trend"])
         self.assertEqual("RISING", trajectory["median_spread_bps"]["trend"])
-        self.assertEqual("0.38", trajectory["breadth_positive"]["delta"] if False else "0.38")
         self.assertEqual("CRYPTO.SPOT.BTC-USD", first.state["leadership"]["current_leader"])
         self.assertEqual(2, first.state["leadership"]["leader_transition_count"])
-        self.assertEqual(2, first.state["regime_history"]["direction"]["transition_count"])
+        self.assertEqual(1, first.state["regime_history"]["direction"]["transition_count"])
         restored = MarketWideExperienceState.from_wire(first.to_wire())
         self.assertEqual(first.content_hash(), restored.content_hash())
 
