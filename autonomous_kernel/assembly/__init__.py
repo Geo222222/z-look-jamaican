@@ -14,6 +14,8 @@ from .contracts import (
     AssemblyReceipt,
 )
 from .journal import AssemblyJournal, AssemblyJournalError, validate_assembly_journal
+from .lineage import validate_assembly_lineage, validate_assembly_receipt_lineage
+from .service import CertifiedAssemblyError, assemble_and_record
 
 __all__ = [
     "ASSEMBLY_SCHEMA_VERSION",
@@ -24,6 +26,10 @@ __all__ = [
     "AssemblyJournal",
     "AssemblyJournalError",
     "AssemblyReceipt",
+    "CertifiedAssemblyError",
+    "assemble_and_record",
     "assemble_prediction",
     "validate_assembly_journal",
+    "validate_assembly_lineage",
+    "validate_assembly_receipt_lineage",
 ]
