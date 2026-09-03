@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-Z8-HIST-REAL-001",
+  "title": "Z8 adaptive assembly single-window real-data historical qualification",
+  "status": "PREREGISTERED_BEFORE_RESULT",
+  "scope": {
+    "claim_ceiling": "SINGLE_WINDOW_HISTORICAL_SUPPORTED",
+    "mode": "HISTORICAL_REPLAY",
+    "evidence_class": "RESEARCH_ONLY",
+    "capital_effect": "NONE",
+    "live_execution": false,
+    "broad_historical_qualification_allowed": false,
+    "prospective_qualification_allowed": false,
+    "contextual_qualification_allowed": false
+  },
+  "dataset": {
+    "included_stream_id": "COINBASE-BTC-USD-MICROSTREAM-004",
+    "provider": "coinbase_advanced_trade_public_websocket",
+    "venue": "COINBASE",
+    "instrument": "BTC-USD",
+    "market_type": "SPOT",
+    "audit_ref": "evidence/audits/EXP-MICROSTREAM-004.json",
+    "audit_outcome_required": "SUPPORTED_CONTINUOUS_PUBLIC_EVIDENCE_MECHANISM",
+    "audit_decision_required": "QUALIFY_EVIDENCE_MECHANISM_ONLY",
+    "manifest_ref": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-004.manifest.json",
+    "compressed_ref": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-004.jsonl.gz",
+    "journal_sha256": "d16930cd9df5e3e853d62f1143de3eb9b321aa2fe9999e7061a69d0dac090f76",
+    "compressed_sha256": "4f920029c92e47c345c10906aa479e4710ee49bbd18a7e1a46804db49158868f",
+    "manifest_content_hash": "83fface77a0fb8aa29ece5b364f8d151c97795c8694a4fd00d37da92dd88c479",
+    "expected_unique_messages": 1155,
+    "expected_sequence_first": 0,
+    "expected_sequence_last": 1154,
+    "expected_gaps": 0,
+    "expected_duplicates": 0,
+    "expected_out_of_order": 0,
+    "excluded_stream_ids": [
+      "COINBASE-BTC-USD-MICROSTREAM-001",
+      "COINBASE-BTC-USD-MICROSTREAM-002",
+      "COINBASE-BTC-USD-MICROSTREAM-003"
+    ],
+    "exclusion_reason": "Earlier captures did not earn the required continuous-data quality qualification and may not contribute to performance scoring."
+  },
+  "pipeline": {
+    "z1_materializer": "materialize_coinbase_stream",
+    "z2_builder": "instrument-state-v1",
+    "z3_mode": "HISTORICAL_REPLAY",
+    "z4_models": [
+      "NULL-PRIOR@1.0.0",
+      "BOOK-IMBALANCE-LINEAR@1.0.0",
+      "REPORTED-FLOW-LINEAR@1.0.0"
+    ],
+    "z5_registry_state_for_experiment": "CANDIDATE_HISTORICAL_RESEARCH_ONLY",
+    "z6_resolution_policy": "FIRST_QUALIFIED_FRAME_AT_OR_AFTER_TARGET_WITHIN_LAG_V1",
+    "z6_max_resolution_lag_ns": 5000000000,
+    "z7_sample_strength_prior_count": 50,
+    "z8_weight_policy": "EVIDENCE_SHRUNK_BOUNDED_RELIABILITY_V1"
+  },
+  "frame_policy": {
+    "horizon_ns": 10000000000,
+    "grid_step_ns": 2000000000,
+    "first_prediction_offset_from_first_known_ns": 5000000000,
+    "latest_prediction_buffer_from_last_known_ns": 15000000000,
+    "depth_bands_bps": [1, 5, 10],
+    "qualified_frames_only_for_prediction": true,
+    "resolution_frames_must_be_qualified": true,
+    "lookahead": "HARD_REJECT",
+    "prediction_competence_cutoff": "STRICTLY_BEFORE_CURRENT_COMPONENT_CREATION"
+  },
+  "comparators": [
+    "NULL-PRIOR@1.0.0",
+    "BOOK-IMBALANCE-LINEAR@1.0.0",
+    "REPORTED-FLOW-LINEAR@1.0.0",
+    "EQUAL_WEIGHT_ENSEMBLE_V1",
+    "Z8_ADAPTIVE_ASSEMBLY_V1"
+  ],
+  "metrics": [
+    "resolved_count",
+    "unresolvable_count",
+    "mean_absolute_error_bps",
+    "root_mean_squared_error_bps",
+    "mean_forecast_bias_bps",
+    "directional_accuracy",
+    "brier_score",
+    "calibration_gap",
+    "interval_coverage"
+  ],
+  "minimum_evidence": {
+    "minimum_resolved_adaptive_predictions": 15,
+    "minimum_resolved_equal_weight_predictions": 15,
+    "minimum_post_prior_adaptive_weight_changes": 1
+  },
+  "performance_gates": {
+    "adaptive_mae_must_be_lte_equal_weight_mae": true,
+    "adaptive_brier_must_be_lte_equal_weight_brier": true,
+    "adaptive_directional_accuracy_max_allowed_shortfall_vs_equal": "0.05",
+    "lineage_and_integrity_errors_allowed": 0,
+    "qualification_if_all_gates_pass": "SINGLE_WINDOW_HISTORICAL_SUPPORTED",
+    "qualification_if_data_insufficient": "INSUFFICIENT_DATA",
+    "qualification_if_any_performance_gate_fails": "NOT_EARNED"
+  },
+  "anti_cherry_picking": {
+    "no_parameter_changes_after_result": true,
+    "no_failed_capture_substitution": true,
+    "no_horizon_search_after_result": true,
+    "no_endpoint_selection_after_result": true,
+    "new_hypothesis_requires_new_untouched_experiment": true
+  }
+}
