@@ -12,6 +12,7 @@ from .assembly.contextual_journal import validate_contextual_assembly_journal
 from .assembly.contextual_lineage import validate_contextual_assembly_lineage
 from .assembly.journal import validate_assembly_journal
 from .assembly.lineage import validate_assembly_lineage
+from .context.service import materialize_market_context
 from .context.status import market_context_status
 from .context.store import validate_market_context_store
 from .evaluation.journal import validate_outcome_journal
@@ -52,6 +53,8 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("validate", help="validate schemas, references, Governor snapshots, governed learning state, and Z9 context")
     subparsers.add_parser("status", help="show a machine-readable resume summary")
     subparsers.add_parser("context_status", help="show read-only Z9 market-context status")
+    materialize_parser = subparsers.add_parser("context_materialize", help="materialize authoritative Z9 context from durable Z2 history at cutoff T")
+    materialize_parser.add_argument("--cutoff-at-ns", type=int, required=True)
     subparsers.add_parser("next-work", help="select the highest-scored ready task whose dependencies are complete")
     subparsers.add_parser("recover", help="idempotently roll a prepared state transaction forward")
     monitor_parser = subparsers.add_parser("monitor_snapshot", help="emit the authoritative read-only observer snapshot")
@@ -91,6 +94,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             _validate_learning_state_or_raise(root); _print(status_summary(root))
         elif args.command == "context_status":
             _print(market_context_status(root))
+        elif args.command == "context_materialize":
+            result = materialize_market_context(root, cutoff_at_ns=args.cutoff_at_ns)
+            _print({"status": "ok", "context": result.context.to_wire(), "selected_frame_count": len(result.selected_frame_ids), "selected_instrument_ids": list(result.selected_instrument_ids)})
         elif args.command == "next-work": _print({"status": "ok", "next_work": next_work(root)})
         elif args.command == "recover":
             result = recover_pending(root); _validate_learning_state_or_raise(root); _print(result)
