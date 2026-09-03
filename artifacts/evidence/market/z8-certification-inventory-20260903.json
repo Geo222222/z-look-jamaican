@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "inventory_id": "Z8-CERTIFICATION-INVENTORY-20260903",
+  "policy_ref": "artifacts/evidence/market/z8-certification-policy-v1.json",
+  "scope": "BTC-USD Coinbase spot microstructure only",
+  "admissible_windows": [
+    {
+      "window_id": "COINBASE-BTC-USD-MICROSTREAM-004",
+      "source_experiment": "EXP-Z8-HIST-REAL-001",
+      "evidence_mode": "HISTORICAL_REPLAY",
+      "utc_date": "2026-09-01",
+      "utc_six_hour_bucket": "18:00-23:59",
+      "first_known_at_ns": 1788286848276845400,
+      "last_known_at_ns": 1788286906764090100,
+      "raw_journal_sha256": "d16930cd9df5e3e853d62f1143de3eb9b321aa2fe9999e7061a69d0dac090f76",
+      "compressed_sha256": "4f920029c92e47c345c10906aa479e4710ee49bbd18a7e1a46804db49158868f",
+      "manifest_content_hash": "83fface77a0fb8aa29ece5b364f8d151c97795c8694a4fd00d37da92dd88c479",
+      "unique_messages": 1155,
+      "resolved_adaptive_predictions": 20,
+      "data_quality": "QUALIFIED",
+      "adaptive_performance_decision": "NOT_EARNED",
+      "include_negative_result_in_population": true
+    },
+    {
+      "window_id": "COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620",
+      "source_experiment": "EXP-Z8-PROSPECTIVE-002",
+      "evidence_mode": "PROSPECTIVE_SHADOW",
+      "utc_date": "2026-09-03",
+      "utc_six_hour_bucket": "00:00-05:59",
+      "first_live_message_ns": 1788402668466208997,
+      "raw_evidence_directory": "artifacts/evidence/market/exp-z8-prospective-002-data",
+      "raw_journal_sha256": "69504f0988753bb4cdcc6a2ee657f6ada838e910f90b42dffbd36c9f9213edd7",
+      "compressed_sha256": "0d63a1097cd89e0d222eb0905c7956a5263b27a36fa617b26e1be039e51c8423",
+      "manifest_content_hash": "f3a9b5d1fe43efce91ec1b5e842c1538622b2e8b471a673427900c23b54fba80",
+      "unique_messages": 1800,
+      "resolved_adaptive_predictions": 13,
+      "data_quality": "QUALIFIED",
+      "prospective_mechanism_decision": "SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED"
+    }
+  ],
+  "excluded_evidence": [
+    {
+      "id": "COINBASE-BTC-USD-MICROSTREAM-001",
+      "reason": "Did not earn required continuous-data quality qualification."
+    },
+    {
+      "id": "COINBASE-BTC-USD-MICROSTREAM-002",
+      "reason": "Did not earn required continuous-data quality qualification."
+    },
+    {
+      "id": "COINBASE-BTC-USD-MICROSTREAM-003",
+      "reason": "Did not earn required continuous-data quality qualification."
+    },
+    {
+      "id": "EXP-Z8-PROSPECTIVE-001",
+      "reason": "Prospective mechanism NOT_EARNED; material receive-path processing backlog and complete raw bundle not durably preserved."
+    },
+    {
+      "id": "EXP-MKT-001-BTC-ETH-5M",
+      "reason": "Candle-only history cannot reconstruct current Z4 microstructure inputs and therefore cannot qualify current Z8."
+    },
+    {
+      "id": "SYNTHETIC-Z1-Z8-UNIT-FRAMES",
+      "reason": "Mechanical certification evidence only; synthetic data cannot satisfy empirical breadth."
+    }
+  ],
+  "broad_historical_progress": {
+    "status": "DATA_BLOCKED",
+    "qualified_windows": 2,
+    "required_qualified_windows": 12,
+    "distinct_utc_dates": 2,
+    "required_distinct_utc_dates": 3,
+    "distinct_utc_six_hour_buckets": 2,
+    "required_distinct_utc_six_hour_buckets": 3,
+    "total_resolved_adaptive_predictions": 33,
+    "required_total_resolved_adaptive_predictions": 100,
+    "performance_scoring_allowed_yet": false,
+    "reason": "Evidence minimum is not met; scoring broad performance now would overstate coverage."
+  },
+  "walk_forward_progress": {
+    "status": "DATA_BLOCKED",
+    "broad_historical_prerequisite_met": false,
+    "eligible_chronological_folds": 0,
+    "required_chronological_folds": 4,
+    "performance_scoring_allowed_yet": false
+  },
+  "contextual_progress": {
+    "status": "ARCHITECTURALLY_BLOCKED_UNTIL_Z9"
+  }
+}
