@@ -78,7 +78,7 @@ class DerivativeStateTests(unittest.TestCase):
         self.assertEqual(first.state["funding"]["value"], "0.0001")
         self.assertEqual(first.state["open_interest"]["value"], "1000")
         self.assertEqual(first.state["open_interest"]["unit_semantics"], "PROVIDER_NATIVE_UNSPECIFIED")
-        self.assertEqual(first.state["mark_index"]["mark_index_divergence_bps"], "100")
+        self.assertEqual(first.state["mark_index"]["mark_index_divergence_bps"], "100.00")
         self.assertEqual(first.state["liquidations"]["event_count"], 2)
         self.assertEqual(first.state["liquidations"]["reported_sell_size"], "2")
         self.assertEqual(first.state["liquidations"]["reported_buy_size"], "1")
