@@ -30,6 +30,21 @@ jobs:
         run: |
           python experiments/z8_real_data_qualification.py --root . --output /tmp/z8-real-data-result.json
           cat /tmp/z8-real-data-result.json
+      - name: Verify frozen Z8 qualification result
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          generated = json.loads(Path('/tmp/z8-real-data-result.json').read_text(encoding='utf-8'))
+          committed = json.loads(Path('artifacts/evidence/market/exp-z8-hist-real-001-result.json').read_text(encoding='utf-8'))
+          if generated != committed:
+              raise SystemExit('generated Z8 real-data result differs from frozen evidence artifact')
+          if committed['integrity']['result_content_hash'] != '2320855eff796b173d5d09429ae204803d60f7cf5771d79d112fcbc4a79671bc':
+              raise SystemExit('frozen Z8 result hash drifted')
+          if committed['qualification']['decision'] != 'NOT_EARNED':
+              raise SystemExit('frozen Z8 qualification decision drifted')
+          PY
       - name: Monitor contract tests
         run: python -m unittest discover -s monitor/tests -v
       - name: Validate durable state
