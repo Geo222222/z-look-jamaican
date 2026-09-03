@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import tempfile
+import unittest
 from datetime import datetime, timezone
+from pathlib import Path
 
-import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from autonomous_kernel.book_bridge import ZLJBookSigner
@@ -115,87 +117,91 @@ def _graph(*, reverse: bool = False) -> EconomicInstrumentGraph:
     )
 
 
-def test_graph_identity_is_order_independent_and_round_trips() -> None:
-    first = _graph()
-    second = _graph(reverse=True)
-    assert first.content_hash() == second.content_hash()
-    restored = EconomicInstrumentGraph.from_wire(first.to_wire())
-    assert restored.content_hash() == first.content_hash()
-    assert [node.node_id for node in restored.nodes_for_root("ASSET.BTC")] == [
-        "BTC-USD-202612",
-        "BTC-USD-PERP",
-        "BTC-USD-SPOT",
-    ]
-
-
-def test_spot_derivative_relationship_requires_same_underlying() -> None:
-    bad_perp = EconomicInstrumentNode(
-        node_id="ETH-USD-PERP",
-        instrument=CanonicalInstrument(
-            canonical_id="CRYPTO.PERP.ETH-USD",
-            asset_class="CRYPTO",
-            market_type="PERPETUAL",
-            base_asset="ETH",
-            quote_asset="USD",
-            settlement_asset="USD",
-        ),
-        role=InstrumentRole.PERPETUAL,
-        economic_root_id="ASSET.ETH",
-        quote_family_id="QUOTE.USD",
-    )
-    with pytest.raises(EconomicGraphError, match="same economic_root_id"):
-        EconomicInstrumentGraph(
-            graph_id="BAD",
-            graph_version="1",
-            effective_at_ns=1,
-            known_at_ns=1,
-            nodes=(_spot(), bad_perp),
-            relationships=(
-                EconomicRelationship(
-                    relationship_id="BAD-REL",
-                    relationship_type=EconomicRelationshipType.SPOT_DERIVATIVE,
-                    source_node_id="BTC-USD-SPOT",
-                    target_node_id="ETH-USD-PERP",
-                    rationale="invalid cross-underlying derivative relation",
-                ),
-            ),
+class EconomicInstrumentGraphTests(unittest.TestCase):
+    def test_graph_identity_is_order_independent_and_round_trips(self) -> None:
+        first = _graph()
+        second = _graph(reverse=True)
+        self.assertEqual(first.content_hash(), second.content_hash())
+        restored = EconomicInstrumentGraph.from_wire(first.to_wire())
+        self.assertEqual(restored.content_hash(), first.content_hash())
+        self.assertEqual(
+            [node.node_id for node in restored.nodes_for_root("ASSET.BTC")],
+            ["BTC-USD-202612", "BTC-USD-PERP", "BTC-USD-SPOT"],
         )
 
+    def test_spot_derivative_relationship_requires_same_underlying(self) -> None:
+        bad_perp = EconomicInstrumentNode(
+            node_id="ETH-USD-PERP",
+            instrument=CanonicalInstrument(
+                canonical_id="CRYPTO.PERP.ETH-USD",
+                asset_class="CRYPTO",
+                market_type="PERPETUAL",
+                base_asset="ETH",
+                quote_asset="USD",
+                settlement_asset="USD",
+            ),
+            role=InstrumentRole.PERPETUAL,
+            economic_root_id="ASSET.ETH",
+            quote_family_id="QUOTE.USD",
+        )
+        with self.assertRaisesRegex(EconomicGraphError, "same economic_root_id"):
+            EconomicInstrumentGraph(
+                graph_id="BAD",
+                graph_version="1",
+                effective_at_ns=1,
+                known_at_ns=1,
+                nodes=(_spot(), bad_perp),
+                relationships=(
+                    EconomicRelationship(
+                        relationship_id="BAD-REL",
+                        relationship_type=EconomicRelationshipType.SPOT_DERIVATIVE,
+                        source_node_id="BTC-USD-SPOT",
+                        target_node_id="ETH-USD-PERP",
+                        rationale="invalid cross-underlying derivative relation",
+                    ),
+                ),
+            )
 
-def test_graph_tamper_is_detected() -> None:
-    wire = _graph().to_wire()
-    wire["graph_version"] = "9.9.9"
-    with pytest.raises(EconomicGraphError, match="content hash mismatch"):
-        EconomicInstrumentGraph.from_wire(wire)
+    def test_graph_tamper_is_detected(self) -> None:
+        wire = _graph().to_wire()
+        wire["graph_version"] = "9.9.9"
+        with self.assertRaisesRegex(EconomicGraphError, "content hash mismatch"):
+            EconomicInstrumentGraph.from_wire(wire)
+
+    def test_related_nodes_can_filter_relationship_family(self) -> None:
+        graph = _graph()
+        related = graph.related_nodes(
+            "BTC-USD-PERP",
+            relationship_types=(EconomicRelationshipType.TERM_STRUCTURE,),
+        )
+        self.assertEqual([node.node_id for node in related], ["BTC-USD-202612"])
+
+    def test_material_graph_version_is_book_bound_without_copying_raw_market_history(self) -> None:
+        graph = _graph()
+        intent = material_graph_evidence(
+            graph,
+            payload_ref="zlj://economic-graphs/CRYPTO-MARKET-GRAPH/1.0.0",
+        )
+        signer = ZLJBookSigner(key_id="zlj-test-1", private_key=Ed25519PrivateKey.generate())
+        produced_at = datetime.fromtimestamp(graph.known_at_ns / 1_000_000_000 + 1, tz=timezone.utc)
+        envelope = intent.sign(
+            signer=signer,
+            receipt_id="ZLJ-GRAPH-1",
+            produced_at=produced_at,
+            visibility_scope=("INSTITUTION", "BENJAMIN"),
+        )
+
+        self.assertEqual(envelope["producer"], "ZLJ")
+        self.assertEqual(envelope["event_type"], "ZLJ.ECONOMIC_INSTRUMENT_GRAPH")
+        self.assertEqual(envelope["subject_id"], "CRYPTO-MARKET-GRAPH@1.0.0")
+        self.assertEqual(envelope["payload_digest"], intent.payload_digest)
+        self.assertLessEqual(envelope["known_at"], envelope["produced_at"])
+
+        with tempfile.TemporaryDirectory() as directory:
+            record = BookOutbox(Path(directory)).enqueue(envelope=envelope, payload=intent.payload)
+        self.assertEqual(record["state"], "PENDING")
+        self.assertNotIn("raw market", intent.payload.decode("utf-8").lower())
 
 
-def test_related_nodes_can_filter_relationship_family() -> None:
-    graph = _graph()
-    related = graph.related_nodes(
-        "BTC-USD-PERP",
-        relationship_types=(EconomicRelationshipType.TERM_STRUCTURE,),
-    )
-    assert [node.node_id for node in related] == ["BTC-USD-202612"]
-
-
-def test_material_graph_version_is_book_bound_without_copying_raw_market_history(tmp_path) -> None:
-    graph = _graph()
-    intent = material_graph_evidence(graph, payload_ref="zlj://economic-graphs/CRYPTO-MARKET-GRAPH/1.0.0")
-    signer = ZLJBookSigner(key_id="zlj-test-1", private_key=Ed25519PrivateKey.generate())
-    produced_at = datetime.fromtimestamp(graph.known_at_ns / 1_000_000_000 + 1, tz=timezone.utc)
-    envelope = intent.sign(
-        signer=signer,
-        receipt_id="ZLJ-GRAPH-1",
-        produced_at=produced_at,
-        visibility_scope=("INSTITUTION", "BENJAMIN"),
-    )
-
-    assert envelope["producer"] == "ZLJ"
-    assert envelope["event_type"] == "ZLJ.ECONOMIC_INSTRUMENT_GRAPH"
-    assert envelope["subject_id"] == "CRYPTO-MARKET-GRAPH@1.0.0"
-    assert envelope["payload_digest"] == intent.payload_digest
-    assert envelope["known_at"] <= envelope["produced_at"]
-
-    record = BookOutbox(tmp_path).enqueue(envelope=envelope, payload=intent.payload)
-    assert record["state"] == "PENDING"
-    assert "raw market" not in intent.payload.decode("utf-8").lower()
+if __name__ == "__main__":
+    unittest.main()
