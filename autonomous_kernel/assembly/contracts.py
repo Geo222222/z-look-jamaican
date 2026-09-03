@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
-from typing import Any, Dict, Mapping, Optional, Tuple
+from typing import Any, Dict, Mapping, Tuple
 
 from ..operations import canonical_hash
 
@@ -92,6 +92,8 @@ class AssemblyReceipt:
             refs.append(model_ref)
             _digest(str(contributor.get("component_prediction_hash", "")), "component_prediction_hash")
             _digest(str(contributor.get("registry_event_hash", "")), "registry_event_hash")
+            _digest(str(contributor.get("model_definition_hash", "")), "model_definition_hash")
+            _digest(str(contributor.get("model_artifact_hash", "")), "model_artifact_hash")
             profile_hash = contributor.get("competence_profile_hash")
             if profile_hash is not None:
                 _digest(str(profile_hash), "competence_profile_hash")
@@ -152,3 +154,39 @@ class AssemblyReceipt:
         value = self.body()
         value["integrity"] = {"algorithm": "sha256", "content_hash": self.content_hash()}
         return value
+
+    @classmethod
+    def from_wire(cls, value: Mapping[str, Any]) -> "AssemblyReceipt":
+        representation = value.get("representation")
+        contract = value.get("prediction_contract")
+        assembled = value.get("assembled_prediction")
+        policies = value.get("policies")
+        contributors = value.get("contributors")
+        if not all(isinstance(item, Mapping) for item in (representation, contract, assembled, policies)):
+            raise AssemblyContractError("assembly envelope is malformed")
+        if not isinstance(contributors, list):
+            raise AssemblyContractError("assembly contributors must be a list")
+        item = cls(
+            schema_version=str(value.get("schema_version", "")),
+            receipt_id=str(value.get("receipt_id", "")),
+            assembly_at_ns=int(value.get("assembly_at_ns", -1)),
+            mode=str(value.get("mode", "")),
+            evidence_class=str(value.get("evidence_class", "")),
+            representation_frame_id=str(representation.get("frame_id", "")),
+            representation_content_hash=str(representation.get("content_hash", "")),
+            prediction_at_ns=int(contract.get("prediction_at_ns", -1)),
+            horizon_ns=int(contract.get("horizon_ns", -1)),
+            resolves_at_ns=int(contract.get("resolves_at_ns", -1)),
+            target_metric=str(contract.get("target_metric", "")),
+            assembled_prediction_id=str(assembled.get("prediction_id", "")),
+            assembled_prediction_content_hash=str(assembled.get("content_hash", "")),
+            contributors=tuple(dict(contributor) for contributor in contributors if isinstance(contributor, Mapping)),
+            weight_policy_id=str(policies.get("weight_policy_id", "")),
+            interval_policy_id=str(policies.get("interval_policy_id", "")),
+        )
+        if len(item.contributors) != len(contributors):
+            raise AssemblyContractError("assembly contributor entry is malformed")
+        integrity = value.get("integrity")
+        if not isinstance(integrity, Mapping) or integrity.get("content_hash") != item.content_hash():
+            raise AssemblyContractError("assembly receipt content hash mismatch")
+        return item
