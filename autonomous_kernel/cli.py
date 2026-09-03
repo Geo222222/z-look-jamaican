@@ -22,23 +22,31 @@ from .store import (
     validate,
 )
 from .models.registry import validate_model_registry
+from .evaluation.journal import validate_outcome_journal
 
 
 def _print(value: Any) -> None:
     print(json.dumps(value, indent=2, sort_keys=False))
 
 
-def _validate_model_registry_or_raise(root: Path) -> None:
-    errors = validate_model_registry(root)
-    if errors:
-        raise StateValidationError(errors)
+def _validate_learning_state_or_raise(root: Path) -> Sequence[str]:
+    checks = []
+    model_errors = validate_model_registry(root)
+    if model_errors:
+        raise StateValidationError(model_errors)
+    checks.append("model_registry")
+    outcome_errors = validate_outcome_journal(root)
+    if outcome_errors:
+        raise StateValidationError(outcome_errors)
+    checks.append("outcome_journal")
+    return checks
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="autokernel", description="Operate validated durable autonomous state")
     parser.add_argument("--root", type=Path, default=repository_root(), help="repository root (defaults to package root)")
     subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("validate", help="validate schemas, references, Governor snapshots, and governed model state")
+    subparsers.add_parser("validate", help="validate schemas, references, Governor snapshots, and governed learning state")
     subparsers.add_parser("status", help="show a machine-readable resume summary")
     subparsers.add_parser("next-work", help="select the highest-scored ready task whose dependencies are complete")
     subparsers.add_parser("recover", help="idempotently roll a prepared state transaction forward")
@@ -85,16 +93,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         if args.command == "validate":
             checks = validate(root)
-            _validate_model_registry_or_raise(root)
-            _print({"status": "ok", "root": str(root), "checks": checks + ["model_registry"]})
+            checks.extend(_validate_learning_state_or_raise(root))
+            _print({"status": "ok", "root": str(root), "checks": checks})
         elif args.command == "status":
-            _validate_model_registry_or_raise(root)
+            _validate_learning_state_or_raise(root)
             _print(status_summary(root))
         elif args.command == "next-work":
             _print({"status": "ok", "next_work": next_work(root)})
         elif args.command == "recover":
             result = recover_pending(root)
-            _validate_model_registry_or_raise(root)
+            _validate_learning_state_or_raise(root)
             _print(result)
         elif args.command == "monitor_snapshot":
             _print(monitor_snapshot(root))
