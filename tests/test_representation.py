@@ -8,7 +8,6 @@ from autonomous_kernel.representation import (
     RepresentationContractError,
     RepresentationError,
     RepresentationFrame,
-    RepresentationStore,
     build_instrument_state,
     validate_representation_store,
 )
@@ -96,12 +95,15 @@ class RepresentationTests(unittest.TestCase):
         venue = first.state["venue_states"]["COINBASE"]
         self.assertEqual("100", venue["book"]["best_bid"])
         self.assertEqual("101", venue["book"]["best_ask"])
-        self.assertEqual("50", venue["book"]["spread_bps"])
-        self.assertEqual("201.00", venue["trade_flow"]["reported_buy_quote_notional"])
+        self.assertAlmostEqual(99.50248756, float(venue["book"]["spread_bps"]), places=6)
+        self.assertEqual("201.0", venue["trade_flow"]["reported_buy_quote_notional"])
         self.assertEqual("100.25", venue["trade_flow"]["reported_sell_quote_notional"])
         self.assertEqual("100.75", venue["trade_flow"]["net_reported_quote_notional"])
         self.assertEqual(170, first.known_at_ns)
-        self.assertEqual(tuple(item.observation_id for item in sorted(sources, key=lambda item: (item.known_at_ns, item.source_event_at_ns, item.provider, item.venue, item.stream_id or "", item.sequence or "", item.observation_id))), first.source_observation_ids)
+        self.assertEqual(
+            ("OBS-SNAP", "OBS-DELTA", "OBS-BUY", "OBS-SELL"),
+            first.source_observation_ids,
+        )
 
     def test_future_known_source_is_hard_rejected(self):
         with self.assertRaisesRegex(RepresentationError, "lookahead rejected"):
