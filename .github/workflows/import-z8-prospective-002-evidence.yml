@@ -1,0 +1,62 @@
+name: import-z8-prospective-002-evidence
+
+on:
+  push:
+    branches:
+      - codex/z8-remaining-certifications
+    paths:
+      - ".github/workflows/import-z8-prospective-002-evidence.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  import-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/z8-remaining-certifications
+          fetch-depth: 0
+      - name: Download exact prospective artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/z8-import
+          curl -fsSL -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/9875923892/zip" \
+            -o /tmp/z8-import/evidence.zip
+          unzip -q /tmp/z8-import/evidence.zip -d /tmp/z8-import/unpacked
+      - name: Verify frozen evidence hashes
+        run: |
+          cd /tmp/z8-import/unpacked
+          test "$(sha256sum result.json | awk '{print $1}')" = "1f3f7b9645e50116241db70e3a52309f0b569d69d6436eb298adb362e4d060fe"
+          test "$(sha256sum raw/COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.jsonl.gz | awk '{print $1}')" = "0d63a1097cd89e0d222eb0905c7956a5263b27a36fa617b26e1be039e51c8423"
+          test "$(sha256sum raw/COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.manifest.json | awk '{print $1}')" = "eeb674268bea25dc89ee60f330c7513be4586b70e929a0163c8db3d8c79d7599"
+          test "$(sha256sum raw/OBS-COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.json | awk '{print $1}')" = "2e6b499428cb3d15f8e1c9917755bd34c8dd2a94ff95dfc108ce4f24f9ea5743"
+          python - <<'PY'
+          import gzip, hashlib
+          p='raw/COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.jsonl.gz'
+          raw=gzip.open(p,'rb').read()
+          assert hashlib.sha256(raw).hexdigest() == '69504f0988753bb4cdcc6a2ee657f6ada838e910f90b42dffbd36c9f9213edd7'
+          PY
+      - name: Commit durable raw evidence
+        run: |
+          target="artifacts/evidence/market/exp-z8-prospective-002-data"
+          mkdir -p "$target"
+          cp /tmp/z8-import/unpacked/raw/COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.jsonl.gz "$target/"
+          cp /tmp/z8-import/unpacked/raw/COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.manifest.json "$target/"
+          cp /tmp/z8-import/unpacked/raw/OBS-COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.json "$target/"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$target"
+          if git diff --cached --quiet; then
+            echo "Evidence already imported"
+            exit 0
+          fi
+          git commit -m "evidence(z8): import prospective 002 raw bundle"
+          git push origin HEAD:codex/z8-remaining-certifications
