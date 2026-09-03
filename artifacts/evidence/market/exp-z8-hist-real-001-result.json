@@ -1,0 +1,136 @@
+{
+  "adaptive_evidence": {
+    "assembly_count": 20,
+    "assembly_receipt_set_hash": "7e1c4518114334b5604210de661798b501abcaabb80c1b02f2eadb0d3e8cccae",
+    "post_prior_non_equal_weight_assembly_count": 19
+  },
+  "dataset": {
+    "canonical_batch_content_hash": "bb9909d22d575aa97a868543bd6696fc77a920442e93aae398c4a939c36fa092",
+    "canonical_record_count": 1659,
+    "compressed_sha256": "4f920029c92e47c345c10906aa479e4710ee49bbd18a7e1a46804db49158868f",
+    "excluded_stream_ids": [
+      "COINBASE-BTC-USD-MICROSTREAM-001",
+      "COINBASE-BTC-USD-MICROSTREAM-002",
+      "COINBASE-BTC-USD-MICROSTREAM-003"
+    ],
+    "first_known_at_ns": 1788286848276845400,
+    "journal_sha256": "d16930cd9df5e3e853d62f1143de3eb9b321aa2fe9999e7061a69d0dac090f76",
+    "last_known_at_ns": 1788286906764090100,
+    "manifest_content_hash": "83fface77a0fb8aa29ece5b364f8d151c97795c8694a4fd00d37da92dd88c479",
+    "stream_id": "COINBASE-BTC-USD-MICROSTREAM-004",
+    "window_duration_ns": 58487244700
+  },
+  "experiment_id": "EXP-Z8-HIST-REAL-001",
+  "integrity": {
+    "assembly_journal_entries": 20,
+    "errors": [],
+    "outcome_journal_entries": 100,
+    "prediction_journal_entries": 100,
+    "result_content_hash": "2320855eff796b173d5d09429ae204803d60f7cf5771d79d112fcbc4a79671bc"
+  },
+  "metrics": {
+    "BOOK-IMBALANCE-LINEAR@1.0.0": {
+      "brier_score": "0.2481849582725104608065926525",
+      "calibration_gap": "0.0407818091451857088352862206",
+      "directional_accuracy": "0.5",
+      "interval_coverage": "1",
+      "mean_absolute_error_bps": "1.714921403485979756374143836",
+      "mean_forecast_bias_bps": "1.554761931006796237426709736",
+      "pending_count": 0,
+      "prediction_count": 20,
+      "resolved_count": 20,
+      "root_mean_squared_error_bps": "2.049133104825999793926785087",
+      "unresolvable_count": 0
+    },
+    "EQUAL_WEIGHT_ENSEMBLE_V1": {
+      "brier_score": "0.2528419686545403392746431218",
+      "calibration_gap": "0.0309338001331410470360544014",
+      "directional_accuracy": "0.5",
+      "interval_coverage": "1",
+      "mean_absolute_error_bps": "1.688419335363550103044350926",
+      "mean_forecast_bias_bps": "1.116737225931477425912167072",
+      "pending_count": 0,
+      "prediction_count": 20,
+      "resolved_count": 20,
+      "root_mean_squared_error_bps": "1.954915902579267446395236315",
+      "unresolvable_count": 0
+    },
+    "NULL-PRIOR@1.0.0": {
+      "brier_score": "0.25",
+      "calibration_gap": "0.0",
+      "directional_accuracy": "0.5",
+      "interval_coverage": "1",
+      "mean_absolute_error_bps": "1.20133286942366825361565085",
+      "mean_forecast_bias_bps": "-0.402764907962117786667028850",
+      "pending_count": 0,
+      "prediction_count": 20,
+      "resolved_count": 20,
+      "root_mean_squared_error_bps": "1.446230430319256935877025000",
+      "unresolvable_count": 0
+    },
+    "REPORTED-FLOW-LINEAR@1.0.0": {
+      "brier_score": "0.2625550213481512841231746776",
+      "calibration_gap": "0.0520195912542374322728769837",
+      "directional_accuracy": "0.5",
+      "interval_coverage": "1",
+      "mean_absolute_error_bps": "2.510007837439003840988122882",
+      "mean_forecast_bias_bps": "2.198214654749753826976820336",
+      "pending_count": 0,
+      "prediction_count": 20,
+      "resolved_count": 20,
+      "root_mean_squared_error_bps": "3.257886702133833833710930911",
+      "unresolvable_count": 0
+    },
+    "Z8_ADAPTIVE_ASSEMBLY_V1": {
+      "brier_score": "0.2528866284068582570050816004",
+      "calibration_gap": "0.0308543250691956574030971234",
+      "directional_accuracy": "0.5",
+      "interval_coverage": "1",
+      "mean_absolute_error_bps": "1.689131180044285198013552934",
+      "mean_forecast_bias_bps": "1.112794546321598259125579158",
+      "pending_count": 0,
+      "prediction_count": 20,
+      "resolved_count": 20,
+      "root_mean_squared_error_bps": "1.954926318386740717618990341",
+      "unresolvable_count": 0
+    }
+  },
+  "prediction_policy": {
+    "grid_step_ns": 2000000000,
+    "horizon_ns": 10000000000,
+    "max_resolution_lag_ns": 5000000000,
+    "resolution_policy": "FIRST_QUALIFIED_FRAME_AT_OR_AFTER_TARGET_WITHIN_LAG_V1"
+  },
+  "preregistration_ref": "artifacts/evidence/market/exp-z8-hist-real-001-preregistration.json",
+  "qualification": {
+    "broad_historical_qualification": false,
+    "contextual_qualification": false,
+    "decision": "NOT_EARNED",
+    "prospective_shadow_qualification": false,
+    "reasons": [
+      "adaptive_mae_worse_than_equal_weight",
+      "adaptive_brier_worse_than_equal_weight"
+    ],
+    "walk_forward_qualification": false
+  },
+  "representation": {
+    "builder_version": "instrument-state-v1",
+    "candidate_cutoff_count": 50,
+    "depth_bands_bps": [
+      1,
+      5,
+      10
+    ],
+    "prediction_cutoff_count": 20,
+    "qualified_frame_count": 50,
+    "qualified_prediction_frame_count": 20
+  },
+  "schema_version": 1,
+  "scope": {
+    "capital_effect": "NONE",
+    "claim_ceiling": "SINGLE_WINDOW_HISTORICAL_SUPPORTED",
+    "evidence_class": "RESEARCH_ONLY",
+    "live_execution": false,
+    "mode": "HISTORICAL_REPLAY"
+  }
+}
