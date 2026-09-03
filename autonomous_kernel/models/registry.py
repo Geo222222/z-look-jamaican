@@ -43,6 +43,8 @@ EVIDENCE_KIND_BY_TARGET = {
     "SUPERSEDED": "SUCCESSION_EVIDENCE",
 }
 
+REGISTRY_AUTHORITY = "governed model lifecycle; model code cannot self-certify"
+
 
 class ModelRegistryError(RuntimeError):
     pass
@@ -81,7 +83,14 @@ def _atomic_json(path: Path, value: Mapping[str, Any]) -> None:
             os.unlink(temporary)
 
 
-def _event_body(sequence: int, event_type: str, model_ref: str, occurred_at_ns: int, payload: Mapping[str, Any], previous_hash: str) -> Dict[str, Any]:
+def _event_body(
+    sequence: int,
+    event_type: str,
+    model_ref: str,
+    occurred_at_ns: int,
+    payload: Mapping[str, Any],
+    previous_hash: str,
+) -> Dict[str, Any]:
     return {
         "schema_version": 1,
         "sequence": int(sequence),
@@ -93,11 +102,137 @@ def _event_body(sequence: int, event_type: str, model_ref: str, occurred_at_ns: 
     }
 
 
-def _event_wire(sequence: int, event_type: str, model_ref: str, occurred_at_ns: int, payload: Mapping[str, Any], previous_hash: str) -> Dict[str, Any]:
+def _event_wire(
+    sequence: int,
+    event_type: str,
+    model_ref: str,
+    occurred_at_ns: int,
+    payload: Mapping[str, Any],
+    previous_hash: str,
+) -> Dict[str, Any]:
     body = _event_body(sequence, event_type, model_ref, occurred_at_ns, payload, previous_hash)
     value = dict(body)
     value["event_hash"] = canonical_hash(body)
     return value
+
+
+def _empty_projection() -> Dict[str, Any]:
+    return {
+        "schema_version": 1,
+        "authority": REGISTRY_AUTHORITY,
+        "models": {},
+        "last_event_hash": None,
+        "event_count": 0,
+    }
+
+
+def _validate_event_chain(events: Sequence[Mapping[str, Any]]) -> List[str]:
+    errors: List[str] = []
+    previous = "GENESIS"
+    seen_registration = set()
+    last_state: Dict[str, str] = {}
+    last_occurred: Dict[str, int] = {}
+
+    for index, event in enumerate(events):
+        body = {key: value for key, value in event.items() if key != "event_hash"}
+        if event.get("schema_version") != 1 or event.get("sequence") != index:
+            errors.append("model transition sequence %d schema/sequence mismatch" % index)
+        if event.get("previous_hash") != previous:
+            errors.append("model transition sequence %d previous_hash mismatch" % index)
+        expected_hash = canonical_hash(body)
+        if event.get("event_hash") != expected_hash:
+            errors.append("model transition sequence %d event_hash mismatch" % index)
+
+        model_ref = str(event.get("model_ref", ""))
+        payload = event.get("payload", {})
+        occurred_at_ns = event.get("occurred_at_ns")
+        if not model_ref:
+            errors.append("model transition sequence %d lacks model_ref" % index)
+        if not isinstance(occurred_at_ns, int) or occurred_at_ns < 0:
+            errors.append("model transition sequence %d has invalid occurred_at_ns" % index)
+        elif model_ref in last_occurred and occurred_at_ns < last_occurred[model_ref]:
+            errors.append("model %s transition time moved backwards at sequence %d" % (model_ref, index))
+        elif model_ref:
+            last_occurred[model_ref] = occurred_at_ns
+
+        if event.get("event_type") == "MODEL_REGISTERED":
+            if model_ref in seen_registration:
+                errors.append("model %s registered more than once" % model_ref)
+            seen_registration.add(model_ref)
+            if not isinstance(payload, Mapping):
+                errors.append("model %s registration payload invalid" % model_ref)
+            else:
+                if payload.get("initial_state") != "CANDIDATE":
+                    errors.append("model %s registration must begin CANDIDATE" % model_ref)
+                definition = payload.get("definition")
+                if not isinstance(definition, Mapping):
+                    errors.append("model %s registration definition missing" % model_ref)
+                elif definition.get("integrity", {}).get("content_hash") != payload.get("definition_hash"):
+                    errors.append("model %s registration definition hash mismatch" % model_ref)
+                try:
+                    _digest(str(payload.get("artifact_hash", "")), "artifact_hash")
+                except ModelRegistryError as exc:
+                    errors.append("%s: %s" % (model_ref, exc))
+                if not payload.get("code_ref"):
+                    errors.append("model %s registration code_ref missing" % model_ref)
+                training = payload.get("training_data_refs", [])
+                if not isinstance(training, list) or any(not str(item) for item in training) or len(training) != len(set(training)):
+                    errors.append("model %s registration training_data_refs invalid" % model_ref)
+            last_state[model_ref] = "CANDIDATE"
+
+        elif event.get("event_type") == "MODEL_TRANSITION":
+            current = last_state.get(model_ref)
+            from_state = payload.get("from_state") if isinstance(payload, Mapping) else None
+            to_state = payload.get("to_state") if isinstance(payload, Mapping) else None
+            evidence_kind = payload.get("evidence_kind") if isinstance(payload, Mapping) else None
+            evidence_refs = payload.get("evidence_refs") if isinstance(payload, Mapping) else None
+            if current is None or from_state != current or to_state not in ALLOWED_TRANSITIONS.get(current, set()):
+                errors.append("model %s has invalid transition at sequence %d" % (model_ref, index))
+            else:
+                expected_kind = EVIDENCE_KIND_BY_TARGET.get(str(to_state))
+                if evidence_kind != expected_kind:
+                    errors.append("model %s transition evidence kind mismatch at sequence %d" % (model_ref, index))
+                if not isinstance(evidence_refs, list) or not evidence_refs or any(not str(item) for item in evidence_refs) or len(evidence_refs) != len(set(evidence_refs)):
+                    errors.append("model %s transition evidence refs invalid at sequence %d" % (model_ref, index))
+                last_state[model_ref] = str(to_state)
+        else:
+            errors.append("model transition sequence %d has unknown event_type" % index)
+
+        previous = expected_hash
+    return errors
+
+
+def _project_events(events: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
+    state = _empty_projection()
+    for event in events:
+        model_ref = str(event["model_ref"])
+        payload = event["payload"]
+        occurred_at_ns = int(event["occurred_at_ns"])
+        if event["event_type"] == "MODEL_REGISTERED":
+            state["models"][model_ref] = {
+                "model_ref": model_ref,
+                "definition": payload["definition"],
+                "definition_hash": payload["definition_hash"],
+                "artifact_hash": payload["artifact_hash"],
+                "code_ref": payload["code_ref"],
+                "training_data_refs": list(payload["training_data_refs"]),
+                "state": "CANDIDATE",
+                "registered_at_ns": occurred_at_ns,
+                "updated_at_ns": occurred_at_ns,
+                "last_evidence_kind": None,
+                "last_evidence_refs": [],
+                "last_event_hash": event["event_hash"],
+            }
+        else:
+            record = state["models"][model_ref]
+            record["state"] = payload["to_state"]
+            record["updated_at_ns"] = occurred_at_ns
+            record["last_evidence_kind"] = payload["evidence_kind"]
+            record["last_evidence_refs"] = list(payload["evidence_refs"])
+            record["last_event_hash"] = event["event_hash"]
+    state["event_count"] = len(events)
+    state["last_event_hash"] = None if not events else events[-1]["event_hash"]
+    return state
 
 
 class ModelRegistry:
@@ -108,13 +243,7 @@ class ModelRegistry:
 
     def state(self) -> Dict[str, Any]:
         if not self.state_path.is_file():
-            return {
-                "schema_version": 1,
-                "authority": "governed model lifecycle; model code cannot self-certify",
-                "models": {},
-                "last_event_hash": None,
-                "event_count": 0,
-            }
+            return _empty_projection()
         value = json.loads(self.state_path.read_text(encoding="utf-8"))
         if not isinstance(value, dict):
             raise ModelRegistryError("model registry state must be an object")
@@ -136,6 +265,17 @@ class ModelRegistry:
             output.append(value)
         return tuple(output)
 
+    def rebuild_state(self) -> Mapping[str, Any]:
+        """Rebuild the mutable registry projection from the append-only event source."""
+        with writer_lock(self.root):
+            events = self.events()
+            errors = _validate_event_chain(events)
+            if errors:
+                raise ModelRegistryError("model transition journal invalid: " + "; ".join(errors))
+            projection = _project_events(events)
+            _atomic_json(self.state_path, projection)
+            return projection
+
     def register(
         self,
         definition: ModelDefinition,
@@ -149,17 +289,20 @@ class ModelRegistry:
         if not code_ref:
             raise ModelRegistryError("code_ref is required")
         training = _refs(training_data_refs, "training_data_refs", allow_empty=True)
+        if int(occurred_at_ns) < 0:
+            raise ModelRegistryError("occurred_at_ns must be non-negative")
         with writer_lock(self.root):
-            errors = validate_model_registry(self.root, require_state=False)
+            events = self.events()
+            errors = _validate_event_chain(events)
             if errors:
-                raise ModelRegistryError("existing model registry invalid: " + "; ".join(errors))
-            state = self.state()
+                raise ModelRegistryError("existing model transition journal invalid: " + "; ".join(errors))
+            state = _project_events(events)
             existing = state["models"].get(definition.model_ref)
             payload = {
                 "definition": definition.to_wire(),
                 "definition_hash": definition.content_hash(),
                 "artifact_hash": artifact,
-                "code_ref": code_ref,
+                "code_ref": str(code_ref),
                 "training_data_refs": list(training),
                 "initial_state": "CANDIDATE",
             }
@@ -174,26 +317,13 @@ class ModelRegistry:
                 }
                 if expected != payload:
                     raise ModelRegistryError("model_ref already registered with different artifact identity")
+                if self.state() != state:
+                    _atomic_json(self.state_path, state)
                 return existing
-            event = self._append_event("MODEL_REGISTERED", definition.model_ref, int(occurred_at_ns), payload)
-            state = self.state()
-            record = {
-                "model_ref": definition.model_ref,
-                "definition": definition.to_wire(),
-                "definition_hash": definition.content_hash(),
-                "artifact_hash": artifact,
-                "code_ref": code_ref,
-                "training_data_refs": list(training),
-                "state": "CANDIDATE",
-                "registered_at_ns": int(occurred_at_ns),
-                "updated_at_ns": int(occurred_at_ns),
-                "last_evidence_kind": None,
-                "last_evidence_refs": [],
-                "last_event_hash": event["event_hash"],
-            }
-            state["models"][definition.model_ref] = record
-            self._persist_state(state, event)
-            return record
+            event = self._append_event(events, "MODEL_REGISTERED", definition.model_ref, int(occurred_at_ns), payload)
+            projection = _project_events(tuple(events) + (event,))
+            _atomic_json(self.state_path, projection)
+            return projection["models"][definition.model_ref]
 
     def transition(
         self,
@@ -210,17 +340,24 @@ class ModelRegistry:
         if expected_kind is None or evidence_kind != expected_kind:
             raise ModelRegistryError("%s requires evidence kind %s" % (target_state, expected_kind))
         refs = _refs(evidence_refs, "evidence_refs")
+        if int(occurred_at_ns) < 0:
+            raise ModelRegistryError("occurred_at_ns must be non-negative")
         with writer_lock(self.root):
-            errors = validate_model_registry(self.root, require_state=False)
+            events = self.events()
+            errors = _validate_event_chain(events)
             if errors:
-                raise ModelRegistryError("existing model registry invalid: " + "; ".join(errors))
-            state = self.state()
+                raise ModelRegistryError("existing model transition journal invalid: " + "; ".join(errors))
+            state = _project_events(events)
             record = state["models"].get(model_ref)
             if record is None:
                 raise ModelRegistryError("model is not registered")
             current = str(record["state"])
+            if int(occurred_at_ns) < int(record["updated_at_ns"]):
+                raise ModelRegistryError("model transition time cannot move backwards")
             if target_state == current:
                 if record.get("last_evidence_kind") == evidence_kind and record.get("last_evidence_refs") == list(refs):
+                    if self.state() != state:
+                        _atomic_json(self.state_path, state)
                     return record
                 raise ModelRegistryError("same-state transition with different evidence is not idempotent")
             if target_state not in ALLOWED_TRANSITIONS[current]:
@@ -231,19 +368,17 @@ class ModelRegistry:
                 "evidence_kind": evidence_kind,
                 "evidence_refs": list(refs),
             }
-            event = self._append_event("MODEL_TRANSITION", model_ref, int(occurred_at_ns), payload)
-            state = self.state()
-            record = state["models"][model_ref]
-            record["state"] = target_state
-            record["updated_at_ns"] = int(occurred_at_ns)
-            record["last_evidence_kind"] = evidence_kind
-            record["last_evidence_refs"] = list(refs)
-            record["last_event_hash"] = event["event_hash"]
-            self._persist_state(state, event)
-            return record
+            event = self._append_event(events, "MODEL_TRANSITION", model_ref, int(occurred_at_ns), payload)
+            projection = _project_events(tuple(events) + (event,))
+            _atomic_json(self.state_path, projection)
+            return projection["models"][model_ref]
 
     def eligible(self, model_ref: str, purpose: str) -> bool:
-        record = self.state().get("models", {}).get(model_ref)
+        events = self.events()
+        errors = _validate_event_chain(events)
+        if errors:
+            raise ModelRegistryError("model transition journal invalid: " + "; ".join(errors))
+        record = _project_events(events).get("models", {}).get(model_ref)
         if record is None:
             return False
         state = record.get("state")
@@ -255,8 +390,14 @@ class ModelRegistry:
             return state not in {"QUARANTINED", "SUPERSEDED"}
         raise ModelRegistryError("unknown eligibility purpose")
 
-    def _append_event(self, event_type: str, model_ref: str, occurred_at_ns: int, payload: Mapping[str, Any]) -> Mapping[str, Any]:
-        events = self.events()
+    def _append_event(
+        self,
+        events: Sequence[Mapping[str, Any]],
+        event_type: str,
+        model_ref: str,
+        occurred_at_ns: int,
+        payload: Mapping[str, Any],
+    ) -> Mapping[str, Any]:
         previous_hash = str(events[-1]["event_hash"]) if events else "GENESIS"
         event = _event_wire(len(events), event_type, model_ref, occurred_at_ns, payload, previous_hash)
         self.events_path.parent.mkdir(parents=True, exist_ok=True)
@@ -266,13 +407,6 @@ class ModelRegistry:
             os.fsync(handle.fileno())
         return event
 
-    def _persist_state(self, state: Dict[str, Any], last_event: Mapping[str, Any]) -> None:
-        state["schema_version"] = 1
-        state["authority"] = "governed model lifecycle; model code cannot self-certify"
-        state["event_count"] = int(last_event["sequence"]) + 1
-        state["last_event_hash"] = str(last_event["event_hash"])
-        _atomic_json(self.state_path, state)
-
 
 def validate_model_registry(root: Path, *, require_state: bool = True) -> List[str]:
     registry = ModelRegistry(root)
@@ -281,37 +415,11 @@ def validate_model_registry(root: Path, *, require_state: bool = True) -> List[s
         events = registry.events()
     except ModelRegistryError as exc:
         return [str(exc)]
-    previous = "GENESIS"
-    seen_registration = set()
-    last_state: Dict[str, str] = {}
-    for index, event in enumerate(events):
-        body = {key: value for key, value in event.items() if key != "event_hash"}
-        if event.get("schema_version") != 1 or event.get("sequence") != index:
-            errors.append("model transition sequence %d schema/sequence mismatch" % index)
-        if event.get("previous_hash") != previous:
-            errors.append("model transition sequence %d previous_hash mismatch" % index)
-        expected_hash = canonical_hash(body)
-        if event.get("event_hash") != expected_hash:
-            errors.append("model transition sequence %d event_hash mismatch" % index)
-        model_ref = str(event.get("model_ref", ""))
-        payload = event.get("payload", {})
-        if event.get("event_type") == "MODEL_REGISTERED":
-            if model_ref in seen_registration:
-                errors.append("model %s registered more than once" % model_ref)
-            seen_registration.add(model_ref)
-            last_state[model_ref] = "CANDIDATE"
-        elif event.get("event_type") == "MODEL_TRANSITION":
-            current = last_state.get(model_ref)
-            from_state = payload.get("from_state") if isinstance(payload, dict) else None
-            to_state = payload.get("to_state") if isinstance(payload, dict) else None
-            if current is None or from_state != current or to_state not in ALLOWED_TRANSITIONS.get(current, set()):
-                errors.append("model %s has invalid transition at sequence %d" % (model_ref, index))
-            else:
-                last_state[model_ref] = str(to_state)
-        else:
-            errors.append("model transition sequence %d has unknown event_type" % index)
-        previous = expected_hash
+    errors.extend(_validate_event_chain(events))
+    if errors:
+        return errors
 
+    projected = _project_events(events)
     if not registry.state_path.is_file():
         if require_state and (root / "state/current_state.json").is_file():
             errors.append("missing required state file: state/model_registry.json")
@@ -321,26 +429,6 @@ def validate_model_registry(root: Path, *, require_state: bool = True) -> List[s
     except (json.JSONDecodeError, ModelRegistryError) as exc:
         errors.append("model registry state unreadable: %s" % exc)
         return errors
-    if state.get("schema_version") != 1 or not isinstance(state.get("models"), dict):
-        errors.append("model registry state schema invalid")
-        return errors
-    if state.get("event_count") != len(events):
-        errors.append("model registry event_count mismatch")
-    expected_last_hash = None if not events else events[-1].get("event_hash")
-    if state.get("last_event_hash") != expected_last_hash:
-        errors.append("model registry last_event_hash mismatch")
-    for model_ref, expected_state in last_state.items():
-        record = state["models"].get(model_ref)
-        if record is None:
-            errors.append("model registry state missing %s" % model_ref)
-            continue
-        if record.get("state") != expected_state:
-            errors.append("model registry state projection mismatch for %s" % model_ref)
-        definition = record.get("definition")
-        if not isinstance(definition, dict) or definition.get("integrity", {}).get("content_hash") != record.get("definition_hash"):
-            errors.append("model registry definition hash mismatch for %s" % model_ref)
-        try:
-            _digest(str(record.get("artifact_hash", "")), "artifact_hash")
-        except ModelRegistryError as exc:
-            errors.append("%s: %s" % (model_ref, exc))
+    if state != projected:
+        errors.append("model registry projection differs from append-only transition source; rebuild required")
     return errors
