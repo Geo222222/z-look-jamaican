@@ -45,6 +45,23 @@ jobs:
           if committed['qualification']['decision'] != 'NOT_EARNED':
               raise SystemExit('frozen Z8 qualification decision drifted')
           PY
+      - name: Validate Z8 empirical certification readiness
+        run: |
+          python experiments/z8_certification_status.py --root . --output /tmp/z8-certification-status.json
+          cat /tmp/z8-certification-status.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('/tmp/z8-certification-status.json').read_text(encoding='utf-8'))
+          if value['broad_historical']['status'] != 'DATA_BLOCKED':
+              raise SystemExit('broad historical status changed without a new certification inventory')
+          if value['walk_forward']['status'] != 'DATA_BLOCKED':
+              raise SystemExit('walk-forward status changed without a new certification inventory')
+          if value['prospective']['status'] != 'SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED':
+              raise SystemExit('prospective mechanism support drifted')
+          if value['capital_effect'] != 'NONE' or value['live_execution'] is not False:
+              raise SystemExit('certification status violated zero-capital boundary')
+          PY
       - name: Monitor contract tests
         run: python -m unittest discover -s monitor/tests -v
       - name: Validate durable state
