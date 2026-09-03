@@ -24,8 +24,8 @@ def frame(instrument, index: int, midpoint: object, *, known_at_ns: Optional[int
 
 
 def histories():
-    btc = [frame(BTC, index, value) for index, value in enumerate((100, 101, 102.01, 103.0301, 104.060401), 1)]
-    eth = [frame(ETH, index, value) for index, value in enumerate((200, 202, 204.02, 206.0602, 208.120802), 1)]
+    btc = [frame(BTC, index, value) for index, value in enumerate(("100", "101", "102.515", "102.002425", "103.02244925"), 1)]
+    eth = [frame(ETH, index, value) for index, value in enumerate(("200", "201.6", "204.0192", "203.4071424", "205.441213824"), 1)]
     return btc, eth
 
 
@@ -40,7 +40,7 @@ class MarketContextTests(unittest.TestCase):
         with self.assertRaises(MarketContextBuildError): build_market_context(tuple(btc + eth), cutoff_at_ns=4_999)
 
     def test_spot_future_basis_and_lead_lag_are_explicit_noncausal_proxies(self):
-        btc, eth = histories(); future = [frame(BTC_FUTURE, index, value) for index, value in enumerate((101, 102.01, 103.0301, 104.060401, 105.10100501), 1)]
+        btc, eth = histories(); future = [frame(BTC_FUTURE, index, value) for index, value in enumerate(("101", "102.212", "103.74518", "103.2264541", "104.258718641"), 1)]
         context = build_market_context(tuple(btc + eth + future), minimum_history_points=3, minimum_lead_lag_pairs=3)
         self.assertEqual(1, context.state["derivatives"]["relationship_count"]); relation = context.state["derivatives"]["relationships"][0]; self.assertGreater(Decimal(relation["basis_bps"]), Decimal("0")); self.assertEqual("ALIGNED_RETURN_SEQUENCE_LAG_PROXY_NOT_CAUSALITY", relation["lead_lag"]["truth_class"]); self.assertEqual("QUALIFIED", context.state["feature_quality"]["DERIVATIVES"]["status"])
 
