@@ -36,7 +36,7 @@ def _observation(
     item_instrument = instrument or _instrument()
     known = T - 20 * SECOND + offset * SECOND
     return CanonicalObservation(
-        observation_id=f"DEROBS-{event_type}-{offset}-{item_instrument.base_asset}",
+        observation_id=f"DEROBS-{event_type}-{offset}-{item_instrument.base_asset}-{provider}-{venue}",
         instrument=item_instrument,
         event_type=event_type,
         provider=provider,
@@ -48,11 +48,11 @@ def _observation(
         known_at_ns=known,
         sequence=str(offset),
         sequence_scope="PROVIDER_EVENT",
-        stream_id="DERIVATIVE-TEST-STREAM",
+        stream_id=f"DERIVATIVE-TEST-STREAM-{provider}-{venue}",
         payload=payload,
         quality={"status": quality, "action_permitted": quality == "VALID"},
         raw_event_sha256=(f"{offset + 1:x}" * 64)[:64],
-        raw_ref=f"raw://derivative/{event_type}/{offset}",
+        raw_ref=f"raw://derivative/{provider}/{venue}/{event_type}/{offset}",
     )
 
 
@@ -79,12 +79,17 @@ class DerivativeStateTests(unittest.TestCase):
         self.assertEqual(first.state["open_interest"]["value"], "1000")
         self.assertEqual(first.state["open_interest"]["unit_semantics"], "PROVIDER_NATIVE_UNSPECIFIED")
         self.assertEqual(first.state["mark_index"]["mark_index_divergence_bps"], "100.00")
-        self.assertEqual(first.state["liquidations"]["event_count"], 2)
-        self.assertEqual(first.state["liquidations"]["reported_sell_size"], "2")
-        self.assertEqual(first.state["liquidations"]["reported_buy_size"], "1")
-        self.assertEqual(first.state["liquidations"]["truth_class"], "PROVIDER_REPORTED_SIDE_UNINTERPRETED")
+        liquidations = first.state["liquidations"]
+        self.assertEqual(liquidations["event_count"], 2)
+        self.assertEqual(liquidations["truth_class"], "PROVIDER_REPORTED_SIDE_UNINTERPRETED")
+        group = liquidations["provider_venue_groups"]["TEST_DERIVATIVES:TEST"]
+        self.assertEqual(group["reported_sell_size"], "2")
+        self.assertEqual(group["reported_buy_size"], "1")
+        self.assertEqual(group["size_unit_semantics"], "PROVIDER_NATIVE_UNSPECIFIED")
+        self.assertIsNone(liquidations["cross_provider_aggregate"])
         self.assertFalse(first.state["comparability"]["open_interest_cross_venue_comparable"])
         self.assertFalse(first.state["comparability"]["liquidation_size_cross_venue_comparable"])
+        self.assertFalse(first.state["comparability"]["spot_derivative_amount_comparable"])
         restored = RepresentationFrame.from_wire(first.to_wire())
         self.assertEqual(restored.content_hash(), first.content_hash())
 
@@ -164,6 +169,41 @@ class DerivativeStateTests(unittest.TestCase):
         self.assertEqual(frame.state["open_interest"]["provider"], "VENUE_B")
         self.assertEqual(frame.state["open_interest"]["unit_semantics"], "PROVIDER_NATIVE_UNSPECIFIED")
         self.assertFalse(frame.state["comparability"]["open_interest_cross_venue_comparable"])
+
+    def test_liquidation_sizes_from_different_exchange_rules_are_never_summed(self) -> None:
+        frame = build_derivative_state(
+            (
+                _observation(
+                    "LIQUIDATION",
+                    {"price": "100", "size": "10", "side": "SELL"},
+                    offset=1,
+                    provider="LINEAR_EXCHANGE",
+                    venue="LINEAR",
+                ),
+                _observation(
+                    "LIQUIDATION",
+                    {"price": "100", "size": "10", "side": "SELL"},
+                    offset=2,
+                    provider="INVERSE_EXCHANGE",
+                    venue="INVERSE",
+                ),
+            ),
+            cutoff_at_ns=T,
+        )
+        liquidations = frame.state["liquidations"]
+        self.assertEqual(liquidations["event_count"], 2)
+        self.assertEqual(len(liquidations["provider_venue_groups"]), 2)
+        self.assertEqual(liquidations["cross_provider_aggregate_status"], "UNAVAILABLE")
+        self.assertIsNone(liquidations["cross_provider_aggregate"])
+        self.assertEqual(
+            liquidations["provider_venue_groups"]["LINEAR_EXCHANGE:LINEAR"]["reported_sell_size"],
+            "10",
+        )
+        self.assertEqual(
+            liquidations["provider_venue_groups"]["INVERSE_EXCHANGE:INVERSE"]["reported_sell_size"],
+            "10",
+        )
+        self.assertFalse(liquidations["cross_provider_comparable"])
 
 
 if __name__ == "__main__":
