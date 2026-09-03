@@ -60,8 +60,11 @@ def create_prediction(
     if frame.status == "UNAVAILABLE":
         raise PredictionFactoryError("unavailable representation cannot produce a prediction")
     prediction_time = int(prediction_at_ns)
+    creation_time = int(created_at_ns)
     if prediction_time < frame.known_at_ns:
         raise PredictionFactoryError("prediction_at_ns cannot precede representation known_at_ns")
+    if creation_time < 0:
+        raise PredictionFactoryError("created_at_ns must be non-negative")
     horizon = int(horizon_ns)
     if horizon <= 0:
         raise PredictionFactoryError("horizon_ns must be positive")
@@ -77,6 +80,7 @@ def create_prediction(
                 frame.content_hash(),
                 mode,
                 str(prediction_time),
+                str(creation_time),
                 str(horizon),
                 expected,
                 probability,
@@ -96,7 +100,7 @@ def create_prediction(
         representation_content_hash=frame.content_hash(),
         representation_status=frame.status,
         prediction_at_ns=prediction_time,
-        created_at_ns=int(created_at_ns),
+        created_at_ns=creation_time,
         horizon_ns=horizon,
         resolves_at_ns=prediction_time + horizon,
         target_metric="ZLJ_AGGREGATE_MIDPOINT_RETURN_BPS_V1",
