@@ -366,6 +366,9 @@ class ModelRegistry:
 
 def validate_model_registry(root: Path, *, require_state: bool = True) -> List[str]:
     registry = ModelRegistry(root)
+    full_kernel = (root / "state/current_state.json").is_file()
+    if require_state and full_kernel and not registry.events_path.is_file():
+        return ["missing required journal: memory/model_transitions.jsonl"]
     try:
         events = registry.events()
     except ModelRegistryError as exc:
@@ -375,7 +378,7 @@ def validate_model_registry(root: Path, *, require_state: bool = True) -> List[s
         return errors
     projected = _project_events(events)
     if not registry.state_path.is_file():
-        return ["missing required state file: state/model_registry.json"] if require_state and (root / "state/current_state.json").is_file() else []
+        return ["missing required state file: state/model_registry.json"] if require_state and full_kernel else []
     try:
         state = registry.state()
     except (json.JSONDecodeError, ModelRegistryError) as exc:
