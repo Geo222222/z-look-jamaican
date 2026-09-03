@@ -117,7 +117,15 @@ def _context(spot_state: RepresentationFrame, perp_state: RepresentationFrame) -
         status="QUALIFIED",
         builder_version="test-context-v1",
         parameters={"test": True},
-        state={"members": {frame.instrument.canonical_id: {"frame_id": frame.frame_id} for frame in frames}},
+        state={
+            "members": {
+                frame.instrument.canonical_id: {
+                    "frame_id": frame.frame_id,
+                    "frame_content_hash": frame.content_hash(),
+                }
+                for frame in frames
+            }
+        },
         source_frame_ids=tuple(frame.frame_id for frame in frames),
         source_frame_hashes=tuple(frame.content_hash() for frame in frames),
         source_instrument_ids=tuple(frame.instrument.canonical_id for frame in frames),
