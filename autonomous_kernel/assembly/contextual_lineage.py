@@ -54,10 +54,12 @@ def validate_contextual_receipt_lineage(root: Path, receipt: ContextualAssemblyR
     registry_errors = validate_context_profile_registry(root)
     if registry_errors:
         errors.append("context-profile registry invalid: " + "; ".join(registry_errors))
+    elif receipt.assembly_at_ns <= 0:
+        errors.append("contextual receipt cannot establish strictly-prior profile authority at non-positive assembly time")
     else:
         model_refs = [str(item.get("model_ref", "")) for item in receipt.contributors]
         try:
-            profiles = ModelContextProfileRegistry(root).active_profiles(model_refs, as_of_ns=receipt.assembly_at_ns)
+            profiles = ModelContextProfileRegistry(root).active_profiles(model_refs, as_of_ns=receipt.assembly_at_ns - 1)
         except ModelContextProfileRegistryError as exc:
             profiles = (); errors.append("context-profile lineage unavailable: %s" % exc)
         if profiles:
