@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Tuple
 
 from ..operations import canonical_hash
+from ..prediction.contracts import Prediction, PredictionContractError
+from ..prediction.journal import PredictionJournal, validate_prediction_journal
 from ..store import writer_lock
 from .contracts import OutcomeContractError, PredictionOutcome
 
@@ -58,6 +60,36 @@ def _parse_entry(value: Mapping[str, Any]) -> Tuple[PredictionOutcome, str]:
     return outcome, expected
 
 
+def _prediction_lineage_error(root: Path, outcome: PredictionOutcome) -> str | None:
+    prediction_errors = validate_prediction_journal(root)
+    if prediction_errors:
+        return "prediction journal invalid: " + "; ".join(prediction_errors)
+    matches = [
+        entry
+        for entry in PredictionJournal(root).entries()
+        if entry.get("prediction", {}).get("prediction_id") == outcome.prediction_id
+    ]
+    if len(matches) != 1:
+        return "outcome must cite exactly one journaled prediction"
+    entry = matches[0]
+    try:
+        prediction = Prediction.from_wire(entry.get("prediction", {}))
+    except (PredictionContractError, ValueError, TypeError) as exc:
+        return "cited prediction is invalid: %s" % exc
+    checks = (
+        (outcome.prediction_content_hash == prediction.content_hash(), "prediction content hash mismatch"),
+        (outcome.prediction_journal_entry_hash == entry.get("entry_hash"), "prediction journal entry hash mismatch"),
+        (outcome.evidence_class == prediction.evidence_class, "prediction evidence class mismatch"),
+        (outcome.target_metric == prediction.target_metric, "prediction target metric mismatch"),
+        (outcome.model_refs == prediction.model_refs, "prediction model lineage mismatch"),
+        (outcome.target_resolves_at_ns == prediction.resolves_at_ns, "prediction resolution time mismatch"),
+        (outcome.reference_price == prediction.reference_price, "prediction reference price mismatch"),
+        (outcome.reference_price_source == prediction.reference_price_source, "prediction reference source mismatch"),
+    )
+    failed = [message for passed, message in checks if not passed]
+    return None if not failed else "; ".join(failed)
+
+
 class OutcomeJournal:
     """Append-only final outcomes; each prediction can receive exactly one outcome."""
 
@@ -83,6 +115,9 @@ class OutcomeJournal:
         return tuple(output)
 
     def append(self, outcome: PredictionOutcome) -> Mapping[str, Any]:
+        lineage_error = _prediction_lineage_error(self.root, outcome)
+        if lineage_error:
+            raise OutcomeJournalError("outcome prediction lineage invalid: " + lineage_error)
         with writer_lock(self.root):
             records = self.entries()
             errors = _validate_records(records)
@@ -158,6 +193,15 @@ def validate_outcome_journal(root: Path) -> List[str]:
     except OutcomeJournalError as exc:
         return errors + [str(exc)]
     errors.extend(_validate_records(records))
+    if not errors:
+        for index, record in enumerate(records):
+            try:
+                outcome, _ = _parse_entry(record)
+            except OutcomeJournalError:
+                continue
+            lineage_error = _prediction_lineage_error(root, outcome)
+            if lineage_error:
+                errors.append("sequence %d: outcome prediction lineage invalid: %s" % (index, lineage_error))
     if not journal.state_path.is_file():
         if full_kernel:
             errors.append("missing required state file: state/outcome_journal.json")
