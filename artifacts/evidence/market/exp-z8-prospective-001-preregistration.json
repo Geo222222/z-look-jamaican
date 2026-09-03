@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-Z8-PROSPECTIVE-001",
+  "status": "PREREGISTERED_BEFORE_LIVE_DATA",
+  "title": "Z8 single-session prospective shadow mechanism qualification",
+  "scope": {
+    "claim_ceiling": "SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED",
+    "broad_historical_qualification_allowed": false,
+    "walk_forward_qualification_allowed": false,
+    "contextual_qualification_allowed": false,
+    "capital_effect": "NONE",
+    "live_execution": false
+  },
+  "source": {
+    "provider": "coinbase_advanced_trade_public_websocket",
+    "endpoint": "wss://advanced-trade-ws.coinbase.com",
+    "instrument": "BTC-USD",
+    "channels": ["level2", "market_trades", "heartbeats"],
+    "authentication_allowed": false,
+    "orders_allowed": false,
+    "wallets_allowed": false
+  },
+  "session_policy": {
+    "capture_seconds": 90,
+    "warmup_seconds": 10,
+    "prediction_interval_seconds": 5,
+    "prediction_horizon_seconds": 10,
+    "max_resolution_lag_seconds": 5,
+    "minimum_resolved_adaptive_predictions": 8,
+    "resolution_policy": "FIRST_QUALIFIED_FRAME_AT_OR_AFTER_TARGET_WITHIN_LAG_V1"
+  },
+  "models": [
+    "NULL-PRIOR@1.0.0",
+    "BOOK-IMBALANCE-LINEAR@1.0.0",
+    "REPORTED-FLOW-LINEAR@1.0.0"
+  ],
+  "qualification_gates": {
+    "all_predictions_created_before_resolution": true,
+    "all_adaptive_components_durably_journaled_before_assembly": true,
+    "competence_cutoff_strictly_before_current_prediction": true,
+    "minimum_resolved_adaptive_predictions": 8,
+    "lineage_integrity_errors_allowed": 0,
+    "capital_effect_must_equal": "NONE",
+    "execution_must_remain_disabled": true
+  },
+  "performance_policy": {
+    "predictive_outperformance_required_for_mechanism_claim": false,
+    "metrics_must_be_reported_without_retuning": true,
+    "economic_performance_cannot_upgrade_claim_ceiling": true
+  },
+  "anti_cherry_picking": {
+    "no_parameter_changes_after_first_live_message": true,
+    "no_endpoint_selection_after_outcome": true,
+    "failed_or_unresolvable_predictions_remain_in_population": true,
+    "new_hypothesis_requires_new_experiment_id": true
+  }
+}
