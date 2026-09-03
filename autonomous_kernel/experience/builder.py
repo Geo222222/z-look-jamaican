@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
-from typing import Dict, Mapping, Sequence, Tuple
+from typing import Dict, Mapping, Sequence
 
 from ..context.contracts import MarketContextFrame
 from ..representation.contracts import RepresentationFrame
@@ -35,10 +35,17 @@ def _experience_id(
     graph_hash: str,
     context_hash: str,
     source_hashes: Sequence[str],
+    timescale_specs: Sequence[TimescaleSpec],
     builder_version: str,
 ) -> str:
+    specification = [
+        "%s:%d" % (spec.timescale.value, spec.lookback_ns)
+        for spec in sorted(timescale_specs, key=lambda item: item.timescale.value)
+    ]
     material = "|".join(
-        [economic_root_id, str(cutoff_at_ns), graph_hash, context_hash, builder_version] + sorted(source_hashes)
+        [economic_root_id, str(cutoff_at_ns), graph_hash, context_hash, builder_version]
+        + specification
+        + sorted(source_hashes)
     )
     return "EXP-%s" % hashlib.sha256(material.encode("utf-8")).hexdigest()[:32]
 
@@ -117,6 +124,8 @@ def build_market_experience(
         raise MarketExperienceError("at least one timescale spec is required")
     if len({spec.timescale for spec in specs}) != len(specs):
         raise MarketExperienceError("timescale specs must be unique")
+    if any(spec.lookback_ns > cutoff_at_ns for spec in specs):
+        raise MarketExperienceError("timescale lookback begins before epoch")
 
     views = []
     all_hashes = []
@@ -132,6 +141,9 @@ def build_market_experience(
                 raise MarketExperienceError("source frame instrument is outside economic root graph")
             if frame.cutoff_at_ns > cutoff_at_ns or frame.known_at_ns > cutoff_at_ns:
                 raise MarketExperienceError("lookahead source frame rejected")
+            # A source representation may include a longer observation history;
+            # the view lookback is an experience/selection contract and does not
+            # fabricate a shorter Z2 frame than the caller actually supplied.
             all_hashes.append(frame.content_hash())
             known_values.append(frame.known_at_ns)
 
@@ -172,6 +184,7 @@ def build_market_experience(
         graph_hash,
         context_hash,
         all_hashes,
+        specs,
         builder_version,
     )
     return MarketExperienceFrame(
