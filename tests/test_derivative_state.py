@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import unittest
-from decimal import Decimal
+from typing import Optional
 
 from autonomous_kernel.observation.contracts import CanonicalObservation
 from autonomous_kernel.observation.instruments import CanonicalInstrument
@@ -28,7 +28,7 @@ def _observation(
     payload,
     *,
     offset: int,
-    instrument: CanonicalInstrument | None = None,
+    instrument: Optional[CanonicalInstrument] = None,
     quality: str = "VALID",
     provider: str = "TEST_DERIVATIVES",
     venue: str = "TEST",
