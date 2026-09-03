@@ -8,6 +8,9 @@ import sys
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
+from .assembly.journal import validate_assembly_journal
+from .evaluation.journal import validate_outcome_journal
+from .models.registry import validate_model_registry
 from .monitor import monitor_snapshot
 from .predecessor import PredecessorVerificationError, verify_manifest
 from .qualified_shadow import ShadowDecisionProposal, record_qualified_shadow_decision
@@ -21,8 +24,6 @@ from .store import (
     update_task,
     validate,
 )
-from .models.registry import validate_model_registry
-from .evaluation.journal import validate_outcome_journal
 
 
 def _print(value: Any) -> None:
@@ -39,6 +40,10 @@ def _validate_learning_state_or_raise(root: Path) -> Sequence[str]:
     if outcome_errors:
         raise StateValidationError(outcome_errors)
     checks.append("outcome_journal")
+    assembly_errors = validate_assembly_journal(root)
+    if assembly_errors:
+        raise StateValidationError(assembly_errors)
+    checks.append("assembly_journal")
     return checks
 
 
