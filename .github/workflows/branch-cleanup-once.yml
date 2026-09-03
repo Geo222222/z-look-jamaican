@@ -1,0 +1,70 @@
+name: one-time-branch-cleanup
+
+on:
+  push:
+    branches:
+      - admin/branch-cleanup
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Archive and prune superseded branches
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+
+          preserve_branch() {
+            case "$1" in
+              main|codex/z9-market-context|freeze/z8-certification-boundary-20260903|freeze/z8-hist-real-001-not-earned|freeze/z8-prospective-002-supported)
+                return 0
+                ;;
+              *)
+                return 1
+                ;;
+            esac
+          }
+
+          mapfile -t branches < <(
+            git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+              | grep -v '^HEAD$' \
+              | sort -u
+          )
+
+          echo "Archiving branch tips before deletion..."
+          for branch in "${branches[@]}"; do
+            if preserve_branch "$branch"; then
+              echo "PRESERVE $branch"
+              continue
+            fi
+            sha="$(git rev-parse "refs/remotes/origin/$branch")"
+            tag="archive/20260903/$branch"
+            git tag -f "$tag" "$sha"
+            git push --force origin "refs/tags/$tag:refs/tags/$tag"
+            echo "ARCHIVED $branch -> $tag ($sha)"
+          done
+
+          echo "Deleting superseded branch refs..."
+          for branch in "${branches[@]}"; do
+            if preserve_branch "$branch" || [ "$branch" = "admin/branch-cleanup" ]; then
+              continue
+            fi
+            git push origin --delete "$branch"
+            echo "DELETED $branch"
+          done
+
+          echo "Deleting one-time cleanup branch last..."
+          git push origin --delete admin/branch-cleanup
+
+          echo "Branch cleanup complete."
