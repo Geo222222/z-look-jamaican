@@ -22,7 +22,41 @@ ZLJ intelligence for Benjamin
 
 Z9 owns representation of broader market context: cross-instrument structure, market breadth, volatility, liquidity, correlation, venue dislocation, spot/derivative basis and an explicitly non-causal lead/lag proxy. Z9 owns **no** trade intent, capital sizing, mandate/risk authorization, credential use, order placement, settlement, or authoritative cross-system proof.
 
-A Z9 frame is derived only from exact Z2 frames. Every source frame ID and SHA-256 content hash is part of the Z9 content hash. A source whose `known_at_ns` or cutoff is later than the requested Z9 cutoff is rejected rather than silently filtered.
+A Z9 frame is derived only from exact Z2 frames. Every source frame ID and SHA-256 content hash is part of the Z9 content hash. The operational materializer selects only durable Z2 frames whose `known_at_ns`, representation cutoff and latest source-event time are all no later than requested cutoff `T`. Any selected source that violates that point-in-time boundary fails closed.
+
+## Canonical operational materialization
+
+The pure `build_market_context()` function remains available for research and deterministic unit tests. It is **not** the authoritative durable runtime path.
+
+The canonical operational path is:
+
+```text
+durable Z2 representation artifacts
+        ↓
+rebuild + validate Z2 discovery index
+        ↓
+select all INSTRUMENT_STATE frames knowable at cutoff T
+        ↓
+build_market_context(..., cutoff_at_ns=T)
+        ↓
+verify exact builder lineage == selected durable source set
+        ↓
+MarketContextStore.persist
+        ↓
+reload exact durable context
+        ↓
+immutable materialization receipt
+```
+
+Command:
+
+```bash
+python -m autonomous_kernel context_materialize --cutoff-at-ns <T>
+```
+
+Materialization policy `Z9_DURABLE_POINT_IN_TIME_MATERIALIZER_V1` binds the cutoff, selection rule, exact source frame IDs/hashes/instruments, source-set hash, context hash, builder version and persisted context-artifact hash.
+
+A context that was manually built and persisted without this receipt is valid research data but is **not accepted by the canonical Z8+Z9 runtime service**.
 
 ## Provider neutrality
 
@@ -47,6 +81,51 @@ Each `MARKET_CONTEXT` records:
 
 Missing context does not become a made-up neutral fact. Feature families are `QUALIFIED`, `DEGRADED` or `UNAVAILABLE`.
 
+## Governed ModelContextProfile registry
+
+A model's context policy is not runtime caller input.
+
+Each model/version registers an immutable `ModelContextProfile` declaring:
+
+```text
+MODEL-A@1.0.0
+   ↓
+ContextProfile@1.0
+├─ feature dependencies
+├─ preferred regimes
+├─ adverse regimes
+├─ diversity group
+└─ profile hash
+```
+
+Registration is bound to the governed model registry's exact model reference, model-definition hash, model-artifact hash and original model registration time. A profile also carries governance evidence refs and its own registration time.
+
+The identity pair `(model_ref, profile_version)` is immutable. Changing context policy requires a new profile version; rewriting an existing version fails closed.
+
+Point-in-time resolution is mandatory. At assembly time `T`, the canonical service selects only the latest profile for each contributor that was registered by `T`. A future profile version cannot leak backward into replay.
+
+Registration command accepts a JSON declaration:
+
+```bash
+python -m autonomous_kernel context_profile_register \
+  --profile path/to/profile.json \
+  --registered-at-ns <T> \
+  --evidence <governance-evidence-ref>
+```
+
+Example declaration:
+
+```json
+{
+  "model_ref": "MODEL-A@1.0.0",
+  "profile_version": "1.0",
+  "feature_dependencies": ["LIQUIDITY", "CORRELATION"],
+  "preferred_regimes": {"structure": ["ORDERLY"]},
+  "adverse_regimes": {"volatility": ["HIGH"]},
+  "diversity_group": "FLOW_FAMILY"
+}
+```
+
 ## Z8 + Z9 assembly
 
 Z8 remains historically immutable and independently reproducible. Z9 does not rewrite Z7 competence or old Z8 weights.
@@ -68,20 +147,27 @@ final_weight_i =
   / Σ(z8_weight × context_multiplier)
 ```
 
-Every model must supply a versioned, hashable `ModelContextProfile` declaring its feature dependencies, preferred/adverse regimes and diversity group. No hidden model-family heuristic exists. Missing a profile fails closed.
+The low-level deterministic weighting function still accepts explicit profile objects so the mathematics can be unit-tested and replayed independently. The **canonical durable service does not**. It resolves the exact governed profiles itself and fails closed if any contributor lacks a profile valid at the assembly cutoff.
 
-The contextual receipt binds the base Z8 receipt, base Z8 prediction, exact Z9 context, complete profile set, component predictions, all factor values, final weights and reason codes. The final contextual prediction remains a normal Z3 prediction so Z6 can resolve it without learning a second outcome truth model.
+The contextual receipt binds the base Z8 receipt, base Z8 prediction, exact Z9 context, complete profile set, each profile hash, component predictions, all factor values, final weights and reason codes. Therefore a later audit can answer, for example:
+
+> Model A's weight changed because profile hash `H`, registered for `MODEL-A@1.0.0` before this assembly, declared LIQUIDITY/CORRELATION relevance and the observed Z9 regimes triggered these recorded factors.
+
+The final contextual prediction remains a normal Z3 prediction so Z6 can resolve it without learning a second outcome truth model.
 
 ## Durability
 
 ```text
-artifacts/market_data/contexts/<context_id>.json  immutable Z9 context
-state/market_context.json                         rebuildable discovery index
-memory/contextual_assemblies.jsonl                append-only hash chain
-state/contextual_assembly_journal.json            rebuildable journal head
+artifacts/market_data/contexts/<context_id>.json                  immutable Z9 context
+artifacts/market_data/context_materializations/<context_id>.json immutable canonical materialization proof
+state/market_context.json                                         rebuildable context discovery index
+artifacts/model_context_profiles/<profile_id>.json                immutable governed model context policy
+state/model_context_profiles.json                                 rebuildable profile discovery index
+memory/contextual_assemblies.jsonl                                append-only hash chain
+state/contextual_assembly_journal.json                            rebuildable journal head
 ```
 
-A persisted Z9 context requires every source Z2 frame to already be durably stored. The canonical contextual service requires the context artifact before it can influence assembly.
+A persisted Z9 context requires every source Z2 frame to already be durably stored. The canonical contextual service requires both the context artifact and canonical materialization receipt before context can influence assembly.
 
 ## Operations
 
@@ -91,7 +177,13 @@ Read-only status:
 python -m autonomous_kernel context_status
 ```
 
-Full kernel validation also validates the Z9 store, contextual journal and Z8→Z9 lineage.
+Materialize at cutoff:
+
+```bash
+python -m autonomous_kernel context_materialize --cutoff-at-ns <T>
+```
+
+Full kernel validation validates the governed model-profile registry, Z9 context store, canonical materialization receipts, contextual journal and Z8→Z9 lineage.
 
 ## Certification
 
