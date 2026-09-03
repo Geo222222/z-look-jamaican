@@ -7,7 +7,7 @@ from enum import Enum
 from typing import Dict, Mapping, Sequence, Tuple
 
 
-EXPERIENCE_SCHEMA_VERSION = "1.0"
+EXPERIENCE_SCHEMA_VERSION = "1.1"
 EXPERIENCE_STATUSES = {"QUALIFIED", "DEGRADED", "UNAVAILABLE"}
 FEATURE_FAMILY_STATUSES = {"QUALIFIED", "DEGRADED", "UNAVAILABLE"}
 
@@ -48,17 +48,11 @@ def _digest(value: str, field: str) -> str:
     return text
 
 
-def _unique_strings(values: Sequence[str], field: str) -> Tuple[str, ...]:
-    result = tuple(str(value) for value in values)
-    if any(not value for value in result) or len(set(result)) != len(result):
-        raise MarketExperienceError(f"{field} must contain unique non-empty values")
-    return result
-
-
 @dataclass(frozen=True)
 class ExperienceSourceFrame:
     frame_id: str
     frame_hash: str
+    representation_type: str
     instrument_id: str
     market_type: str
     window_start_ns: int
@@ -67,7 +61,7 @@ class ExperienceSourceFrame:
     status: str
 
     def __post_init__(self) -> None:
-        if not self.frame_id or not self.instrument_id or not self.market_type:
+        if not self.frame_id or not self.representation_type or not self.instrument_id or not self.market_type:
             raise MarketExperienceError("experience source-frame identity is required")
         _digest(self.frame_hash, "frame_hash")
         if self.status not in EXPERIENCE_STATUSES:
@@ -81,6 +75,7 @@ class ExperienceSourceFrame:
         return {
             "frame_id": self.frame_id,
             "frame_hash": self.frame_hash,
+            "representation_type": self.representation_type,
             "instrument_id": self.instrument_id,
             "market_type": self.market_type,
             "window_start_ns": self.window_start_ns,
@@ -173,9 +168,7 @@ class MarketExperienceFrame:
             for source in view.source_frames:
                 if source.cutoff_at_ns > self.cutoff_at_ns or source.known_at_ns > self.cutoff_at_ns:
                     raise MarketExperienceError("lookahead source frame rejected")
-        max_known = max(
-            [source.known_at_ns for view in self.views for source in view.source_frames] or [0]
-        )
+        max_known = max([source.known_at_ns for view in self.views for source in view.source_frames] or [0])
         if self.known_at_ns < max_known:
             raise MarketExperienceError("experience known_at cannot precede source knowledge")
 
@@ -252,6 +245,7 @@ class MarketExperienceFrame:
                     ExperienceSourceFrame(
                         frame_id=str(frame.get("frame_id", "")),
                         frame_hash=str(frame.get("frame_hash", "")),
+                        representation_type=str(frame.get("representation_type", "")),
                         instrument_id=str(frame.get("instrument_id", "")),
                         market_type=str(frame.get("market_type", "")),
                         window_start_ns=int(frame.get("window_start_ns", -1)),
@@ -292,7 +286,10 @@ class MarketExperienceFrame:
         if not isinstance(lineage, Mapping) or lineage.get("source_set_hash") != item.source_set_hash():
             raise MarketExperienceError("experience source_set_hash mismatch")
         authority = value.get("authority")
-        if not isinstance(authority, Mapping) or any(authority.get(key) is not False for key in ("capital_decision", "risk_authorization", "external_execution")):
+        if not isinstance(authority, Mapping) or any(
+            authority.get(key) is not False
+            for key in ("capital_decision", "risk_authorization", "external_execution")
+        ):
             raise MarketExperienceError("experience authority boundary is invalid")
         integrity = value.get("integrity")
         if not isinstance(integrity, Mapping) or integrity.get("content_hash") != item.content_hash():
