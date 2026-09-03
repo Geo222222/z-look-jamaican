@@ -7,6 +7,7 @@ from typing import Dict, Mapping, Sequence
 from ..context.contracts import MarketContextFrame
 from ..representation.contracts import RepresentationFrame
 from .contracts import (
+    ExperienceRelationshipStateRef,
     ExperienceSourceFrame,
     ExperienceTimescale,
     ExperienceView,
@@ -14,6 +15,7 @@ from .contracts import (
     MarketExperienceFrame,
 )
 from .economic_graph import EconomicInstrumentGraph
+from .relationships import EconomicRelationshipState
 
 
 BUILDER_VERSION = "market-experience-v1"
@@ -61,6 +63,20 @@ def _frame_ref(frame: RepresentationFrame) -> ExperienceSourceFrame:
         cutoff_at_ns=frame.cutoff_at_ns,
         known_at_ns=frame.known_at_ns,
         status=frame.status,
+    )
+
+
+def _relationship_ref(state: EconomicRelationshipState) -> ExperienceRelationshipStateRef:
+    return ExperienceRelationshipStateRef(
+        relationship_state_id=state.relationship_state_id,
+        relationship_state_hash=state.content_hash(),
+        relationship_id=state.relationship_id,
+        relationship_type=state.relationship_type,
+        economic_root_id=state.economic_root_id,
+        graph_hash=state.graph_hash,
+        cutoff_at_ns=state.cutoff_at_ns,
+        known_at_ns=state.known_at_ns,
+        status=state.status,
     )
 
 
@@ -166,13 +182,14 @@ def build_market_experience(
     timescale_frames: Mapping[ExperienceTimescale, Sequence[RepresentationFrame]],
     timescale_specs: Sequence[TimescaleSpec],
     cutoff_at_ns: int,
+    relationship_states: Sequence[EconomicRelationshipState] = (),
     builder_version: str = BUILDER_VERSION,
 ) -> MarketExperienceFrame:
     """Build a deterministic causal market-experience manifest at cutoff T.
 
     The builder rejects rather than filters future-known source frames, contexts,
-    or graph versions. Future realized paths/outcomes belong in a separate
-    outcome object and must never mutate this frame.
+    graph versions, or empirical relationship states. Future realized paths and
+    outcomes belong in separate objects and must never mutate this frame.
 
     A timescale may not be backed by a representation containing information
     from before that view's declared start; doing so would contaminate a short
@@ -192,6 +209,19 @@ def build_market_experience(
         raise MarketExperienceError("economic root is absent from graph")
     allowed_instruments = {node.instrument.canonical_id for node in graph_nodes}
 
+    relationships = tuple(relationship_states)
+    relationship_ids = [item.relationship_state_id for item in relationships]
+    if len(relationship_ids) != len(set(relationship_ids)):
+        raise MarketExperienceError("duplicate relationship-state id")
+    graph_hash = graph.content_hash()
+    for state in relationships:
+        if state.economic_root_id != economic_root_id:
+            raise MarketExperienceError("relationship state economic root differs from experience")
+        if state.graph_hash != graph_hash:
+            raise MarketExperienceError("relationship state graph hash differs from experience graph")
+        if state.cutoff_at_ns > cutoff_at_ns or state.known_at_ns > cutoff_at_ns:
+            raise MarketExperienceError("lookahead relationship state rejected")
+
     specs = tuple(timescale_specs)
     if not specs:
         raise MarketExperienceError("at least one timescale spec is required")
@@ -201,8 +231,8 @@ def build_market_experience(
         raise MarketExperienceError("timescale lookback begins before epoch")
 
     views = []
-    all_hashes = []
-    known_values = [graph.known_at_ns, context.known_at_ns]
+    all_hashes = [item.content_hash() for item in relationships]
+    known_values = [graph.known_at_ns, context.known_at_ns] + [item.known_at_ns for item in relationships]
     overall_states = []
     for spec in specs:
         view_start = cutoff_at_ns - spec.lookback_ns
@@ -253,8 +283,9 @@ def build_market_experience(
         overall_status = "DEGRADED"
     else:
         overall_status = "UNAVAILABLE"
+    if relationships and overall_status == "QUALIFIED" and any(item.status != "QUALIFIED" for item in relationships):
+        overall_status = "DEGRADED"
 
-    graph_hash = graph.content_hash()
     context_hash = context.content_hash()
     experience_id = _experience_id(
         economic_root_id,
@@ -279,4 +310,5 @@ def build_market_experience(
         context_hash=context_hash,
         context_status=context.status,
         views=tuple(views),
+        relationship_states=tuple(_relationship_ref(item) for item in relationships),
     )
