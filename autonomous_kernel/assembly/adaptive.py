@@ -35,9 +35,13 @@ def _registry_record_at(registry: ModelRegistry, model_ref: str, as_of_ns: int) 
             continue
         payload = event.get("payload", {})
         if event.get("event_type") == "MODEL_REGISTERED":
+            definition = payload.get("definition")
+            if not isinstance(definition, Mapping):
+                raise AdaptiveAssemblyError("registered model definition is unavailable")
             record = {
                 "model_ref": model_ref,
                 "state": "CANDIDATE",
+                "definition": dict(definition),
                 "definition_hash": str(payload.get("definition_hash", "")),
                 "artifact_hash": str(payload.get("artifact_hash", "")),
                 "registry_event_hash": str(event.get("event_hash", "")),
@@ -58,6 +62,19 @@ def _eligible_state(state: str, mode: str) -> bool:
     if mode == "HISTORICAL_REPLAY":
         return state not in {"QUARANTINED", "SUPERSEDED"}
     return False
+
+
+def _validate_registered_contract(record: Mapping[str, Any], prediction: Prediction, frame: RepresentationFrame) -> None:
+    definition = record.get("definition")
+    if not isinstance(definition, Mapping):
+        raise AdaptiveAssemblyError("registered model definition is malformed")
+    if definition.get("required_representation_type") != frame.representation_type:
+        raise AdaptiveAssemblyError("registered model does not support this representation type")
+    if definition.get("target_metric") != prediction.target_metric:
+        raise AdaptiveAssemblyError("registered model does not support this target metric")
+    horizons = definition.get("supported_horizons_ns")
+    if not isinstance(horizons, list) or prediction.horizon_ns not in [int(value) for value in horizons]:
+        raise AdaptiveAssemblyError("registered model does not support this prediction horizon")
 
 
 def _select_profile(
@@ -226,6 +243,7 @@ def assemble_prediction(
     for prediction in components:
         model_ref = prediction.model_refs[0]
         registry_record = _registry_record_at(registry, model_ref, assembly_at)
+        _validate_registered_contract(registry_record, prediction, frame)
         if not _eligible_state(str(registry_record["state"]), mode):
             raise AdaptiveAssemblyError(
                 "model %s is not eligible for %s assembly at %d (state=%s)"
@@ -266,14 +284,8 @@ def assemble_prediction(
             running += weight
         weights.append(weight)
 
-    expected = sum(
-        Decimal(item["prediction"].expected_move_bps) * weight
-        for item, weight in zip(provisional, weights)
-    )
-    probability = sum(
-        Decimal(item["prediction"].probability_positive) * weight
-        for item, weight in zip(provisional, weights)
-    )
+    expected = sum(Decimal(item["prediction"].expected_move_bps) * weight for item, weight in zip(provisional, weights))
+    probability = sum(Decimal(item["prediction"].probability_positive) * weight for item, weight in zip(provisional, weights))
     all_intervals = all(
         item["prediction"].interval_low_bps is not None and item["prediction"].interval_high_bps is not None
         for item in provisional
@@ -281,8 +293,8 @@ def assemble_prediction(
     interval_low = None
     interval_high = None
     if all_intervals:
-        interval_low = min(Decimal(item["prediction"].interval_low_bps) for item in provisional)
-        interval_high = max(Decimal(item["prediction"].interval_high_bps) for item in provisional)
+        interval_low = min(Decimal(str(item["prediction"].interval_low_bps)) for item in provisional)
+        interval_high = max(Decimal(str(item["prediction"].interval_high_bps)) for item in provisional)
 
     model_refs = tuple(item["prediction"].model_refs[0] for item in provisional)
     assembled = create_prediction(
