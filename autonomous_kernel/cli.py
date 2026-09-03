@@ -21,17 +21,24 @@ from .store import (
     update_task,
     validate,
 )
+from .models.registry import validate_model_registry
 
 
 def _print(value: Any) -> None:
     print(json.dumps(value, indent=2, sort_keys=False))
 
 
+def _validate_model_registry_or_raise(root: Path) -> None:
+    errors = validate_model_registry(root)
+    if errors:
+        raise StateValidationError(errors)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="autokernel", description="Operate validated durable autonomous state")
     parser.add_argument("--root", type=Path, default=repository_root(), help="repository root (defaults to package root)")
     subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("validate", help="validate schemas, references, and Governor snapshots")
+    subparsers.add_parser("validate", help="validate schemas, references, Governor snapshots, and governed model state")
     subparsers.add_parser("status", help="show a machine-readable resume summary")
     subparsers.add_parser("next-work", help="select the highest-scored ready task whose dependencies are complete")
     subparsers.add_parser("recover", help="idempotently roll a prepared state transaction forward")
@@ -78,13 +85,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         if args.command == "validate":
             checks = validate(root)
-            _print({"status": "ok", "root": str(root), "checks": checks})
+            _validate_model_registry_or_raise(root)
+            _print({"status": "ok", "root": str(root), "checks": checks + ["model_registry"]})
         elif args.command == "status":
+            _validate_model_registry_or_raise(root)
             _print(status_summary(root))
         elif args.command == "next-work":
             _print({"status": "ok", "next_work": next_work(root)})
         elif args.command == "recover":
-            _print(recover_pending(root))
+            result = recover_pending(root)
+            _validate_model_registry_or_raise(root)
+            _print(result)
         elif args.command == "monitor_snapshot":
             _print(monitor_snapshot(root))
         elif args.command == "predecessor_verify":
