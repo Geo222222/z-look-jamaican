@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "checkpoint_id": "FREEZE-EXP-Z8-PROSPECTIVE-001",
+  "status": "FROZEN_PROSPECTIVE_EVIDENCE",
+  "experiment_id": "EXP-Z8-PROSPECTIVE-001",
+  "freeze_policy": {
+    "edit_in_place_allowed": false,
+    "reinterpret_result_allowed": false,
+    "parameter_retuning_against_this_result_allowed": false,
+    "new_hypothesis_requires_new_experiment_id": true,
+    "future_certifications_must_not_upgrade_this_experiment": true
+  },
+  "workflow": {
+    "run_id": 33707574223,
+    "artifact_id": 9875801245,
+    "artifact_digest": "sha256:688c73108240b7c7e600acbec66d0565d840cbf5ebb7f9814a346fc31395b2f1",
+    "workflow_conclusion": "success",
+    "qualification_decision": "NOT_EARNED"
+  },
+  "result": {
+    "path": "artifacts/evidence/market/exp-z8-prospective-001-result.json",
+    "result_content_hash": "e714df286decf0c8b7b136047dc079ee9f90b248b638524e675678467432b6de",
+    "decision": "NOT_EARNED",
+    "reasons": ["resolved_adaptive_predictions_below_minimum"],
+    "resolved_adaptive_predictions": 5,
+    "required_resolved_adaptive_predictions": 8
+  },
+  "qualified_observations": {
+    "capital_effect": "NONE",
+    "live_execution": false,
+    "lineage_integrity_errors": 0,
+    "canonical_observation_count": 573,
+    "qualified_frame_count": 201,
+    "component_prediction_count": 21,
+    "adaptive_prediction_count": 7,
+    "assembly_receipt_count": 7,
+    "stream_sequence_gaps": 0,
+    "stream_duplicates": 0,
+    "stream_out_of_order": 0
+  },
+  "post_run_audit_findings": {
+    "prospective_loop_throughput_concern": true,
+    "evidence": {
+      "provider_minus_receive_seconds_p50": "-33.958624500",
+      "provider_minus_receive_seconds_p90": "-6.001209675",
+      "provider_minus_receive_seconds_p99": "-1.176867287",
+      "interpretation": "The synchronous receive path accumulated material processing backlog while repeatedly rebuilding point-in-time state and learning artifacts."
+    },
+    "raw_stream_bundle_preserved_in_workflow_artifact": false,
+    "raw_bundle_implication": "The result contains the finalized stream manifest hash and summary but the temporary raw stream bundle was not exported from the experiment workspace. A successor experiment must preserve the complete raw bundle before stronger prospective evidence claims are allowed."
+  },
+  "scope_boundary": {
+    "prospective_shadow_mechanism_support": "NOT_EARNED",
+    "broad_historical_qualification": false,
+    "walk_forward_qualification": false,
+    "contextual_qualification": false
+  }
+}
