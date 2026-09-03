@@ -24,6 +24,8 @@ jobs:
         run: python -m pip install -e .
       - name: Compile
         run: python -m compileall -q autonomous_kernel experiments tests monitor/app monitor/tests
+      - name: Frontend syntax
+        run: node --check monitor/web/product-app.js
       - name: Unit tests
         run: python -m unittest discover -s tests -v
       - name: Run preregistered Z8 real-data qualification
@@ -50,7 +52,7 @@ jobs:
           from pathlib import Path
           value = json.loads(Path('/tmp/z8-certification-status.json').read_text(encoding='utf-8'))
           if value['broad_historical']['status'] != 'DATA_BLOCKED': raise SystemExit('broad historical status changed without a new certification inventory')
-          if value['walk_forward']['status'] != 'DATA_BLOCKED': raise SystemExit('walk-forward status changed without a new certification inventory')
+          if value['walk_forward']['status'] != 'DATA_BLOCKED': raise SystemExit('walk-forward status changed without new certification inventory')
           if value['prospective']['status'] != 'SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED': raise SystemExit('prospective mechanism support drifted')
           if value['capital_effect'] != 'NONE' or value['live_execution'] is not False: raise SystemExit('certification status violated zero-capital boundary')
           PY
