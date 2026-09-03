@@ -4,8 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#050914" />
-  <title>ZLJ — Intelligence Operator Console</title>
+  <title>ZLJ — Intelligence Laboratory + Perception Console</title>
   <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="stylesheet" href="/assets/product.css" />
 </head>
 <body>
 <div class="ambient ambient-a"></div>
@@ -14,43 +15,28 @@
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-      <div class="brand-copy"><strong>ZLJ</strong><small>Intelligence Operator</small></div>
+      <div class="brand-copy"><strong>ZLJ</strong><small>Intelligence Laboratory</small></div>
     </div>
-    <nav id="nav" aria-label="Operator navigation"></nav>
+    <nav id="nav" aria-label="Intelligence laboratory navigation"></nav>
     <div class="sidebar-foot">
       <div class="mode-row"><span class="status-dot" id="side-dot"></span><span id="side-health">Connecting</span></div>
       <small id="contract-version">Contract —</small>
-      <small>Capital authority: <b>NONE</b></small>
+      <small>Purpose: <b>PERCEPTION → INTELLIGENCE</b></small>
     </div>
   </aside>
 
   <main class="main-shell">
     <header class="topbar">
-      <div><div class="eyebrow">Z LOOK JAMAICAN / EPINNOX PERCEPTION</div><h1 id="page-title">Overview</h1></div>
+      <div><div class="eyebrow">EPINNOX / MARKET PERCEPTION</div><h1 id="page-title">Overview</h1></div>
       <div class="topbar-actions">
         <div class="system-mode"><span class="status-dot cyan"></span><span>SHADOW ONLY</span></div>
-        <div class="system-mode locked"><span class="lock-glyph">◆</span><span>LIVE EXECUTION LOCKED</span></div>
+        <div class="system-mode locked"><span class="lock-glyph">◆</span><span>CAPITAL AUTHORITY NONE</span></div>
         <button class="icon-button" id="refresh-button" aria-label="Refresh">↻</button>
       </div>
     </header>
-    <section id="view" class="view" aria-live="polite"><div class="loading-state"><div class="orbital-loader"><span></span><span></span><span></span></div><p>Resolving durable ZLJ state…</p></div></section>
+    <section id="view" class="view" aria-live="polite"><div class="loading-state"><div class="orbital-loader"><span></span><span></span><span></span></div><p>Resolving durable market intelligence state…</p></div></section>
   </main>
 </div>
-
-<div id="command-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="command-modal-title">
-  <div class="modal">
-    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
-    <div class="eyebrow">GOVERNED OPERATOR COMMAND</div>
-    <h2 id="command-modal-title">Command</h2>
-    <p id="command-modal-description"></p>
-    <form id="command-form">
-      <div id="command-parameters"></div>
-      <label class="confirm-row hidden" id="confirm-row"><input type="checkbox" id="command-confirm" /><span>I understand this request may mutate durable ZLJ state and will be receipted.</span></label>
-      <div class="modal-actions"><button type="button" class="button ghost" id="modal-cancel">Cancel</button><button type="submit" class="button primary" id="command-submit">Execute</button></div>
-    </form>
-    <pre id="command-result" class="command-result hidden"></pre>
-  </div>
-</div>
-<script src="/assets/app.js"></script>
+<script src="/assets/product-app.js"></script>
 </body>
 </html>
