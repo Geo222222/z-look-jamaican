@@ -4,7 +4,7 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from ..operations import canonical_hash
 from ..prediction.contracts import Prediction, PredictionContractError
@@ -60,7 +60,7 @@ def _parse_entry(value: Mapping[str, Any]) -> Tuple[PredictionOutcome, str]:
     return outcome, expected
 
 
-def _prediction_lineage_error(root: Path, outcome: PredictionOutcome) -> str | None:
+def _prediction_lineage_error(root: Path, outcome: PredictionOutcome) -> Optional[str]:
     prediction_errors = validate_prediction_journal(root)
     if prediction_errors:
         return "prediction journal invalid: " + "; ".join(prediction_errors)
