@@ -7,7 +7,7 @@ from enum import Enum
 from typing import Dict, Mapping, Sequence, Tuple
 
 
-EXPERIENCE_SCHEMA_VERSION = "1.1"
+EXPERIENCE_SCHEMA_VERSION = "1.2"
 EXPERIENCE_STATUSES = {"QUALIFIED", "DEGRADED", "UNAVAILABLE"}
 FEATURE_FAMILY_STATUSES = {"QUALIFIED", "DEGRADED", "UNAVAILABLE"}
 
@@ -128,6 +128,42 @@ class ExperienceView:
 
 
 @dataclass(frozen=True)
+class ExperienceRelationshipStateRef:
+    relationship_state_id: str
+    relationship_state_hash: str
+    relationship_id: str
+    relationship_type: str
+    economic_root_id: str
+    graph_hash: str
+    cutoff_at_ns: int
+    known_at_ns: int
+    status: str
+
+    def __post_init__(self) -> None:
+        if not self.relationship_state_id or not self.relationship_id or not self.relationship_type or not self.economic_root_id:
+            raise MarketExperienceError("experience relationship-state identity is required")
+        _digest(self.relationship_state_hash, "relationship_state_hash")
+        _digest(self.graph_hash, "relationship graph_hash")
+        if self.status not in EXPERIENCE_STATUSES:
+            raise MarketExperienceError("relationship-state status is invalid")
+        if self.cutoff_at_ns < 0 or self.known_at_ns < 0 or self.known_at_ns > self.cutoff_at_ns:
+            raise MarketExperienceError("relationship-state timing is invalid")
+
+    def body(self) -> Dict[str, object]:
+        return {
+            "relationship_state_id": self.relationship_state_id,
+            "relationship_state_hash": self.relationship_state_hash,
+            "relationship_id": self.relationship_id,
+            "relationship_type": self.relationship_type,
+            "economic_root_id": self.economic_root_id,
+            "graph_hash": self.graph_hash,
+            "cutoff_at_ns": self.cutoff_at_ns,
+            "known_at_ns": self.known_at_ns,
+            "status": self.status,
+        }
+
+
+@dataclass(frozen=True)
 class MarketExperienceFrame:
     experience_id: str
     economic_root_id: str
@@ -142,6 +178,7 @@ class MarketExperienceFrame:
     context_hash: str
     context_status: str
     views: Tuple[ExperienceView, ...]
+    relationship_states: Tuple[ExperienceRelationshipStateRef, ...] = ()
     schema_version: str = EXPERIENCE_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
@@ -168,7 +205,19 @@ class MarketExperienceFrame:
             for source in view.source_frames:
                 if source.cutoff_at_ns > self.cutoff_at_ns or source.known_at_ns > self.cutoff_at_ns:
                     raise MarketExperienceError("lookahead source frame rejected")
-        max_known = max([source.known_at_ns for view in self.views for source in view.source_frames] or [0])
+        relationship_ids = [item.relationship_state_id for item in self.relationship_states]
+        if len(relationship_ids) != len(set(relationship_ids)):
+            raise MarketExperienceError("experience relationship-state ids must be unique")
+        for relationship in self.relationship_states:
+            if relationship.cutoff_at_ns > self.cutoff_at_ns or relationship.known_at_ns > self.cutoff_at_ns:
+                raise MarketExperienceError("lookahead relationship state rejected")
+            if relationship.graph_hash != self.graph_hash:
+                raise MarketExperienceError("relationship state graph hash differs from experience graph")
+            if relationship.economic_root_id != self.economic_root_id:
+                raise MarketExperienceError("relationship state economic root differs from experience")
+        known_candidates = [source.known_at_ns for view in self.views for source in view.source_frames]
+        known_candidates.extend(item.known_at_ns for item in self.relationship_states)
+        max_known = max(known_candidates or [0])
         if self.known_at_ns < max_known:
             raise MarketExperienceError("experience known_at cannot precede source knowledge")
 
@@ -178,11 +227,20 @@ class MarketExperienceFrame:
             for source in sorted(view.source_frames, key=lambda item: item.frame_id):
                 sources.append(
                     {
+                        "kind": "REPRESENTATION",
                         "timescale": view.timescale.value,
                         "frame_id": source.frame_id,
                         "frame_hash": source.frame_hash,
                     }
                 )
+        for relationship in sorted(self.relationship_states, key=lambda item: item.relationship_state_id):
+            sources.append(
+                {
+                    "kind": "ECONOMIC_RELATIONSHIP_STATE",
+                    "relationship_state_id": relationship.relationship_state_id,
+                    "relationship_state_hash": relationship.relationship_state_hash,
+                }
+            )
         return _sha256(sources)
 
     def body(self) -> Dict[str, object]:
@@ -205,6 +263,9 @@ class MarketExperienceFrame:
                 "status": self.context_status,
             },
             "views": [view.body() for view in sorted(self.views, key=lambda item: item.timescale.value)],
+            "relationship_states": [
+                item.body() for item in sorted(self.relationship_states, key=lambda item: item.relationship_state_id)
+            ],
             "lineage": {"source_set_hash": self.source_set_hash()},
             "authority": {
                 "capital_decision": False,
@@ -226,10 +287,13 @@ class MarketExperienceFrame:
         graph = value.get("economic_graph")
         context = value.get("market_context")
         views_raw = value.get("views")
+        relationships_raw = value.get("relationship_states", [])
         if not isinstance(graph, Mapping) or not isinstance(context, Mapping):
             raise MarketExperienceError("experience graph/context envelope is malformed")
         if not isinstance(views_raw, Sequence) or isinstance(views_raw, (str, bytes)):
             raise MarketExperienceError("experience views must be an array")
+        if not isinstance(relationships_raw, Sequence) or isinstance(relationships_raw, (str, bytes)):
+            raise MarketExperienceError("experience relationship_states must be an array")
         views = []
         for raw in views_raw:
             if not isinstance(raw, Mapping):
@@ -266,6 +330,23 @@ class MarketExperienceFrame:
                     feature_family_status=feature_status if isinstance(feature_status, Mapping) else {},
                 )
             )
+        relationships = []
+        for raw in relationships_raw:
+            if not isinstance(raw, Mapping):
+                raise MarketExperienceError("experience relationship-state reference is malformed")
+            relationships.append(
+                ExperienceRelationshipStateRef(
+                    relationship_state_id=str(raw.get("relationship_state_id", "")),
+                    relationship_state_hash=str(raw.get("relationship_state_hash", "")),
+                    relationship_id=str(raw.get("relationship_id", "")),
+                    relationship_type=str(raw.get("relationship_type", "")),
+                    economic_root_id=str(raw.get("economic_root_id", "")),
+                    graph_hash=str(raw.get("graph_hash", "")),
+                    cutoff_at_ns=int(raw.get("cutoff_at_ns", -1)),
+                    known_at_ns=int(raw.get("known_at_ns", -1)),
+                    status=str(raw.get("status", "")),
+                )
+            )
         item = cls(
             schema_version=str(value.get("schema_version", "")),
             experience_id=str(value.get("experience_id", "")),
@@ -281,6 +362,7 @@ class MarketExperienceFrame:
             context_hash=str(context.get("content_hash", "")),
             context_status=str(context.get("status", "")),
             views=tuple(views),
+            relationship_states=tuple(relationships),
         )
         lineage = value.get("lineage")
         if not isinstance(lineage, Mapping) or lineage.get("source_set_hash") != item.source_set_hash():
