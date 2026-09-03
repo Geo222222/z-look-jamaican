@@ -1,0 +1,81 @@
+{
+  "adaptive_metrics": {
+    "brier_score": "0.2581915203614760408473934374",
+    "directional_accuracy": "0.4",
+    "mae_bps": "2.794703316591805673474935806",
+    "resolved_count": 5
+  },
+  "experiment_id": "EXP-Z8-PROSPECTIVE-001",
+  "integrity": {
+    "assembly_journal_entries": 7,
+    "assembly_receipt_set_hash": "c2e5fe67822a066d79a1654a95d73d4f1c95331f259b051ad07c6388b632c693",
+    "errors": [],
+    "outcome_journal_entries": 28,
+    "prediction_journal_entries": 28,
+    "result_content_hash": "e714df286decf0c8b7b136047dc079ee9f90b248b638524e675678467432b6de"
+  },
+  "preregistration_ref": "artifacts/evidence/market/exp-z8-prospective-001-preregistration.json",
+  "qualification": {
+    "broad_historical_qualification": false,
+    "contextual_qualification": false,
+    "decision": "NOT_EARNED",
+    "reasons": [
+      "resolved_adaptive_predictions_below_minimum"
+    ],
+    "walk_forward_qualification": false
+  },
+  "schema_version": 1,
+  "scope": {
+    "capital_effect": "NONE",
+    "claim_ceiling": "SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED",
+    "evidence_class": "FORWARD_EVALUABLE",
+    "live_execution": false,
+    "mode": "PROSPECTIVE_SHADOW",
+    "registry_scope": "EXPERIMENT_LOCAL_MECHANISM_ONLY"
+  },
+  "session": {
+    "adaptive_prediction_count": 7,
+    "assembly_receipt_count": 7,
+    "canonical_observation_count": 573,
+    "capture_seconds": 90,
+    "component_prediction_count": 21,
+    "first_live_message_ns": 1788402332822051011,
+    "qualified_frame_count": 201,
+    "raw_stream_manifest_hash": "750fe5a52cb77152826e0188641c4d09623012139ecb9909fb0b6d9b636598c9",
+    "raw_stream_summary": {
+      "channels": ["heartbeats", "level2", "market_trades", "subscriptions"],
+      "duplicate_count": 0,
+      "final_book_hash": "4e9017a30dd4a7027011b39742aae1b657061b97a5320c30f65e69452f014a85",
+      "gaps": [],
+      "heartbeat_message_count": 22,
+      "last_global_sequence": 449,
+      "last_sequences_observed_by_channel": {
+        "heartbeats": 449,
+        "level2": 448,
+        "market_trades": 444,
+        "subscriptions": 6
+      },
+      "latest_provider_at": "2026-09-03T02:25:54.598973773Z",
+      "level2_snapshot_count": 1,
+      "level2_update_count": 393,
+      "market_trade_message_count": 31,
+      "out_of_order": [],
+      "record_count": 450,
+      "schema_version": 1,
+      "sequence_scope": "CONNECTION_GLOBAL",
+      "signed_provider_minus_receive_seconds_percentiles": {
+        "50": "-33.958624500",
+        "90": "-6.001209675",
+        "99": "-1.176867287"
+      },
+      "spread_bps_percentiles": {
+        "50": "0.001290071474474936072120671738",
+        "90": "0.01548054914151969712821622921",
+        "99": "0.3715289137216980109786794005"
+      },
+      "spread_sample_count": 394,
+      "unique_message_count": 450
+    },
+    "stream_id": "COINBASE-BTC-USD-PROSPECTIVE-1788402332080745431"
+  }
+}
