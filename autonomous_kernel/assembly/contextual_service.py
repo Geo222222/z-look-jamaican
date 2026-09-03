@@ -21,8 +21,15 @@ class CertifiedContextualAssemblyError(RuntimeError):
 
 
 def contextual_assemble_and_record(root: Path, frame: RepresentationFrame, component_predictions: Sequence[Prediction], registry: ModelRegistry, context: MarketContextFrame, *, assembly_at_ns: int) -> Tuple[Prediction, ContextualAssemblyReceipt]:
-    """Canonical durable Z8+Z9 entrypoint; active context profiles are registry-resolved as-of assembly time."""
+    """Canonical durable Z8+Z9 entrypoint.
+
+    Context profiles are resolved from governed durable state. A profile must
+    have been activated strictly before the assembly timestamp so a later event
+    cannot retroactively reinterpret an assembly made at the same nanosecond.
+    """
     root = root.resolve(); assembly_at = int(assembly_at_ns)
+    if assembly_at <= 0:
+        raise CertifiedContextualAssemblyError("contextual assembly time must be positive so policy authority can be strictly prior")
     try:
         durable_context = MarketContextStore(root).load(context.context_id)
     except Exception as exc:
@@ -35,7 +42,7 @@ def contextual_assemble_and_record(root: Path, frame: RepresentationFrame, compo
             raise CertifiedContextualAssemblyError("contextual components must each bind exactly one model_ref")
         model_refs.append(prediction.model_refs[0])
     try:
-        profiles = ModelContextProfileRegistry(root).active_profiles(model_refs, as_of_ns=assembly_at)
+        profiles = ModelContextProfileRegistry(root).active_profiles(model_refs, as_of_ns=assembly_at - 1)
         base_prediction, base_receipt = assemble_and_record(root, frame, component_predictions, registry, assembly_at_ns=assembly_at)
         final_prediction, receipt = contextualize_prediction(frame, component_predictions, base_prediction, base_receipt, context, profiles, assembly_at_ns=assembly_at)
     except (CertifiedAssemblyError, ContextualAssemblyError, ModelContextProfileRegistryError) as exc:
