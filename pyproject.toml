@@ -11,6 +11,7 @@ dependencies = ["websockets>=12,<18", "cryptography>=43"]
 
 [project.scripts]
 autokernel = "autonomous_kernel.cli:main"
+zlj-canonicalize = "autonomous_kernel.observation.materialize:main"
 
 [tool.setuptools]
 packages = ["autonomous_kernel", "autonomous_kernel.observation", "experiments"]
