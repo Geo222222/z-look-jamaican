@@ -1,0 +1,41 @@
+name: z8-prospective-qualification-v2
+
+on:
+  push:
+    branches:
+      - codex/z8-remaining-certifications
+    paths:
+      - "experiments/z8_prospective_shadow_qualification_v2.py"
+      - "artifacts/evidence/market/exp-z8-prospective-002-preregistration.json"
+      - ".github/workflows/z8-prospective-qualification-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prospective-v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install project dependencies
+        run: python -m pip install -e .
+      - name: Compile prospective runner
+        run: python -m py_compile experiments/z8_prospective_shadow_qualification_v2.py
+      - name: Run preregistered decoupled prospective qualification
+        run: |
+          mkdir -p /tmp/z8-prospective-002
+          python experiments/z8_prospective_shadow_qualification_v2.py --root . --artifact-dir /tmp/z8-prospective-002
+          cp artifacts/evidence/market/exp-z8-prospective-002-preregistration.json /tmp/z8-prospective-002/preregistration.json
+      - name: Preserve complete prospective evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: exp-z8-prospective-002
+          path: /tmp/z8-prospective-002
+          if-no-files-found: warn
+          retention-days: 30
