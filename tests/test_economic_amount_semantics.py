@@ -110,6 +110,31 @@ class EconomicAmountSemanticsTests(unittest.TestCase):
         )
         self.assertFalse(same_native_series_compatible(first, second))
 
+    def test_same_exchange_contract_rule_change_breaks_native_series(self) -> None:
+        before = EconomicAmountSemantics(
+            instrument_id="CRYPTO.PERP.BTC-USD",
+            market_type="PERPETUAL",
+            provider="EXCHANGE_A",
+            venue="EXCHANGE_A",
+            native_kind=NativeAmountKind.CONTRACTS,
+            native_unit="CONTRACT",
+            contract_convention=ContractConvention.LINEAR_BASE,
+            contract_multiplier="0.001",
+            multiplier_unit="BTC_PER_CONTRACT",
+        )
+        after = EconomicAmountSemantics(
+            instrument_id="CRYPTO.PERP.BTC-USD",
+            market_type="PERPETUAL",
+            provider="EXCHANGE_A",
+            venue="EXCHANGE_A",
+            native_kind=NativeAmountKind.CONTRACTS,
+            native_unit="CONTRACT",
+            contract_convention=ContractConvention.LINEAR_BASE,
+            contract_multiplier="0.01",
+            multiplier_unit="BTC_PER_CONTRACT",
+        )
+        self.assertFalse(same_native_series_compatible(before, after))
+
     def test_same_exchange_rule_is_compatible_for_within_series_change(self) -> None:
         first = EconomicAmountSemantics(
             instrument_id="CRYPTO.PERP.BTC-USD",
