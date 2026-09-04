@@ -18,10 +18,18 @@ from .features import (
     extract_context_features,
     extract_instrument_features,
 )
+from .falsification import (
+    FALSIFICATION_AUTHORITY,
+    FALSIFICATION_SCHEMA_VERSION,
+    build_falsification_policy,
+    evaluate_falsification,
+)
 
 __all__ = (
     "RESEARCH_AUTHORITY",
     "FEATURE_SCHEMA_VERSION",
+    "FALSIFICATION_AUTHORITY",
+    "FALSIFICATION_SCHEMA_VERSION",
     "ResearchContractError",
     "build_point_in_time_dataset_manifest",
     "validate_point_in_time_row",
@@ -34,4 +42,6 @@ __all__ = (
     "extract_instrument_features",
     "extract_context_features",
     "build_training_row",
+    "build_falsification_policy",
+    "evaluate_falsification",
 )
