@@ -82,6 +82,19 @@ class OutcomeDefinition:
             "resolution_evidence_families": list(self.resolution_evidence_families),
         }
 
+    @classmethod
+    def from_wire(cls, value: Mapping[str, Any]) -> "OutcomeDefinition":
+        return cls(
+            metric_id=str(value.get("metric_id", "")),
+            answer_kind=AnswerKind(str(value.get("answer_kind", ""))),
+            target_expression=str(value.get("target_expression", "")),
+            resolver_policy_id=str(value.get("resolver_policy_id", "")),
+            max_resolution_lag_ns=int(value.get("max_resolution_lag_ns", -1)),
+            resolution_evidence_families=tuple(
+                str(item) for item in value.get("resolution_evidence_families", [])
+            ),
+        )
+
 
 @dataclass(frozen=True)
 class QuestionDefinition:
@@ -166,6 +179,50 @@ class QuestionDefinition:
         value["integrity"] = {"algorithm": "sha256", "content_hash": self.content_hash()}
         return value
 
+    @classmethod
+    def from_wire(cls, value: Mapping[str, Any]) -> "QuestionDefinition":
+        outcome = value.get("outcome")
+        evidence = value.get("evidence_policy")
+        if not isinstance(outcome, Mapping) or not isinstance(evidence, Mapping):
+            raise QuestionContractError("question envelope is malformed")
+        item = cls(
+            schema_version=str(value.get("schema_version", "")),
+            question_id=str(value.get("question_id", "")),
+            version=str(value.get("version", "")),
+            family=QuestionFamily(str(value.get("family", ""))),
+            scope=QuestionScope(str(value.get("scope", ""))),
+            asks=str(value.get("asks", "")),
+            horizon_ns=int(value.get("horizon_ns", -1)),
+            outcome=OutcomeDefinition.from_wire(outcome),
+            required_timescales=tuple(
+                ExperienceTimescale(str(item)) for item in evidence.get("required_timescales", [])
+            ),
+            required_artifact_types=tuple(
+                str(item) for item in evidence.get("required_artifact_types", [])
+            ),
+            required_feature_families=tuple(
+                str(item) for item in evidence.get("required_feature_families", [])
+            ),
+            allowed_feature_families=tuple(
+                str(item) for item in evidence.get("allowed_feature_families", [])
+            ),
+            forbidden_feature_families=tuple(
+                str(item) for item in evidence.get("forbidden_feature_families", [])
+            ),
+            parameters=value.get("parameters") if isinstance(value.get("parameters"), Mapping) else {},
+            evidence_cutoff_policy=str(evidence.get("cutoff_policy", "")),
+        )
+        authority = value.get("authority")
+        if not isinstance(authority, Mapping) or any(
+            authority.get(key) is not False
+            for key in ("capital_decision", "risk_authorization", "external_execution")
+        ):
+            raise QuestionContractError("question authority boundary is invalid")
+        integrity = value.get("integrity")
+        if not isinstance(integrity, Mapping) or integrity.get("content_hash") != item.content_hash():
+            raise QuestionContractError("question content hash mismatch")
+        return item
+
 
 @dataclass(frozen=True)
 class QuestionRegistryEntry:
@@ -204,6 +261,31 @@ class QuestionRegistryEntry:
             "qualification_evidence_refs": list(self.qualification_evidence_refs),
         }
 
+    @classmethod
+    def from_wire(cls, value: Mapping[str, Any]) -> "QuestionRegistryEntry":
+        definition_raw = value.get("definition")
+        if not isinstance(definition_raw, Mapping):
+            raise QuestionContractError("question registry entry definition is malformed")
+        definition = QuestionDefinition.from_wire(definition_raw)
+        if value.get("question_ref") != definition.question_ref:
+            raise QuestionContractError("question registry entry question_ref mismatch")
+        if value.get("definition_hash") != definition.content_hash():
+            raise QuestionContractError("question registry entry definition hash mismatch")
+        return cls(
+            definition=definition,
+            lifecycle_state=str(value.get("lifecycle_state", "")),
+            registered_at_ns=int(value.get("registered_at_ns", -1)),
+            effective_at_ns=int(value.get("effective_at_ns", -1)),
+            resolver_implementation_ref=(
+                None
+                if value.get("resolver_implementation_ref") is None
+                else str(value.get("resolver_implementation_ref"))
+            ),
+            qualification_evidence_refs=tuple(
+                str(item) for item in value.get("qualification_evidence_refs", [])
+            ),
+        )
+
 
 @dataclass(frozen=True)
 class QuestionRegistrySnapshot:
@@ -226,7 +308,10 @@ class QuestionRegistrySnapshot:
         refs = [entry.definition.question_ref for entry in self.entries]
         if len(refs) != len(set(refs)):
             raise QuestionContractError("question registry refs must be unique")
-        if any(entry.registered_at_ns > self.known_at_ns or entry.effective_at_ns > self.effective_at_ns for entry in self.entries):
+        if any(
+            entry.registered_at_ns > self.known_at_ns or entry.effective_at_ns > self.effective_at_ns
+            for entry in self.entries
+        ):
             raise QuestionContractError("registry snapshot cannot predate an entry")
 
     def body(self) -> Dict[str, Any]:
@@ -257,6 +342,38 @@ class QuestionRegistrySnapshot:
         value["integrity"] = {"algorithm": "sha256", "content_hash": self.content_hash()}
         return value
 
+    @classmethod
+    def from_wire(cls, value: Mapping[str, Any]) -> "QuestionRegistrySnapshot":
+        entries_raw = value.get("entries")
+        if not isinstance(entries_raw, Sequence) or isinstance(entries_raw, (str, bytes)):
+            raise QuestionContractError("question registry entries must be an array")
+        item = cls(
+            schema_version=str(value.get("schema_version", "")),
+            registry_id=str(value.get("registry_id", "")),
+            version=str(value.get("version", "")),
+            known_at_ns=int(value.get("known_at_ns", -1)),
+            effective_at_ns=int(value.get("effective_at_ns", -1)),
+            entries=tuple(
+                QuestionRegistryEntry.from_wire(entry)
+                for entry in entries_raw
+                if isinstance(entry, Mapping)
+            ),
+        )
+        if len(item.entries) != len(entries_raw):
+            raise QuestionContractError("question registry entry is malformed")
+        authority = value.get("authority")
+        if not isinstance(authority, Mapping):
+            raise QuestionContractError("question registry authority boundary is invalid")
+        if authority.get("defines_learning_targets") is not True or any(
+            authority.get(key) is not False
+            for key in ("selects_model", "capital_decision", "risk_authorization", "external_execution")
+        ):
+            raise QuestionContractError("question registry authority boundary is invalid")
+        integrity = value.get("integrity")
+        if not isinstance(integrity, Mapping) or integrity.get("content_hash") != item.content_hash():
+            raise QuestionContractError("question registry content hash mismatch")
+        return item
+
 
 def build_question_registry_snapshot(
     *,
@@ -266,11 +383,10 @@ def build_question_registry_snapshot(
     known_at_ns: int,
     effective_at_ns: int,
 ) -> QuestionRegistrySnapshot:
-    provisional = QuestionRegistrySnapshot(
+    return QuestionRegistrySnapshot(
         registry_id=registry_id,
         version=version,
         known_at_ns=known_at_ns,
         effective_at_ns=effective_at_ns,
         entries=tuple(entries),
     )
-    return provisional
