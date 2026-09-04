@@ -101,10 +101,37 @@ def _context(cutoff, frame):
                     "frame_content_hash": frame.content_hash(),
                 }
             },
-            "regime": "TREND",
-            "volatility_state": "HIGH",
-            "liquidity_state": "DEEP",
-            "summary": {"breadth_ratio": 0.7},
+            "market": {
+                "member_instrument_count": 2,
+                "qualified_spot_count": 2,
+                "return_breadth_count": 2,
+                "aggregate_return_bps": "4.2",
+                "breadth_positive": "0.75",
+                "cross_sectional_return_dispersion_bps": "1.1",
+                "median_realized_volatility_bps": "12",
+                "median_spread_bps": "1.5",
+                "liquidity_concentration_hhi": "0.52",
+                "median_absolute_pairwise_correlation": "0.70",
+            },
+            "derivatives": {
+                "relationship_count": 1,
+                "relationships": [{"basis_bps": "3.0"}],
+            },
+            "regimes": {
+                "direction": "RISK_ON",
+                "volatility": "NORMAL",
+                "liquidity": "NORMAL",
+                "correlation": "COHERENT",
+                "derivatives": "CONTANGO",
+                "structure": "ORDERLY",
+            },
+            "feature_quality": {
+                "CORE_MARKET": {"status": "QUALIFIED"},
+                "LIQUIDITY": {"status": "QUALIFIED"},
+                "CORRELATION": {"status": "QUALIFIED"},
+                "DERIVATIVES": {"status": "QUALIFIED"},
+            },
+            "input_quality": {"degraded_reasons": []},
         },
         source_frame_ids=(frame.frame_id,),
         source_frame_hashes=(frame.content_hash(),),
@@ -135,7 +162,10 @@ class ResearchQualificationPlaneTests(unittest.TestCase):
         self.assertLessEqual(row["feature_known_at_ns"], row["cutoff_at_ns"])
         self.assertGreater(row["label_known_at_ns"], row["cutoff_at_ns"])
         self.assertIn("microstructure.mean_depth10_imbalance", row["features"])
-        self.assertEqual(row["context"]["context.regime"], "TREND")
+        self.assertEqual(row["context"]["context.regime.direction"], "RISK_ON")
+        self.assertAlmostEqual(row["context"]["context.market.breadth_positive"], 0.75)
+        self.assertAlmostEqual(row["context"]["context.derivatives.mean_basis_bps"], 3.0)
+        self.assertEqual(row["context"]["context.quality.CORE_MARKET"], "QUALIFIED")
         self.assertEqual({ref["role"] for ref in row["source_refs"]}, {"FEATURE", "LABEL"})
 
     def test_dataset_rejects_post_cutoff_feature_leakage(self):
