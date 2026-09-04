@@ -24,6 +24,7 @@ from .qualification import (
     validate_evaluation_receipt,
     validate_transition_proposal,
 )
+from .qualification_status import qualification_evidence_status, validate_qualification_evidence_store
 from .registry import ModelRegistry, ModelRegistryError, validate_model_registry
 
 __all__ = [
@@ -42,8 +43,10 @@ __all__ = [
     "baseline_model_set",
     "build_evaluation_receipt",
     "build_transition_proposal",
+    "qualification_evidence_status",
     "run_baseline_models",
     "validate_evaluation_receipt",
     "validate_model_registry",
+    "validate_qualification_evidence_store",
     "validate_transition_proposal",
 ]
