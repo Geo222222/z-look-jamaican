@@ -257,7 +257,7 @@ def adapt_kraken_v2(
                     received_at_ns=record.received_at_ns,
                     known_at_ns=record.received_at_ns,
                     sequence=sequence,
-                    sequence_scope="PROVIDER_EVENT" if sequence is not None else "NONE",
+                    sequence_scope="INSTRUMENT" if sequence is not None else "NONE",
                     stream_id=record.stream_id,
                     payload={
                         "trade_id": trade_id,
@@ -290,13 +290,13 @@ def adapt_kraken_v2(
                     else:
                         raise ProviderAdapterError("Kraken book level is malformed")
                     updates.append({"side": canonical_side, "price": price, "size": size})
-            sequence_value = book.get("checksum")
-            sequence = None if sequence_value is None else str(sequence_value)
+            checksum_value = book.get("checksum")
+            checksum = None if checksum_value is None else str(checksum_value)
             output.append(
                 CanonicalObservation(
                     observation_id=_stable_id(
                         "CAN-KR",
-                        "%s|book|%s|%s|%s" % (record.stream_id, message_type, index, sequence or "none"),
+                        "%s|book|%s|%s|%s" % (record.stream_id, message_type, index, checksum or "none"),
                     ),
                     instrument=registry.resolve(record.provider, symbol),
                     event_type=event_type,
@@ -307,10 +307,10 @@ def adapt_kraken_v2(
                     source_event_at_ns=source_event_at_ns,
                     received_at_ns=record.received_at_ns,
                     known_at_ns=record.received_at_ns,
-                    sequence=sequence,
-                    sequence_scope="PROVIDER_EVENT" if sequence is not None else "NONE",
+                    sequence=None,
+                    sequence_scope="NONE",
                     stream_id=record.stream_id,
-                    payload={"updates": updates, "checksum": sequence},
+                    payload={"updates": updates, "checksum": checksum},
                     quality=item_quality,
                     raw_event_sha256=record.message_hash,
                     raw_ref=record.raw_ref,
@@ -363,9 +363,6 @@ def adapt_binance_spot(
     payload, stream = _binance_payload(record.message)
     event_type = str(payload.get("e", ""))
     if not event_type:
-        # Subscription acknowledgements and other control messages are not
-        # market observations. A combined envelope without an event type is
-        # malformed because its data claims to be stream payload.
         if stream is not None:
             raise ProviderAdapterError("Binance combined market payload lacks event type")
         return ()
@@ -454,7 +451,4 @@ def adapt_binance_spot(
             ),
         )
 
-    # Recognized control/status messages have no e field and were handled above.
-    # An event-bearing payload from an unsupported market stream is intentionally
-    # not promoted into the canonical observation plane.
     return ()
