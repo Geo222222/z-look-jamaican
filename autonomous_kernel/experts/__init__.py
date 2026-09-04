@@ -1,5 +1,11 @@
 """Question-bound expert contracts and Expert School intelligence lifecycle."""
 
+from .adapters import (
+    ExpertAdapterError,
+    implemented_baseline_expert_contracts,
+    operational_expert_inventory,
+    question_prediction_to_expert_claim,
+)
 from .contracts import (
     EXPERT_CONTRACT_SCHEMA_VERSION,
     EXPERT_CLAIM_SCHEMA_VERSION,
@@ -24,12 +30,16 @@ __all__ = (
     "EXPERT_CONTRACT_SCHEMA_VERSION",
     "EXPERT_CLAIM_SCHEMA_VERSION",
     "EXPERT_SCHOOL_SCHEMA_VERSION",
+    "ExpertAdapterError",
     "ExpertContractError",
     "ExpertSchoolError",
     "build_expert_contract",
     "build_expert_claim",
     "validate_expert_contract",
     "validate_expert_claim",
+    "implemented_baseline_expert_contracts",
+    "operational_expert_inventory",
+    "question_prediction_to_expert_claim",
     "active_question_definitions",
     "build_baseline_expert_school",
     "score_expert_claim",
