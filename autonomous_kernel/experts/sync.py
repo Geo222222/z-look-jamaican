@@ -64,15 +64,19 @@ def sync_expert_learning(root: Path, *, known_at_ns: int) -> Mapping[str, Any]:
     """Project already-durable question evidence into earned Expert School state.
 
     The sync never creates predictions or outcomes. It only consumes validated
-    append-only journals, adapts model claims into expert claims, scores them when
-    a resolver has produced a final outcome, and reconstructs competence from the
+    append-only journals that were knowable by ``known_at_ns``, adapts model
+    claims into expert claims, scores them when a resolver has produced a final
+    outcome by that same knowledge cutoff, and reconstructs competence from the
     resulting immutable score history.
     """
     root = root.resolve()
-    if int(known_at_ns) < 0:
+    known_at = int(known_at_ns)
+    if known_at < 0:
         raise ExpertLearningSyncError("known_at_ns must be non-negative")
-    predictions = _prediction_entries(root)
-    outcomes = _outcomes(root)
+    all_predictions = _prediction_entries(root)
+    all_outcomes = _outcomes(root)
+    predictions = tuple((prediction, journaled) for prediction, journaled in all_predictions if journaled <= known_at)
+    outcomes = {prediction_id: outcome for prediction_id, outcome in all_outcomes.items() if outcome.decided_at_ns <= known_at}
     runtime = IntelligenceRuntime(root)
     runtime_errors = validate_event_chain(runtime.events())
     if runtime_errors:
@@ -131,14 +135,16 @@ def sync_expert_learning(root: Path, *, known_at_ns: int) -> Mapping[str, Any]:
     final_state = runtime.state()
     competence = final_state.get("competence")
     if final_state.get("scores") and (scores_recorded > 0 or competence is None):
-        competence = runtime.rebuild_competence(known_at_ns=int(known_at_ns))
+        competence = runtime.rebuild_competence(known_at_ns=known_at)
         final_state = runtime.state()
 
     return {
         "status": "OK",
-        "known_at_ns": int(known_at_ns),
-        "prediction_count": len(predictions),
-        "outcome_count": len(outcomes),
+        "known_at_ns": known_at,
+        "journal_prediction_count": len(all_predictions),
+        "journal_outcome_count": len(all_outcomes),
+        "eligible_prediction_count": len(predictions),
+        "eligible_outcome_count": len(outcomes),
         "claims_recorded": claims_recorded,
         "scores_recorded": scores_recorded,
         "skipped_unimplemented_predictions": skipped_unimplemented,
