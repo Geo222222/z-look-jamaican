@@ -14,6 +14,7 @@ from .instruments import InstrumentRegistry, default_instrument_registry
 
 COINBASE_PROVIDER = "coinbase_advanced_trade_public_websocket"
 KRAKEN_PROVIDER = "kraken_websocket_v2"
+BINANCE_SPOT_PROVIDER = "binance_spot_public_websocket"
 
 
 class ProviderAdapterError(ValueError):
@@ -46,6 +47,23 @@ def _iso_to_ns(value: str) -> int:
     whole_ns = int(parsed.timestamp()) * 1_000_000_000
     fractional_ns = int((fraction + "000000000")[:9])
     return whole_ns + fractional_ns
+
+
+def _milliseconds_to_ns(value: Any, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ProviderAdapterError("%s must be an integer millisecond timestamp" % field)
+    if value < 0:
+        raise ProviderAdapterError("%s must be non-negative" % field)
+    return int(value) * 1_000_000
+
+
+def _integer(value: Any, field: str, *, non_negative: bool = True) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ProviderAdapterError("%s must be an integer" % field)
+    result = int(value)
+    if non_negative and result < 0:
+        raise ProviderAdapterError("%s must be non-negative" % field)
+    return result
 
 
 def _initial_quality(provider: str, source_event_at_ns: int, received_at_ns: int) -> Mapping[str, Any]:
@@ -299,3 +317,144 @@ def adapt_kraken_v2(
                 )
             )
     return tuple(output)
+
+
+def _binance_payload(message: Mapping[str, Any]) -> Tuple[Mapping[str, Any], Optional[str]]:
+    if "data" not in message:
+        return message, None
+    data = message.get("data")
+    stream = message.get("stream")
+    if not isinstance(data, Mapping) or not isinstance(stream, str) or not stream.strip():
+        raise ProviderAdapterError("Binance combined stream envelope is malformed")
+    return data, stream
+
+
+def _binance_symbol(payload: Mapping[str, Any], stream: Optional[str], default_symbol: Optional[str]) -> str:
+    symbol = payload.get("s")
+    if symbol:
+        return str(symbol).upper()
+    if stream:
+        prefix = stream.split("@", 1)[0].strip()
+        if prefix:
+            return prefix.upper()
+    if default_symbol:
+        return str(default_symbol).upper()
+    raise ProviderAdapterError("Binance market event lacks symbol")
+
+
+def adapt_binance_spot(
+    record: ProviderRecord,
+    *,
+    registry: Optional[InstrumentRegistry] = None,
+    default_symbol: Optional[str] = None,
+    quality: Optional[Mapping[str, Any]] = None,
+) -> Tuple[CanonicalObservation, ...]:
+    """Translate Binance public spot market streams without inventing truth.
+
+    Raw and combined stream envelopes are supported for the trade and diff-depth
+    event forms. Binance's trade flag `m` reports whether the buyer is the market
+    maker; this adapter deliberately does not infer aggressor BUY/SELL semantics
+    from that field, so canonical trade side remains UNKNOWN. Diff-depth is a
+    delta-only source and is never mislabeled as BOOK_SNAPSHOT.
+    """
+    if record.provider != BINANCE_SPOT_PROVIDER:
+        raise ProviderAdapterError("Binance spot adapter received the wrong provider")
+    registry = registry or default_instrument_registry()
+    payload, stream = _binance_payload(record.message)
+    event_type = str(payload.get("e", ""))
+    if not event_type:
+        # Subscription acknowledgements and other control messages are not
+        # market observations. A combined envelope without an event type is
+        # malformed because its data claims to be stream payload.
+        if stream is not None:
+            raise ProviderAdapterError("Binance combined market payload lacks event type")
+        return ()
+
+    symbol = _binance_symbol(payload, stream, default_symbol)
+    instrument = registry.resolve(record.provider, symbol)
+
+    if event_type == "trade":
+        trade_id = _integer(payload.get("t"), "Binance trade id")
+        event_ms = payload.get("T") if payload.get("T") is not None else payload.get("E")
+        source_event_at_ns = _milliseconds_to_ns(event_ms, "Binance trade time")
+        item_quality = dict(quality or _initial_quality(record.provider, source_event_at_ns, record.received_at_ns))
+        return (
+            CanonicalObservation(
+                observation_id=_stable_id("CAN-BN", "%s|trade|%s|%s" % (record.stream_id, symbol, trade_id)),
+                instrument=instrument,
+                event_type="TRADE",
+                provider=record.provider,
+                venue="BINANCE",
+                provider_symbol=symbol,
+                channel="trade",
+                source_event_at_ns=source_event_at_ns,
+                received_at_ns=record.received_at_ns,
+                known_at_ns=record.received_at_ns,
+                sequence=str(trade_id),
+                sequence_scope="INSTRUMENT",
+                stream_id=record.stream_id,
+                payload={
+                    "trade_id": str(trade_id),
+                    "price": payload.get("p"),
+                    "size": payload.get("q"),
+                    "side": "UNKNOWN",
+                },
+                quality=item_quality,
+                raw_event_sha256=record.message_hash,
+                raw_ref=record.raw_ref,
+            ),
+        )
+
+    if event_type == "depthUpdate":
+        first_update = _integer(payload.get("U"), "Binance first update id")
+        final_update = _integer(payload.get("u"), "Binance final update id")
+        if first_update > final_update:
+            raise ProviderAdapterError("Binance depth update id range is invalid")
+        source_event_at_ns = _milliseconds_to_ns(payload.get("E"), "Binance depth event time")
+        updates = []
+        for field, side in (("b", "BID"), ("a", "ASK")):
+            levels = payload.get(field)
+            if not isinstance(levels, Sequence) or isinstance(levels, (str, bytes)):
+                raise ProviderAdapterError("Binance depth levels are malformed")
+            for level in levels:
+                if not isinstance(level, Sequence) or isinstance(level, (str, bytes)) or len(level) < 2:
+                    raise ProviderAdapterError("Binance depth level is malformed")
+                updates.append(
+                    {
+                        "side": side,
+                        "price": _decimal_text(level[0]),
+                        "size": _decimal_text(level[1]),
+                    }
+                )
+        if not updates:
+            raise ProviderAdapterError("Binance depth update contains no levels")
+        item_quality = dict(quality or _initial_quality(record.provider, source_event_at_ns, record.received_at_ns))
+        return (
+            CanonicalObservation(
+                observation_id=_stable_id(
+                    "CAN-BN",
+                    "%s|depth|%s|%s|%s" % (record.stream_id, symbol, first_update, final_update),
+                ),
+                instrument=instrument,
+                event_type="BOOK_DELTA",
+                provider=record.provider,
+                venue="BINANCE",
+                provider_symbol=symbol,
+                channel="depth",
+                source_event_at_ns=source_event_at_ns,
+                received_at_ns=record.received_at_ns,
+                known_at_ns=record.received_at_ns,
+                sequence="%s:%s" % (first_update, final_update),
+                sequence_scope="INSTRUMENT",
+                stream_id=record.stream_id,
+                payload={"updates": updates},
+                quality=item_quality,
+                raw_event_sha256=record.message_hash,
+                raw_ref=record.raw_ref,
+            ),
+        )
+
+    # Recognized control/status messages have no e field and were handled above.
+    # An event-bearing payload from an unsupported market stream is intentionally
+    # not promoted into the canonical observation plane.
+    return ()
