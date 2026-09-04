@@ -9,13 +9,15 @@ from ..experience.contracts import ExperienceTimescale
 from ..operations import canonical_hash
 from ..questions.contracts import AnswerKind, QuestionDefinition, QuestionRegistrySnapshot
 
-QUESTION_PREDICTION_SCHEMA_VERSION = "1.0"
+QUESTION_PREDICTION_SCHEMA_VERSION = "1.1"
 QUESTION_PREDICTION_MODES = {"PROSPECTIVE_SHADOW", "HISTORICAL_REPLAY"}
 QUESTION_PREDICTION_EVIDENCE_CLASSES = {"FORWARD_EVALUABLE", "RESEARCH_ONLY"}
 ARTIFACT_STATUSES = {"QUALIFIED", "DEGRADED"}
 
+
 class QuestionPredictionError(ValueError):
     pass
+
 
 def _digest(value: str, field: str) -> str:
     text = str(value).lower()
@@ -27,6 +29,7 @@ def _digest(value: str, field: str) -> str:
         raise QuestionPredictionError("%s must be hexadecimal" % field) from exc
     return text
 
+
 def _decimal_text(value: Any, field: str) -> str:
     try:
         number = Decimal(str(value))
@@ -36,6 +39,7 @@ def _decimal_text(value: Any, field: str) -> str:
         raise QuestionPredictionError("%s must be finite" % field)
     return format(number, "f")
 
+
 def _unique_strings(values: Sequence[str], field: str, *, allow_empty: bool = False) -> Tuple[str, ...]:
     result = tuple(str(value) for value in values)
     if (not result and not allow_empty) or any(not value for value in result):
@@ -43,6 +47,7 @@ def _unique_strings(values: Sequence[str], field: str, *, allow_empty: bool = Fa
     if len(set(result)) != len(result):
         raise QuestionPredictionError("%s must contain unique values" % field)
     return result
+
 
 def normalize_question_answer(answer_kind: AnswerKind, answer: Mapping[str, Any]) -> Dict[str, Any]:
     if not isinstance(answer, Mapping):
@@ -101,6 +106,7 @@ def normalize_question_answer(answer_kind: AnswerKind, answer: Mapping[str, Any]
         raise QuestionPredictionError("unsupported answer kind")
     return normalized
 
+
 @dataclass(frozen=True)
 class PredictionArtifactRef:
     artifact_type: str
@@ -110,6 +116,7 @@ class PredictionArtifactRef:
     status: str
     timescales: Tuple[ExperienceTimescale, ...]
     feature_families: Tuple[str, ...]
+    subject_ids: Tuple[str, ...]
 
     def __post_init__(self) -> None:
         if not self.artifact_type or not self.artifact_id:
@@ -122,13 +129,33 @@ class PredictionArtifactRef:
         if len(set(self.timescales)) != len(self.timescales):
             raise QuestionPredictionError("artifact timescales must be unique")
         _unique_strings(self.feature_families, "artifact feature_families", allow_empty=True)
+        _unique_strings(self.subject_ids, "artifact subject_ids")
 
     def to_wire(self) -> Dict[str, Any]:
-        return {"artifact_type": self.artifact_type, "artifact_id": self.artifact_id, "content_hash": self.content_hash, "known_at_ns": self.known_at_ns, "status": self.status, "timescales": [item.value for item in self.timescales], "feature_families": list(self.feature_families)}
+        return {
+            "artifact_type": self.artifact_type,
+            "artifact_id": self.artifact_id,
+            "content_hash": self.content_hash,
+            "known_at_ns": self.known_at_ns,
+            "status": self.status,
+            "timescales": [item.value for item in self.timescales],
+            "feature_families": list(self.feature_families),
+            "subject_ids": list(self.subject_ids),
+        }
 
     @classmethod
     def from_wire(cls, value: Mapping[str, Any]) -> "PredictionArtifactRef":
-        return cls(artifact_type=str(value.get("artifact_type", "")), artifact_id=str(value.get("artifact_id", "")), content_hash=str(value.get("content_hash", "")), known_at_ns=int(value.get("known_at_ns", -1)), status=str(value.get("status", "")), timescales=tuple(ExperienceTimescale(str(item)) for item in value.get("timescales", [])), feature_families=tuple(str(item) for item in value.get("feature_families", [])))
+        return cls(
+            artifact_type=str(value.get("artifact_type", "")),
+            artifact_id=str(value.get("artifact_id", "")),
+            content_hash=str(value.get("content_hash", "")),
+            known_at_ns=int(value.get("known_at_ns", -1)),
+            status=str(value.get("status", "")),
+            timescales=tuple(ExperienceTimescale(str(item)) for item in value.get("timescales", [])),
+            feature_families=tuple(str(item) for item in value.get("feature_families", [])),
+            subject_ids=tuple(str(item) for item in value.get("subject_ids", [])),
+        )
+
 
 @dataclass(frozen=True)
 class QuestionBoundPrediction:
@@ -142,6 +169,7 @@ class QuestionBoundPrediction:
     question_registry_hash: str
     question_family: str
     question_scope: str
+    subject_id: str
     answer_kind: str
     cutoff_at_ns: int
     created_at_ns: int
@@ -162,7 +190,7 @@ class QuestionBoundPrediction:
             raise QuestionPredictionError("prediction_id must be non-empty and file-safe")
         if self.mode not in QUESTION_PREDICTION_MODES or self.evidence_class not in QUESTION_PREDICTION_EVIDENCE_CLASSES:
             raise QuestionPredictionError("prediction mode/evidence_class is invalid")
-        for field in ("question_ref", "question_registry_id", "question_registry_version", "question_family", "question_scope", "answer_kind", "outcome_metric_id", "resolver_policy_id"):
+        for field in ("question_ref", "question_registry_id", "question_registry_version", "question_family", "question_scope", "subject_id", "answer_kind", "outcome_metric_id", "resolver_policy_id"):
             if not str(getattr(self, field)).strip():
                 raise QuestionPredictionError("%s is required" % field)
         _digest(self.question_definition_hash, "question_definition_hash")
@@ -191,15 +219,50 @@ class QuestionBoundPrediction:
             raise QuestionPredictionError("post-cutoff artifact rejected")
         if self.created_at_ns < max(ref.known_at_ns for ref in self.artifact_refs):
             raise QuestionPredictionError("prediction cannot be created before its evidence is knowable")
+        if self.subject_id not in {subject for ref in self.artifact_refs for subject in ref.subject_ids}:
+            raise QuestionPredictionError("prediction subject is not bound by input evidence")
 
     def body(self) -> Dict[str, Any]:
-        return {"schema_version": self.schema_version, "prediction_id": self.prediction_id, "mode": self.mode, "evidence_class": self.evidence_class, "question": {"question_ref": self.question_ref, "definition_hash": self.question_definition_hash, "family": self.question_family, "scope": self.question_scope, "answer_kind": self.answer_kind, "outcome_metric_id": self.outcome_metric_id, "resolver_policy_id": self.resolver_policy_id, "max_resolution_lag_ns": self.max_resolution_lag_ns}, "registry": {"registry_id": self.question_registry_id, "version": self.question_registry_version, "content_hash": self.question_registry_hash}, "timing": {"cutoff_at_ns": self.cutoff_at_ns, "created_at_ns": self.created_at_ns, "horizon_ns": self.horizon_ns, "resolves_at_ns": self.resolves_at_ns}, "answer": dict(self.answer), "model_refs": list(self.model_refs), "artifact_refs": [ref.to_wire() for ref in sorted(self.artifact_refs, key=lambda item: (item.artifact_type, item.artifact_id))], "authority": {"capital_decision": False, "risk_authorization": False, "external_execution": False}}
+        return {
+            "schema_version": self.schema_version,
+            "prediction_id": self.prediction_id,
+            "mode": self.mode,
+            "evidence_class": self.evidence_class,
+            "question": {
+                "question_ref": self.question_ref,
+                "definition_hash": self.question_definition_hash,
+                "family": self.question_family,
+                "scope": self.question_scope,
+                "subject_id": self.subject_id,
+                "answer_kind": self.answer_kind,
+                "outcome_metric_id": self.outcome_metric_id,
+                "resolver_policy_id": self.resolver_policy_id,
+                "max_resolution_lag_ns": self.max_resolution_lag_ns,
+            },
+            "registry": {
+                "registry_id": self.question_registry_id,
+                "version": self.question_registry_version,
+                "content_hash": self.question_registry_hash,
+            },
+            "timing": {
+                "cutoff_at_ns": self.cutoff_at_ns,
+                "created_at_ns": self.created_at_ns,
+                "horizon_ns": self.horizon_ns,
+                "resolves_at_ns": self.resolves_at_ns,
+            },
+            "answer": dict(self.answer),
+            "model_refs": list(self.model_refs),
+            "artifact_refs": [ref.to_wire() for ref in sorted(self.artifact_refs, key=lambda item: (item.artifact_type, item.artifact_id))],
+            "authority": {"capital_decision": False, "risk_authorization": False, "external_execution": False},
+        }
 
     def content_hash(self) -> str:
         return canonical_hash(self.body())
 
     def to_wire(self) -> Dict[str, Any]:
-        value = self.body(); value["integrity"] = {"algorithm": "sha256", "content_hash": self.content_hash()}; return value
+        value = self.body()
+        value["integrity"] = {"algorithm": "sha256", "content_hash": self.content_hash()}
+        return value
 
     @classmethod
     def from_wire(cls, value: Mapping[str, Any]) -> "QuestionBoundPrediction":
@@ -215,7 +278,16 @@ class QuestionBoundPrediction:
         refs = tuple(PredictionArtifactRef.from_wire(item) for item in refs_raw if isinstance(item, Mapping))
         if len(refs) != len(refs_raw):
             raise QuestionPredictionError("artifact ref is malformed")
-        item = cls(schema_version=str(value.get("schema_version", "")), prediction_id=str(value.get("prediction_id", "")), mode=str(value.get("mode", "")), evidence_class=str(value.get("evidence_class", "")), question_ref=str(question.get("question_ref", "")), question_definition_hash=str(question.get("definition_hash", "")), question_registry_id=str(registry.get("registry_id", "")), question_registry_version=str(registry.get("version", "")), question_registry_hash=str(registry.get("content_hash", "")), question_family=str(question.get("family", "")), question_scope=str(question.get("scope", "")), answer_kind=str(question.get("answer_kind", "")), cutoff_at_ns=int(timing.get("cutoff_at_ns", -1)), created_at_ns=int(timing.get("created_at_ns", -1)), horizon_ns=int(timing.get("horizon_ns", -1)), resolves_at_ns=int(timing.get("resolves_at_ns", -1)), outcome_metric_id=str(question.get("outcome_metric_id", "")), resolver_policy_id=str(question.get("resolver_policy_id", "")), max_resolution_lag_ns=int(question.get("max_resolution_lag_ns", -1)), answer=dict(answer), model_refs=tuple(str(ref) for ref in value.get("model_refs", [])), artifact_refs=refs)
+        item = cls(
+            schema_version=str(value.get("schema_version", "")),
+            prediction_id=str(value.get("prediction_id", "")), mode=str(value.get("mode", "")), evidence_class=str(value.get("evidence_class", "")),
+            question_ref=str(question.get("question_ref", "")), question_definition_hash=str(question.get("definition_hash", "")),
+            question_registry_id=str(registry.get("registry_id", "")), question_registry_version=str(registry.get("version", "")), question_registry_hash=str(registry.get("content_hash", "")),
+            question_family=str(question.get("family", "")), question_scope=str(question.get("scope", "")), subject_id=str(question.get("subject_id", "")), answer_kind=str(question.get("answer_kind", "")),
+            cutoff_at_ns=int(timing.get("cutoff_at_ns", -1)), created_at_ns=int(timing.get("created_at_ns", -1)), horizon_ns=int(timing.get("horizon_ns", -1)), resolves_at_ns=int(timing.get("resolves_at_ns", -1)),
+            outcome_metric_id=str(question.get("outcome_metric_id", "")), resolver_policy_id=str(question.get("resolver_policy_id", "")), max_resolution_lag_ns=int(question.get("max_resolution_lag_ns", -1)),
+            answer=dict(answer), model_refs=tuple(str(ref) for ref in value.get("model_refs", [])), artifact_refs=refs,
+        )
         authority = value.get("authority")
         if not isinstance(authority, Mapping) or any(authority.get(key) is not False for key in ("capital_decision", "risk_authorization", "external_execution")):
             raise QuestionPredictionError("prediction authority boundary is invalid")
@@ -224,7 +296,8 @@ class QuestionBoundPrediction:
             raise QuestionPredictionError("question-bound prediction content hash mismatch")
         return item
 
-def build_question_bound_prediction(*, registry: QuestionRegistrySnapshot, question: QuestionDefinition, mode: str, evidence_class: str, cutoff_at_ns: int, created_at_ns: int, answer: Mapping[str, Any], model_refs: Sequence[str], artifact_refs: Sequence[PredictionArtifactRef]) -> QuestionBoundPrediction:
+
+def build_question_bound_prediction(*, registry: QuestionRegistrySnapshot, question: QuestionDefinition, subject_id: str, mode: str, evidence_class: str, cutoff_at_ns: int, created_at_ns: int, answer: Mapping[str, Any], model_refs: Sequence[str], artifact_refs: Sequence[PredictionArtifactRef]) -> QuestionBoundPrediction:
     matching = [entry for entry in registry.entries if entry.definition.question_ref == question.question_ref]
     if len(matching) != 1:
         raise QuestionPredictionError("question is not uniquely present in registry")
@@ -240,6 +313,11 @@ def build_question_bound_prediction(*, registry: QuestionRegistrySnapshot, quest
     artifact_types = {ref.artifact_type for ref in refs}
     features = {family for ref in refs for family in ref.feature_families}
     timescales = {timescale for ref in refs for timescale in ref.timescales}
+    subjects = {subject for ref in refs for subject in ref.subject_ids}
+    if not str(subject_id).strip():
+        raise QuestionPredictionError("subject_id is required")
+    if subject_id not in subjects:
+        raise QuestionPredictionError("prediction subject is not bound by input evidence")
     if not set(question.required_artifact_types).issubset(artifact_types):
         raise QuestionPredictionError("required artifact type is missing")
     if not set(question.required_feature_families).issubset(features):
@@ -254,6 +332,19 @@ def build_question_bound_prediction(*, registry: QuestionRegistrySnapshot, quest
         raise QuestionPredictionError("post-cutoff artifact rejected")
     normalized = normalize_question_answer(question.outcome.answer_kind, answer)
     models = _unique_strings(model_refs, "model_refs")
-    material = {"registry_hash": registry.content_hash(), "question_hash": question.content_hash(), "cutoff_at_ns": int(cutoff_at_ns), "created_at_ns": int(created_at_ns), "mode": mode, "evidence_class": evidence_class, "answer": normalized, "model_refs": list(models), "artifact_refs": [ref.to_wire() for ref in sorted(refs, key=lambda item: (item.artifact_type, item.artifact_id))]}
+    material = {
+        "registry_hash": registry.content_hash(), "question_hash": question.content_hash(), "subject_id": subject_id,
+        "cutoff_at_ns": int(cutoff_at_ns), "created_at_ns": int(created_at_ns), "mode": mode, "evidence_class": evidence_class,
+        "answer": normalized, "model_refs": list(models),
+        "artifact_refs": [ref.to_wire() for ref in sorted(refs, key=lambda item: (item.artifact_type, item.artifact_id))],
+    }
     prediction_id = "QPRED-%s" % hashlib.sha256(canonical_hash(material).encode("utf-8")).hexdigest()[:32]
-    return QuestionBoundPrediction(prediction_id=prediction_id, mode=mode, evidence_class=evidence_class, question_ref=question.question_ref, question_definition_hash=question.content_hash(), question_registry_id=registry.registry_id, question_registry_version=registry.version, question_registry_hash=registry.content_hash(), question_family=question.family.value, question_scope=question.scope.value, answer_kind=question.outcome.answer_kind.value, cutoff_at_ns=int(cutoff_at_ns), created_at_ns=int(created_at_ns), horizon_ns=question.horizon_ns, resolves_at_ns=int(cutoff_at_ns) + question.horizon_ns, outcome_metric_id=question.outcome.metric_id, resolver_policy_id=question.outcome.resolver_policy_id, max_resolution_lag_ns=question.outcome.max_resolution_lag_ns, answer=normalized, model_refs=models, artifact_refs=refs)
+    return QuestionBoundPrediction(
+        prediction_id=prediction_id, mode=mode, evidence_class=evidence_class,
+        question_ref=question.question_ref, question_definition_hash=question.content_hash(),
+        question_registry_id=registry.registry_id, question_registry_version=registry.version, question_registry_hash=registry.content_hash(),
+        question_family=question.family.value, question_scope=question.scope.value, subject_id=str(subject_id), answer_kind=question.outcome.answer_kind.value,
+        cutoff_at_ns=int(cutoff_at_ns), created_at_ns=int(created_at_ns), horizon_ns=question.horizon_ns, resolves_at_ns=int(cutoff_at_ns) + question.horizon_ns,
+        outcome_metric_id=question.outcome.metric_id, resolver_policy_id=question.outcome.resolver_policy_id, max_resolution_lag_ns=question.outcome.max_resolution_lag_ns,
+        answer=normalized, model_refs=models, artifact_refs=refs,
+    )
