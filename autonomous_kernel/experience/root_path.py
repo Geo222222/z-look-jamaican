@@ -110,6 +110,8 @@ class EconomicRootPathExperience:
     status: str
     baseline_experience_id: str
     baseline_experience_hash: str
+    baseline_spot_frame_id: str
+    baseline_spot_frame_hash: str
     points: Tuple[RootPathPoint, ...]
     missing_target_ns: Tuple[int, ...]
     builder_version: str = ROOT_PATH_BUILDER_VERSION
@@ -118,10 +120,18 @@ class EconomicRootPathExperience:
     def __post_init__(self) -> None:
         if self.schema_version != ROOT_PATH_SCHEMA_VERSION:
             raise RootPathExperienceError("unsupported root-path schema")
-        for field in ("root_path_id", "economic_root_id", "instrument_id", "baseline_experience_id", "builder_version"):
+        for field in (
+            "root_path_id",
+            "economic_root_id",
+            "instrument_id",
+            "baseline_experience_id",
+            "baseline_spot_frame_id",
+            "builder_version",
+        ):
             if not str(getattr(self, field)).strip():
                 raise RootPathExperienceError("root-path %s is required" % field)
         _digest(self.baseline_experience_hash, "baseline_experience_hash")
+        _digest(self.baseline_spot_frame_hash, "baseline_spot_frame_hash")
         if self.window_start_ns < 0 or self.cutoff_at_ns < self.window_start_ns:
             raise RootPathExperienceError("root-path window is invalid")
         if self.known_at_ns < 0 or self.known_at_ns > self.cutoff_at_ns:
@@ -164,6 +174,13 @@ class EconomicRootPathExperience:
                 raise RootPathExperienceError("root-path point knowledge exceeds declared grid lag")
             if point.frame_cutoff_at_ns > self.cutoff_at_ns or point.frame_known_at_ns > self.cutoff_at_ns:
                 raise RootPathExperienceError("root-path point exceeds causal cutoff")
+        cutoff_points = [point for point in self.points if point.target_at_ns == self.cutoff_at_ns]
+        if cutoff_points:
+            if len(cutoff_points) != 1:
+                raise RootPathExperienceError("root path requires one cutoff point")
+            cutoff_point = cutoff_points[0]
+            if cutoff_point.frame_id != self.baseline_spot_frame_id or cutoff_point.frame_content_hash != self.baseline_spot_frame_hash:
+                raise RootPathExperienceError("root-path cutoff must equal exact prediction-time spot frame")
         max_known = max((point.frame_known_at_ns for point in self.points), default=0)
         if self.known_at_ns < max_known:
             raise RootPathExperienceError("root-path known_at precedes source knowledge")
@@ -192,11 +209,14 @@ class EconomicRootPathExperience:
             "baseline_experience": {
                 "experience_id": self.baseline_experience_id,
                 "content_hash": self.baseline_experience_hash,
+                "spot_frame_id": self.baseline_spot_frame_id,
+                "spot_frame_hash": self.baseline_spot_frame_hash,
             },
             "points": [point.to_wire() for point in self.points],
             "missing_target_ns": list(self.missing_target_ns),
             "truth_boundary": {
                 "point_selection": "FIRST_QUALIFIED_SAME_INSTRUMENT_FRAME_WITHIN_GRID_LAG_AND_SOURCE_AGE",
+                "cutoff_point": "EXACT_PREDICTION_TIME_SPOT_FRAME",
                 "interpolation": False,
                 "future_known_inputs": False,
                 "stale_carry_forward": False,
@@ -238,6 +258,8 @@ class EconomicRootPathExperience:
             builder_version=str(value.get("builder_version", "")),
             baseline_experience_id=str(baseline.get("experience_id", "")),
             baseline_experience_hash=str(baseline.get("content_hash", "")),
+            baseline_spot_frame_id=str(baseline.get("spot_frame_id", "")),
+            baseline_spot_frame_hash=str(baseline.get("spot_frame_hash", "")),
             points=tuple(RootPathPoint.from_wire(raw) for raw in points if isinstance(raw, Mapping)),
             missing_target_ns=tuple(int(raw) for raw in value.get("missing_target_ns", [])),
         )
@@ -252,6 +274,8 @@ class EconomicRootPathExperience:
             raise RootPathExperienceError("root-path stale-carry-forward boundary is invalid")
         if truth.get("point_selection") != "FIRST_QUALIFIED_SAME_INSTRUMENT_FRAME_WITHIN_GRID_LAG_AND_SOURCE_AGE":
             raise RootPathExperienceError("root-path point-selection policy is invalid")
+        if truth.get("cutoff_point") != "EXACT_PREDICTION_TIME_SPOT_FRAME":
+            raise RootPathExperienceError("root-path cutoff-point policy is invalid")
         if any(truth.get(key) is not False for key in ("capital_decision", "risk_authorization", "external_execution")):
             raise RootPathExperienceError("root-path authority boundary is invalid")
         integrity = value.get("integrity")
@@ -288,23 +312,25 @@ def _durable_representations(root: Path) -> Tuple[RepresentationFrame, ...]:
     return tuple(frames)
 
 
-def _short_spot_instrument(experience: MarketExperienceFrame) -> Tuple[str, int]:
+def _short_spot_instrument(experience: MarketExperienceFrame) -> Tuple[str, int, str, str]:
     views = [view for view in experience.views if view.timescale is ExperienceTimescale.SHORT]
     if len(views) != 1:
         raise RootPathExperienceError("root path requires exactly one SHORT Market Experience view")
     view = views[0]
     if experience.status != "QUALIFIED" or view.status != "QUALIFIED":
         raise RootPathExperienceError("root path requires qualified Market Experience and SHORT view")
-    spot_ids = sorted({
-        ref.instrument_id
+    spot_refs = [
+        ref
         for ref in view.source_frames
         if ref.representation_type == "INSTRUMENT_STATE"
         and ref.market_type == "SPOT"
         and ref.status == "QUALIFIED"
-    })
-    if len(spot_ids) != 1:
-        raise RootPathExperienceError("root path requires one unambiguous qualified spot instrument")
-    return spot_ids[0], view.lookback_ns
+        and ref.cutoff_at_ns == experience.cutoff_at_ns
+    ]
+    if len(spot_refs) != 1:
+        raise RootPathExperienceError("root path requires one exact qualified spot frame at experience cutoff")
+    ref = spot_refs[0]
+    return ref.instrument_id, view.lookback_ns, ref.frame_id, ref.frame_hash
 
 
 def build_economic_root_path(
@@ -322,11 +348,12 @@ def build_economic_root_path(
     grid interval. A representation may satisfy a target only if its own cutoff
     is inside that slot and its known-at time is neither too stale before the
     target nor later than the permitted slot lag. No interpolation or stale
-    carry-forward is performed.
+    carry-forward is performed. The final T point must equal the exact spot
+    representation already bound into the prediction-time Market Experience.
     """
     root = root.resolve()
     restored_experience = MarketExperienceFrame.from_wire(baseline_experience.to_wire())
-    instrument_id, lookback_ns = _short_spot_instrument(restored_experience)
+    instrument_id, lookback_ns, cutoff_frame_id, cutoff_frame_hash = _short_spot_instrument(restored_experience)
     if grid_interval_ns <= 0:
         raise RootPathExperienceError("root-path grid interval must be positive")
     if max_point_lag_ns < 0 or max_point_lag_ns >= grid_interval_ns:
@@ -348,6 +375,14 @@ def build_economic_root_path(
     ]
     frames.sort(key=lambda item: (item.cutoff_at_ns, item.known_at_ns, item.frame_id, item.content_hash()))
 
+    exact_cutoff = [
+        frame
+        for frame in frames
+        if frame.frame_id == cutoff_frame_id and frame.content_hash() == cutoff_frame_hash
+    ]
+    if len(exact_cutoff) != 1:
+        raise RootPathExperienceError("prediction-time cutoff spot frame is not durably recoverable")
+
     used = set()
     points = []
     missing = []
@@ -362,6 +397,12 @@ def build_economic_root_path(
             and frame.known_at_ns >= oldest_allowed
             and frame.known_at_ns <= target + max_point_lag_ns
         ]
+        if target == cutoff:
+            eligible = [
+                frame
+                for frame in eligible
+                if frame.frame_id == cutoff_frame_id and frame.content_hash() == cutoff_frame_hash
+            ]
         if not eligible:
             missing.append(target)
             continue
@@ -402,6 +443,8 @@ def build_economic_root_path(
         "max_point_lag_ns": max_point_lag_ns,
         "max_source_age_ns": max_source_age_ns,
         "baseline_experience_hash": restored_experience.content_hash(),
+        "baseline_spot_frame_id": cutoff_frame_id,
+        "baseline_spot_frame_hash": cutoff_frame_hash,
         "points": [point.to_wire() for point in points],
         "missing_target_ns": missing,
         "builder_version": builder_version,
@@ -420,6 +463,8 @@ def build_economic_root_path(
         status=status,
         baseline_experience_id=restored_experience.experience_id,
         baseline_experience_hash=restored_experience.content_hash(),
+        baseline_spot_frame_id=cutoff_frame_id,
+        baseline_spot_frame_hash=cutoff_frame_hash,
         points=tuple(points),
         missing_target_ns=tuple(missing),
         builder_version=builder_version,
