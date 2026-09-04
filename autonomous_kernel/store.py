@@ -24,6 +24,7 @@ from .microstream import validate_stream_bundles
 from .operations import validate_capability_registry, validate_capability_transitions, validate_execution_receipts
 from .shadow_lifecycle import validate_shadow_runtime
 from .background_jobs import validate_background_jobs
+from market_objects.store import validate_market_object_store
 
 
 ROOT_STATES = {
@@ -78,6 +79,7 @@ REQUIRED_JSON_FILES = (
     "state/capabilities.json",
     "state/experiments.json",
     "state/market_data.json",
+    "state/market_objects.json",
     "state/background_jobs.json",
     "opportunities/register.json",
     "accounting/ledger.json",
@@ -435,6 +437,8 @@ def validate(root: Optional[Path] = None) -> List[str]:
     checks.append("execution_receipt_integrity")
     errors.extend(validate_market_data_store(root))
     checks.append("market_data_store")
+    errors.extend(validate_market_object_store(root))
+    checks.append("market_object_graph")
     errors.extend(validate_stream_bundles(root))
     checks.append("microstructure_stream_bundles")
     errors.extend(validate_shadow_runtime(root))

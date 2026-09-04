@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "registry_id": "ZLJ-STRATEGY-ARCHETYPES",
+  "registry_version": "1.0.0",
+  "updated_at": "2026-09-02T02:30:00Z",
+  "authority": "KNOWLEDGE_ONLY_NO_EXECUTION_AUTHORITY",
+  "purpose": "Machine-readable catalog of economic mechanisms and the market-object prerequisites that make them plausible, dangerous, or unqualified.",
+  "selection_policy": {
+    "run_all_strategies": false,
+    "record_every_considered_strategy": true,
+    "applicability_is_not_opportunity": true,
+    "opportunity_is_not_execution_authority": true,
+    "minimum_applicability_before_opportunity_review": "HIGH"
+  },
+  "learning_contract": {
+    "context_labels": "Strategy applicability labels describe current object-graph compatibility only.",
+    "outcome_labels": "Profit/loss, fill, adverse excursion, cost, and invalidation outcomes must be attached later from time-forward evidence.",
+    "anti_leakage": "No realized outcome may become an input to the applicability object that preceded it.",
+    "trial_ledger": "Every registry strategy considered for a world snapshot must be retained, including blocked and rejected entries.",
+    "versioning": "Training examples must pin registry version, object hashes, classifier versions, and outcome horizon."
+  },
+  "strategies": [
+    {
+      "strategy_id": "STRAT-ARCH-TREND-CONTINUATION",
+      "archetype": "TREND_CONTINUATION",
+      "capital_authority": false,
+      "order_authority": false,
+      "mechanism": {
+        "economic_thesis": "Persistent directional participation may continue when trend, momentum, participation, and volatility states align before the move becomes extended.",
+        "null_hypothesis": "After costs, aligned trend-state entries have no positive forward expectancy beyond unconditional returns.",
+        "falsification": "Reject a scoped implementation when preregistered walk-forward or prospective net expectancy is non-positive, unstable, concentrated, or capacity-infeasible."
+      },
+      "conditions": {
+        "required": [
+          {"condition_id":"TREND-DIRECTIONAL","object_type":"TREND_STATE","path":"payload.state","operator":"IN","value":["UP","DOWN"],"weight":2},
+          {"condition_id":"MOMENTUM-ALIGNED","object_type":"MOMENTUM_STATE","path":"payload.state","operator":"IN","value":["POSITIVE","NEGATIVE"],"weight":1},
+          {"condition_id":"LIQUIDITY-HEALTHY","object_type":"LIQUIDITY_STATE","path":"payload.state","operator":"EQ","value":"HEALTHY","weight":2}
+        ],
+        "supporting": [
+          {"condition_id":"PARTICIPATION-ABOVE-NORMAL","object_type":"PARTICIPATION_STATE","path":"payload.state","operator":"EQ","value":"ABOVE_NORMAL","weight":1},
+          {"condition_id":"VOLATILITY-NOT-COMPRESSED","object_type":"VOLATILITY_STATE","path":"payload.state","operator":"IN","value":["NORMAL","EXPANDING"],"weight":1}
+        ],
+        "contraindications": [
+          {"condition_id":"VOLATILITY-EXTREME-RISK","object_type":"RISK_STATE","path":"payload.state","operator":"EQ","value":"EXTREME","weight":2}
+        ],
+        "triggers": [
+          {"condition_id":"RANGE-BREAK","object_type":"PRICE_STRUCTURE","path":"payload.range.status","operator":"IN","value":["BROKEN_UP","BROKEN_DOWN"],"weight":1}
+        ]
+      },
+      "minimum_support_score": 0.5,
+      "minimum_trigger_matches": 1,
+      "invalidation_conditions": ["trend state reverses", "price structure returns through the prior range", "liquidity becomes adverse", "forward flow contradicts direction"],
+      "economics": {"qualification":"NOT_EARNED","current_net_edge_available":false,"cost_model_status":"NOT_EARNED","capacity_status":"NOT_EARNED"},
+      "evidence_bindings": [{"outcome":"REJECTED","scope":{"exchange":"binance","assets":["BTC","ETH"],"evaluation_horizons":["30M","6H"]},"applies_to_all_horizons":false,"evidence_ids":["EVIDENCE-HISTORICAL-MECHANISMS-002-RESULT"]}],
+      "research_action": "Only preregister a materially different scoped trend mechanism; do not tune the rejected Binance 30M/6H definitions."
+    },
+    {
+      "strategy_id": "STRAT-ARCH-BREAKOUT-RETEST",
+      "archetype": "BREAKOUT_RETEST",
+      "capital_authority": false,
+      "order_authority": false,
+      "mechanism": {
+        "economic_thesis": "A genuine range break that holds on retest can reveal acceptance outside prior value and offer defined invalidation at the reclaimed boundary.",
+        "null_hypothesis": "Retests after apparent breaks fail or do not cover execution costs.",
+        "falsification": "Reject when retest confirmation has no stable net expectancy or the boundary cannot define bounded risk."
+      },
+      "conditions": {
+        "required": [
+          {"condition_id":"STRUCTURE-BROKEN","object_type":"PRICE_STRUCTURE","path":"payload.range.status","operator":"IN","value":["BROKEN_UP","BROKEN_DOWN"],"weight":2},
+          {"condition_id":"LIQUIDITY-HEALTHY","object_type":"LIQUIDITY_STATE","path":"payload.state","operator":"EQ","value":"HEALTHY","weight":2}
+        ],
+        "supporting": [
+          {"condition_id":"VOLATILITY-EXPANDING","object_type":"VOLATILITY_STATE","path":"payload.state","operator":"EQ","value":"EXPANDING","weight":1},
+          {"condition_id":"PARTICIPATION-CONFIRMS","object_type":"PARTICIPATION_STATE","path":"payload.state","operator":"EQ","value":"ABOVE_NORMAL","weight":1}
+        ],
+        "contraindications": [
+          {"condition_id":"MOMENTUM-MIXED","object_type":"MOMENTUM_STATE","path":"payload.state","operator":"EQ","value":"MIXED","weight":1}
+        ],
+        "triggers": [
+          {"condition_id":"RETEST-CONFIRMED","object_type":"STATE_TRANSITION","path":"payload.to","operator":"EQ","value":"RETEST_HELD","weight":2}
+        ]
+      },
+      "minimum_support_score": 0.5,
+      "minimum_trigger_matches": 1,
+      "invalidation_conditions": ["price closes back inside prior range", "retest depth exceeds risk budget", "participation collapses"],
+      "economics": {"qualification":"NOT_EARNED","current_net_edge_available":false,"cost_model_status":"NOT_EARNED","capacity_status":"NOT_EARNED"},
+      "evidence_bindings": [],
+      "research_action": "Watch only until a separate retest transition object exists; a breakout alone is not the trigger."
+    },
+    {
+      "strategy_id": "STRAT-ARCH-RANGE-FADE",
+      "archetype": "RANGE_FADE",
+      "capital_authority": false,
+      "order_authority": false,
+      "mechanism": {
+        "economic_thesis": "Balanced low-volatility markets may mean-revert from established boundaries when liquidity remains healthy and directional control is absent.",
+        "null_hypothesis": "Range boundaries do not produce net mean reversion after false breaks and costs.",
+        "falsification": "Reject when boundary-conditioned outcomes are non-positive or trend transitions dominate."
+      },
+      "conditions": {
+        "required": [
+          {"condition_id":"TREND-RANGE","object_type":"TREND_STATE","path":"payload.state","operator":"EQ","value":"RANGE_OR_MIXED","weight":2},
+          {"condition_id":"VOLATILITY-LOW","object_type":"VOLATILITY_STATE","path":"payload.state","operator":"IN","value":["LOW","COMPRESSED"],"weight":2},
+          {"condition_id":"LIQUIDITY-HEALTHY","object_type":"LIQUIDITY_STATE","path":"payload.state","operator":"EQ","value":"HEALTHY","weight":1}
+        ],
+        "supporting": [
+          {"condition_id":"PARTICIPATION-NOT-EXPANDED","object_type":"PARTICIPATION_STATE","path":"payload.state","operator":"IN","value":["NORMAL","BELOW_NORMAL"],"weight":1}
+        ],
+        "contraindications": [
+          {"condition_id":"STRUCTURE-BREAK","object_type":"PRICE_STRUCTURE","path":"payload.range.status","operator":"IN","value":["BROKEN_UP","BROKEN_DOWN"],"weight":3}
+        ],
+        "triggers": [
+          {"condition_id":"BOUNDARY-TEST","object_type":"PATTERN_DETECTION","path":"payload.possible_patterns.0.pattern","operator":"IN","value":["RANGE_UPPER_TEST","RANGE_LOWER_TEST"],"weight":1}
+        ]
+      },
+      "minimum_support_score": 0.5,
+      "minimum_trigger_matches": 1,
+      "invalidation_conditions": ["confirmed directional range break", "volatility expansion", "liquidity withdrawal"],
+      "economics": {"qualification":"NOT_EARNED","current_net_edge_available":false,"cost_model_status":"NOT_EARNED","capacity_status":"NOT_EARNED"},
+      "evidence_bindings": [],
+      "research_action": "Require explicit boundary-test objects and transition-aware exits before testing."
+    },
+    {
+      "strategy_id": "STRAT-ARCH-VOLATILITY-EXPANSION",
+      "archetype": "VOLATILITY_EXPANSION_BREAKOUT",
+      "capital_authority": false,
+      "order_authority": false,
+      "mechanism": {
+        "economic_thesis": "A transition from compression to expansion can create a directional window when price structure and participation confirm.",
+        "null_hypothesis": "Compression breaks have no directional persistence after costs and false-break losses.",
+        "falsification": "Reject when transition-conditioned follow-through is non-positive or false-break tails exceed the risk budget."
+      },
+      "conditions": {
+        "required": [
+          {"condition_id":"VOL-TRANSITION","object_type":"STATE_TRANSITION","path":"payload.to","operator":"EQ","value":"EXPANDING","weight":2},
+          {"condition_id":"STRUCTURE-BREAK","object_type":"PRICE_STRUCTURE","path":"payload.range.status","operator":"IN","value":["BROKEN_UP","BROKEN_DOWN"],"weight":2}
+        ],
+        "supporting": [
+          {"condition_id":"PARTICIPATION-ABOVE","object_type":"PARTICIPATION_STATE","path":"payload.state","operator":"EQ","value":"ABOVE_NORMAL","weight":1}
+        ],
+        "contraindications": [
+          {"condition_id":"LIQUIDITY-ADVERSE","object_type":"LIQUIDITY_STATE","path":"payload.state","operator":"IN","value":["THIN","WIDE_SPREAD"],"weight":2}
+        ],
+        "triggers": [
+          {"condition_id":"TRANSITION-CONFIRMED","object_type":"STATE_TRANSITION","path":"payload.transition_strength","operator":"GTE","value":0.6,"weight":1}
+        ]
+      },
+      "minimum_support_score": 0.5,
+      "minimum_trigger_matches": 1,
+      "invalidation_conditions": ["volatility returns to compression", "price reenters range", "participation fails to confirm"],
+      "economics": {"qualification":"NOT_EARNED","current_net_edge_available":false,"cost_model_status":"NOT_EARNED","capacity_status":"NOT_EARNED"},
+      "evidence_bindings": [],
+      "research_action": "Build labels from transition objects rather than static high-volatility snapshots."
+    },
+    {
+      "strategy_id": "STRAT-ARCH-EXHAUSTION-REVERSAL",
+      "archetype": "EXHAUSTION_REVERSAL",
+      "capital_authority": false,
+      "order_authority": false,
+      "mechanism": {
+        "economic_thesis": "An extended move with deteriorating participation and opposing structure can reverse after late entrants exhaust.",
+        "null_hypothesis": "Apparent exhaustion continues trending or reversal payoff does not cover adverse selection.",
+        "falsification": "Reject when extension classifications do not precede bounded reversals with positive net expectancy."
+      },
+      "conditions": {
+        "required": [
+          {"condition_id":"MOMENTUM-EXTREME","object_type":"MOMENTUM_STATE","path":"payload.strength","operator":"GTE","value":0.75,"weight":2},
+          {"condition_id":"VOLATILITY-EXPANDING","object_type":"VOLATILITY_STATE","path":"payload.state","operator":"EQ","value":"EXPANDING","weight":1}
+        ],
+        "supporting": [
+          {"condition_id":"PARTICIPATION-NOT-CONFIRMING","object_type":"PARTICIPATION_STATE","path":"payload.state","operator":"NE","value":"ABOVE_NORMAL","weight":1}
+        ],
+        "contraindications": [
+          {"condition_id":"TREND-STILL-STRONG","object_type":"TREND_STATE","path":"payload.strength","operator":"GTE","value":0.8,"weight":2}
+        ],
+        "triggers": [
+          {"condition_id":"STRUCTURE-REVERSAL","object_type":"STATE_TRANSITION","path":"payload.dimension","operator":"EQ","value":"TREND","weight":1}
+        ]
+      },
+      "minimum_support_score": 0.5,
+      "minimum_trigger_matches": 1,
+      "invalidation_conditions": ["new directional high or low with expanding participation", "trend strength reaccelerates", "risk-to-invalidation exceeds plan"],
+      "economics": {"qualification":"NOT_EARNED","current_net_edge_available":false,"cost_model_status":"NOT_EARNED","capacity_status":"NOT_EARNED"},
+      "evidence_bindings": [],
+      "research_action": "Do not infer exhaustion from RSI alone; require a transition and participation contradiction."
+    },
+    {
+      "strategy_id": "STRAT-ARCH-FUNDING-CARRY",
+      "archetype": "DELTA_NEUTRAL_FUNDING_CARRY",
+      "capital_authority": false,
+      "order_authority": false,
+      "mechanism": {
+        "economic_thesis": "Persistent positive perpetual funding may compensate a delta-neutral long-spot/short-perpetual position when expected funding exceeds all entry, exit, financing, and rebalance costs.",
+        "null_hypothesis": "Funding decays or basis/implementation losses consume the carry before costs are recovered.",
+        "falsification": "Reject when preregistered realized funding minus four trading sides, basis drift, financing, and operational costs is non-positive or tail risk is unacceptable."
+      },
+      "conditions": {
+        "required": [
+          {"condition_id":"FUNDING-POSITIVE","object_type":"FUNDING_OBSERVATION","path":"payload.funding_rate","operator":"GT","value":0.0003,"weight":3},
+          {"condition_id":"LIQUIDITY-HEALTHY","object_type":"LIQUIDITY_STATE","path":"payload.state","operator":"EQ","value":"HEALTHY","weight":2},
+          {"condition_id":"PORTFOLIO-ALLOWS","object_type":"PORTFOLIO_OBSERVATION","path":"payload.strategy_exposure_allowed","operator":"TRUTHY","weight":3}
+        ],
+        "supporting": [
+          {"condition_id":"POSITIONING-LONG","object_type":"POSITIONING_STATE","path":"payload.state","operator":"EQ","value":"CROWDED_LONG_CANDIDATE","weight":1}
+        ],
+        "contraindications": [
+          {"condition_id":"LIQUIDITY-THIN","object_type":"LIQUIDITY_STATE","path":"payload.state","operator":"EQ","value":"THIN","weight":3}
+        ],
+        "triggers": [
+          {"condition_id":"FUNDING-EXTREME-TRIGGER","object_type":"FUNDING_OBSERVATION","path":"payload.funding_rate","operator":"GT","value":0.0005,"weight":1}
+        ]
+      },
+      "minimum_support_score": 0.5,
+      "minimum_trigger_matches": 1,
+      "invalidation_conditions": ["forecast funding no longer covers unwinding cost", "basis dislocation exceeds risk budget", "borrow or venue risk changes", "liquidity degrades"],
+      "economics": {"qualification":"NOT_EARNED","current_net_edge_available":false,"cost_model_status":"NOT_EARNED","capacity_status":"NOT_EARNED"},
+      "evidence_bindings": [],
+      "research_action": "Highest-priority new historical mechanism: preregister low-turnover carry using native funding and explicit four-side cost coverage."
+    },
+    {
+      "strategy_id": "STRAT-ARCH-BASIS-CONVERGENCE",
+      "archetype": "SPOT_PERPETUAL_BASIS_CONVERGENCE",
+      "capital_authority": false,
+      "order_authority": false,
+      "mechanism": {
+        "economic_thesis": "An extreme same-exchange spot/perpetual basis may converge while a hedged pair limits directional exposure.",
+        "null_hypothesis": "Basis convergence is too small or unstable to cover four sides, funding, and tail risk.",
+        "falsification": "Reject a horizon when gross break-even costs are below realistic execution costs or fold stability fails."
+      },
+      "conditions": {
+        "required": [
+          {"condition_id":"RELATIVE-DISLOCATION","object_type":"RELATIVE_CALCULATION","path":"payload.values.relative_return","operator":"GT","value":0,"weight":2},
+          {"condition_id":"LIQUIDITY-HEALTHY","object_type":"LIQUIDITY_STATE","path":"payload.state","operator":"EQ","value":"HEALTHY","weight":2}
+        ],
+        "supporting": [
+          {"condition_id":"FUNDING-POSITIVE","object_type":"FUNDING_OBSERVATION","path":"payload.funding_rate","operator":"GT","value":0,"weight":1}
+        ],
+        "contraindications": [
+          {"condition_id":"RELATIONSHIP-WEAK","object_type":"CORRELATION_STATE","path":"payload.state","operator":"IN","value":["WEAK","NEGATIVE"],"weight":2}
+        ],
+        "triggers": [
+          {"condition_id":"CONVERGENCE-TRANSITION","object_type":"STATE_TRANSITION","path":"payload.dimension","operator":"EQ","value":"CORRELATION","weight":1}
+        ]
+      },
+      "minimum_support_score": 0.5,
+      "minimum_trigger_matches": 1,
+      "invalidation_conditions": ["basis widens beyond tail bound", "funding turns adverse", "hedge relationship breaks", "four-side costs exceed forecast convergence"],
+      "economics": {"qualification":"REJECTED","current_net_edge_available":false,"cost_model_status":"HISTORICALLY_REJECTED","capacity_status":"NOT_EARNED"},
+      "evidence_bindings": [{"outcome":"REJECTED","scope":{"exchange":"binance","assets":["BTC","ETH"],"evaluation_horizons":["6H"]},"applies_to_all_horizons":false,"evidence_ids":["EVIDENCE-HISTORICAL-MECHANISMS-002-RESULT"]}],
+      "research_action": "Do not reuse the rejected six-hour rule; only a distinct horizon/mechanism may reopen under new preregistration."
+    },
+    {
+      "strategy_id": "STRAT-ARCH-SPOT-PERP-LEAD-LAG",
+      "archetype": "SPOT_PERPETUAL_LEAD_LAG",
+      "capital_authority": false,
+      "order_authority": false,
+      "mechanism": {
+        "economic_thesis": "One same-exchange market leg may occasionally incorporate information before the other and create a short-lived response window.",
+        "null_hypothesis": "Spot and perpetual are synchronized at the evaluated cadence, leaving no tradeable lag after costs.",
+        "falsification": "Reject when preregistered shock/lag definitions produce insufficient events or non-positive net response."
+      },
+      "conditions": {
+        "required": [
+          {"condition_id":"RELATIVE-DIVERGENCE","object_type":"RELATIVE_CALCULATION","path":"payload.values.relative_return","operator":"NE","value":0,"weight":2},
+          {"condition_id":"LIQUIDITY-HEALTHY","object_type":"LIQUIDITY_STATE","path":"payload.state","operator":"EQ","value":"HEALTHY","weight":2}
+        ],
+        "supporting": [],
+        "contraindications": [
+          {"condition_id":"CORRELATION-HIGH","object_type":"CORRELATION_STATE","path":"payload.state","operator":"EQ","value":"HIGH_POSITIVE","weight":2}
+        ],
+        "triggers": [
+          {"condition_id":"LEADERSHIP-TRANSITION","object_type":"STATE_TRANSITION","path":"payload.dimension","operator":"EQ","value":"RELATIVE_LEADERSHIP","weight":1}
+        ]
+      },
+      "minimum_support_score": 0,
+      "minimum_trigger_matches": 1,
+      "invalidation_conditions": ["legs remain synchronized", "lag closes before executable entry", "cost exceeds response", "leader identity is unstable"],
+      "economics": {"qualification":"REJECTED","current_net_edge_available":false,"cost_model_status":"HISTORICALLY_REJECTED","capacity_status":"NOT_EARNED"},
+      "evidence_bindings": [{"outcome":"REJECTED","scope":{"exchange":"binance","assets":["BTC","ETH"],"evaluation_horizons":["30M"]},"applies_to_all_horizons":false,"evidence_ids":["EVIDENCE-HISTORICAL-MECHANISMS-002-RESULT"]}],
+      "research_action": "The frozen five-minute shock definitions produced zero events; do not loosen them post hoc."
+    },
+    {
+      "strategy_id": "STRAT-ARCH-LIQUIDATION-SQUEEZE",
+      "archetype": "LIQUIDATION_SQUEEZE",
+      "capital_authority": false,
+      "order_authority": false,
+      "mechanism": {
+        "economic_thesis": "Crowded leveraged positioning can accelerate price when forced liquidations remove one side of the book.",
+        "null_hypothesis": "Price/funding observations without open interest and liquidation evidence cannot identify a squeeze or produce a tradeable edge.",
+        "falsification": "Block the archetype whenever open interest, liquidation, and executable liquidity evidence are unavailable; reject if complete evidence has no net expectancy."
+      },
+      "conditions": {
+        "required": [
+          {"condition_id":"OPEN-INTEREST-AVAILABLE","object_type":"POSITIONING_STATE","path":"payload.classifications.open_interest_direction","operator":"NE","value":"UNAVAILABLE","weight":3},
+          {"condition_id":"LIQUIDATION-AVAILABLE","object_type":"POSITIONING_STATE","path":"payload.classifications.liquidation_pressure","operator":"NE","value":"UNAVAILABLE","weight":3},
+          {"condition_id":"LIQUIDITY-KNOWN","object_type":"LIQUIDITY_STATE","path":"payload.state","operator":"EXISTS","weight":1}
+        ],
+        "supporting": [
+          {"condition_id":"FUNDING-CROWDED","object_type":"POSITIONING_STATE","path":"payload.state","operator":"IN","value":["CROWDED_LONG_CANDIDATE","CROWDED_SHORT_CANDIDATE"],"weight":1}
+        ],
+        "contraindications": [],
+        "triggers": [
+          {"condition_id":"LIQUIDATION-PRESSURE-HIGH","object_type":"POSITIONING_STATE","path":"payload.classifications.liquidation_pressure","operator":"EQ","value":"HIGH","weight":2}
+        ]
+      },
+      "minimum_support_score": 0.5,
+      "minimum_trigger_matches": 1,
+      "invalidation_conditions": ["open interest falls without directional follow-through", "liquidation flow dissipates", "book replenishes", "data becomes stale"],
+      "economics": {"qualification":"NOT_EARNED","current_net_edge_available":false,"cost_model_status":"NOT_EARNED","capacity_status":"NOT_EARNED"},
+      "evidence_bindings": [],
+      "research_action": "Remain blocked until authoritative open-interest and liquidation evidence objects exist."
+    }
+  ]
+}
