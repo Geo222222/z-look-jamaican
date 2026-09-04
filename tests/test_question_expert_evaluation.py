@@ -19,7 +19,6 @@ from autonomous_kernel.evaluation import (
     build_question_outcome_id,
     validate_question_evaluation_journal,
 )
-from autonomous_kernel.experience import ExperienceTimescale
 from autonomous_kernel.models import (
     QuestionExpertDefinition,
     QuestionExpertRegistryEntry,
@@ -29,7 +28,6 @@ from autonomous_kernel.models import (
 from autonomous_kernel.prediction import (
     PredictionArtifactRef,
     QuestionExpertPrediction,
-    QuestionExpertPredictionError,
     QuestionExpertPredictionJournal,
     QuestionExpertPredictionJournalError,
     QuestionPredictionJournal,
@@ -43,7 +41,6 @@ from autonomous_kernel.questions import (
 
 
 T = 1_788_400_000_000_000_000
-SECOND = 1_000_000_000
 
 
 def _question_registry():
@@ -90,17 +87,22 @@ def _expert(question, *, suffix="CONTROL"):
     )
 
 
-def _expert_registry(expert):
+def _expert_registry(
+    expert,
+    *,
+    version="1.0.0",
+    qualification_evidence_refs=("QUAL-QUESTION-EXPERT-001",),
+):
     return build_question_expert_registry_snapshot(
         registry_id="ZLJ-QUESTION-EXPERTS",
-        version="1.0.0",
+        version=version,
         entries=(
             QuestionExpertRegistryEntry(
                 definition=expert,
                 lifecycle_state="SHADOW_QUALIFIED",
                 registered_at_ns=T - 500,
                 effective_at_ns=T - 400,
-                qualification_evidence_refs=("QUAL-QUESTION-EXPERT-001",),
+                qualification_evidence_refs=qualification_evidence_refs,
             ),
         ),
         known_at_ns=T - 300,
@@ -110,8 +112,7 @@ def _expert_registry(expert):
 
 def _artifacts(question):
     refs = []
-    required_types = tuple(question.required_artifact_types)
-    for index, artifact_type in enumerate(required_types):
+    for index, artifact_type in enumerate(question.required_artifact_types):
         refs.append(
             PredictionArtifactRef(
                 artifact_type=artifact_type,
@@ -186,7 +187,7 @@ def _journal_prediction(root, wrapped):
     return base_entry, expert_entry
 
 
-def _outcome(wrapped, base_entry, *, status="RESOLVED", realized_answer=None):
+def _outcome(wrapped, base_entry, *, status="RESOLVED"):
     prediction = wrapped.prediction
     implementation = "tests.question_expert_evaluation.resolver_v1"
     outcome_id = build_question_outcome_id(
@@ -217,11 +218,7 @@ def _outcome(wrapped, base_entry, *, status="RESOLVED", realized_answer=None):
             ),
         )
         decided_at_ns = target + 1
-        answer = (
-            realized_answer
-            if realized_answer is not None
-            else _realized_answer(prediction.question_ref.split("@")[0])
-        )
+        answer = _realized_answer(prediction.question_ref.split("@")[0])
     else:
         evidence = ()
         answer = None
@@ -253,7 +250,12 @@ def _outcome(wrapped, base_entry, *, status="RESOLVED", realized_answer=None):
     )
 
 
-def _full_sources(root, question_id="ECONOMIC_ROOT_DIRECTION_10S", *, status="RESOLVED"):
+def _full_sources(
+    root,
+    question_id="ECONOMIC_ROOT_DIRECTION_10S",
+    *,
+    status="RESOLVED",
+):
     _, _, _, _, wrapped = _expert_prediction(question_id)
     base_entry, expert_entry = _journal_prediction(root, wrapped)
     outcome = _outcome(wrapped, base_entry, status=status)
@@ -274,10 +276,11 @@ class QuestionExpertPredictionJournalTests(unittest.TestCase):
             root = Path(temporary)
             _, _, _, _, wrapped = _expert_prediction()
             base_entry, expert_entry = _journal_prediction(root, wrapped)
-
             self.assertEqual([], validate_question_expert_prediction_journal(root))
             self.assertTrue((root / "memory/question_predictions.jsonl").is_file())
-            self.assertTrue((root / "memory/question_expert_predictions.jsonl").is_file())
+            self.assertTrue(
+                (root / "memory/question_expert_predictions.jsonl").is_file()
+            )
             self.assertEqual(
                 base_entry["entry_hash"],
                 expert_entry["base_prediction_journal_entry_hash"],
@@ -303,7 +306,6 @@ class QuestionExpertPredictionJournalTests(unittest.TestCase):
                     base_prediction_journal_entry_hash="d" * 64,
                     journaled_at_ns=T + 3,
                 )
-
             base_entry = QuestionPredictionJournal(root).append(
                 wrapped.prediction,
                 journaled_at_ns=T + 2,
@@ -322,7 +324,7 @@ class QuestionExpertPredictionJournalTests(unittest.TestCase):
     def test_sidecar_refuses_retrospective_journaling_and_conflicting_expert_lineage(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            registry, question, _, _, wrapped = _expert_prediction()
+            _, _, expert, _, wrapped = _expert_prediction()
             base_entry = QuestionPredictionJournal(root).append(
                 wrapped.prediction,
                 journaled_at_ns=T + 2,
@@ -337,27 +339,33 @@ class QuestionExpertPredictionJournalTests(unittest.TestCase):
                     base_prediction_journal_entry_hash=str(base_entry["entry_hash"]),
                     journaled_at_ns=wrapped.prediction.resolves_at_ns,
                 )
-
             original_entry = journal.append(
                 wrapped,
                 base_prediction_journal_entry_hash=str(base_entry["entry_hash"]),
                 journaled_at_ns=T + 3,
             )
-            alternate_expert = _expert(question, suffix="ALTERNATE")
-            alternate_registry = _expert_registry(alternate_expert)
+            alternate_registry = _expert_registry(
+                expert,
+                version="1.0.1",
+                qualification_evidence_refs=("QUAL-QUESTION-EXPERT-ALT",),
+            )
             alternate = QuestionExpertPrediction(
                 prediction=wrapped.prediction,
                 expert_registry_id=alternate_registry.registry_id,
                 expert_registry_version=alternate_registry.version,
                 expert_registry_hash=alternate_registry.content_hash(),
-                expert_definition_ref=alternate_expert.definition_ref,
-                expert_definition_hash=alternate_expert.content_hash(),
+                expert_definition_ref=expert.definition_ref,
+                expert_definition_hash=expert.content_hash(),
                 expert_lifecycle_state="SHADOW_QUALIFIED",
                 qualification_evidence_refs=("QUAL-QUESTION-EXPERT-ALT",),
             )
             self.assertEqual(
                 wrapped.prediction.prediction_id,
                 alternate.prediction.prediction_id,
+            )
+            self.assertNotEqual(
+                wrapped.expert_registry_hash,
+                alternate.expert_registry_hash,
             )
             with self.assertRaisesRegex(
                 QuestionExpertPredictionJournalError,
@@ -416,20 +424,19 @@ class QuestionBoundEvaluationTests(unittest.TestCase):
             self.assertEqual(evaluation.to_wire(), reproduced.to_wire())
 
     def test_continuous_and_categorical_scoring_are_question_bound(self):
-        with tempfile.TemporaryDirectory() as temp_continuous:
-            root = Path(temp_continuous)
+        with tempfile.TemporaryDirectory() as temporary:
             *_, continuous = _full_sources(
-                root, "ECONOMIC_ROOT_MAGNITUDE_30S"
+                Path(temporary),
+                "ECONOMIC_ROOT_MAGNITUDE_30S",
             )
             self.assertEqual("1.5", continuous.metrics["signed_error"])
             self.assertEqual("1.5", continuous.metrics["absolute_error"])
             self.assertEqual("2.25", continuous.metrics["squared_error"])
             self.assertEqual(1, continuous.metrics["interval_covered"])
-
-        with tempfile.TemporaryDirectory() as temp_categorical:
-            root = Path(temp_categorical)
+        with tempfile.TemporaryDirectory() as temporary:
             *_, categorical = _full_sources(
-                root, "MARKET_DIRECTION_REGIME_15M"
+                Path(temporary),
+                "MARKET_DIRECTION_REGIME_15M",
             )
             self.assertEqual("TREND_UP", categorical.metrics["predicted_label"])
             self.assertEqual("RANGE", categorical.metrics["realized_label"])
@@ -438,15 +445,17 @@ class QuestionBoundEvaluationTests(unittest.TestCase):
 
     def test_unresolvable_market_truth_is_not_scored_as_model_failure(self):
         with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
             _, _, _, outcome, _, evaluation = _full_sources(
-                root,
+                Path(temporary),
                 status="UNRESOLVABLE",
             )
             self.assertEqual("UNRESOLVABLE", outcome.status)
             self.assertEqual("NOT_SCORABLE_UNRESOLVABLE", evaluation.status)
             self.assertEqual({}, evaluation.metrics)
-            self.assertEqual("NO_SCORE_UNRESOLVABLE_V1", evaluation.scoring_policy_id)
+            self.assertEqual(
+                "NO_SCORE_UNRESOLVABLE_V1",
+                evaluation.scoring_policy_id,
+            )
 
     def test_evaluation_refuses_pre_outcome_time_and_substituted_outcome_lineage(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -463,7 +472,6 @@ class QuestionBoundEvaluationTests(unittest.TestCase):
                     outcome_journal_entry_hash=str(outcome_entry["entry_hash"]),
                     evaluated_at_ns=outcome.decided_at_ns - 1,
                 )
-
             substituted = replace(outcome, question_registry_hash="d" * 64)
             with self.assertRaisesRegex(
                 QuestionEvaluationError,
@@ -493,8 +501,7 @@ class QuestionBoundEvaluationTests(unittest.TestCase):
 
     def test_wire_tamper_and_authority_escalation_are_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            *_, evaluation = _full_sources(root)
+            *_, evaluation = _full_sources(Path(temporary))
             escalated = copy.deepcopy(evaluation.to_wire())
             escalated["authority"]["model_competence"] = True
             with self.assertRaisesRegex(
@@ -502,7 +509,6 @@ class QuestionBoundEvaluationTests(unittest.TestCase):
                 "authority boundary",
             ):
                 QuestionBoundEvaluation.from_wire(escalated)
-
             tampered = copy.deepcopy(evaluation.to_wire())
             tampered["metrics"]["exact_hit"] = 0
             with self.assertRaisesRegex(
@@ -570,7 +576,6 @@ class QuestionEvaluationJournalTests(unittest.TestCase):
                     false_expert,
                     journaled_at_ns=false_expert.evaluated_at_ns + 1,
                 )
-
             false_outcome = replace(
                 evaluation,
                 outcome_journal_entry_hash="e" * 64,
