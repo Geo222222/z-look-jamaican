@@ -53,11 +53,14 @@ class ExpertIntelligenceRuntimeTests(unittest.TestCase):
             with self.assertRaises(IntelligenceRuntimeError):
                 runtime.record_score(score, occurred_at_ns=12_000_000_001)
 
-    def test_operator_projection_never_promotes_candidate_population_without_evidence(self):
+    def test_operator_projection_distinguishes_implementation_from_earned_competence(self):
         with tempfile.TemporaryDirectory() as temporary:
             projection = expert_intelligence_projection(Path(temporary))
             self.assertEqual(projection["construction"]["intelligence_publication"], "BUILT")
-            self.assertEqual(projection["qualification"]["expert_population"], "CANDIDATE_ONLY")
+            self.assertEqual(projection["construction"]["operational_prediction_adapter"], "BUILT")
+            self.assertEqual(projection["qualification"]["expert_population"], "IMPLEMENTED_CANDIDATES_PRESENT")
+            self.assertGreater(projection["school"]["implemented_expert_count"], 0)
+            self.assertGreater(projection["school"]["curriculum_expert_count"], projection["school"]["implemented_expert_count"])
             self.assertEqual(projection["qualification"]["earned_competence"], "NOT_YET_EARNED")
             self.assertEqual(projection["qualification"]["benjamin_handoff"], "NO_RUNTIME_PUBLICATION")
             self.assertEqual(projection["qualification"]["live_capital_authority"], "NONE")
