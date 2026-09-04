@@ -5,7 +5,7 @@ from typing import Any, Dict, Mapping, Sequence
 from ..operations import canonical_hash
 
 
-INTELLIGENCE_SCHEMA_VERSION = "1.0"
+INTELLIGENCE_SCHEMA_VERSION = "1.1"
 INTELLIGENCE_AUTHORITY = {
     "perception_only": True,
     "economic_decision": False,
@@ -27,11 +27,11 @@ def build_intelligence_publication(
     competence_memory_hash: str,
     market_context_hash: str,
 ) -> Mapping[str, Any]:
-    """Phase 15: publish question-bound ZLJ intelligence for Benjamin.
+    """Build internal question-bound ZLJ intelligence.
 
-    This is an epistemic package, not a trade instruction. Benjamin may consume
-    it as evidence when making economic judgments, but the package itself cannot
-    express portfolio action, risk authorization or provider execution.
+    This artifact is structurally valid intelligence but is not, by itself, a
+    Benjamin handoff. The Benjamin publication gate must separately establish
+    empirical eligibility before the intelligence may cross that boundary.
     """
     refs = tuple(str(value) for value in evidence_refs)
     if not refs or any(not value for value in refs) or len(set(refs)) != len(refs):
@@ -48,11 +48,14 @@ def build_intelligence_publication(
             raise IntelligencePublicationError("%s must be SHA-256 hex" % field) from exc
     if not isinstance(assembly, Mapping) or "question_ref" not in assembly or "assembled_estimate" not in assembly:
         raise IntelligencePublicationError("assembly is incomplete")
+    assembly_hash = str(assembly.get("integrity", {}).get("content_hash", ""))
+    if len(assembly_hash) != 64:
+        raise IntelligencePublicationError("assembly must be integrity-bound")
 
     contributions = assembly.get("expert_contributions") or ()
     body: Dict[str, Any] = {
         "schema_version": INTELLIGENCE_SCHEMA_VERSION,
-        "publication_type": "ZLJ_INTELLIGENCE",
+        "publication_type": "ZLJ_INTERNAL_INTELLIGENCE",
         "published_at_ns": int(published_at_ns),
         "question_ref": assembly["question_ref"],
         "claim_kind": assembly["claim_kind"],
@@ -62,14 +65,16 @@ def build_intelligence_publication(
         "current_context": dict(assembly.get("current_context") or {}),
         "expert_evidence": [dict(item) for item in contributions],
         "provenance": {
-            "assembly_hash": assembly.get("integrity", {}).get("content_hash"),
+            "assembly_hash": assembly_hash,
             "competence_memory_hash": str(competence_memory_hash).lower(),
             "market_context_hash": str(market_context_hash).lower(),
             "evidence_refs": list(refs),
         },
         "authority": dict(INTELLIGENCE_AUTHORITY),
         "consumer_boundary": {
-            "may_be_consumed_by": ["BENJAMIN"],
+            "may_be_consumed_by": ["ZLJ_INTERNAL"],
+            "benjamin_handoff_eligible": False,
+            "requires": "BENJAMIN_PUBLICATION_ELIGIBILITY_GATE",
             "does_not_instruct": ["BENJAMIN", "WATCHMAN", "THE_HAND"],
         },
     }
@@ -82,10 +87,17 @@ def build_intelligence_publication(
 def validate_intelligence_publication(value: Mapping[str, Any]) -> None:
     if not isinstance(value, Mapping) or value.get("schema_version") != INTELLIGENCE_SCHEMA_VERSION:
         raise IntelligencePublicationError("intelligence publication schema is invalid")
-    if value.get("publication_type") != "ZLJ_INTELLIGENCE":
-        raise IntelligencePublicationError("publication_type must be ZLJ_INTELLIGENCE")
+    if value.get("publication_type") != "ZLJ_INTERNAL_INTELLIGENCE":
+        raise IntelligencePublicationError("publication_type must be ZLJ_INTERNAL_INTELLIGENCE")
     if value.get("authority") != INTELLIGENCE_AUTHORITY:
         raise IntelligencePublicationError("intelligence authority boundary changed")
+    boundary = value.get("consumer_boundary")
+    if not isinstance(boundary, Mapping):
+        raise IntelligencePublicationError("internal intelligence consumer boundary is missing")
+    if boundary.get("may_be_consumed_by") != ["ZLJ_INTERNAL"] or boundary.get("benjamin_handoff_eligible") is not False:
+        raise IntelligencePublicationError("internal intelligence cannot claim Benjamin handoff eligibility")
+    if boundary.get("requires") != "BENJAMIN_PUBLICATION_ELIGIBILITY_GATE":
+        raise IntelligencePublicationError("internal intelligence must require Benjamin publication gate")
     for forbidden in (
         "buy",
         "sell",
