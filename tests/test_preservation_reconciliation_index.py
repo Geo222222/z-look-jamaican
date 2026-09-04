@@ -71,6 +71,18 @@ class PreservationReconciliationIndexTests(unittest.TestCase):
             set(source["historical_only_responsibilities"]),
         )
 
+    def test_canonical_successors_are_exact_and_do_not_replace_preservation_lineage(self):
+        value = self._index()
+        self.assertEqual(
+            {
+                "generic_falsification_controls": "b4664b4f462fb702e6915a0e1d698e4e398b48bb",
+                "bounded_research_jobs": "b3da2978196c75d71955e327463d7f95d2c8d69c",
+                "perception_lineage_graph": "a22d67ed8103e5e2a6b7e73e0acdefc3cc05892c",
+            },
+            value["canonical_successors"],
+        )
+        self.assertEqual("discovery_and_lineage_only", value["canonical_role"])
+
     def test_all_remote_identity_fields_are_full_git_object_ids(self):
         value = self._index()
         for item in value["preserved_workstreams"]:
