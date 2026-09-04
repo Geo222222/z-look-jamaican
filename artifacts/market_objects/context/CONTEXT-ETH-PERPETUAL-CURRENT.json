@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "object_id": "CONTEXT-ETH-PERPETUAL-CURRENT",
+  "object_type": "MARKET_CONTEXT",
+  "layer": "CONTEXT",
+  "truth_class": "CALENDAR_CONTEXT",
+  "authority": "CONTEXT_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "ETH"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-07-31T20:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [],
+  "method": {
+    "name": "UTC_MARKET_CALENDAR_CONTEXT",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "DEGRADED",
+    "scheduled_event_evidence_available": false
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "session": "US_SESSION",
+    "day_of_week": "FRIDAY",
+    "is_weekend": false,
+    "hour_utc": 20,
+    "scheduled_event": "UNKNOWN",
+    "event_ref": null
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "a11e07028e00ee9bf10cf16394cf2c3b2f4d8bd66f11ff3bf70b09ef557bf7dd"
+  }
+}

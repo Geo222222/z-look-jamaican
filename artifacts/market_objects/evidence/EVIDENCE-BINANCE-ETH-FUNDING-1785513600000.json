@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "object_id": "EVIDENCE-BINANCE-ETH-FUNDING-1785513600000",
+  "object_type": "FUNDING_OBSERVATION",
+  "layer": "EVIDENCE",
+  "truth_class": "OBSERVED_EVIDENCE",
+  "authority": "SOURCE_EVIDENCE",
+  "subject": {
+    "instrument": "ETH-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "ETH"
+  },
+  "effective_at": "2026-07-31T16:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-07-31T16:00:00Z",
+    "end": "2026-07-31T16:00:00Z"
+  },
+  "input_refs": [],
+  "method": {
+    "name": "SOURCE_FUNDING_PRESERVATION",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "source_record_id": "verified-funding:1785513600000",
+    "source_sha256": "7c80252ade4e9742cf05d25af28be465e98252ce74033ff52b72e6e8a297b5d4"
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "funding_rate": "-0.00002045",
+    "interval_hours": 8,
+    "source_record_id": "verified-funding:1785513600000"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "744c306b4a0e98e55b25ab937d5a0db1fd94375ab48caad8cc5817339c4b1b15"
+  }
+}

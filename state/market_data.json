@@ -94,6 +94,32 @@
       "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
     },
     {
+      "observation_id": "OBS-COINBASE-BTC-USD-MICROSTREAM-CAL-001-A",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-CAL-001-A.json",
+      "provider": "coinbase_advanced_trade_public_websocket",
+      "instrument": "BTC-USD",
+      "channel": "microstructure_stream",
+      "source_event_at": 1788290927,
+      "observed_at": 1788290927,
+      "quality_status": "VALID",
+      "content_hash": "7e5fd52f7534c41bb55e8103cb0f31378a12d29807023255db9b53918a47917a",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
+      "observation_id": "OBS-COINBASE-BTC-USD-MICROSTREAM-CAL-001-B",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-CAL-001-B.json",
+      "provider": "coinbase_advanced_trade_public_websocket",
+      "instrument": "BTC-USD",
+      "channel": "microstructure_stream",
+      "source_event_at": 1788312510,
+      "observed_at": 1788312510,
+      "quality_status": "VALID",
+      "content_hash": "e4b05b6a3d2460c1131146d8ed52819e5c00fadbbce6b258abba7bdf4519f581",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
       "observation_id": "OBS-COINBASE-ETH-USD-1788272400",
       "path": "artifacts/market_data/observations/OBS-COINBASE-ETH-USD-1788272400.json",
       "provider": "coinbase_exchange_public",

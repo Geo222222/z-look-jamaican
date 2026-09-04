@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "object_id": "MATCH-ETH-SPOT-STRAT-ARCH-RANGE-FADE",
+  "object_type": "STRATEGY_APPLICABILITY",
+  "layer": "STRATEGY_APPLICABILITY",
+  "truth_class": "APPLICABILITY_ASSESSMENT",
+  "authority": "ADVISORY_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [
+    {
+      "ref": "market://STORY-ETH-SPOT-CURRENT",
+      "relationship": "ASSESSES_STORY",
+      "required": true,
+      "expected_object_type": "MARKET_STORY"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785528000000",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://MATH-TECH-BINANCE-ETH-SPOT-4H-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "TECHNICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-STAT-BINANCE-ETH-SPOT-4H-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATISTICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-REL-ETH-SPOT-PERP-4H",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "RELATIVE_CALCULATION"
+    },
+    {
+      "ref": "market://STRUCT-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "PRICE_STRUCTURE"
+    },
+    {
+      "ref": "market://PATTERN-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "PATTERN_DETECTION"
+    },
+    {
+      "ref": "market://CONTEXT-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "MARKET_CONTEXT"
+    },
+    {
+      "ref": "market://STATE-TREND-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "TREND_STATE"
+    },
+    {
+      "ref": "market://STATE-VOL-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "VOLATILITY_STATE"
+    },
+    {
+      "ref": "market://STATE-MOM-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "MOMENTUM_STATE"
+    },
+    {
+      "ref": "market://STATE-PART-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "PARTICIPATION_STATE"
+    },
+    {
+      "ref": "market://STATE-CORR-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "CORRELATION_STATE"
+    },
+    {
+      "ref": "market://STATE-RISK-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "RISK_STATE"
+    },
+    {
+      "ref": "market://STATE-LIQ-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "LIQUIDITY_STATE"
+    },
+    {
+      "ref": "market://STATE-POS-ETH-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "POSITIONING_STATE"
+    },
+    {
+      "ref": "market://TRANS-ETH-SPOT-TREND",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-ETH-SPOT-VOLATILITY",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-ETH-SPOT-MOMENTUM",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    }
+  ],
+  "method": {
+    "name": "DETERMINISTIC_STRATEGY_CONDITION_MATCHER",
+    "version": "1.0.0",
+    "deterministic": true,
+    "strategy_registry_version": "1.0.0"
+  },
+  "quality": {
+    "status": "VALID",
+    "conditions_evaluated": 6
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "strategy_id": "STRAT-ARCH-RANGE-FADE",
+    "archetype": "RANGE_FADE",
+    "story_ref": "market://STORY-ETH-SPOT-CURRENT",
+    "applicability": "BLOCKED",
+    "applicability_score": 1.0,
+    "status": "MISSING_PREREQUISITES",
+    "matched_conditions": 2,
+    "required_conditions": 3,
+    "matched_condition_ids": [
+      "TREND-RANGE",
+      "PARTICIPATION-NOT-EXPANDED"
+    ],
+    "missing_conditions": [
+      "VOLATILITY-LOW",
+      "LIQUIDITY-HEALTHY"
+    ],
+    "contraindication_hits": [],
+    "trigger_matches": 0,
+    "condition_results": {
+      "required": [
+        {
+          "condition_id": "TREND-RANGE",
+          "description": null,
+          "object_type": "TREND_STATE",
+          "path": "payload.state",
+          "operator": "EQ",
+          "expected": "RANGE_OR_MIXED",
+          "matched": true,
+          "matched_object_ref": "market://STATE-TREND-ETH-SPOT-CURRENT",
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-TREND-ETH-SPOT-CURRENT",
+              "observed": "RANGE_OR_MIXED",
+              "available": true,
+              "matched": true
+            }
+          ],
+          "weight": 2.0
+        },
+        {
+          "condition_id": "VOLATILITY-LOW",
+          "description": null,
+          "object_type": "VOLATILITY_STATE",
+          "path": "payload.state",
+          "operator": "IN",
+          "expected": [
+            "LOW",
+            "COMPRESSED"
+          ],
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-VOL-ETH-SPOT-CURRENT",
+              "observed": "NORMAL",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 2.0
+        },
+        {
+          "condition_id": "LIQUIDITY-HEALTHY",
+          "description": null,
+          "object_type": "LIQUIDITY_STATE",
+          "path": "payload.state",
+          "operator": "EQ",
+          "expected": "HEALTHY",
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-LIQ-ETH-SPOT-CURRENT",
+              "observed": "UNAVAILABLE",
+              "available": false,
+              "matched": false
+            }
+          ],
+          "weight": 1.0
+        }
+      ],
+      "supporting": [
+        {
+          "condition_id": "PARTICIPATION-NOT-EXPANDED",
+          "description": null,
+          "object_type": "PARTICIPATION_STATE",
+          "path": "payload.state",
+          "operator": "IN",
+          "expected": [
+            "NORMAL",
+            "BELOW_NORMAL"
+          ],
+          "matched": true,
+          "matched_object_ref": "market://STATE-PART-ETH-SPOT-CURRENT",
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-PART-ETH-SPOT-CURRENT",
+              "observed": "BELOW_NORMAL",
+              "available": true,
+              "matched": true
+            }
+          ],
+          "weight": 1.0
+        }
+      ],
+      "contraindications": [
+        {
+          "condition_id": "STRUCTURE-BREAK",
+          "description": null,
+          "object_type": "PRICE_STRUCTURE",
+          "path": "payload.range.status",
+          "operator": "IN",
+          "expected": [
+            "BROKEN_UP",
+            "BROKEN_DOWN"
+          ],
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STRUCT-ETH-SPOT-CURRENT",
+              "observed": "INSIDE",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 3.0
+        }
+      ],
+      "triggers": [
+        {
+          "condition_id": "BOUNDARY-TEST",
+          "description": null,
+          "object_type": "PATTERN_DETECTION",
+          "path": "payload.possible_patterns.0.pattern",
+          "operator": "IN",
+          "expected": [
+            "RANGE_UPPER_TEST",
+            "RANGE_LOWER_TEST"
+          ],
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://PATTERN-ETH-SPOT-CURRENT",
+              "observed": null,
+              "available": false,
+              "matched": false
+            }
+          ],
+          "weight": 1.0
+        }
+      ]
+    },
+    "scoped_evidence": [],
+    "economic_qualification": "NOT_EARNED",
+    "opportunity_created": false,
+    "execution_authority": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "2ab9492141296dbfdd9a02af2879ff98b20417cd57259fc34ba563649de1241a"
+  }
+}

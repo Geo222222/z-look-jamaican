@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "object_id": "EVIDENCE-BINANCE-BTC-SPOT-4H-1784750400000",
+  "object_type": "MARKET_OBSERVATION",
+  "layer": "EVIDENCE",
+  "truth_class": "OBSERVED_EVIDENCE",
+  "authority": "SOURCE_EVIDENCE",
+  "subject": {
+    "instrument": "BTC-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-22T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-07-22T20:00:00Z",
+    "end": "2026-07-22T20:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [],
+  "method": {
+    "name": "SOURCE_RECORD_PRESERVATION",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "source_record_id": "verified-5m-aggregate:spot:1784750400000",
+    "source_sha256": "7c80252ade4e9742cf05d25af28be465e98252ce74033ff52b72e6e8a297b5d4"
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "open": "65923.19",
+    "high": "66138.24",
+    "low": "65791.79",
+    "close": "66114.49",
+    "volume": "0",
+    "quote_volume": "90583853.3541208",
+    "trade_count": 258138,
+    "taker_buy_quote_volume": "42967586.238971405",
+    "source_record_id": "verified-5m-aggregate:spot:1784750400000"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "1420f6f09bf8368595e808cddd8e6592068f12c44e82e94d09c1018103c0fdb8"
+  }
+}

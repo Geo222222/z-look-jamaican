@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "object_id": "EVIDENCE-BINANCE-BTC-PERPETUAL-4H-1782273600000",
+  "object_type": "MARKET_OBSERVATION",
+  "layer": "EVIDENCE",
+  "truth_class": "OBSERVED_EVIDENCE",
+  "authority": "SOURCE_EVIDENCE",
+  "subject": {
+    "instrument": "BTC-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-06-24T04:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-24T04:00:00Z",
+    "end": "2026-06-24T04:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [],
+  "method": {
+    "name": "SOURCE_RECORD_PRESERVATION",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "source_record_id": "verified-5m-aggregate:perpetual:1782273600000",
+    "source_sha256": "7c80252ade4e9742cf05d25af28be465e98252ce74033ff52b72e6e8a297b5d4"
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "open": "62704.6",
+    "high": "63053.5",
+    "low": "62500.0",
+    "close": "62630.3",
+    "volume": "0",
+    "quote_volume": "758063343.9279002",
+    "trade_count": 362205,
+    "taker_buy_quote_volume": "371016146.1161",
+    "source_record_id": "verified-5m-aggregate:perpetual:1782273600000"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "165cf59830ee895ad3e85f6521e0c52b6e58157160ad36a9df9fa1f82d106f1b"
+  }
+}

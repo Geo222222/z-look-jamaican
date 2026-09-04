@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-HISTORICAL-MECHANISMS-001",
+  "task_id": "TASK-MKT-006",
+  "frozen_at": "2026-09-02T02:02:57Z",
+  "created_before_historical_rows_downloaded": true,
+  "amendment_note": "The owner expanded the initial spot-only design to require same-exchange spot/perpetual comparison before any historical rows were downloaded or observed.",
+  "claim_class": "HISTORICAL_MECHANISM_FALSIFICATION",
+  "objective": "Use checksum-verified public history to reject weak mechanisms and compare each asset's spot and perpetual behavior on the same exchange. Nominate at most one family for a separately preregistered prospective shadow on its intended venue; history cannot promote live or capital authority.",
+  "null_hypothesis": "None of the frozen mechanism families has positive, time-stable net expectancy at 20 basis points per side after correcting for the fourteen evaluated asset-target streams.",
+  "data": {
+    "provider": "binance_official_public_data_archive",
+    "exchange": "binance",
+    "assets": ["BTC", "ETH"],
+    "quote_asset": "USDT",
+    "interval": "5m",
+    "first_month": "2025-08",
+    "last_month": "2026-07",
+    "pairs": [
+      {
+        "asset": "BTC",
+        "spot": {"market": "binance_spot", "symbol": "BTCUSDT"},
+        "future": {"market": "binance_usdm_perpetual", "symbol": "BTCUSDT"}
+      },
+      {
+        "asset": "ETH",
+        "spot": {"market": "binance_spot", "symbol": "ETHUSDT"},
+        "future": {"market": "binance_usdm_perpetual", "symbol": "ETHUSDT"}
+      }
+    ],
+    "surfaces": {
+      "spot_klines": "https://data.binance.vision/data/spot/monthly/klines/{symbol}/5m/{symbol}-5m-{month}.zip",
+      "perpetual_klines": "https://data.binance.vision/data/futures/um/monthly/klines/{symbol}/5m/{symbol}-5m-{month}.zip",
+      "premium_index_klines": "https://data.binance.vision/data/futures/um/monthly/premiumIndexKlines/{symbol}/5m/{symbol}-5m-{month}.zip",
+      "funding_rates": "https://data.binance.vision/data/futures/um/monthly/fundingRate/{symbol}/{symbol}-fundingRate-{month}.zip"
+    },
+    "checksum_suffix": ".CHECKSUM",
+    "official_source": "https://github.com/binance/binance-public-data/blob/master/README.md",
+    "kline_fields": [
+      "open_time", "open", "high", "low", "close", "base_volume", "close_time",
+      "quote_volume", "trade_count", "taker_buy_base_volume", "taker_buy_quote_volume"
+    ],
+    "pairing_rule": "A comparison may use only the spot and perpetual market for the same asset and exchange. No cross-exchange basis or futures substitution is allowed under this experiment ID.",
+    "cross_venue_limit": "Binance USDT history is discovery evidence only. A survivor must be independently tested prospectively on the exact intended venue, products, fees, and data feed before execution qualification."
+  },
+  "quality_gates": [
+    "Every archive matches its official SHA-256 checksum.",
+    "Each archive contains exactly its expected CSV member and no path traversal.",
+    "Open timestamps normalize explicitly from milliseconds or microseconds and are unique and strictly five-minute ordered.",
+    "Spot, perpetual, and premium-index bars for an asset align on the same complete start/end interval with no unexplained five-minute gaps.",
+    "Prices are positive and satisfy low <= open/close <= high; basis and premium values are finite.",
+    "Volumes and trade counts are non-negative; taker-buy volumes cannot exceed totals.",
+    "Funding timestamps and rates parse unambiguously and remain inside the declared history window.",
+    "Any quality failure blocks economic interpretation rather than silently dropping rows."
+  ],
+  "derived_features": {
+    "spot_bar_log_return": "log(spot_close/spot_open)",
+    "perpetual_bar_log_return": "log(perpetual_close/perpetual_open)",
+    "spot_taker_imbalance": "2 * spot_taker_buy_quote_volume / spot_quote_volume - 1; zero when quote volume is zero",
+    "perpetual_taker_imbalance": "2 * perpetual_taker_buy_quote_volume / perpetual_quote_volume - 1; zero when quote volume is zero",
+    "log_basis": "log(perpetual_close/spot_close)",
+    "basis_change": "current log_basis minus prior bar log_basis",
+    "premium_index": "official perpetual premium-index close",
+    "funding_sum": "sum of official funding rates with timestamps after entry and at or before exit",
+    "rolling_breakout": "both spot and perpetual close above every prior close in the frozen lookback; current bar is excluded"
+  },
+  "walk_forward": {
+    "warmup_days": 90,
+    "test_fold_days": 30,
+    "training": "anchored expanding; every threshold uses rows strictly before its test fold",
+    "signal_time": "completed five-minute bar close",
+    "entry_time": "next five-minute bar open in both paired markets",
+    "fold_boundary": "entry and frozen exit must both occur inside the same test fold",
+    "overlap": "one open position per asset-mechanism-target stream; later signals are ignored until the frozen exit",
+    "thresholds": {
+      "high_taker_imbalance_quantile": 0.80,
+      "median_quote_volume_quantile": 0.50,
+      "high_quote_volume_quantile": 0.70,
+      "return_shock_quantile": 0.90,
+      "extreme_basis_quantile": 0.90
+    }
+  },
+  "mechanisms": [
+    {
+      "id": "CONFIRMED-FLOW-CONTINUATION-30M",
+      "assets": ["BTC", "ETH"],
+      "targets": ["spot", "perpetual"],
+      "thesis": "Aggressive buying confirmed independently in both same-exchange markets contains more directional information than one venue leg alone.",
+      "signal": "spot and perpetual taker imbalance >= their training q80; both bar returns > 0; both quote volumes >= their training q50",
+      "holding_bars": 6
+    },
+    {
+      "id": "PERPETUAL-LEADS-SPOT-30M",
+      "assets": ["BTC", "ETH"],
+      "targets": ["spot"],
+      "thesis": "An unusually strong, buy-initiated perpetual move leads a lagging same-exchange spot response.",
+      "signal": "perpetual bar return >= training positive-return q90; perpetual imbalance >= q80; perpetual volume >= q50; spot return < 0.5 * perpetual return",
+      "holding_bars": 6
+    },
+    {
+      "id": "SPOT-LEADS-PERPETUAL-30M",
+      "assets": ["BTC", "ETH"],
+      "targets": ["perpetual"],
+      "thesis": "An unusually strong, buy-initiated spot move leads a lagging same-exchange perpetual response.",
+      "signal": "spot bar return >= training positive-return q90; spot imbalance >= q80; spot volume >= q50; perpetual return < 0.5 * spot return",
+      "holding_bars": 6
+    },
+    {
+      "id": "BASIS-CONVERGENCE-6H",
+      "assets": ["BTC", "ETH"],
+      "targets": ["long_spot_short_perpetual"],
+      "thesis": "An extreme and still-widening positive same-exchange perpetual basis mean-reverts enough to cover four trading sides, with realized funding included.",
+      "signal": "log basis >= training q90; basis_change > 0; official premium_index > 0",
+      "holding_bars": 72
+    },
+    {
+      "id": "CONFIRMED-SLOW-BREAKOUT-6H",
+      "assets": ["BTC", "ETH"],
+      "targets": ["spot", "perpetual"],
+      "thesis": "A twenty-four-hour breakout confirmed by positive order flow and high activity in both paired markets persists long enough to overcome turnover.",
+      "signal": "both closes > their max prior 288 closes; both imbalances > 0; both quote volumes >= their training q70",
+      "holding_bars": 72,
+      "breakout_lookback_bars": 288
+    }
+  ],
+  "execution_model": {
+    "entry": "next bar open after the completed signal bar",
+    "exit": "open after the frozen holding period",
+    "per_side_cost_bps": [5, 10, 20, 40],
+    "primary_cost_bps": 20,
+    "directional_sides": 2,
+    "paired_basis_sides": 4,
+    "leverage": 1,
+    "funding": "For a long perpetual subtract funding_sum; for a short perpetual add funding_sum. Spot has no funding. The basis pair is equal-notional long spot/short perpetual.",
+    "fill_probability": 1,
+    "limitations": [
+      "Kline taker volume is executed-flow evidence, not Level 2 queue state.",
+      "Perfect next-open fills are optimistic; cost scenarios proxy fees, spread, slippage, and latency until prospectively calibrated.",
+      "The historical futures model does not claim margin, liquidation, capacity, partial-fill, rejection, fee-tier, or latency truth.",
+      "No leverage is modeled and no futures result authorizes capital use."
+    ]
+  },
+  "reported_metrics": [
+    "trade count", "gross and cost-adjusted compounded return", "mean and median trade return",
+    "hit rate", "maximum drawdown", "positive-fold fraction", "one-sided mean-return p-value",
+    "Bonferroni-adjusted p-value across fourteen streams", "profit concentration by best fold",
+    "break-even per-side cost", "spot-versus-perpetual target comparison by asset and exchange"
+  ],
+  "evidence_gate": {
+    "primary_cost_bps_per_side": 20,
+    "minimum_trades_per_stream": 50,
+    "minimum_test_folds": 6,
+    "minimum_positive_fold_fraction": 0.70,
+    "maximum_drawdown": 0.15,
+    "maximum_best_fold_profit_share": 0.50,
+    "maximum_bonferroni_p_value": 0.05,
+    "family_rule": "A family passes only if every frozen asset-target stream in that family passes. Directional families therefore require BTC and ETH agreement and, when both targets are declared, spot and perpetual agreement.",
+    "decision": "At most one passing family may be nominated for a newly preregistered prospective shadow. No automatic capability or capital promotion."
+  },
+  "failure_gate": "Reject or classify insufficient if source integrity, aligned same-exchange pairing, timestamp continuity, no-lookahead, funding/cost application, fold count, trade count, family agreement, statistical correction, concentration, or drawdown gates fail.",
+  "stop_rule": "Run exactly the five frozen mechanism families, fourteen asset-target streams, four cost scenarios, two assets, four data surfaces, and twelve declared months. Do not add parameters, mechanisms, exchanges, assets, months, or alternative thresholds after observing results under this experiment ID.",
+  "capital_used_usd": "0.00",
+  "credentials_allowed": false,
+  "orders_allowed": false,
+  "live_or_capital_authority_earned": false
+}

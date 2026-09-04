@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "observation_id": "OBS-COINBASE-BTC-USD-MICROSTREAM-CAL-001-B",
+  "observed_at": 1788312510,
+  "raw": {
+    "provider": "coinbase_advanced_trade_public_websocket",
+    "instrument": "BTC-USD",
+    "channel": "microstructure_stream",
+    "provider_payload": {
+      "manifest_path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-CAL-001-B.manifest.json",
+      "compressed_path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-CAL-001-B.jsonl.gz"
+    },
+    "source_event_at": 1788312510,
+    "received_at": 1788312510,
+    "raw_stream_sha256": "bc52dbd8211317442f9b1974637ea4558aa84337b29d7b4ada1acf490f53e9d6",
+    "compressed_sha256": "548059f9dd335c516991cd8b6bea1d5d787d7994bda00a0b511b89b338872987"
+  },
+  "normalized": {
+    "schema_version": 1,
+    "type": "microstructure_stream_summary",
+    "instrument": "BTC-USD",
+    "raw_observation_id": "OBS-COINBASE-BTC-USD-MICROSTREAM-CAL-001-B",
+    "stream_id": "COINBASE-BTC-USD-MICROSTREAM-CAL-001-B",
+    "summary": {
+      "schema_version": 1,
+      "record_count": 1202,
+      "unique_message_count": 1202,
+      "duplicate_count": 0,
+      "channels": [
+        "heartbeats",
+        "level2",
+        "market_trades",
+        "subscriptions"
+      ],
+      "sequence_scope": "CONNECTION_GLOBAL",
+      "last_global_sequence": 1201,
+      "last_sequences_observed_by_channel": {
+        "level2": 1201,
+        "subscriptions": 8,
+        "market_trades": 1191,
+        "heartbeats": 1187
+      },
+      "gaps": [],
+      "out_of_order": [],
+      "level2_snapshot_count": 1,
+      "level2_update_count": 995,
+      "market_trade_message_count": 145,
+      "heartbeat_message_count": 58,
+      "latest_provider_at": "2026-09-02T01:28:30.813154411Z",
+      "signed_provider_minus_receive_seconds_percentiles": {
+        "50": "0.2834145",
+        "90": "0.2873409",
+        "99": "0.2888988",
+        "100": "0.2900618"
+      },
+      "spread_bps_percentiles": {
+        "50": "0.001295803998760433894785768936",
+        "90": "0.001295855045654593077218382352",
+        "99": "0.001295855045654593077218382352",
+        "100": "0.5260936625539359386372645099"
+      },
+      "spread_sample_count": 996,
+      "final_book_hash": "2b89a04bd4b3f90a9696579a29f9ad37e2f1680ee39ca1f4dcb74a7ad2f227cc"
+    },
+    "truth_class": "OBSERVED_PUBLIC_MARKET_DATA"
+  },
+  "quality": {
+    "status": "VALID",
+    "provider": "coinbase_advanced_trade_public_websocket",
+    "source_event_at": 1788312510,
+    "received_at": 1788312510,
+    "observed_at": 1788312510,
+    "event_age_seconds": 0,
+    "transport_age_seconds": 0,
+    "action_permitted": true,
+    "reasons": [],
+    "source_clock_ahead_seconds": 0,
+    "clock_skew_tolerance_seconds": 1,
+    "schema_version": 1
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "e4b05b6a3d2460c1131146d8ed52819e5c00fadbbce6b258abba7bdf4519f581"
+  }
+}

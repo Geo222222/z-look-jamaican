@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "object_id": "STATE-MOM-ETH-SPOT-PRIOR",
+  "object_type": "MOMENTUM_STATE",
+  "layer": "STATE",
+  "truth_class": "DETERMINISTIC_CLASSIFICATION",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T16:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T16:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MATH-TECH-BINANCE-ETH-SPOT-4H-PRIOR",
+      "relationship": "MOMENTUM_TECHNICAL_EVIDENCE",
+      "required": true,
+      "expected_object_type": "TECHNICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-STAT-BINANCE-ETH-SPOT-4H-PRIOR",
+      "relationship": "MOMENTUM_STATISTICAL_EVIDENCE",
+      "required": true,
+      "expected_object_type": "STATISTICAL_CALCULATION"
+    }
+  ],
+  "method": {
+    "name": "RSI_RETURN_ZSCORE_MOMENTUM_CLASSIFIER",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "input_count": 2
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "dimension": "MOMENTUM",
+    "state": "MIXED",
+    "strength": 0.2872,
+    "evidence_refs": [
+      "market://MATH-TECH-BINANCE-ETH-SPOT-4H-PRIOR",
+      "market://MATH-STAT-BINANCE-ETH-SPOT-4H-PRIOR"
+    ],
+    "classifications": {
+      "acceleration": "STABLE_OR_DECAYING",
+      "persistence": "UNMEASURED_WITHOUT_STATE_HISTORY"
+    },
+    "uncertainty": [
+      "Momentum strength is window-dependent and does not imply continuation."
+    ],
+    "duplicates_measurement_values": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "1de7a9699e783fd13b4f081aa017d6592cb4eb746e36c661c52e39fd63f00a98"
+  }
+}

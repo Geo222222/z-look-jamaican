@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "object_id": "OPPORTUNITY-ETH-SPOT-CURRENT",
+  "object_type": "OPPORTUNITY_CANDIDATE",
+  "layer": "OPPORTUNITY",
+  "truth_class": "ECONOMIC_CANDIDATE",
+  "authority": "CANDIDATE_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-TREND-CONTINUATION",
+      "relationship": "APPLICABILITY_GATE",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://STATE-LIQ-ETH-SPOT-CURRENT",
+      "relationship": "LIQUIDITY_GATE",
+      "required": true,
+      "expected_object_type": "LIQUIDITY_STATE"
+    },
+    {
+      "ref": "market://EVIDENCE-PORTFOLIO-ETH-SPOT-BLOCKED",
+      "relationship": "PORTFOLIO_GATE",
+      "required": true,
+      "expected_object_type": "PORTFOLIO_OBSERVATION"
+    }
+  ],
+  "method": {
+    "name": "DETERMINISTIC_ECONOMIC_OPPORTUNITY_GATE",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "all_gates_passed": false
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "strategy_applicability_ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-TREND-CONTINUATION",
+    "liquidity_state_ref": "market://STATE-LIQ-ETH-SPOT-CURRENT",
+    "portfolio_ref": "market://EVIDENCE-PORTFOLIO-ETH-SPOT-BLOCKED",
+    "status": "BLOCKED_CANDIDATE",
+    "entry_plan": {},
+    "exit_plan": {},
+    "risk_plan": {},
+    "economics": {
+      "expected_gross_payoff_bps": "0",
+      "expected_total_cost_bps": "20",
+      "minimum_required_net_edge_bps": "1",
+      "calculated_net_edge_bps": "-20"
+    },
+    "gates": {
+      "applicability_high": false,
+      "watch_trigger_present": false,
+      "economic_qualification_earned": false,
+      "entry_defined": false,
+      "exit_defined": false,
+      "risk_defined": false,
+      "net_edge_sufficient": false,
+      "liquidity_sufficient": false,
+      "portfolio_allows_exposure": false
+    },
+    "failed_gates": [
+      "applicability_high",
+      "watch_trigger_present",
+      "economic_qualification_earned",
+      "entry_defined",
+      "exit_defined",
+      "risk_defined",
+      "net_edge_sufficient",
+      "liquidity_sufficient",
+      "portfolio_allows_exposure"
+    ],
+    "execution_authority": false,
+    "capital_authority": false,
+    "execution_request_created": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "5ebfde3b73a316843cec5a5e900a5cc9e68657670c6b66895c26a1d375d6b4b1"
+  }
+}

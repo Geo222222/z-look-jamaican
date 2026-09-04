@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "object_id": "MATH-STAT-BINANCE-BTC-SPOT-4H-CURRENT",
+  "object_type": "STATISTICAL_CALCULATION",
+  "layer": "DERIVED_MATH",
+  "truth_class": "STATISTICAL_ESTIMATE",
+  "authority": "DERIVED_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MEAS-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "ESTIMATED_FROM",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    }
+  ],
+  "method": {
+    "name": "ROLLING_DISTRIBUTION_STATISTICS",
+    "version": "1.0.0",
+    "deterministic": true,
+    "parameters": {
+      "zscore_window": 30,
+      "autocorrelation_lag": 1
+    }
+  },
+  "quality": {
+    "status": "VALID",
+    "input_rows": 250,
+    "stationarity_claimed": false
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "measurement_ref": "market://MEAS-BINANCE-BTC-SPOT-4H-CURRENT",
+    "values": {
+      "mean_log_return": -5.07739e-05,
+      "rolling_variance": 6.11183e-05,
+      "rolling_volatility": 0.0078178197,
+      "skewness": -0.4875775199,
+      "excess_kurtosis": 4.7881046467,
+      "lag1_autocorrelation": -0.1086759688,
+      "volume_zscore_30": -1.2841362401,
+      "return_zscore_30": -0.0045387187,
+      "absolute_return_percentile": 0.2008032129
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "82158791adcec0ccffaca00ff90bc7270aa952aaa4e3d702f34357b1a97fda3b"
+  }
+}

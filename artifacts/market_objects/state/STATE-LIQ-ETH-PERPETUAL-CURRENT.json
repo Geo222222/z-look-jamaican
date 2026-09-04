@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "object_id": "STATE-LIQ-ETH-PERPETUAL-CURRENT",
+  "object_type": "LIQUIDITY_STATE",
+  "layer": "STATE",
+  "truth_class": "DETERMINISTIC_CLASSIFICATION",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-07-31T20:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [],
+  "method": {
+    "name": "EXPLICIT_MISSING_EVIDENCE_CLASSIFIER",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "UNAVAILABLE",
+    "reason": "Historical candles contain no contemporaneous order-book depth or spread."
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "dimension": "LIQUIDITY",
+    "state": "UNAVAILABLE",
+    "strength": 0.0,
+    "evidence_refs": [],
+    "classifications": {},
+    "uncertainty": [
+      "Historical candles contain no contemporaneous order-book depth or spread."
+    ],
+    "required_evidence": [
+      "ORDER_BOOK_OBSERVATION",
+      "TRADE_OBSERVATION"
+    ],
+    "duplicates_measurement_values": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "9aa82282695e5b77dc8f89998a5d1a76b9a6eb0e7ad49cd14c33e298db37532c"
+  }
+}

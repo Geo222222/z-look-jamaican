@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "object_id": "EVIDENCE-BINANCE-ETH-PERPETUAL-4H-1782331200000",
+  "object_type": "MARKET_OBSERVATION",
+  "layer": "EVIDENCE",
+  "truth_class": "OBSERVED_EVIDENCE",
+  "authority": "SOURCE_EVIDENCE",
+  "subject": {
+    "instrument": "ETH-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-06-24T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-24T20:00:00Z",
+    "end": "2026-06-24T20:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [],
+  "method": {
+    "name": "SOURCE_RECORD_PRESERVATION",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "source_record_id": "verified-5m-aggregate:perpetual:1782331200000",
+    "source_sha256": "7c80252ade4e9742cf05d25af28be465e98252ce74033ff52b72e6e8a297b5d4"
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "open": "1583.72",
+    "high": "1629.15",
+    "low": "1579.0",
+    "close": "1621.54",
+    "volume": "0",
+    "quote_volume": "1231636951.8419597",
+    "trade_count": 1111179,
+    "taker_buy_quote_volume": "649934366.57078",
+    "source_record_id": "verified-5m-aggregate:perpetual:1782331200000"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "053a7ffba8d69455a8d841bb8d59df155aa2e22edff2a37d9bbe3a8de31f6cce"
+  }
+}

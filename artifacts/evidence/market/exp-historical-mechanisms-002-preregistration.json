@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-HISTORICAL-MECHANISMS-002",
+  "parent_experiment_id": "EXP-HISTORICAL-MECHANISMS-001",
+  "task_id": "TASK-MKT-006",
+  "frozen_at": "2026-09-02T02:13:58Z",
+  "created_before_economic_rows_or_returns_evaluated": true,
+  "claim_class": "HISTORICAL_MECHANISM_FALSIFICATION",
+  "reason_for_child": "The parent failed closed before economic evaluation because both official premium-index series omit the same 288 bars while spot and perpetual bars remain complete. This child changes only missing-auxiliary-data handling and inherits every economic choice unchanged.",
+  "immutable_parent": {
+    "preregistration_path": "artifacts/evidence/market/exp-historical-mechanisms-001-preregistration.json",
+    "preregistration_sha256": "d4bd986b9b6a97dad281ebe87cad9c9ca3d86c08ae5834c7a78cfce8d39a1bc2",
+    "result_path": "artifacts/evidence/market/exp-historical-mechanisms-001-result.json",
+    "source_manifest_path": "artifacts/market_data/historical/binance-spot-perpetual-5m-2025-08_2026-07.manifest.json",
+    "source_manifest_sha256": "7c80252ade4e9742cf05d25af28be465e98252ce74033ff52b72e6e8a297b5d4"
+  },
+  "inherited_without_change": {
+    "exchange": "binance",
+    "assets": ["BTC", "ETH"],
+    "spot_market": "binance_spot",
+    "future_market": "binance_usdm_perpetual",
+    "interval": "5m",
+    "months": ["2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07"],
+    "mechanism_families": [
+      "CONFIRMED-FLOW-CONTINUATION-30M",
+      "PERPETUAL-LEADS-SPOT-30M",
+      "SPOT-LEADS-PERPETUAL-30M",
+      "BASIS-CONVERGENCE-6H",
+      "CONFIRMED-SLOW-BREAKOUT-6H"
+    ],
+    "asset_target_stream_count": 14,
+    "walk_forward": "90-day anchored warmup followed by complete non-overlapping 30-day test folds; all thresholds use prior rows only",
+    "threshold_quantiles": {"imbalance_high": 0.80, "volume_median": 0.50, "volume_high": 0.70, "return_shock": 0.90, "basis_extreme": 0.90},
+    "entry": "next five-minute bar open",
+    "holding_bars": {"30m": 6, "6h": 72},
+    "per_side_cost_bps": [5, 10, 20, 40],
+    "primary_cost_bps": 20,
+    "directional_sides": 2,
+    "paired_basis_sides": 4,
+    "funding_rule": "subtract official funding from a long perpetual and add it to a short perpetual for timestamps after entry and at or before exit",
+    "gate": "Each family requires every frozen asset-target stream to have positive mean net return, at least 50 trades, at least 6 folds, at least 70% positive folds, no more than 15% drawdown, no more than 50% best-fold profit concentration, and Bonferroni p <= 0.05 across fourteen streams."
+  },
+  "sole_quality_amendment": {
+    "spot_and_perpetual": "Must remain complete, strictly contiguous, and exactly timestamp-aligned. No spot or perpetual row may be dropped.",
+    "premium_index": "Left-align the auxiliary premium index onto the complete spot/perpetual clock. Preserve missing values explicitly; do not interpolate, forward-fill, or drop the paired market row.",
+    "basis_signal": "A BASIS-CONVERGENCE-6H signal is false when its current premium-index observation is unavailable. All other basis, return, flow, threshold, cost, funding, fold, and holding rules remain unchanged.",
+    "known_unavailability": "Exactly 288 bars per asset are unavailable on 2026-06-29 UTC. Any different missing count, timestamp, or additional gap fails this child before economics.",
+    "other_families": "Premium index is not an input to the four non-basis families, so their complete spot/perpetual rows remain eligible."
+  },
+  "stop_rule": "Run the inherited frozen design exactly once with only the declared auxiliary-data handling change. Do not alter thresholds, mechanisms, assets, targets, costs, folds, months, or gates after observing results.",
+  "decision_rule": "At most one fully passing family may be nominated for a separately preregistered prospective test. No automatic capability or capital promotion.",
+  "capital_used_usd": "0.00",
+  "credentials_allowed": false,
+  "orders_allowed": false,
+  "live_or_capital_authority_earned": false
+}

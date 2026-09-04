@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "object_id": "STORY-BTC-PERPETUAL-CURRENT",
+  "object_type": "MARKET_STORY",
+  "layer": "STORY",
+  "truth_class": "HYPOTHESIS_COMPOSITION",
+  "authority": "HYPOTHESIS_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [
+    {
+      "ref": "market://STRUCT-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "PRICE_STRUCTURE"
+    },
+    {
+      "ref": "market://PATTERN-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "PATTERN_DETECTION"
+    },
+    {
+      "ref": "market://CONTEXT-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "MARKET_CONTEXT"
+    },
+    {
+      "ref": "market://STATE-TREND-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "TREND_STATE"
+    },
+    {
+      "ref": "market://STATE-VOL-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "VOLATILITY_STATE"
+    },
+    {
+      "ref": "market://STATE-MOM-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "MOMENTUM_STATE"
+    },
+    {
+      "ref": "market://STATE-PART-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "PARTICIPATION_STATE"
+    },
+    {
+      "ref": "market://STATE-CORR-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "CORRELATION_STATE"
+    },
+    {
+      "ref": "market://STATE-RISK-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "RISK_STATE"
+    },
+    {
+      "ref": "market://STATE-LIQ-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "LIQUIDITY_STATE"
+    },
+    {
+      "ref": "market://STATE-POS-BTC-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "POSITIONING_STATE"
+    },
+    {
+      "ref": "market://TRANS-BTC-PERPETUAL-TREND",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-BTC-PERPETUAL-VOLATILITY",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-BTC-PERPETUAL-MOMENTUM",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    }
+  ],
+  "method": {
+    "name": "COMPETING_HYPOTHESIS_COMPOSER",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "supporting_object_count": 14,
+    "contradiction_count": 0
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "primary": {
+      "story": "BALANCED_COMPRESSION",
+      "confidence": 0.72,
+      "interpretation": "Deterministic hypothesis selected from typed state, structure, context, and transition objects.",
+      "epistemic_type": "HYPOTHESIS"
+    },
+    "alternatives": [
+      {
+        "story": "QUIET_ACCUMULATION_OR_DISTRIBUTION",
+        "confidence": 0.3,
+        "epistemic_type": "HYPOTHESIS"
+      }
+    ],
+    "supporting_refs": [
+      "market://STRUCT-BTC-PERPETUAL-CURRENT",
+      "market://PATTERN-BTC-PERPETUAL-CURRENT",
+      "market://CONTEXT-BTC-PERPETUAL-CURRENT",
+      "market://STATE-TREND-BTC-PERPETUAL-CURRENT",
+      "market://STATE-VOL-BTC-PERPETUAL-CURRENT",
+      "market://STATE-MOM-BTC-PERPETUAL-CURRENT",
+      "market://STATE-PART-BTC-PERPETUAL-CURRENT",
+      "market://STATE-CORR-BTC-PERPETUAL-CURRENT",
+      "market://STATE-RISK-BTC-PERPETUAL-CURRENT",
+      "market://STATE-LIQ-BTC-PERPETUAL-CURRENT",
+      "market://STATE-POS-BTC-PERPETUAL-CURRENT",
+      "market://TRANS-BTC-PERPETUAL-TREND",
+      "market://TRANS-BTC-PERPETUAL-VOLATILITY",
+      "market://TRANS-BTC-PERPETUAL-MOMENTUM"
+    ],
+    "contradiction_refs": [],
+    "expected_next_states": [
+      "RANGE_CONTINUES",
+      "VOLATILITY_EXPANSION"
+    ],
+    "invalidation_conditions": [
+      {
+        "condition": "RANGE_BREAK_CONFIRMED"
+      },
+      {
+        "condition": "VOLATILITY_EXPANDS"
+      }
+    ],
+    "facts_embedded": false,
+    "measurements_embedded": false,
+    "story_is_objective_truth": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "20e4d679155afed1ed5bd50b641d0e48048e1bd6b8f0bcdd2d3d248c259476b8"
+  }
+}

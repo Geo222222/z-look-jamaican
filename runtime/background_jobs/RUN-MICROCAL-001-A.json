@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "job_id": "JOB-MICROSTREAM-CALIBRATION-001",
+  "run_id": "RUN-MICROCAL-001-A",
+  "status": "SUCCEEDED",
+  "started_at": "2026-09-01T19:27:46.589620Z",
+  "completed_at": "2026-09-01T19:28:53.307136Z",
+  "returncode": 0,
+  "stdout_tail": "{\"accepted_messages\": 1146, \"authentication_used\": false, \"capital_used_usd\": \"0.00\", \"experiment_id\": \"EXP-MICROSTREAM-CALIBRATION-001\", \"observation_id\": \"OBS-COINBASE-BTC-USD-MICROSTREAM-CAL-001-A\", \"quality\": \"VALID\", \"stream_id\": \"COINBASE-BTC-USD-MICROSTREAM-CAL-001-A\", \"summary\": {\"channels\": [\"heartbeats\", \"level2\", \"market_trades\", \"subscriptions\"], \"duplicate_count\": 0, \"final_book_hash\": \"888612f092e3ad2d9d7a7035e2b78f03a0d3d59317b571e8237cb8ddb758d21b\", \"gaps\": [], \"heartbeat_message_count\": 59, \"last_global_sequence\": 1145, \"last_sequences_observed_by_channel\": {\"heartbeats\": 1140, \"level2\": 1145, \"market_trades\": 1133, \"subscriptions\": 7}, \"latest_provider_at\": \"2026-09-01T19:28:47.708516225Z\", \"level2_snapshot_count\": 1, \"level2_update_count\": 913, \"market_trade_message_count\": 170, \"out_of_order\": [], \"record_count\": 1146, \"schema_version\": 1, \"sequence_scope\": \"CONNECTION_GLOBAL\", \"signed_provider_minus_receive_seconds_percentiles\": {\"100\": \"0.4933946\", \"50\": \"0.488587\", \"90\": \"0.4914033\", \"99\": \"0.4927914\"}, \"spread_bps_percentiles\": {\"100\": \"1.836935340328467566101394306\", \"50\": \"0.001292902630403937043657895637\", \"90\": \"0.3400071479069231079006219868\", \"99\": \"0.6491662481139263488562518331\"}, \"spread_sample_count\": 914, \"unique_message_count\": 1146}, \"uncompressed_bytes\": 7578526}\n",
+  "stderr_tail": "",
+  "capital_effect": "NONE",
+  "credentials_used": false
+}

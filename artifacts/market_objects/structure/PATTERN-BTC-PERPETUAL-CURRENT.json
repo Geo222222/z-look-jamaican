@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "object_id": "PATTERN-BTC-PERPETUAL-CURRENT",
+  "object_type": "PATTERN_DETECTION",
+  "layer": "STRUCTURE",
+  "truth_class": "PATTERN_CANDIDATE",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MEAS-BINANCE-BTC-PERPETUAL-4H-CURRENT",
+      "relationship": "PATTERN_INPUT",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    },
+    {
+      "ref": "market://MATH-TECH-BINANCE-BTC-PERPETUAL-4H-CURRENT",
+      "relationship": "PATTERN_INPUT",
+      "required": true,
+      "expected_object_type": "TECHNICAL_CALCULATION"
+    }
+  ],
+  "method": {
+    "name": "BOUNDED_GEOMETRIC_PATTERN_RULES",
+    "version": "1.0.0",
+    "deterministic": true,
+    "parameters": {
+      "window_bars": 30,
+      "horizontal_high_band": 0.04,
+      "rising_low_threshold": 0.01
+    }
+  },
+  "quality": {
+    "status": "VALID",
+    "candidate_count": 1
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "price_measurement_ref": "market://MEAS-BINANCE-BTC-PERPETUAL-4H-CURRENT",
+    "technical_ref": "market://MATH-TECH-BINANCE-BTC-PERPETUAL-4H-CURRENT",
+    "possible_patterns": [
+      {
+        "pattern": "VOLATILITY_COMPRESSION",
+        "confidence": 0.6105,
+        "status": "CANDIDATE"
+      }
+    ],
+    "canonical_price_truth": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "21f522f530a65da1155a6ba27f798165735c53e02de1b5a86b348fb090278425"
+  }
+}

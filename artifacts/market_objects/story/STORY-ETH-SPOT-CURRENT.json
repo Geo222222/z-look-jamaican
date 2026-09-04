@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "object_id": "STORY-ETH-SPOT-CURRENT",
+  "object_type": "MARKET_STORY",
+  "layer": "STORY",
+  "truth_class": "HYPOTHESIS_COMPOSITION",
+  "authority": "HYPOTHESIS_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [
+    {
+      "ref": "market://STRUCT-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "PRICE_STRUCTURE"
+    },
+    {
+      "ref": "market://PATTERN-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "PATTERN_DETECTION"
+    },
+    {
+      "ref": "market://CONTEXT-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "MARKET_CONTEXT"
+    },
+    {
+      "ref": "market://STATE-TREND-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "TREND_STATE"
+    },
+    {
+      "ref": "market://STATE-VOL-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "VOLATILITY_STATE"
+    },
+    {
+      "ref": "market://STATE-MOM-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "MOMENTUM_STATE"
+    },
+    {
+      "ref": "market://STATE-PART-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "PARTICIPATION_STATE"
+    },
+    {
+      "ref": "market://STATE-CORR-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "CORRELATION_STATE"
+    },
+    {
+      "ref": "market://STATE-RISK-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "RISK_STATE"
+    },
+    {
+      "ref": "market://STATE-LIQ-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "LIQUIDITY_STATE"
+    },
+    {
+      "ref": "market://STATE-POS-ETH-SPOT-CURRENT",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "POSITIONING_STATE"
+    },
+    {
+      "ref": "market://TRANS-ETH-SPOT-TREND",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-ETH-SPOT-VOLATILITY",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-ETH-SPOT-MOMENTUM",
+      "relationship": "SUPPORTS_STORY",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    }
+  ],
+  "method": {
+    "name": "COMPETING_HYPOTHESIS_COMPOSER",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "supporting_object_count": 14,
+    "contradiction_count": 0
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "primary": {
+      "story": "MIXED_UNRESOLVED",
+      "confidence": 0.5,
+      "interpretation": "Deterministic hypothesis selected from typed state, structure, context, and transition objects.",
+      "epistemic_type": "HYPOTHESIS"
+    },
+    "alternatives": [
+      {
+        "story": "TREND_FORMATION",
+        "confidence": 0.25,
+        "epistemic_type": "HYPOTHESIS"
+      },
+      {
+        "story": "RANGE_FORMATION",
+        "confidence": 0.25,
+        "epistemic_type": "HYPOTHESIS"
+      }
+    ],
+    "supporting_refs": [
+      "market://STRUCT-ETH-SPOT-CURRENT",
+      "market://PATTERN-ETH-SPOT-CURRENT",
+      "market://CONTEXT-ETH-SPOT-CURRENT",
+      "market://STATE-TREND-ETH-SPOT-CURRENT",
+      "market://STATE-VOL-ETH-SPOT-CURRENT",
+      "market://STATE-MOM-ETH-SPOT-CURRENT",
+      "market://STATE-PART-ETH-SPOT-CURRENT",
+      "market://STATE-CORR-ETH-SPOT-CURRENT",
+      "market://STATE-RISK-ETH-SPOT-CURRENT",
+      "market://STATE-LIQ-ETH-SPOT-CURRENT",
+      "market://STATE-POS-ETH-SPOT-CURRENT",
+      "market://TRANS-ETH-SPOT-TREND",
+      "market://TRANS-ETH-SPOT-VOLATILITY",
+      "market://TRANS-ETH-SPOT-MOMENTUM"
+    ],
+    "contradiction_refs": [],
+    "expected_next_states": [
+      "MORE_EVIDENCE_REQUIRED"
+    ],
+    "invalidation_conditions": [
+      {
+        "condition": "A_COHERENT_STATE_AND_TRANSITION_CONFIGURATION_EMERGES"
+      }
+    ],
+    "facts_embedded": false,
+    "measurements_embedded": false,
+    "story_is_objective_truth": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "02fff5510b3f1c787ebec1cfcebd8a1b429e7fd6fc4d053f4efb9b9838b12f83"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "object_id": "MATH-STAT-BINANCE-BTC-PERPETUAL-4H-CURRENT",
+  "object_type": "STATISTICAL_CALCULATION",
+  "layer": "DERIVED_MATH",
+  "truth_class": "STATISTICAL_ESTIMATE",
+  "authority": "DERIVED_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MEAS-BINANCE-BTC-PERPETUAL-4H-CURRENT",
+      "relationship": "ESTIMATED_FROM",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    }
+  ],
+  "method": {
+    "name": "ROLLING_DISTRIBUTION_STATISTICS",
+    "version": "1.0.0",
+    "deterministic": true,
+    "parameters": {
+      "zscore_window": 30,
+      "autocorrelation_lag": 1
+    }
+  },
+  "quality": {
+    "status": "VALID",
+    "input_rows": 250,
+    "stationarity_claimed": false
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "measurement_ref": "market://MEAS-BINANCE-BTC-PERPETUAL-4H-CURRENT",
+    "values": {
+      "mean_log_return": -5.02462e-05,
+      "rolling_variance": 6.09989e-05,
+      "rolling_volatility": 0.0078101812,
+      "skewness": -0.4515402763,
+      "excess_kurtosis": 4.6392504376,
+      "lag1_autocorrelation": -0.1073990287,
+      "volume_zscore_30": -1.1562264405,
+      "return_zscore_30": -0.0115988009,
+      "absolute_return_percentile": 0.2008032129
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "b0a2399e3099f917297036bf4eccc55676c16267a89e61093ea547f74631b9da"
+  }
+}

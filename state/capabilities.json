@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:23:00Z",
+  "updated_at": "2026-09-02T02:19:50Z",
   "lifecycle": ["DISCOVERED", "HYPOTHESIS", "PREREGISTERED", "BACKTEST_SUPPORTED", "PROSPECTIVE_SUPPORTED", "REPLAY_QUALIFIED", "SHADOW_QUALIFIED", "EXECUTION_PLANE_QUALIFIED", "CAPITAL_ELIGIBLE", "LIVE"],
   "promotion_rule": "Models may recommend; deterministic validation must advance exactly one state with evidence. LIVE additionally requires Governor authority and remains disabled.",
   "items": [
@@ -32,6 +32,16 @@
       "experiment_ids": ["EXP-SHADOW-LIFECYCLE-001"],
       "evidence_ids": ["evidence/audits/TASK-MKT-003.json", "EVIDENCE-OPS-ZERO-001", "AUDIT-EXP-SHADOW-LIFECYCLE-001"],
       "next_required_evidence": "preregistered public microstructure calibration, repeated prospective consumers, and venue-independent execution-model rejection tests",
+      "live_enabled": false
+    },
+    {
+      "id": "CAP-CRYPTO-SPOT-FUTURES-MECHANISMS-001",
+      "kind": "economic_mechanism_research",
+      "state": "PREREGISTERED",
+      "operational_status": "REJECTED",
+      "experiment_ids": ["EXP-HISTORICAL-MECHANISMS-001", "EXP-HISTORICAL-MECHANISMS-002"],
+      "evidence_ids": ["EVIDENCE-HISTORICAL-MECHANISMS-001-PREREGISTRATION", "EVIDENCE-HISTORICAL-MECHANISMS-001-QUALITY-FAILURE", "EVIDENCE-HISTORICAL-MECHANISMS-002-PREREGISTRATION", "EVIDENCE-HISTORICAL-MECHANISMS-002-RESULT"],
+      "next_required_evidence": "A materially different economic hypothesis under a new capability/experiment lineage; do not tune the rejected directional, lead-lag, breakout, or six-hour basis families.",
       "live_enabled": false
     }
   ]

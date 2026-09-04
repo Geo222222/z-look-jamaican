@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "object_id": "MATH-TECH-BINANCE-BTC-SPOT-4H-CURRENT",
+  "object_type": "TECHNICAL_CALCULATION",
+  "layer": "DERIVED_MATH",
+  "truth_class": "DETERMINISTIC_CALCULATION",
+  "authority": "DERIVED_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MEAS-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "CALCULATED_FROM",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    }
+  ],
+  "method": {
+    "name": "WILDER_AND_EMA_TECHNICALS",
+    "version": "1.0.0",
+    "deterministic": true,
+    "parameters": {
+      "rsi": 14,
+      "atr": 14,
+      "adx": 14,
+      "ema": [
+        20,
+        50,
+        200
+      ],
+      "bollinger": [
+        20,
+        2
+      ]
+    }
+  },
+  "quality": {
+    "status": "VALID",
+    "input_rows": 250,
+    "unavailable_values": []
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "measurement_ref": "market://MEAS-BINANCE-BTC-SPOT-4H-CURRENT",
+    "window": "4H",
+    "values": {
+      "rsi_14": 36.1103268387,
+      "ema_20": 63906.548397626,
+      "ema_50": 64243.7171203421,
+      "ema_200": 63443.4016488348,
+      "atr_14": 660.2972378172,
+      "adx_14": 23.8499705411,
+      "bollinger_bandwidth_20_2": 0.0379251255
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "7f0df379c7a33ac967052c4fa37f159a6fe832f9a880438fc1592836408aee53"
+  }
+}

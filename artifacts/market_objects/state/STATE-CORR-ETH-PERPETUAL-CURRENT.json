@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "object_id": "STATE-CORR-ETH-PERPETUAL-CURRENT",
+  "object_type": "CORRELATION_STATE",
+  "layer": "STATE",
+  "truth_class": "DETERMINISTIC_CLASSIFICATION",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H",
+    "benchmark_instrument": "ETH-USDT-PERPETUAL"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z",
+    "aligned_rows": 250
+  },
+  "input_refs": [
+    {
+      "ref": "market://MATH-REL-ETH-SPOT-PERP-4H",
+      "relationship": "RELATIONSHIP_EVIDENCE",
+      "required": true,
+      "expected_object_type": "RELATIVE_CALCULATION"
+    }
+  ],
+  "method": {
+    "name": "ROLLING_CORRELATION_CLASSIFIER",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "input_count": 1
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "dimension": "CORRELATION",
+    "state": "HIGH_POSITIVE",
+    "strength": 0.9999,
+    "evidence_refs": [
+      "market://MATH-REL-ETH-SPOT-PERP-4H"
+    ],
+    "classifications": {
+      "relative_performance": "UNDERPERFORMING"
+    },
+    "uncertainty": [
+      "Rolling correlation is not causal and can change abruptly."
+    ],
+    "duplicates_measurement_values": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "2b199554abf1944aa494c3f33fac9be78c62f655d7a2ddbee827d4bc6ef53dcf"
+  }
+}

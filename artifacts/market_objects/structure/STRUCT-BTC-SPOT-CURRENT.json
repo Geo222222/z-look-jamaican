@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "object_id": "STRUCT-BTC-SPOT-CURRENT",
+  "object_type": "PRICE_STRUCTURE",
+  "layer": "STRUCTURE",
+  "truth_class": "DETERMINISTIC_CLASSIFICATION",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MEAS-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "GEOMETRY_FROM",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    }
+  ],
+  "method": {
+    "name": "PIVOT_AND_RANGE_GEOMETRY",
+    "version": "1.0.0",
+    "deterministic": true,
+    "parameters": {
+      "pivot_radius": 2,
+      "range_lookback": 120
+    }
+  },
+  "quality": {
+    "status": "VALID",
+    "confirmed_swing_count": 68
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "measurement_ref": "market://MEAS-BINANCE-BTC-SPOT-4H-CURRENT",
+    "trend_structure": "MIXED_OR_RANGE",
+    "swing_points": [
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-23T16:00:00Z",
+        "price": "64650.0",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-24T04:00:00Z",
+        "price": "65808.59",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-24T12:00:00Z",
+        "price": "63739.75",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-25T08:00:00Z",
+        "price": "63810.0",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-27T04:00:00Z",
+        "price": "65744.6",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-28T00:00:00Z",
+        "price": "63059.39",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-28T12:00:00Z",
+        "price": "62742.47",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-29T08:00:00Z",
+        "price": "64744.81",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-29T20:00:00Z",
+        "price": "63267.34",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-30T12:00:00Z",
+        "price": "65176.6",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-31T00:00:00Z",
+        "price": "65409.56",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-31T12:00:00Z",
+        "price": "62466.0",
+        "confirmation_lag_bars": 2
+      }
+    ],
+    "range": {
+      "lower": 61824.97,
+      "upper": 66956.15,
+      "status": "INSIDE",
+      "lookback_bars": 120
+    },
+    "support_zones": [
+      [
+        "63267.34",
+        "63267.34"
+      ],
+      [
+        "62466.0",
+        "62466.0"
+      ]
+    ],
+    "resistance_zones": [
+      [
+        "65176.6",
+        "65176.6"
+      ],
+      [
+        "65409.56",
+        "65409.56"
+      ]
+    ],
+    "gaps": [],
+    "unfilled_imbalances": [],
+    "limitations": [
+      "Candle geometry cannot establish intrabar order-book imbalance."
+    ]
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "38951ad3d0331c7bce308228cb2d0003844e2bbc9e04cd95297483e04b7099dd"
+  }
+}

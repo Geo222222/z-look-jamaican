@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "object_id": "WORLD-BINANCE-ETH-SPOT-4H-20260731",
+  "object_type": "MARKET_WORLD_SNAPSHOT",
+  "layer": "INDEX",
+  "truth_class": "REFERENCE_INDEX",
+  "authority": "INDEX_ONLY",
+  "subject": {
+    "instrument": "ETH-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "ETH"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785528000000",
+      "relationship": "INDEXES_EVIDENCE",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://MEAS-BINANCE-ETH-SPOT-4H-CURRENT",
+      "relationship": "INDEXES_MEASUREMENT",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    },
+    {
+      "ref": "market://MATH-TECH-BINANCE-ETH-SPOT-4H-CURRENT",
+      "relationship": "INDEXES_DERIVED_MATH",
+      "required": true,
+      "expected_object_type": "TECHNICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-STAT-BINANCE-ETH-SPOT-4H-CURRENT",
+      "relationship": "INDEXES_DERIVED_MATH",
+      "required": true,
+      "expected_object_type": "STATISTICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-REL-ETH-SPOT-PERP-4H",
+      "relationship": "INDEXES_DERIVED_MATH",
+      "required": true,
+      "expected_object_type": "RELATIVE_CALCULATION"
+    },
+    {
+      "ref": "market://STRUCT-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STRUCTURE",
+      "required": true,
+      "expected_object_type": "PRICE_STRUCTURE"
+    },
+    {
+      "ref": "market://PATTERN-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STRUCTURE",
+      "required": true,
+      "expected_object_type": "PATTERN_DETECTION"
+    },
+    {
+      "ref": "market://CONTEXT-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_CONTEXT",
+      "required": true,
+      "expected_object_type": "MARKET_CONTEXT"
+    },
+    {
+      "ref": "market://STATE-TREND-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "TREND_STATE"
+    },
+    {
+      "ref": "market://STATE-VOL-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "VOLATILITY_STATE"
+    },
+    {
+      "ref": "market://STATE-MOM-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "MOMENTUM_STATE"
+    },
+    {
+      "ref": "market://STATE-PART-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "PARTICIPATION_STATE"
+    },
+    {
+      "ref": "market://STATE-CORR-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "CORRELATION_STATE"
+    },
+    {
+      "ref": "market://STATE-RISK-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "RISK_STATE"
+    },
+    {
+      "ref": "market://STATE-LIQ-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "LIQUIDITY_STATE"
+    },
+    {
+      "ref": "market://STATE-POS-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "POSITIONING_STATE"
+    },
+    {
+      "ref": "market://TRANS-ETH-SPOT-TREND",
+      "relationship": "INDEXES_TRANSITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-ETH-SPOT-VOLATILITY",
+      "relationship": "INDEXES_TRANSITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-ETH-SPOT-MOMENTUM",
+      "relationship": "INDEXES_TRANSITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://STORY-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_STORY",
+      "required": true,
+      "expected_object_type": "MARKET_STORY"
+    },
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-TREND-CONTINUATION",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-BREAKOUT-RETEST",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-RANGE-FADE",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-VOLATILITY-EXPANSION",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-EXHAUSTION-REVERSAL",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-FUNDING-CARRY",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-BASIS-CONVERGENCE",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-SPOT-PERP-LEAD-LAG",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-ETH-SPOT-STRAT-ARCH-LIQUIDATION-SQUEEZE",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://EVIDENCE-PORTFOLIO-ETH-SPOT-BLOCKED",
+      "relationship": "INDEXES_EVIDENCE",
+      "required": true,
+      "expected_object_type": "PORTFOLIO_OBSERVATION"
+    },
+    {
+      "ref": "market://OPPORTUNITY-ETH-SPOT-CURRENT",
+      "relationship": "INDEXES_OPPORTUNITY",
+      "required": true,
+      "expected_object_type": "OPPORTUNITY_CANDIDATE"
+    }
+  ],
+  "method": {
+    "name": "REFERENCE_ONLY_WORLD_INDEX",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "indexed_object_count": 31
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "snapshot_id": "WORLD-BINANCE-ETH-SPOT-4H-20260731",
+    "instrument": "ETH-USDT-SPOT",
+    "as_of": "2026-07-31T20:00:00Z",
+    "evidence_refs": [
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785528000000",
+      "market://EVIDENCE-PORTFOLIO-ETH-SPOT-BLOCKED"
+    ],
+    "measurement_refs": [
+      "market://MEAS-BINANCE-ETH-SPOT-4H-CURRENT"
+    ],
+    "derived_math_refs": [
+      "market://MATH-TECH-BINANCE-ETH-SPOT-4H-CURRENT",
+      "market://MATH-STAT-BINANCE-ETH-SPOT-4H-CURRENT",
+      "market://MATH-REL-ETH-SPOT-PERP-4H"
+    ],
+    "structure_refs": [
+      "market://STRUCT-ETH-SPOT-CURRENT",
+      "market://PATTERN-ETH-SPOT-CURRENT"
+    ],
+    "perception_refs": [],
+    "context_refs": [
+      "market://CONTEXT-ETH-SPOT-CURRENT"
+    ],
+    "state_refs": [
+      "market://STATE-TREND-ETH-SPOT-CURRENT",
+      "market://STATE-VOL-ETH-SPOT-CURRENT",
+      "market://STATE-MOM-ETH-SPOT-CURRENT",
+      "market://STATE-PART-ETH-SPOT-CURRENT",
+      "market://STATE-CORR-ETH-SPOT-CURRENT",
+      "market://STATE-RISK-ETH-SPOT-CURRENT",
+      "market://STATE-LIQ-ETH-SPOT-CURRENT",
+      "market://STATE-POS-ETH-SPOT-CURRENT"
+    ],
+    "transition_refs": [
+      "market://TRANS-ETH-SPOT-TREND",
+      "market://TRANS-ETH-SPOT-VOLATILITY",
+      "market://TRANS-ETH-SPOT-MOMENTUM"
+    ],
+    "story_refs": [
+      "market://STORY-ETH-SPOT-CURRENT"
+    ],
+    "strategy_match_refs": [
+      "market://MATCH-ETH-SPOT-STRAT-ARCH-TREND-CONTINUATION",
+      "market://MATCH-ETH-SPOT-STRAT-ARCH-BREAKOUT-RETEST",
+      "market://MATCH-ETH-SPOT-STRAT-ARCH-RANGE-FADE",
+      "market://MATCH-ETH-SPOT-STRAT-ARCH-VOLATILITY-EXPANSION",
+      "market://MATCH-ETH-SPOT-STRAT-ARCH-EXHAUSTION-REVERSAL",
+      "market://MATCH-ETH-SPOT-STRAT-ARCH-FUNDING-CARRY",
+      "market://MATCH-ETH-SPOT-STRAT-ARCH-BASIS-CONVERGENCE",
+      "market://MATCH-ETH-SPOT-STRAT-ARCH-SPOT-PERP-LEAD-LAG",
+      "market://MATCH-ETH-SPOT-STRAT-ARCH-LIQUIDATION-SQUEEZE"
+    ],
+    "opportunity_refs": [
+      "market://OPPORTUNITY-ETH-SPOT-CURRENT"
+    ],
+    "contains_embedded_market_values": false,
+    "execution_authority": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "0f71388b923ad263b1124cd115874475213fb54c4f31bf7e19dc286694c36bc9"
+  }
+}

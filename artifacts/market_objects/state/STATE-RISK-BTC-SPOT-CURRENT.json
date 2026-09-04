@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "object_id": "STATE-RISK-BTC-SPOT-CURRENT",
+  "object_type": "RISK_STATE",
+  "layer": "STATE",
+  "truth_class": "DETERMINISTIC_CLASSIFICATION",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MATH-TECH-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "EXTENSION_EVIDENCE",
+      "required": true,
+      "expected_object_type": "TECHNICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-STAT-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "TAIL_EVIDENCE",
+      "required": true,
+      "expected_object_type": "STATISTICAL_CALCULATION"
+    },
+    {
+      "ref": "market://CONTEXT-BTC-SPOT-CURRENT",
+      "relationship": "EVENT_RISK_CONTEXT",
+      "required": true,
+      "expected_object_type": "MARKET_CONTEXT"
+    }
+  ],
+  "method": {
+    "name": "EXTENSION_EVENT_RISK_CLASSIFIER",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "input_count": 3
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "dimension": "RISK",
+    "state": "NORMAL",
+    "strength": 0.463,
+    "evidence_refs": [
+      "market://MATH-TECH-BINANCE-BTC-SPOT-4H-CURRENT",
+      "market://MATH-STAT-BINANCE-BTC-SPOT-4H-CURRENT",
+      "market://CONTEXT-BTC-SPOT-CURRENT"
+    ],
+    "classifications": {
+      "extension": "NOT_EXTENDED",
+      "scheduled_event_risk": "UNKNOWN"
+    },
+    "uncertainty": [
+      "This classifies observable extension and scheduled-event risk; it is not a loss forecast."
+    ],
+    "duplicates_measurement_values": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "06e8932ee0560206d0cded42f98aca1d8b0573072cda08b93c5d702175f81f00"
+  }
+}

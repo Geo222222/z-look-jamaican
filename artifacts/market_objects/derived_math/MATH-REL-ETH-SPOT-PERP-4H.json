@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "object_id": "MATH-REL-ETH-SPOT-PERP-4H",
+  "object_type": "RELATIVE_CALCULATION",
+  "layer": "DERIVED_MATH",
+  "truth_class": "STATISTICAL_ESTIMATE",
+  "authority": "DERIVED_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H",
+    "benchmark_instrument": "ETH-USDT-PERPETUAL"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z",
+    "aligned_rows": 250
+  },
+  "input_refs": [
+    {
+      "ref": "market://MEAS-BINANCE-ETH-SPOT-4H-CURRENT",
+      "relationship": "SUBJECT_SERIES",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    },
+    {
+      "ref": "market://MEAS-BINANCE-ETH-PERPETUAL-4H-CURRENT",
+      "relationship": "BENCHMARK_SERIES",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    }
+  ],
+  "method": {
+    "name": "ALIGNED_RETURN_RELATIONSHIPS",
+    "version": "1.0.0",
+    "deterministic": true,
+    "parameters": {
+      "relative_return_window": 120
+    }
+  },
+  "quality": {
+    "status": "VALID",
+    "aligned_rows": 250
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "subject_ref": "market://MEAS-BINANCE-ETH-SPOT-4H-CURRENT",
+    "benchmark_ref": "market://MEAS-BINANCE-ETH-PERPETUAL-4H-CURRENT",
+    "values": {
+      "relative_return": -0.0001031926,
+      "correlation": 0.9999433634,
+      "beta": 0.999293904,
+      "tracking_error": 0.0001102849
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "08c2e873b940ecab54f91bce5006d98480fe8ed2e0c2b84115fa12efbf4e2057"
+  }
+}

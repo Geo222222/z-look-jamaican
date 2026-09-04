@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "object_id": "STRUCT-BTC-PERPETUAL-PRIOR",
+  "object_type": "PRICE_STRUCTURE",
+  "layer": "STRUCTURE",
+  "truth_class": "DETERMINISTIC_CLASSIFICATION",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T16:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T16:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MEAS-BINANCE-BTC-PERPETUAL-4H-PRIOR",
+      "relationship": "GEOMETRY_FROM",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    }
+  ],
+  "method": {
+    "name": "PIVOT_AND_RANGE_GEOMETRY",
+    "version": "1.0.0",
+    "deterministic": true,
+    "parameters": {
+      "pivot_radius": 2,
+      "range_lookback": 120
+    }
+  },
+  "quality": {
+    "status": "VALID",
+    "confirmed_swing_count": 68
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "measurement_ref": "market://MEAS-BINANCE-BTC-PERPETUAL-4H-PRIOR",
+    "trend_structure": "MIXED_OR_RANGE",
+    "swing_points": [
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-22T16:00:00Z",
+        "price": "66363.6",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-23T16:00:00Z",
+        "price": "64636.0",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-24T04:00:00Z",
+        "price": "65780.0",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-24T12:00:00Z",
+        "price": "63666.0",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-25T08:00:00Z",
+        "price": "63760.5",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-27T04:00:00Z",
+        "price": "65722.5",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-28T00:00:00Z",
+        "price": "63021.0",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-28T12:00:00Z",
+        "price": "62660.1",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-29T08:00:00Z",
+        "price": "64715.9",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_LOW",
+        "timestamp": "2026-07-29T20:00:00Z",
+        "price": "63234.0",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-30T12:00:00Z",
+        "price": "65157.0",
+        "confirmation_lag_bars": 2
+      },
+      {
+        "kind": "SWING_HIGH",
+        "timestamp": "2026-07-31T00:00:00Z",
+        "price": "65391.3",
+        "confirmation_lag_bars": 2
+      }
+    ],
+    "range": {
+      "lower": 61806.0,
+      "upper": 66924.1,
+      "status": "INSIDE",
+      "lookback_bars": 120
+    },
+    "support_zones": [
+      [
+        "62660.1",
+        "62660.1"
+      ],
+      [
+        "63234.0",
+        "63234.0"
+      ]
+    ],
+    "resistance_zones": [
+      [
+        "65157.0",
+        "65157.0"
+      ],
+      [
+        "65391.3",
+        "65391.3"
+      ]
+    ],
+    "gaps": [],
+    "unfilled_imbalances": [],
+    "limitations": [
+      "Candle geometry cannot establish intrabar order-book imbalance."
+    ]
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "11384ea8e3ee38a7947a6a53284af17aa26fbc456c57ad53ecb0323cb404e078"
+  }
+}

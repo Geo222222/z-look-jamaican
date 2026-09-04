@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "object_id": "MATCH-BTC-SPOT-STRAT-ARCH-TREND-CONTINUATION",
+  "object_type": "STRATEGY_APPLICABILITY",
+  "layer": "STRATEGY_APPLICABILITY",
+  "truth_class": "APPLICABILITY_ASSESSMENT",
+  "authority": "ADVISORY_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [
+    {
+      "ref": "market://STORY-BTC-SPOT-CURRENT",
+      "relationship": "ASSESSES_STORY",
+      "required": true,
+      "expected_object_type": "MARKET_STORY"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-BTC-SPOT-4H-1785528000000",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://MATH-TECH-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "TECHNICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-STAT-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATISTICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-REL-BTC-SPOT-PERP-4H",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "RELATIVE_CALCULATION"
+    },
+    {
+      "ref": "market://STRUCT-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "PRICE_STRUCTURE"
+    },
+    {
+      "ref": "market://PATTERN-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "PATTERN_DETECTION"
+    },
+    {
+      "ref": "market://CONTEXT-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "MARKET_CONTEXT"
+    },
+    {
+      "ref": "market://STATE-TREND-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "TREND_STATE"
+    },
+    {
+      "ref": "market://STATE-VOL-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "VOLATILITY_STATE"
+    },
+    {
+      "ref": "market://STATE-MOM-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "MOMENTUM_STATE"
+    },
+    {
+      "ref": "market://STATE-PART-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "PARTICIPATION_STATE"
+    },
+    {
+      "ref": "market://STATE-CORR-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "CORRELATION_STATE"
+    },
+    {
+      "ref": "market://STATE-RISK-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "RISK_STATE"
+    },
+    {
+      "ref": "market://STATE-LIQ-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "LIQUIDITY_STATE"
+    },
+    {
+      "ref": "market://STATE-POS-BTC-SPOT-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "POSITIONING_STATE"
+    },
+    {
+      "ref": "market://TRANS-BTC-SPOT-TREND",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-BTC-SPOT-VOLATILITY",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-BTC-SPOT-MOMENTUM",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    }
+  ],
+  "method": {
+    "name": "DETERMINISTIC_STRATEGY_CONDITION_MATCHER",
+    "version": "1.0.0",
+    "deterministic": true,
+    "strategy_registry_version": "1.0.0"
+  },
+  "quality": {
+    "status": "VALID",
+    "conditions_evaluated": 7
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "strategy_id": "STRAT-ARCH-TREND-CONTINUATION",
+    "archetype": "TREND_CONTINUATION",
+    "story_ref": "market://STORY-BTC-SPOT-CURRENT",
+    "applicability": "BLOCKED",
+    "applicability_score": 0.0,
+    "status": "MISSING_PREREQUISITES",
+    "matched_conditions": 1,
+    "required_conditions": 3,
+    "matched_condition_ids": [
+      "MOMENTUM-ALIGNED"
+    ],
+    "missing_conditions": [
+      "TREND-DIRECTIONAL",
+      "LIQUIDITY-HEALTHY"
+    ],
+    "contraindication_hits": [],
+    "trigger_matches": 0,
+    "condition_results": {
+      "required": [
+        {
+          "condition_id": "TREND-DIRECTIONAL",
+          "description": null,
+          "object_type": "TREND_STATE",
+          "path": "payload.state",
+          "operator": "IN",
+          "expected": [
+            "UP",
+            "DOWN"
+          ],
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-TREND-BTC-SPOT-CURRENT",
+              "observed": "RANGE_OR_MIXED",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 2.0
+        },
+        {
+          "condition_id": "MOMENTUM-ALIGNED",
+          "description": null,
+          "object_type": "MOMENTUM_STATE",
+          "path": "payload.state",
+          "operator": "IN",
+          "expected": [
+            "POSITIVE",
+            "NEGATIVE"
+          ],
+          "matched": true,
+          "matched_object_ref": "market://STATE-MOM-BTC-SPOT-CURRENT",
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-MOM-BTC-SPOT-CURRENT",
+              "observed": "NEGATIVE",
+              "available": true,
+              "matched": true
+            }
+          ],
+          "weight": 1.0
+        },
+        {
+          "condition_id": "LIQUIDITY-HEALTHY",
+          "description": null,
+          "object_type": "LIQUIDITY_STATE",
+          "path": "payload.state",
+          "operator": "EQ",
+          "expected": "HEALTHY",
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-LIQ-BTC-SPOT-CURRENT",
+              "observed": "UNAVAILABLE",
+              "available": false,
+              "matched": false
+            }
+          ],
+          "weight": 2.0
+        }
+      ],
+      "supporting": [
+        {
+          "condition_id": "PARTICIPATION-ABOVE-NORMAL",
+          "description": null,
+          "object_type": "PARTICIPATION_STATE",
+          "path": "payload.state",
+          "operator": "EQ",
+          "expected": "ABOVE_NORMAL",
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-PART-BTC-SPOT-CURRENT",
+              "observed": "BELOW_NORMAL",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 1.0
+        },
+        {
+          "condition_id": "VOLATILITY-NOT-COMPRESSED",
+          "description": null,
+          "object_type": "VOLATILITY_STATE",
+          "path": "payload.state",
+          "operator": "IN",
+          "expected": [
+            "NORMAL",
+            "EXPANDING"
+          ],
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-VOL-BTC-SPOT-CURRENT",
+              "observed": "COMPRESSED",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 1.0
+        }
+      ],
+      "contraindications": [
+        {
+          "condition_id": "VOLATILITY-EXTREME-RISK",
+          "description": null,
+          "object_type": "RISK_STATE",
+          "path": "payload.state",
+          "operator": "EQ",
+          "expected": "EXTREME",
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-RISK-BTC-SPOT-CURRENT",
+              "observed": "NORMAL",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 2.0
+        }
+      ],
+      "triggers": [
+        {
+          "condition_id": "RANGE-BREAK",
+          "description": null,
+          "object_type": "PRICE_STRUCTURE",
+          "path": "payload.range.status",
+          "operator": "IN",
+          "expected": [
+            "BROKEN_UP",
+            "BROKEN_DOWN"
+          ],
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STRUCT-BTC-SPOT-CURRENT",
+              "observed": "INSIDE",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 1.0
+        }
+      ]
+    },
+    "scoped_evidence": [
+      {
+        "outcome": "REJECTED",
+        "scope": {
+          "exchange": "binance",
+          "assets": [
+            "BTC",
+            "ETH"
+          ],
+          "evaluation_horizons": [
+            "30M",
+            "6H"
+          ]
+        },
+        "applies_to_all_horizons": false,
+        "evidence_ids": [
+          "EVIDENCE-HISTORICAL-MECHANISMS-002-RESULT"
+        ]
+      }
+    ],
+    "economic_qualification": "NOT_EARNED",
+    "opportunity_created": false,
+    "execution_authority": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "587a2f7bac21ccd6883760b22ee4f779cdc2c8d31968f29e852ad1b99bd1bc95"
+  }
+}

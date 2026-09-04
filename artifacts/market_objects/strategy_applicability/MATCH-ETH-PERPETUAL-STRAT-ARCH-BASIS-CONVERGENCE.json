@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "object_id": "MATCH-ETH-PERPETUAL-STRAT-ARCH-BASIS-CONVERGENCE",
+  "object_type": "STRATEGY_APPLICABILITY",
+  "layer": "STRATEGY_APPLICABILITY",
+  "truth_class": "APPLICABILITY_ASSESSMENT",
+  "authority": "ADVISORY_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [
+    {
+      "ref": "market://STORY-ETH-PERPETUAL-CURRENT",
+      "relationship": "ASSESSES_STORY",
+      "required": true,
+      "expected_object_type": "MARKET_STORY"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-PERPETUAL-4H-1785528000000",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-FUNDING-1785513600000",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "FUNDING_OBSERVATION"
+    },
+    {
+      "ref": "market://MATH-TECH-BINANCE-ETH-PERPETUAL-4H-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "TECHNICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-STAT-BINANCE-ETH-PERPETUAL-4H-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATISTICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-REL-ETH-SPOT-PERP-4H",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "RELATIVE_CALCULATION"
+    },
+    {
+      "ref": "market://STRUCT-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "PRICE_STRUCTURE"
+    },
+    {
+      "ref": "market://PATTERN-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "PATTERN_DETECTION"
+    },
+    {
+      "ref": "market://CONTEXT-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "MARKET_CONTEXT"
+    },
+    {
+      "ref": "market://STATE-TREND-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "TREND_STATE"
+    },
+    {
+      "ref": "market://STATE-VOL-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "VOLATILITY_STATE"
+    },
+    {
+      "ref": "market://STATE-MOM-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "MOMENTUM_STATE"
+    },
+    {
+      "ref": "market://STATE-PART-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "PARTICIPATION_STATE"
+    },
+    {
+      "ref": "market://STATE-CORR-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "CORRELATION_STATE"
+    },
+    {
+      "ref": "market://STATE-RISK-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "RISK_STATE"
+    },
+    {
+      "ref": "market://STATE-LIQ-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "LIQUIDITY_STATE"
+    },
+    {
+      "ref": "market://STATE-POS-ETH-PERPETUAL-CURRENT",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "POSITIONING_STATE"
+    },
+    {
+      "ref": "market://TRANS-ETH-PERPETUAL-TREND",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-ETH-PERPETUAL-VOLATILITY",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-ETH-PERPETUAL-MOMENTUM",
+      "relationship": "EVALUATES_CONDITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    }
+  ],
+  "method": {
+    "name": "DETERMINISTIC_STRATEGY_CONDITION_MATCHER",
+    "version": "1.0.0",
+    "deterministic": true,
+    "strategy_registry_version": "1.0.0"
+  },
+  "quality": {
+    "status": "VALID",
+    "conditions_evaluated": 5
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "strategy_id": "STRAT-ARCH-BASIS-CONVERGENCE",
+    "archetype": "SPOT_PERPETUAL_BASIS_CONVERGENCE",
+    "story_ref": "market://STORY-ETH-PERPETUAL-CURRENT",
+    "applicability": "BLOCKED",
+    "applicability_score": 0.0,
+    "status": "MISSING_PREREQUISITES",
+    "matched_conditions": 0,
+    "required_conditions": 2,
+    "matched_condition_ids": [],
+    "missing_conditions": [
+      "RELATIVE-DISLOCATION",
+      "LIQUIDITY-HEALTHY"
+    ],
+    "contraindication_hits": [],
+    "trigger_matches": 0,
+    "condition_results": {
+      "required": [
+        {
+          "condition_id": "RELATIVE-DISLOCATION",
+          "description": null,
+          "object_type": "RELATIVE_CALCULATION",
+          "path": "payload.values.relative_return",
+          "operator": "GT",
+          "expected": 0,
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://MATH-REL-ETH-SPOT-PERP-4H",
+              "observed": -0.0001031926,
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 2.0
+        },
+        {
+          "condition_id": "LIQUIDITY-HEALTHY",
+          "description": null,
+          "object_type": "LIQUIDITY_STATE",
+          "path": "payload.state",
+          "operator": "EQ",
+          "expected": "HEALTHY",
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-LIQ-ETH-PERPETUAL-CURRENT",
+              "observed": "UNAVAILABLE",
+              "available": false,
+              "matched": false
+            }
+          ],
+          "weight": 2.0
+        }
+      ],
+      "supporting": [
+        {
+          "condition_id": "FUNDING-POSITIVE",
+          "description": null,
+          "object_type": "FUNDING_OBSERVATION",
+          "path": "payload.funding_rate",
+          "operator": "GT",
+          "expected": 0,
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://EVIDENCE-BINANCE-ETH-FUNDING-1785513600000",
+              "observed": "-0.00002045",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 1.0
+        }
+      ],
+      "contraindications": [
+        {
+          "condition_id": "RELATIONSHIP-WEAK",
+          "description": null,
+          "object_type": "CORRELATION_STATE",
+          "path": "payload.state",
+          "operator": "IN",
+          "expected": [
+            "WEAK",
+            "NEGATIVE"
+          ],
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://STATE-CORR-ETH-PERPETUAL-CURRENT",
+              "observed": "HIGH_POSITIVE",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 2.0
+        }
+      ],
+      "triggers": [
+        {
+          "condition_id": "CONVERGENCE-TRANSITION",
+          "description": null,
+          "object_type": "STATE_TRANSITION",
+          "path": "payload.dimension",
+          "operator": "EQ",
+          "expected": "CORRELATION",
+          "matched": false,
+          "matched_object_ref": null,
+          "candidate_results": [
+            {
+              "object_ref": "market://TRANS-ETH-PERPETUAL-TREND",
+              "observed": "TREND",
+              "available": true,
+              "matched": false
+            },
+            {
+              "object_ref": "market://TRANS-ETH-PERPETUAL-VOLATILITY",
+              "observed": "VOLATILITY",
+              "available": true,
+              "matched": false
+            },
+            {
+              "object_ref": "market://TRANS-ETH-PERPETUAL-MOMENTUM",
+              "observed": "MOMENTUM",
+              "available": true,
+              "matched": false
+            }
+          ],
+          "weight": 1.0
+        }
+      ]
+    },
+    "scoped_evidence": [
+      {
+        "outcome": "REJECTED",
+        "scope": {
+          "exchange": "binance",
+          "assets": [
+            "BTC",
+            "ETH"
+          ],
+          "evaluation_horizons": [
+            "6H"
+          ]
+        },
+        "applies_to_all_horizons": false,
+        "evidence_ids": [
+          "EVIDENCE-HISTORICAL-MECHANISMS-002-RESULT"
+        ]
+      }
+    ],
+    "economic_qualification": "REJECTED",
+    "opportunity_created": false,
+    "execution_authority": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "0cdcca23b81c1194b0b9ed851dadaaaf861591d84e147a2446fa69b18caa1c7a"
+  }
+}

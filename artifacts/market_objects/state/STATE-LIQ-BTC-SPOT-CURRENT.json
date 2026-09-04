@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "object_id": "STATE-LIQ-BTC-SPOT-CURRENT",
+  "object_type": "LIQUIDITY_STATE",
+  "layer": "STATE",
+  "truth_class": "DETERMINISTIC_CLASSIFICATION",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-07-31T20:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [],
+  "method": {
+    "name": "EXPLICIT_MISSING_EVIDENCE_CLASSIFIER",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "UNAVAILABLE",
+    "reason": "Historical candles contain no contemporaneous order-book depth or spread."
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "dimension": "LIQUIDITY",
+    "state": "UNAVAILABLE",
+    "strength": 0.0,
+    "evidence_refs": [],
+    "classifications": {},
+    "uncertainty": [
+      "Historical candles contain no contemporaneous order-book depth or spread."
+    ],
+    "required_evidence": [
+      "ORDER_BOOK_OBSERVATION",
+      "TRADE_OBSERVATION"
+    ],
+    "duplicates_measurement_values": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "91d303c24622623a0dc968ca1717edd69fd0534f11742bb3eb0b08cf0053afd8"
+  }
+}

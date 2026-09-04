@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "object_id": "TRANS-ETH-PERPETUAL-TREND",
+  "object_type": "STATE_TRANSITION",
+  "layer": "TRANSITION",
+  "truth_class": "DETERMINISTIC_CLASSIFICATION",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-07-31T16:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [
+    {
+      "ref": "market://STATE-TREND-ETH-PERPETUAL-PRIOR",
+      "relationship": "FROM_STATE",
+      "required": true,
+      "expected_object_type": "TREND_STATE"
+    },
+    {
+      "ref": "market://STATE-TREND-ETH-PERPETUAL-CURRENT",
+      "relationship": "TO_STATE",
+      "required": true,
+      "expected_object_type": "TREND_STATE"
+    },
+    {
+      "ref": "market://MATH-TECH-BINANCE-ETH-PERPETUAL-4H-CURRENT",
+      "relationship": "SUPPORTS_TRANSITION",
+      "required": true,
+      "expected_object_type": null
+    },
+    {
+      "ref": "market://STRUCT-ETH-PERPETUAL-CURRENT",
+      "relationship": "SUPPORTS_TRANSITION",
+      "required": true,
+      "expected_object_type": null
+    }
+  ],
+  "method": {
+    "name": "STATE_SEQUENCE_COMPARATOR",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "state_changed": false
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "dimension": "TREND",
+    "from": "RANGE_OR_MIXED",
+    "to": "RANGE_OR_MIXED",
+    "started_at": "2026-07-31T16:00:00Z",
+    "confirmed_at": "2026-07-31T20:00:00Z",
+    "duration_before_transition_seconds": 14400.0,
+    "transition_strength": 0.0151,
+    "from_state_ref": "market://STATE-TREND-ETH-PERPETUAL-PRIOR",
+    "to_state_ref": "market://STATE-TREND-ETH-PERPETUAL-CURRENT",
+    "intermediate_state_refs": [],
+    "supporting_evidence_refs": [
+      "market://MATH-TECH-BINANCE-ETH-PERPETUAL-4H-CURRENT",
+      "market://STRUCT-ETH-PERPETUAL-CURRENT"
+    ]
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "a19132d19685820ea607a8a31ea25aaed77790cf01722c9f9fac7802b6470771"
+  }
+}

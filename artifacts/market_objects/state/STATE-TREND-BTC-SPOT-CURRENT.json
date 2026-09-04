@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "object_id": "STATE-TREND-BTC-SPOT-CURRENT",
+  "object_type": "TREND_STATE",
+  "layer": "STATE",
+  "truth_class": "DETERMINISTIC_CLASSIFICATION",
+  "authority": "CLASSIFICATION_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "BTC-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "BTC",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MATH-TECH-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "TREND_MATH_EVIDENCE",
+      "required": true,
+      "expected_object_type": "TECHNICAL_CALCULATION"
+    },
+    {
+      "ref": "market://STRUCT-BTC-SPOT-CURRENT",
+      "relationship": "TREND_GEOMETRY_EVIDENCE",
+      "required": true,
+      "expected_object_type": "PRICE_STRUCTURE"
+    }
+  ],
+  "method": {
+    "name": "STRUCTURE_EMA_ADX_TREND_CLASSIFIER",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "input_count": 2
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "dimension": "TREND",
+    "state": "RANGE_OR_MIXED",
+    "strength": 0.523,
+    "evidence_refs": [
+      "market://MATH-TECH-BINANCE-BTC-SPOT-4H-CURRENT",
+      "market://STRUCT-BTC-SPOT-CURRENT"
+    ],
+    "classifications": {
+      "structure_class": "MIXED_OR_RANGE",
+      "directional_strength_band": "WEAK"
+    },
+    "uncertainty": [
+      "Trend is a deterministic label over lagging calculations and confirmed swing geometry, not a forecast."
+    ],
+    "duplicates_measurement_values": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "32471c90a827b2fd9857bd11329bc512000fb71474da3c5a99efeb24b3f8cfaf"
+  }
+}

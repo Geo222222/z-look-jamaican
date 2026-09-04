@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "object_id": "WORLD-BINANCE-BTC-SPOT-4H-20260731",
+  "object_type": "MARKET_WORLD_SNAPSHOT",
+  "layer": "INDEX",
+  "truth_class": "REFERENCE_INDEX",
+  "authority": "INDEX_ONLY",
+  "subject": {
+    "instrument": "BTC-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "BTC"
+  },
+  "effective_at": "2026-07-31T20:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T20:00:00Z"
+  },
+  "input_refs": [
+    {
+      "ref": "market://EVIDENCE-BINANCE-BTC-SPOT-4H-1785528000000",
+      "relationship": "INDEXES_EVIDENCE",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://MEAS-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "INDEXES_MEASUREMENT",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    },
+    {
+      "ref": "market://MATH-TECH-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "INDEXES_DERIVED_MATH",
+      "required": true,
+      "expected_object_type": "TECHNICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-STAT-BINANCE-BTC-SPOT-4H-CURRENT",
+      "relationship": "INDEXES_DERIVED_MATH",
+      "required": true,
+      "expected_object_type": "STATISTICAL_CALCULATION"
+    },
+    {
+      "ref": "market://MATH-REL-BTC-SPOT-PERP-4H",
+      "relationship": "INDEXES_DERIVED_MATH",
+      "required": true,
+      "expected_object_type": "RELATIVE_CALCULATION"
+    },
+    {
+      "ref": "market://STRUCT-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STRUCTURE",
+      "required": true,
+      "expected_object_type": "PRICE_STRUCTURE"
+    },
+    {
+      "ref": "market://PATTERN-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STRUCTURE",
+      "required": true,
+      "expected_object_type": "PATTERN_DETECTION"
+    },
+    {
+      "ref": "market://CONTEXT-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_CONTEXT",
+      "required": true,
+      "expected_object_type": "MARKET_CONTEXT"
+    },
+    {
+      "ref": "market://STATE-TREND-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "TREND_STATE"
+    },
+    {
+      "ref": "market://STATE-VOL-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "VOLATILITY_STATE"
+    },
+    {
+      "ref": "market://STATE-MOM-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "MOMENTUM_STATE"
+    },
+    {
+      "ref": "market://STATE-PART-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "PARTICIPATION_STATE"
+    },
+    {
+      "ref": "market://STATE-CORR-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "CORRELATION_STATE"
+    },
+    {
+      "ref": "market://STATE-RISK-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "RISK_STATE"
+    },
+    {
+      "ref": "market://STATE-LIQ-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "LIQUIDITY_STATE"
+    },
+    {
+      "ref": "market://STATE-POS-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STATE",
+      "required": true,
+      "expected_object_type": "POSITIONING_STATE"
+    },
+    {
+      "ref": "market://TRANS-BTC-SPOT-TREND",
+      "relationship": "INDEXES_TRANSITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-BTC-SPOT-VOLATILITY",
+      "relationship": "INDEXES_TRANSITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://TRANS-BTC-SPOT-MOMENTUM",
+      "relationship": "INDEXES_TRANSITION",
+      "required": true,
+      "expected_object_type": "STATE_TRANSITION"
+    },
+    {
+      "ref": "market://STORY-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_STORY",
+      "required": true,
+      "expected_object_type": "MARKET_STORY"
+    },
+    {
+      "ref": "market://MATCH-BTC-SPOT-STRAT-ARCH-TREND-CONTINUATION",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-BTC-SPOT-STRAT-ARCH-BREAKOUT-RETEST",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-BTC-SPOT-STRAT-ARCH-RANGE-FADE",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-BTC-SPOT-STRAT-ARCH-VOLATILITY-EXPANSION",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-BTC-SPOT-STRAT-ARCH-EXHAUSTION-REVERSAL",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-BTC-SPOT-STRAT-ARCH-FUNDING-CARRY",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-BTC-SPOT-STRAT-ARCH-BASIS-CONVERGENCE",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-BTC-SPOT-STRAT-ARCH-SPOT-PERP-LEAD-LAG",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://MATCH-BTC-SPOT-STRAT-ARCH-LIQUIDATION-SQUEEZE",
+      "relationship": "INDEXES_STRATEGY_APPLICABILITY",
+      "required": true,
+      "expected_object_type": "STRATEGY_APPLICABILITY"
+    },
+    {
+      "ref": "market://EVIDENCE-PORTFOLIO-BTC-SPOT-BLOCKED",
+      "relationship": "INDEXES_EVIDENCE",
+      "required": true,
+      "expected_object_type": "PORTFOLIO_OBSERVATION"
+    },
+    {
+      "ref": "market://OPPORTUNITY-BTC-SPOT-CURRENT",
+      "relationship": "INDEXES_OPPORTUNITY",
+      "required": true,
+      "expected_object_type": "OPPORTUNITY_CANDIDATE"
+    }
+  ],
+  "method": {
+    "name": "REFERENCE_ONLY_WORLD_INDEX",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "indexed_object_count": 31
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "snapshot_id": "WORLD-BINANCE-BTC-SPOT-4H-20260731",
+    "instrument": "BTC-USDT-SPOT",
+    "as_of": "2026-07-31T20:00:00Z",
+    "evidence_refs": [
+      "market://EVIDENCE-BINANCE-BTC-SPOT-4H-1785528000000",
+      "market://EVIDENCE-PORTFOLIO-BTC-SPOT-BLOCKED"
+    ],
+    "measurement_refs": [
+      "market://MEAS-BINANCE-BTC-SPOT-4H-CURRENT"
+    ],
+    "derived_math_refs": [
+      "market://MATH-TECH-BINANCE-BTC-SPOT-4H-CURRENT",
+      "market://MATH-STAT-BINANCE-BTC-SPOT-4H-CURRENT",
+      "market://MATH-REL-BTC-SPOT-PERP-4H"
+    ],
+    "structure_refs": [
+      "market://STRUCT-BTC-SPOT-CURRENT",
+      "market://PATTERN-BTC-SPOT-CURRENT"
+    ],
+    "perception_refs": [],
+    "context_refs": [
+      "market://CONTEXT-BTC-SPOT-CURRENT"
+    ],
+    "state_refs": [
+      "market://STATE-TREND-BTC-SPOT-CURRENT",
+      "market://STATE-VOL-BTC-SPOT-CURRENT",
+      "market://STATE-MOM-BTC-SPOT-CURRENT",
+      "market://STATE-PART-BTC-SPOT-CURRENT",
+      "market://STATE-CORR-BTC-SPOT-CURRENT",
+      "market://STATE-RISK-BTC-SPOT-CURRENT",
+      "market://STATE-LIQ-BTC-SPOT-CURRENT",
+      "market://STATE-POS-BTC-SPOT-CURRENT"
+    ],
+    "transition_refs": [
+      "market://TRANS-BTC-SPOT-TREND",
+      "market://TRANS-BTC-SPOT-VOLATILITY",
+      "market://TRANS-BTC-SPOT-MOMENTUM"
+    ],
+    "story_refs": [
+      "market://STORY-BTC-SPOT-CURRENT"
+    ],
+    "strategy_match_refs": [
+      "market://MATCH-BTC-SPOT-STRAT-ARCH-TREND-CONTINUATION",
+      "market://MATCH-BTC-SPOT-STRAT-ARCH-BREAKOUT-RETEST",
+      "market://MATCH-BTC-SPOT-STRAT-ARCH-RANGE-FADE",
+      "market://MATCH-BTC-SPOT-STRAT-ARCH-VOLATILITY-EXPANSION",
+      "market://MATCH-BTC-SPOT-STRAT-ARCH-EXHAUSTION-REVERSAL",
+      "market://MATCH-BTC-SPOT-STRAT-ARCH-FUNDING-CARRY",
+      "market://MATCH-BTC-SPOT-STRAT-ARCH-BASIS-CONVERGENCE",
+      "market://MATCH-BTC-SPOT-STRAT-ARCH-SPOT-PERP-LEAD-LAG",
+      "market://MATCH-BTC-SPOT-STRAT-ARCH-LIQUIDATION-SQUEEZE"
+    ],
+    "opportunity_refs": [
+      "market://OPPORTUNITY-BTC-SPOT-CURRENT"
+    ],
+    "contains_embedded_market_values": false,
+    "execution_authority": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "4db52c837fd44a580d068ee20eaed86466bf8178195f2efd8cb65c276abf3047"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "object_id": "MATH-STAT-BINANCE-ETH-PERPETUAL-4H-PRIOR",
+  "object_type": "STATISTICAL_CALCULATION",
+  "layer": "DERIVED_MATH",
+  "truth_class": "STATISTICAL_ESTIMATE",
+  "authority": "DERIVED_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T16:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T16:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MEAS-BINANCE-ETH-PERPETUAL-4H-PRIOR",
+      "relationship": "ESTIMATED_FROM",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    }
+  ],
+  "method": {
+    "name": "ROLLING_DISTRIBUTION_STATISTICS",
+    "version": "1.0.0",
+    "deterministic": true,
+    "parameters": {
+      "zscore_window": 30,
+      "autocorrelation_lag": 1
+    }
+  },
+  "quality": {
+    "status": "VALID",
+    "input_rows": 249,
+    "stationarity_claimed": false
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "measurement_ref": "market://MEAS-BINANCE-ETH-PERPETUAL-4H-PRIOR",
+    "values": {
+      "mean_log_return": 0.0003166377,
+      "rolling_variance": 0.000107432,
+      "rolling_volatility": 0.0103649407,
+      "skewness": 0.0886289163,
+      "excess_kurtosis": 2.4353340435,
+      "lag1_autocorrelation": -0.0765804422,
+      "volume_zscore_30": -0.8891984382,
+      "return_zscore_30": 0.34409123,
+      "absolute_return_percentile": 0.3306451613
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "a09630e333be456869f37664e023bbb32982593d34de055e8f2cc2fddf1fe27f"
+  }
+}

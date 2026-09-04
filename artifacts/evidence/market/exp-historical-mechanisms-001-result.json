@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-HISTORICAL-MECHANISMS-001",
+  "evaluated_at": "2026-09-02T02:13:58Z",
+  "status": "RESOLVED",
+  "resolution": "REJECTED_SOURCE_ALIGNMENT_GATE",
+  "preregistration_path": "artifacts/evidence/market/exp-historical-mechanisms-001-preregistration.json",
+  "preregistration_sha256": "d4bd986b9b6a97dad281ebe87cad9c9ca3d86c08ae5834c7a78cfce8d39a1bc2",
+  "manifest_path": "artifacts/market_data/historical/binance-spot-perpetual-5m-2025-08_2026-07.manifest.json",
+  "manifest_sha256": "7c80252ade4e9742cf05d25af28be465e98252ce74033ff52b72e6e8a297b5d4",
+  "source_integrity": {
+    "archive_count": 96,
+    "all_official_checksums_verified": true,
+    "stored_source_bytes": 24856486
+  },
+  "observed_quality": [
+    {
+      "exchange": "binance",
+      "asset": "BTC",
+      "spot_bar_count": 105120,
+      "perpetual_bar_count": 105120,
+      "premium_index_bar_count": 104832,
+      "spot_gaps": 0,
+      "perpetual_gaps": 0,
+      "premium_index_gaps": 1,
+      "missing_premium_index_bars": 288,
+      "gap_after": "2026-06-28T23:55:00Z",
+      "next_available": "2026-06-30T00:00:00Z"
+    },
+    {
+      "exchange": "binance",
+      "asset": "ETH",
+      "spot_bar_count": 105120,
+      "perpetual_bar_count": 105120,
+      "premium_index_bar_count": 104832,
+      "spot_gaps": 0,
+      "perpetual_gaps": 0,
+      "premium_index_gaps": 1,
+      "missing_premium_index_bars": 288,
+      "gap_after": "2026-06-28T23:55:00Z",
+      "next_available": "2026-06-30T00:00:00Z"
+    }
+  ],
+  "economic_rows_evaluated": 0,
+  "streams_evaluated": 0,
+  "observed": "Both spot and perpetual histories were continuous and exactly aligned. Both checksum-valid premium-index histories omitted the same 288 five-minute bars on 2026-06-29 UTC. The frozen rule required complete three-surface alignment, so evaluation stopped before signals or returns were inspected.",
+  "decision": "FAIL_CLOSED_AND_PRESERVE",
+  "next_action": "Under a new child experiment ID, keep every economic rule unchanged, retain the complete spot/perpetual rows, represent the auxiliary premium index as explicitly unavailable for the 288 affected timestamps, and block only basis signals that require a missing premium observation.",
+  "capital_used_usd": "0.00",
+  "orders_sent": 0,
+  "live_or_capital_authority_earned": false
+}

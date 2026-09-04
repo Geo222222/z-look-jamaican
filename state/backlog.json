@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:23:00Z",
+  "updated_at": "2026-09-02T02:19:50Z",
   "ranking_method": "priority_score is a 0-100 judgment combining information gain, mission value, falsification cost, reversibility, risk, dependency burden, and reuse value; assumptions remain explicit in each task.",
   "items": [
     {
@@ -316,6 +316,18 @@
       "acceptance": "Several preregistered time-separated public windows cover different activity/spread/depth regimes and yield reproducible distributions with the qualified journal; they either support or reject configured public-observable bounds without inferring fees, order latency, fill truth, or edge.",
       "reversal_condition": "Stop if marginal windows do not improve tail estimates, storage/infrastructure cost exceeds information value, provider terms or schemas change, or any authenticated/financial surface would be required.",
       "updated_at": "2026-09-01T18:23:00Z"
+    },
+    {
+      "id": "TASK-MKT-006",
+      "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+      "title": "Falsify same-exchange spot/perpetual economic mechanisms from checksum-verified history",
+      "status": "completed",
+      "priority_score": 99,
+      "score_basis": {"information_gain":5,"mission_value":5,"low_falsification_cost":5,"reversibility":5,"risk_control":5,"reuse_value":4},
+      "depends_on": ["TASK-MKT-001","TASK-MKT-004"],
+      "acceptance": "The frozen Binance BTC/ETH spot and USD-M perpetual design downloads only official checksum-verified history, enforces aligned data quality and no-lookahead, includes funding and conservative trading costs, reports every frozen walk-forward stream, and nominates at most one family for separate prospective validation.",
+      "reversal_condition": "Reject or redesign under a new experiment ID if integrity, same-exchange alignment, futures economics, family agreement, stability, corrected significance, or conservative net expectancy fails.",
+      "updated_at": "2026-09-02T02:19:50Z"
     }
   ]
 }

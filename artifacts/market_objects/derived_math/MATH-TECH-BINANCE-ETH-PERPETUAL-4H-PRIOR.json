@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "object_id": "MATH-TECH-BINANCE-ETH-PERPETUAL-4H-PRIOR",
+  "object_type": "TECHNICAL_CALCULATION",
+  "layer": "DERIVED_MATH",
+  "truth_class": "DETERMINISTIC_CALCULATION",
+  "authority": "DERIVED_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-PERPETUAL",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T16:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T16:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://MEAS-BINANCE-ETH-PERPETUAL-4H-PRIOR",
+      "relationship": "CALCULATED_FROM",
+      "required": true,
+      "expected_object_type": "NORMALIZED_MEASUREMENT"
+    }
+  ],
+  "method": {
+    "name": "WILDER_AND_EMA_TECHNICALS",
+    "version": "1.0.0",
+    "deterministic": true,
+    "parameters": {
+      "rsi": 14,
+      "atr": 14,
+      "adx": 14,
+      "ema": [
+        20,
+        50,
+        200
+      ],
+      "bollinger": [
+        20,
+        2
+      ]
+    }
+  },
+  "quality": {
+    "status": "VALID",
+    "input_rows": 249,
+    "unavailable_values": []
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "measurement_ref": "market://MEAS-BINANCE-ETH-PERPETUAL-4H-PRIOR",
+    "window": "4H",
+    "values": {
+      "rsi_14": 39.9365781119,
+      "ema_20": 1898.3837555206,
+      "ema_50": 1898.2561088006,
+      "ema_200": 1808.8285560816,
+      "atr_14": 28.1674024009,
+      "adx_14": 13.457957726,
+      "bollinger_bandwidth_20_2": 0.0387572955
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "148bc8f4c1c641cbb44196271ec2a9d70a33f2b7b0a493adac36b29f27aaca44"
+  }
+}

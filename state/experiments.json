@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T18:56:00Z",
+  "updated_at": "2026-09-02T02:19:50Z",
   "authority": "Canonical lifecycle/index; immutable hypotheses and parameters live in hash-pinned preregistration artifacts; observations/results remain in their declared stores.",
   "items": [
     {
@@ -128,6 +128,34 @@
       "failure_gate": "Any zero-effect boundary breach, corrupt/non-replayable stream, unexplained sequence failure, stale evidence, resource breach, or prior-ID mutation.",
       "lineage": {"parent_experiment_id": "EXP-MICROSTREAM-004", "capability_id": "CAP-MARKET-DATA-QUALITY-001"},
       "resolution": null
+    },
+    {
+      "id": "EXP-HISTORICAL-MECHANISMS-001",
+      "status": "RESOLVED",
+      "hypothesis": "One same-exchange spot/perpetual mechanism family has positive, time-stable historical expectancy after funding, conservative costs, walk-forward thresholds, and fourteen-stream multiplicity correction.",
+      "preregistration_path": "artifacts/evidence/market/exp-historical-mechanisms-001-preregistration.json",
+      "preregistration_sha256": "d4bd986b9b6a97dad281ebe87cad9c9ca3d86c08ae5834c7a78cfce8d39a1bc2",
+      "observation_store": "artifacts/evidence/market/exp-historical-mechanisms-001-result.json",
+      "resume_command": null,
+      "reconciliation": "official SHA-256 checksums, aligned Binance spot/USD-M perpetual/premium bars, official funding rates, and deterministic anchored walk-forward replay",
+      "evidence_gate": "every frozen asset-target stream in a family passes trade, fold-stability, drawdown, concentration, net-return, and Bonferroni gates at 20 bps per side",
+      "failure_gate": "source/alignment/no-lookahead/funding/cost failure or any frozen family stream failing its evidence gate",
+      "lineage": {"parent_experiment_id": "EXP-MKT-001", "capability_id": "CAP-CRYPTO-SPOT-FUTURES-MECHANISMS-001"},
+      "resolution": "REJECTED_SOURCE_ALIGNMENT_GATE"
+    },
+    {
+      "id": "EXP-HISTORICAL-MECHANISMS-002",
+      "status": "RESOLVED",
+      "hypothesis": "One inherited same-exchange spot/perpetual mechanism family has positive, time-stable historical expectancy after explicit auxiliary premium unavailability, funding, conservative costs, walk-forward thresholds, and fourteen-stream multiplicity correction.",
+      "preregistration_path": "artifacts/evidence/market/exp-historical-mechanisms-002-preregistration.json",
+      "preregistration_sha256": "0574aafc7d3e676681758c0d7e7ccf1e5de5eec43702775b74046dbe31c842bf",
+      "observation_store": "artifacts/evidence/market/exp-historical-mechanisms-002-result.json",
+      "resume_command": null,
+      "reconciliation": "immutable parent source manifest, complete aligned spot/perpetual bars, explicit 288-bar premium-index unavailability per asset, official funding, and deterministic anchored walk-forward replay",
+      "evidence_gate": "every inherited asset-target stream in a family passes trade, fold-stability, drawdown, concentration, net-return, and Bonferroni gates at 20 bps per side",
+      "failure_gate": "source/inherited-design/no-lookahead/funding/cost failure, unexpected premium unavailability, or any frozen family stream failing its evidence gate",
+      "lineage": {"parent_experiment_id": "EXP-HISTORICAL-MECHANISMS-001", "capability_id": "CAP-CRYPTO-SPOT-FUTURES-MECHANISMS-001"},
+      "resolution": "REJECTED_NO_FAMILY_PASSED"
     }
   ]
 }

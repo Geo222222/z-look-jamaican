@@ -1,0 +1,4530 @@
+{
+  "schema_version": 1,
+  "object_id": "MEAS-BINANCE-ETH-SPOT-4H-PRIOR",
+  "object_type": "NORMALIZED_MEASUREMENT",
+  "layer": "MEASUREMENT",
+  "truth_class": "NORMALIZED_MEASUREMENT",
+  "authority": "DERIVED_NO_EXECUTION_AUTHORITY",
+  "subject": {
+    "instrument": "ETH-USDT-SPOT",
+    "exchange": "binance",
+    "asset": "ETH",
+    "interval": "4H"
+  },
+  "effective_at": "2026-07-31T16:00:00Z",
+  "created_at": "2026-09-02T03:00:00Z",
+  "source_time_range": {
+    "start": "2026-06-20T08:00:00Z",
+    "end": "2026-07-31T16:00:00Z",
+    "interval": "4H"
+  },
+  "input_refs": [
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1781942400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1781956800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1781971200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1781985600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782000000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782014400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782028800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782043200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782057600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782072000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782086400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782100800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782115200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782129600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782144000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782158400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782172800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782187200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782201600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782216000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782230400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782244800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782259200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782273600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782288000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782302400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782316800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782331200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782345600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782360000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782374400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782388800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782403200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782417600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782432000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782446400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782460800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782475200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782489600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782504000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782518400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782532800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782547200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782561600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782576000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782590400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782604800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782619200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782633600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782648000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782662400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782676800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782691200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782705600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782720000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782734400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782748800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782763200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782777600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782792000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782806400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782820800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782835200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782849600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782864000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782878400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782892800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782907200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782921600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782936000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782950400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782964800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782979200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782993600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783008000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783022400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783036800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783051200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783065600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783080000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783094400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783108800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783123200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783137600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783152000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783166400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783180800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783195200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783209600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783224000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783238400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783252800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783267200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783281600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783296000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783310400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783324800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783339200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783353600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783368000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783382400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783396800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783411200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783425600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783440000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783454400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783468800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783483200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783497600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783512000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783526400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783540800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783555200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783569600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783584000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783598400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783612800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783627200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783641600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783656000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783670400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783684800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783699200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783713600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783728000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783742400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783756800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783771200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783785600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783800000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783814400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783828800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783843200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783857600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783872000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783886400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783900800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783915200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783929600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783944000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783958400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783972800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783987200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784001600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784016000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784030400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784044800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784059200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784073600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784088000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784102400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784116800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784131200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784145600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784160000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784174400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784188800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784203200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784217600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784232000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784246400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784260800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784275200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784289600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784304000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784318400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784332800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784347200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784361600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784376000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784390400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784404800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784419200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784433600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784448000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784462400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784476800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784491200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784505600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784520000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784534400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784548800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784563200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784577600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784592000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784606400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784620800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784635200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784649600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784664000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784678400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784692800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784707200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784721600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784736000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784750400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784764800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784779200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784793600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784808000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784822400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784836800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784851200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784865600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784880000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784894400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784908800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784923200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784937600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784952000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784966400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784980800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784995200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785009600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785024000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785038400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785052800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785067200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785081600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785096000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785110400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785124800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785139200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785153600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785168000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785182400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785196800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785211200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785225600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785240000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785254400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785268800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785283200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785297600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785312000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785326400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785340800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785355200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785369600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785384000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785398400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785412800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785427200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785441600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785456000000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785470400000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785484800000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785499200000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    },
+    {
+      "ref": "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785513600000",
+      "relationship": "NORMALIZES",
+      "required": true,
+      "expected_object_type": "MARKET_OBSERVATION"
+    }
+  ],
+  "method": {
+    "name": "PRICE_SERIES_NORMALIZER",
+    "version": "1.0.0",
+    "deterministic": true
+  },
+  "quality": {
+    "status": "VALID",
+    "input_count": 249
+  },
+  "permissions": {
+    "execution_authority": false,
+    "capital_authority": false,
+    "can_create_execution_request": false
+  },
+  "payload": {
+    "evidence_refs": [
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1781942400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1781956800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1781971200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1781985600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782000000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782014400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782028800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782043200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782057600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782072000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782086400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782100800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782115200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782129600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782144000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782158400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782172800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782187200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782201600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782216000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782230400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782244800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782259200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782273600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782288000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782302400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782316800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782331200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782345600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782360000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782374400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782388800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782403200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782417600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782432000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782446400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782460800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782475200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782489600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782504000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782518400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782532800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782547200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782561600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782576000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782590400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782604800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782619200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782633600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782648000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782662400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782676800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782691200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782705600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782720000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782734400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782748800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782763200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782777600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782792000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782806400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782820800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782835200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782849600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782864000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782878400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782892800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782907200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782921600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782936000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782950400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782964800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782979200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1782993600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783008000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783022400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783036800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783051200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783065600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783080000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783094400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783108800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783123200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783137600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783152000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783166400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783180800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783195200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783209600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783224000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783238400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783252800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783267200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783281600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783296000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783310400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783324800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783339200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783353600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783368000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783382400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783396800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783411200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783425600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783440000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783454400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783468800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783483200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783497600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783512000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783526400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783540800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783555200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783569600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783584000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783598400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783612800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783627200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783641600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783656000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783670400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783684800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783699200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783713600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783728000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783742400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783756800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783771200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783785600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783800000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783814400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783828800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783843200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783857600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783872000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783886400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783900800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783915200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783929600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783944000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783958400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783972800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1783987200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784001600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784016000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784030400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784044800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784059200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784073600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784088000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784102400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784116800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784131200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784145600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784160000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784174400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784188800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784203200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784217600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784232000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784246400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784260800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784275200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784289600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784304000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784318400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784332800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784347200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784361600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784376000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784390400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784404800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784419200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784433600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784448000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784462400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784476800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784491200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784505600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784520000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784534400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784548800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784563200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784577600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784592000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784606400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784620800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784635200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784649600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784664000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784678400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784692800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784707200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784721600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784736000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784750400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784764800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784779200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784793600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784808000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784822400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784836800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784851200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784865600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784880000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784894400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784908800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784923200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784937600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784952000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784966400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784980800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1784995200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785009600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785024000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785038400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785052800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785067200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785081600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785096000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785110400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785124800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785139200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785153600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785168000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785182400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785196800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785211200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785225600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785240000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785254400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785268800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785283200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785297600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785312000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785326400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785340800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785355200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785369600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785384000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785398400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785412800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785427200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785441600000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785456000000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785470400000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785484800000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785499200000",
+      "market://EVIDENCE-BINANCE-ETH-SPOT-4H-1785513600000"
+    ],
+    "row_count": 249,
+    "rows": [
+      {
+        "timestamp": "2026-06-20T08:00:00Z",
+        "open": "1725.81",
+        "high": "1731.76",
+        "low": "1721.25",
+        "close": "1727.18",
+        "volume": "0",
+        "quote_volume": "22978204.973372996",
+        "trade_count": 167591,
+        "taker_buy_quote_volume": "13224840.092409004"
+      },
+      {
+        "timestamp": "2026-06-20T12:00:00Z",
+        "open": "1727.18",
+        "high": "1749.55",
+        "low": "1708.11",
+        "close": "1740.63",
+        "volume": "0",
+        "quote_volume": "78859368.24936302",
+        "trade_count": 584044,
+        "taker_buy_quote_volume": "39649452.575553015"
+      },
+      {
+        "timestamp": "2026-06-20T16:00:00Z",
+        "open": "1740.63",
+        "high": "1740.91",
+        "low": "1721.03",
+        "close": "1729.27",
+        "volume": "0",
+        "quote_volume": "40574940.080848",
+        "trade_count": 293750,
+        "taker_buy_quote_volume": "19976964.055862002"
+      },
+      {
+        "timestamp": "2026-06-20T20:00:00Z",
+        "open": "1729.27",
+        "high": "1746.17",
+        "low": "1726.53",
+        "close": "1741.08",
+        "volume": "0",
+        "quote_volume": "59657471.85362099",
+        "trade_count": 267793,
+        "taker_buy_quote_volume": "33406312.968342"
+      },
+      {
+        "timestamp": "2026-06-21T00:00:00Z",
+        "open": "1741.08",
+        "high": "1741.45",
+        "low": "1733.51",
+        "close": "1737.87",
+        "volume": "0",
+        "quote_volume": "19956063.627311006",
+        "trade_count": 174336,
+        "taker_buy_quote_volume": "9160948.570965001"
+      },
+      {
+        "timestamp": "2026-06-21T04:00:00Z",
+        "open": "1737.88",
+        "high": "1741.41",
+        "low": "1729.8",
+        "close": "1732.36",
+        "volume": "0",
+        "quote_volume": "33212764.297998987",
+        "trade_count": 178328,
+        "taker_buy_quote_volume": "19743349.348572996"
+      },
+      {
+        "timestamp": "2026-06-21T08:00:00Z",
+        "open": "1732.36",
+        "high": "1737.02",
+        "low": "1718.56",
+        "close": "1725.36",
+        "volume": "0",
+        "quote_volume": "33901130.44174901",
+        "trade_count": 230369,
+        "taker_buy_quote_volume": "13024279.304218998"
+      },
+      {
+        "timestamp": "2026-06-21T12:00:00Z",
+        "open": "1725.37",
+        "high": "1732.57",
+        "low": "1717.14",
+        "close": "1730.72",
+        "volume": "0",
+        "quote_volume": "32769162.118902996",
+        "trade_count": 263935,
+        "taker_buy_quote_volume": "16049806.848926999"
+      },
+      {
+        "timestamp": "2026-06-21T16:00:00Z",
+        "open": "1730.71",
+        "high": "1739.32",
+        "low": "1721.67",
+        "close": "1734.14",
+        "volume": "0",
+        "quote_volume": "34932609.16376901",
+        "trade_count": 260447,
+        "taker_buy_quote_volume": "18480121.929305"
+      },
+      {
+        "timestamp": "2026-06-21T20:00:00Z",
+        "open": "1734.14",
+        "high": "1735.34",
+        "low": "1702.0",
+        "close": "1706.94",
+        "volume": "0",
+        "quote_volume": "58867855.406794004",
+        "trade_count": 551184,
+        "taker_buy_quote_volume": "27383873.631086994"
+      },
+      {
+        "timestamp": "2026-06-22T00:00:00Z",
+        "open": "1706.94",
+        "high": "1759.84",
+        "low": "1706.94",
+        "close": "1730.0",
+        "volume": "0",
+        "quote_volume": "83790596.54606399",
+        "trade_count": 759671,
+        "taker_buy_quote_volume": "44619485.990568"
+      },
+      {
+        "timestamp": "2026-06-22T04:00:00Z",
+        "open": "1730.0",
+        "high": "1751.58",
+        "low": "1727.69",
+        "close": "1746.34",
+        "volume": "0",
+        "quote_volume": "54891031.23205299",
+        "trade_count": 327318,
+        "taker_buy_quote_volume": "28478773.480792996"
+      },
+      {
+        "timestamp": "2026-06-22T08:00:00Z",
+        "open": "1746.34",
+        "high": "1774.7",
+        "low": "1743.56",
+        "close": "1767.68",
+        "volume": "0",
+        "quote_volume": "70127982.633223",
+        "trade_count": 424238,
+        "taker_buy_quote_volume": "35503241.493257"
+      },
+      {
+        "timestamp": "2026-06-22T12:00:00Z",
+        "open": "1767.68",
+        "high": "1779.9",
+        "low": "1742.41",
+        "close": "1744.74",
+        "volume": "0",
+        "quote_volume": "113562874.53842999",
+        "trade_count": 827601,
+        "taker_buy_quote_volume": "54486314.43297601"
+      },
+      {
+        "timestamp": "2026-06-22T16:00:00Z",
+        "open": "1744.75",
+        "high": "1747.7",
+        "low": "1729.15",
+        "close": "1734.59",
+        "volume": "0",
+        "quote_volume": "86271332.46014",
+        "trade_count": 561698,
+        "taker_buy_quote_volume": "41328068.978131"
+      },
+      {
+        "timestamp": "2026-06-22T20:00:00Z",
+        "open": "1734.59",
+        "high": "1740.07",
+        "low": "1717.02",
+        "close": "1728.19",
+        "volume": "0",
+        "quote_volume": "49857101.379349",
+        "trade_count": 402517,
+        "taker_buy_quote_volume": "26105942.369579002"
+      },
+      {
+        "timestamp": "2026-06-23T00:00:00Z",
+        "open": "1728.19",
+        "high": "1736.25",
+        "low": "1719.75",
+        "close": "1729.9",
+        "volume": "0",
+        "quote_volume": "32377372.501792006",
+        "trade_count": 370164,
+        "taker_buy_quote_volume": "17400180.306975"
+      },
+      {
+        "timestamp": "2026-06-23T04:00:00Z",
+        "open": "1729.91",
+        "high": "1731.25",
+        "low": "1680.52",
+        "close": "1683.01",
+        "volume": "0",
+        "quote_volume": "88283236.939908",
+        "trade_count": 668644,
+        "taker_buy_quote_volume": "39864047.83249201"
+      },
+      {
+        "timestamp": "2026-06-23T08:00:00Z",
+        "open": "1683.02",
+        "high": "1684.8",
+        "low": "1635.65",
+        "close": "1660.9",
+        "volume": "0",
+        "quote_volume": "117983455.44479099",
+        "trade_count": 748102,
+        "taker_buy_quote_volume": "56816614.81641697"
+      },
+      {
+        "timestamp": "2026-06-23T12:00:00Z",
+        "open": "1660.9",
+        "high": "1672.0",
+        "low": "1645.52",
+        "close": "1659.78",
+        "volume": "0",
+        "quote_volume": "80964787.137809",
+        "trade_count": 835298,
+        "taker_buy_quote_volume": "36858058.42237701"
+      },
+      {
+        "timestamp": "2026-06-23T16:00:00Z",
+        "open": "1659.78",
+        "high": "1673.89",
+        "low": "1650.0",
+        "close": "1662.58",
+        "volume": "0",
+        "quote_volume": "64239703.00630799",
+        "trade_count": 503985,
+        "taker_buy_quote_volume": "33639251.51265299"
+      },
+      {
+        "timestamp": "2026-06-23T20:00:00Z",
+        "open": "1662.57",
+        "high": "1672.92",
+        "low": "1660.27",
+        "close": "1667.13",
+        "volume": "0",
+        "quote_volume": "31368533.013358004",
+        "trade_count": 289086,
+        "taker_buy_quote_volume": "17150113.475714006"
+      },
+      {
+        "timestamp": "2026-06-24T00:00:00Z",
+        "open": "1667.13",
+        "high": "1680.46",
+        "low": "1658.18",
+        "close": "1666.67",
+        "volume": "0",
+        "quote_volume": "37372805.72641601",
+        "trade_count": 425689,
+        "taker_buy_quote_volume": "18855582.040676005"
+      },
+      {
+        "timestamp": "2026-06-24T04:00:00Z",
+        "open": "1666.67",
+        "high": "1679.57",
+        "low": "1658.22",
+        "close": "1673.12",
+        "volume": "0",
+        "quote_volume": "40802907.910169",
+        "trade_count": 235407,
+        "taker_buy_quote_volume": "20395044.66812301"
+      },
+      {
+        "timestamp": "2026-06-24T08:00:00Z",
+        "open": "1673.13",
+        "high": "1693.67",
+        "low": "1655.76",
+        "close": "1679.57",
+        "volume": "0",
+        "quote_volume": "56283839.647460006",
+        "trade_count": 450395,
+        "taker_buy_quote_volume": "31356146.812762"
+      },
+      {
+        "timestamp": "2026-06-24T12:00:00Z",
+        "open": "1679.57",
+        "high": "1681.29",
+        "low": "1616.8",
+        "close": "1618.08",
+        "volume": "0",
+        "quote_volume": "145554880.03290904",
+        "trade_count": 1483074,
+        "taker_buy_quote_volume": "66624428.865279"
+      },
+      {
+        "timestamp": "2026-06-24T16:00:00Z",
+        "open": "1618.08",
+        "high": "1636.08",
+        "low": "1552.95",
+        "close": "1584.58",
+        "volume": "0",
+        "quote_volume": "214729380.12820202",
+        "trade_count": 1877922,
+        "taker_buy_quote_volume": "104757811.584961"
+      },
+      {
+        "timestamp": "2026-06-24T20:00:00Z",
+        "open": "1584.59",
+        "high": "1629.82",
+        "low": "1580.0",
+        "close": "1622.17",
+        "volume": "0",
+        "quote_volume": "83122494.49998899",
+        "trade_count": 781612,
+        "taker_buy_quote_volume": "45943842.237381995"
+      },
+      {
+        "timestamp": "2026-06-25T00:00:00Z",
+        "open": "1622.18",
+        "high": "1626.51",
+        "low": "1614.69",
+        "close": "1619.6",
+        "volume": "0",
+        "quote_volume": "38777580.427202",
+        "trade_count": 409691,
+        "taker_buy_quote_volume": "18922717.279809996"
+      },
+      {
+        "timestamp": "2026-06-25T04:00:00Z",
+        "open": "1619.61",
+        "high": "1660.54",
+        "low": "1617.12",
+        "close": "1657.19",
+        "volume": "0",
+        "quote_volume": "104616181.97384296",
+        "trade_count": 598658,
+        "taker_buy_quote_volume": "62042057.03588998"
+      },
+      {
+        "timestamp": "2026-06-25T08:00:00Z",
+        "open": "1657.2",
+        "high": "1658.98",
+        "low": "1628.05",
+        "close": "1633.27",
+        "volume": "0",
+        "quote_volume": "72176910.469439",
+        "trade_count": 416323,
+        "taker_buy_quote_volume": "41431803.631394014"
+      },
+      {
+        "timestamp": "2026-06-25T12:00:00Z",
+        "open": "1633.28",
+        "high": "1650.38",
+        "low": "1532.9",
+        "close": "1570.01",
+        "volume": "0",
+        "quote_volume": "312158132.76700205",
+        "trade_count": 1881201,
+        "taker_buy_quote_volume": "156184743.999259"
+      },
+      {
+        "timestamp": "2026-06-25T16:00:00Z",
+        "open": "1570.01",
+        "high": "1587.7",
+        "low": "1554.6",
+        "close": "1559.42",
+        "volume": "0",
+        "quote_volume": "110334019.87718196",
+        "trade_count": 713930,
+        "taker_buy_quote_volume": "62075161.782985024"
+      },
+      {
+        "timestamp": "2026-06-25T20:00:00Z",
+        "open": "1559.41",
+        "high": "1583.65",
+        "low": "1556.73",
+        "close": "1567.84",
+        "volume": "0",
+        "quote_volume": "63302133.036226",
+        "trade_count": 434777,
+        "taker_buy_quote_volume": "35640509.36297401"
+      },
+      {
+        "timestamp": "2026-06-26T00:00:00Z",
+        "open": "1567.86",
+        "high": "1571.78",
+        "low": "1512.0",
+        "close": "1557.93",
+        "volume": "0",
+        "quote_volume": "128488500.00998397",
+        "trade_count": 884181,
+        "taker_buy_quote_volume": "61798447.971118994"
+      },
+      {
+        "timestamp": "2026-06-26T04:00:00Z",
+        "open": "1557.93",
+        "high": "1586.5",
+        "low": "1543.43",
+        "close": "1581.12",
+        "volume": "0",
+        "quote_volume": "107766090.300502",
+        "trade_count": 521120,
+        "taker_buy_quote_volume": "61292135.56038199"
+      },
+      {
+        "timestamp": "2026-06-26T08:00:00Z",
+        "open": "1581.12",
+        "high": "1582.43",
+        "low": "1541.01",
+        "close": "1545.14",
+        "volume": "0",
+        "quote_volume": "110555875.30742098",
+        "trade_count": 626938,
+        "taker_buy_quote_volume": "50328025.502352"
+      },
+      {
+        "timestamp": "2026-06-26T12:00:00Z",
+        "open": "1545.15",
+        "high": "1588.23",
+        "low": "1521.54",
+        "close": "1580.14",
+        "volume": "0",
+        "quote_volume": "187134274.017346",
+        "trade_count": 1233188,
+        "taker_buy_quote_volume": "99429420.43835498"
+      },
+      {
+        "timestamp": "2026-06-26T16:00:00Z",
+        "open": "1580.13",
+        "high": "1594.7",
+        "low": "1570.32",
+        "close": "1574.51",
+        "volume": "0",
+        "quote_volume": "85777417.09988895",
+        "trade_count": 520973,
+        "taker_buy_quote_volume": "45360231.57064501"
+      },
+      {
+        "timestamp": "2026-06-26T20:00:00Z",
+        "open": "1574.51",
+        "high": "1583.4",
+        "low": "1568.0",
+        "close": "1578.68",
+        "volume": "0",
+        "quote_volume": "41247917.115430005",
+        "trade_count": 224182,
+        "taker_buy_quote_volume": "23886676.844351996"
+      },
+      {
+        "timestamp": "2026-06-27T00:00:00Z",
+        "open": "1578.68",
+        "high": "1587.17",
+        "low": "1571.55",
+        "close": "1580.62",
+        "volume": "0",
+        "quote_volume": "30231987.850977004",
+        "trade_count": 204564,
+        "taker_buy_quote_volume": "13134677.795383997"
+      },
+      {
+        "timestamp": "2026-06-27T04:00:00Z",
+        "open": "1580.62",
+        "high": "1586.38",
+        "low": "1575.2",
+        "close": "1585.71",
+        "volume": "0",
+        "quote_volume": "24067790.027421005",
+        "trade_count": 138540,
+        "taker_buy_quote_volume": "11253920.679668998"
+      },
+      {
+        "timestamp": "2026-06-27T08:00:00Z",
+        "open": "1585.72",
+        "high": "1585.95",
+        "low": "1579.0",
+        "close": "1584.0",
+        "volume": "0",
+        "quote_volume": "21299404.716425",
+        "trade_count": 125861,
+        "taker_buy_quote_volume": "9451907.793786"
+      },
+      {
+        "timestamp": "2026-06-27T12:00:00Z",
+        "open": "1584.0",
+        "high": "1611.02",
+        "low": "1581.42",
+        "close": "1605.68",
+        "volume": "0",
+        "quote_volume": "54573759.292885005",
+        "trade_count": 283478,
+        "taker_buy_quote_volume": "34394226.984235"
+      },
+      {
+        "timestamp": "2026-06-27T16:00:00Z",
+        "open": "1605.68",
+        "high": "1607.92",
+        "low": "1573.36",
+        "close": "1578.51",
+        "volume": "0",
+        "quote_volume": "47107968.93346399",
+        "trade_count": 308152,
+        "taker_buy_quote_volume": "22841680.943622"
+      },
+      {
+        "timestamp": "2026-06-27T20:00:00Z",
+        "open": "1578.51",
+        "high": "1585.69",
+        "low": "1562.86",
+        "close": "1573.99",
+        "volume": "0",
+        "quote_volume": "31486728.831557993",
+        "trade_count": 221229,
+        "taker_buy_quote_volume": "15878076.019086"
+      },
+      {
+        "timestamp": "2026-06-28T00:00:00Z",
+        "open": "1574.0",
+        "high": "1580.05",
+        "low": "1569.07",
+        "close": "1575.08",
+        "volume": "0",
+        "quote_volume": "19144089.385775",
+        "trade_count": 141596,
+        "taker_buy_quote_volume": "8100101.9864529995"
+      },
+      {
+        "timestamp": "2026-06-28T04:00:00Z",
+        "open": "1575.08",
+        "high": "1577.34",
+        "low": "1562.41",
+        "close": "1575.96",
+        "volume": "0",
+        "quote_volume": "33029342.877761997",
+        "trade_count": 244254,
+        "taker_buy_quote_volume": "18688696.912384003"
+      },
+      {
+        "timestamp": "2026-06-28T08:00:00Z",
+        "open": "1575.96",
+        "high": "1586.35",
+        "low": "1572.23",
+        "close": "1582.87",
+        "volume": "0",
+        "quote_volume": "37713103.092292",
+        "trade_count": 195904,
+        "taker_buy_quote_volume": "18883766.889908005"
+      },
+      {
+        "timestamp": "2026-06-28T12:00:00Z",
+        "open": "1582.86",
+        "high": "1588.82",
+        "low": "1575.04",
+        "close": "1580.89",
+        "volume": "0",
+        "quote_volume": "37448104.312588006",
+        "trade_count": 243238,
+        "taker_buy_quote_volume": "19214133.148778994"
+      },
+      {
+        "timestamp": "2026-06-28T16:00:00Z",
+        "open": "1580.9",
+        "high": "1581.94",
+        "low": "1556.81",
+        "close": "1564.62",
+        "volume": "0",
+        "quote_volume": "42028953.537424006",
+        "trade_count": 276706,
+        "taker_buy_quote_volume": "20253757.246858"
+      },
+      {
+        "timestamp": "2026-06-28T20:00:00Z",
+        "open": "1564.61",
+        "high": "1582.29",
+        "low": "1548.37",
+        "close": "1571.96",
+        "volume": "0",
+        "quote_volume": "51181040.31706299",
+        "trade_count": 404930,
+        "taker_buy_quote_volume": "25113135.118329"
+      },
+      {
+        "timestamp": "2026-06-29T00:00:00Z",
+        "open": "1571.96",
+        "high": "1589.75",
+        "low": "1550.43",
+        "close": "1584.78",
+        "volume": "0",
+        "quote_volume": "58664538.611767",
+        "trade_count": 555570,
+        "taker_buy_quote_volume": "30037432.908322003"
+      },
+      {
+        "timestamp": "2026-06-29T04:00:00Z",
+        "open": "1584.77",
+        "high": "1589.08",
+        "low": "1562.26",
+        "close": "1580.16",
+        "volume": "0",
+        "quote_volume": "38128695.688526995",
+        "trade_count": 303986,
+        "taker_buy_quote_volume": "18510898.906681992"
+      },
+      {
+        "timestamp": "2026-06-29T08:00:00Z",
+        "open": "1580.17",
+        "high": "1587.0",
+        "low": "1569.85",
+        "close": "1574.93",
+        "volume": "0",
+        "quote_volume": "52386427.00255099",
+        "trade_count": 328177,
+        "taker_buy_quote_volume": "24291277.840696"
+      },
+      {
+        "timestamp": "2026-06-29T12:00:00Z",
+        "open": "1574.93",
+        "high": "1597.28",
+        "low": "1557.35",
+        "close": "1580.26",
+        "volume": "0",
+        "quote_volume": "158505978.11559603",
+        "trade_count": 890800,
+        "taker_buy_quote_volume": "82962588.90924701"
+      },
+      {
+        "timestamp": "2026-06-29T16:00:00Z",
+        "open": "1580.26",
+        "high": "1637.58",
+        "low": "1574.06",
+        "close": "1625.6",
+        "volume": "0",
+        "quote_volume": "130640969.71038097",
+        "trade_count": 640608,
+        "taker_buy_quote_volume": "65575089.27350198"
+      },
+      {
+        "timestamp": "2026-06-29T20:00:00Z",
+        "open": "1625.6",
+        "high": "1626.65",
+        "low": "1607.41",
+        "close": "1613.07",
+        "volume": "0",
+        "quote_volume": "54540861.408360004",
+        "trade_count": 240587,
+        "taker_buy_quote_volume": "24998591.954106"
+      },
+      {
+        "timestamp": "2026-06-30T00:00:00Z",
+        "open": "1613.07",
+        "high": "1614.41",
+        "low": "1586.49",
+        "close": "1587.18",
+        "volume": "0",
+        "quote_volume": "55527052.392390996",
+        "trade_count": 269087,
+        "taker_buy_quote_volume": "27750448.684317004"
+      },
+      {
+        "timestamp": "2026-06-30T04:00:00Z",
+        "open": "1587.18",
+        "high": "1596.25",
+        "low": "1579.79",
+        "close": "1592.51",
+        "volume": "0",
+        "quote_volume": "40028930.792647004",
+        "trade_count": 200299,
+        "taker_buy_quote_volume": "18712108.798721008"
+      },
+      {
+        "timestamp": "2026-06-30T08:00:00Z",
+        "open": "1592.51",
+        "high": "1594.28",
+        "low": "1575.85",
+        "close": "1578.58",
+        "volume": "0",
+        "quote_volume": "53528733.969509006",
+        "trade_count": 276160,
+        "taker_buy_quote_volume": "23314196.774252"
+      },
+      {
+        "timestamp": "2026-06-30T12:00:00Z",
+        "open": "1578.57",
+        "high": "1578.58",
+        "low": "1550.2",
+        "close": "1565.18",
+        "volume": "0",
+        "quote_volume": "115780270.74910598",
+        "trade_count": 803417,
+        "taker_buy_quote_volume": "53186125.38479699"
+      },
+      {
+        "timestamp": "2026-06-30T16:00:00Z",
+        "open": "1565.19",
+        "high": "1581.92",
+        "low": "1561.84",
+        "close": "1580.53",
+        "volume": "0",
+        "quote_volume": "51165729.254918",
+        "trade_count": 284527,
+        "taker_buy_quote_volume": "25570045.092370998"
+      },
+      {
+        "timestamp": "2026-06-30T20:00:00Z",
+        "open": "1580.52",
+        "high": "1582.98",
+        "low": "1566.0",
+        "close": "1572.01",
+        "volume": "0",
+        "quote_volume": "34139563.721655",
+        "trade_count": 180248,
+        "taker_buy_quote_volume": "16099373.587361"
+      },
+      {
+        "timestamp": "2026-07-01T00:00:00Z",
+        "open": "1572.0",
+        "high": "1599.19",
+        "low": "1552.92",
+        "close": "1594.81",
+        "volume": "0",
+        "quote_volume": "78495837.35977203",
+        "trade_count": 468108,
+        "taker_buy_quote_volume": "44981268.36379399"
+      },
+      {
+        "timestamp": "2026-07-01T04:00:00Z",
+        "open": "1594.81",
+        "high": "1604.02",
+        "low": "1571.5",
+        "close": "1578.36",
+        "volume": "0",
+        "quote_volume": "63377979.179155014",
+        "trade_count": 320098,
+        "taker_buy_quote_volume": "31420971.837931994"
+      },
+      {
+        "timestamp": "2026-07-01T08:00:00Z",
+        "open": "1578.36",
+        "high": "1585.33",
+        "low": "1567.13",
+        "close": "1569.89",
+        "volume": "0",
+        "quote_volume": "41244449.18885999",
+        "trade_count": 234375,
+        "taker_buy_quote_volume": "19446438.693893"
+      },
+      {
+        "timestamp": "2026-07-01T12:00:00Z",
+        "open": "1569.88",
+        "high": "1631.0",
+        "low": "1565.26",
+        "close": "1620.09",
+        "volume": "0",
+        "quote_volume": "151367641.91973302",
+        "trade_count": 806999,
+        "taker_buy_quote_volume": "75737508.04456499"
+      },
+      {
+        "timestamp": "2026-07-01T16:00:00Z",
+        "open": "1620.1",
+        "high": "1629.26",
+        "low": "1607.17",
+        "close": "1618.09",
+        "volume": "0",
+        "quote_volume": "66745719.870466",
+        "trade_count": 368021,
+        "taker_buy_quote_volume": "33378818.343114"
+      },
+      {
+        "timestamp": "2026-07-01T20:00:00Z",
+        "open": "1618.07",
+        "high": "1646.26",
+        "low": "1608.35",
+        "close": "1609.58",
+        "volume": "0",
+        "quote_volume": "89329039.154811",
+        "trade_count": 480997,
+        "taker_buy_quote_volume": "45240446.71337001"
+      },
+      {
+        "timestamp": "2026-07-02T00:00:00Z",
+        "open": "1609.59",
+        "high": "1642.32",
+        "low": "1597.22",
+        "close": "1639.47",
+        "volume": "0",
+        "quote_volume": "73171477.767431",
+        "trade_count": 372317,
+        "taker_buy_quote_volume": "41650241.081677996"
+      },
+      {
+        "timestamp": "2026-07-02T04:00:00Z",
+        "open": "1639.46",
+        "high": "1639.94",
+        "low": "1614.32",
+        "close": "1615.97",
+        "volume": "0",
+        "quote_volume": "64750161.30917",
+        "trade_count": 360988,
+        "taker_buy_quote_volume": "28437210.595081996"
+      },
+      {
+        "timestamp": "2026-07-02T08:00:00Z",
+        "open": "1615.97",
+        "high": "1657.53",
+        "low": "1615.08",
+        "close": "1650.32",
+        "volume": "0",
+        "quote_volume": "116096420.93214697",
+        "trade_count": 474667,
+        "taker_buy_quote_volume": "65158940.955994"
+      },
+      {
+        "timestamp": "2026-07-02T12:00:00Z",
+        "open": "1650.31",
+        "high": "1725.0",
+        "low": "1647.66",
+        "close": "1697.05",
+        "volume": "0",
+        "quote_volume": "266684433.89962104",
+        "trade_count": 1220994,
+        "taker_buy_quote_volume": "149593055.52891496"
+      },
+      {
+        "timestamp": "2026-07-02T16:00:00Z",
+        "open": "1697.06",
+        "high": "1707.14",
+        "low": "1686.49",
+        "close": "1700.15",
+        "volume": "0",
+        "quote_volume": "65158228.905656",
+        "trade_count": 356765,
+        "taker_buy_quote_volume": "30290530.868577003"
+      },
+      {
+        "timestamp": "2026-07-02T20:00:00Z",
+        "open": "1700.15",
+        "high": "1706.68",
+        "low": "1692.13",
+        "close": "1700.57",
+        "volume": "0",
+        "quote_volume": "37403158.304602005",
+        "trade_count": 213832,
+        "taker_buy_quote_volume": "18315243.44467"
+      },
+      {
+        "timestamp": "2026-07-03T00:00:00Z",
+        "open": "1700.57",
+        "high": "1718.97",
+        "low": "1694.72",
+        "close": "1706.43",
+        "volume": "0",
+        "quote_volume": "58851782.485583",
+        "trade_count": 412559,
+        "taker_buy_quote_volume": "31195373.303550996"
+      },
+      {
+        "timestamp": "2026-07-03T04:00:00Z",
+        "open": "1706.43",
+        "high": "1722.21",
+        "low": "1702.28",
+        "close": "1717.77",
+        "volume": "0",
+        "quote_volume": "52256378.594063",
+        "trade_count": 278720,
+        "taker_buy_quote_volume": "26550686.017496005"
+      },
+      {
+        "timestamp": "2026-07-03T08:00:00Z",
+        "open": "1717.77",
+        "high": "1749.0",
+        "low": "1715.68",
+        "close": "1742.54",
+        "volume": "0",
+        "quote_volume": "94515618.06612399",
+        "trade_count": 562460,
+        "taker_buy_quote_volume": "50958056.940318"
+      },
+      {
+        "timestamp": "2026-07-03T12:00:00Z",
+        "open": "1742.54",
+        "high": "1753.29",
+        "low": "1728.99",
+        "close": "1731.24",
+        "volume": "0",
+        "quote_volume": "92351389.97280598",
+        "trade_count": 500565,
+        "taker_buy_quote_volume": "47731238.395554"
+      },
+      {
+        "timestamp": "2026-07-03T16:00:00Z",
+        "open": "1731.24",
+        "high": "1753.0",
+        "low": "1727.87",
+        "close": "1745.38",
+        "volume": "0",
+        "quote_volume": "45911194.191749",
+        "trade_count": 332478,
+        "taker_buy_quote_volume": "24576619.77385299"
+      },
+      {
+        "timestamp": "2026-07-03T20:00:00Z",
+        "open": "1745.39",
+        "high": "1775.78",
+        "low": "1743.61",
+        "close": "1758.21",
+        "volume": "0",
+        "quote_volume": "80104889.13614199",
+        "trade_count": 471685,
+        "taker_buy_quote_volume": "44275670.10498999"
+      },
+      {
+        "timestamp": "2026-07-04T00:00:00Z",
+        "open": "1758.22",
+        "high": "1764.0",
+        "low": "1744.09",
+        "close": "1753.92",
+        "volume": "0",
+        "quote_volume": "32759415.817823",
+        "trade_count": 271279,
+        "taker_buy_quote_volume": "16134489.008057998"
+      },
+      {
+        "timestamp": "2026-07-04T04:00:00Z",
+        "open": "1753.91",
+        "high": "1764.61",
+        "low": "1751.72",
+        "close": "1758.19",
+        "volume": "0",
+        "quote_volume": "48241722.057156",
+        "trade_count": 257895,
+        "taker_buy_quote_volume": "25602165.111006"
+      },
+      {
+        "timestamp": "2026-07-04T08:00:00Z",
+        "open": "1758.18",
+        "high": "1765.55",
+        "low": "1755.0",
+        "close": "1758.24",
+        "volume": "0",
+        "quote_volume": "30279202.879161",
+        "trade_count": 307243,
+        "taker_buy_quote_volume": "14306534.546706"
+      },
+      {
+        "timestamp": "2026-07-04T12:00:00Z",
+        "open": "1758.23",
+        "high": "1799.92",
+        "low": "1758.23",
+        "close": "1791.09",
+        "volume": "0",
+        "quote_volume": "92529333.18494599",
+        "trade_count": 469138,
+        "taker_buy_quote_volume": "53102859.611623"
+      },
+      {
+        "timestamp": "2026-07-04T16:00:00Z",
+        "open": "1791.08",
+        "high": "1807.65",
+        "low": "1779.0",
+        "close": "1792.83",
+        "volume": "0",
+        "quote_volume": "99154313.40124802",
+        "trade_count": 507520,
+        "taker_buy_quote_volume": "49454196.30290501"
+      },
+      {
+        "timestamp": "2026-07-04T20:00:00Z",
+        "open": "1792.83",
+        "high": "1795.81",
+        "low": "1772.1",
+        "close": "1780.64",
+        "volume": "0",
+        "quote_volume": "36010344.60935199",
+        "trade_count": 171030,
+        "taker_buy_quote_volume": "17100391.309931006"
+      },
+      {
+        "timestamp": "2026-07-05T00:00:00Z",
+        "open": "1780.64",
+        "high": "1780.75",
+        "low": "1757.0",
+        "close": "1761.59",
+        "volume": "0",
+        "quote_volume": "64322776.994559",
+        "trade_count": 322249,
+        "taker_buy_quote_volume": "25101702.191689998"
+      },
+      {
+        "timestamp": "2026-07-05T04:00:00Z",
+        "open": "1761.58",
+        "high": "1772.69",
+        "low": "1760.07",
+        "close": "1770.1",
+        "volume": "0",
+        "quote_volume": "171704728.36250603",
+        "trade_count": 630650,
+        "taker_buy_quote_volume": "82129147.223966"
+      },
+      {
+        "timestamp": "2026-07-05T08:00:00Z",
+        "open": "1770.09",
+        "high": "1773.27",
+        "low": "1748.79",
+        "close": "1760.08",
+        "volume": "0",
+        "quote_volume": "309973568.63966197",
+        "trade_count": 832283,
+        "taker_buy_quote_volume": "146708689.84389204"
+      },
+      {
+        "timestamp": "2026-07-05T12:00:00Z",
+        "open": "1760.08",
+        "high": "1781.28",
+        "low": "1756.03",
+        "close": "1774.67",
+        "volume": "0",
+        "quote_volume": "35386807.294658996",
+        "trade_count": 256930,
+        "taker_buy_quote_volume": "19298206.611318003"
+      },
+      {
+        "timestamp": "2026-07-05T16:00:00Z",
+        "open": "1774.66",
+        "high": "1786.23",
+        "low": "1770.31",
+        "close": "1781.43",
+        "volume": "0",
+        "quote_volume": "32381270.96612701",
+        "trade_count": 225167,
+        "taker_buy_quote_volume": "14675754.640784007"
+      },
+      {
+        "timestamp": "2026-07-05T20:00:00Z",
+        "open": "1781.44",
+        "high": "1808.0",
+        "low": "1769.29",
+        "close": "1785.65",
+        "volume": "0",
+        "quote_volume": "74803966.238566",
+        "trade_count": 443022,
+        "taker_buy_quote_volume": "41063020.614285"
+      },
+      {
+        "timestamp": "2026-07-06T00:00:00Z",
+        "open": "1785.65",
+        "high": "1799.02",
+        "low": "1772.22",
+        "close": "1779.71",
+        "volume": "0",
+        "quote_volume": "51477067.91110498",
+        "trade_count": 378371,
+        "taker_buy_quote_volume": "24535888.93002899"
+      },
+      {
+        "timestamp": "2026-07-06T04:00:00Z",
+        "open": "1779.7",
+        "high": "1784.79",
+        "low": "1764.42",
+        "close": "1772.32",
+        "volume": "0",
+        "quote_volume": "47749629.90858",
+        "trade_count": 255155,
+        "taker_buy_quote_volume": "22746046.95235"
+      },
+      {
+        "timestamp": "2026-07-06T08:00:00Z",
+        "open": "1772.32",
+        "high": "1778.6",
+        "low": "1755.77",
+        "close": "1759.64",
+        "volume": "0",
+        "quote_volume": "58875690.643914014",
+        "trade_count": 269374,
+        "taker_buy_quote_volume": "27796743.147329994"
+      },
+      {
+        "timestamp": "2026-07-06T12:00:00Z",
+        "open": "1759.64",
+        "high": "1788.96",
+        "low": "1728.95",
+        "close": "1788.57",
+        "volume": "0",
+        "quote_volume": "179083609.27409998",
+        "trade_count": 948364,
+        "taker_buy_quote_volume": "93929695.82379599"
+      },
+      {
+        "timestamp": "2026-07-06T16:00:00Z",
+        "open": "1788.57",
+        "high": "1805.0",
+        "low": "1782.42",
+        "close": "1792.76",
+        "volume": "0",
+        "quote_volume": "108710719.038645",
+        "trade_count": 530438,
+        "taker_buy_quote_volume": "55685583.80009501"
+      },
+      {
+        "timestamp": "2026-07-06T20:00:00Z",
+        "open": "1792.76",
+        "high": "1833.4",
+        "low": "1787.26",
+        "close": "1799.56",
+        "volume": "0",
+        "quote_volume": "97896741.27409504",
+        "trade_count": 388963,
+        "taker_buy_quote_volume": "53330595.19832001"
+      },
+      {
+        "timestamp": "2026-07-07T00:00:00Z",
+        "open": "1799.56",
+        "high": "1810.16",
+        "low": "1768.85",
+        "close": "1771.56",
+        "volume": "0",
+        "quote_volume": "66944098.86888498",
+        "trade_count": 378555,
+        "taker_buy_quote_volume": "30131868.042407002"
+      },
+      {
+        "timestamp": "2026-07-07T04:00:00Z",
+        "open": "1771.55",
+        "high": "1782.59",
+        "low": "1757.57",
+        "close": "1771.24",
+        "volume": "0",
+        "quote_volume": "65417463.726118006",
+        "trade_count": 288985,
+        "taker_buy_quote_volume": "32739436.434463006"
+      },
+      {
+        "timestamp": "2026-07-07T08:00:00Z",
+        "open": "1771.23",
+        "high": "1785.0",
+        "low": "1768.37",
+        "close": "1780.77",
+        "volume": "0",
+        "quote_volume": "49210293.24601501",
+        "trade_count": 233940,
+        "taker_buy_quote_volume": "27077921.601028003"
+      },
+      {
+        "timestamp": "2026-07-07T12:00:00Z",
+        "open": "1780.77",
+        "high": "1803.03",
+        "low": "1761.19",
+        "close": "1797.45",
+        "volume": "0",
+        "quote_volume": "116009755.110902",
+        "trade_count": 785298,
+        "taker_buy_quote_volume": "62128855.44106"
+      },
+      {
+        "timestamp": "2026-07-07T16:00:00Z",
+        "open": "1797.45",
+        "high": "1813.16",
+        "low": "1773.5",
+        "close": "1790.45",
+        "volume": "0",
+        "quote_volume": "83697542.77165699",
+        "trade_count": 556320,
+        "taker_buy_quote_volume": "38698107.745427996"
+      },
+      {
+        "timestamp": "2026-07-07T20:00:00Z",
+        "open": "1790.46",
+        "high": "1793.12",
+        "low": "1765.35",
+        "close": "1771.45",
+        "volume": "0",
+        "quote_volume": "49256624.48802103",
+        "trade_count": 277174,
+        "taker_buy_quote_volume": "18204194.553801995"
+      },
+      {
+        "timestamp": "2026-07-08T00:00:00Z",
+        "open": "1771.45",
+        "high": "1785.0",
+        "low": "1741.21",
+        "close": "1751.78",
+        "volume": "0",
+        "quote_volume": "80404740.59779096",
+        "trade_count": 450493,
+        "taker_buy_quote_volume": "36195855.99288801"
+      },
+      {
+        "timestamp": "2026-07-08T04:00:00Z",
+        "open": "1751.74",
+        "high": "1759.69",
+        "low": "1745.01",
+        "close": "1756.7",
+        "volume": "0",
+        "quote_volume": "44490761.312298015",
+        "trade_count": 286717,
+        "taker_buy_quote_volume": "23604381.79572"
+      },
+      {
+        "timestamp": "2026-07-08T08:00:00Z",
+        "open": "1756.7",
+        "high": "1758.7",
+        "low": "1725.18",
+        "close": "1747.95",
+        "volume": "0",
+        "quote_volume": "98675827.77784203",
+        "trade_count": 528879,
+        "taker_buy_quote_volume": "45308141.795508"
+      },
+      {
+        "timestamp": "2026-07-08T12:00:00Z",
+        "open": "1747.95",
+        "high": "1751.25",
+        "low": "1713.44",
+        "close": "1722.96",
+        "volume": "0",
+        "quote_volume": "90459253.46607697",
+        "trade_count": 643326,
+        "taker_buy_quote_volume": "42993846.10735"
+      },
+      {
+        "timestamp": "2026-07-08T16:00:00Z",
+        "open": "1722.96",
+        "high": "1746.52",
+        "low": "1722.78",
+        "close": "1740.98",
+        "volume": "0",
+        "quote_volume": "54463164.251953006",
+        "trade_count": 356233,
+        "taker_buy_quote_volume": "27830160.792449"
+      },
+      {
+        "timestamp": "2026-07-08T20:00:00Z",
+        "open": "1740.99",
+        "high": "1744.81",
+        "low": "1731.41",
+        "close": "1743.54",
+        "volume": "0",
+        "quote_volume": "23949993.595381",
+        "trade_count": 194178,
+        "taker_buy_quote_volume": "11309674.353427002"
+      },
+      {
+        "timestamp": "2026-07-09T00:00:00Z",
+        "open": "1743.55",
+        "high": "1756.79",
+        "low": "1721.93",
+        "close": "1730.7",
+        "volume": "0",
+        "quote_volume": "48303672.851556",
+        "trade_count": 370953,
+        "taker_buy_quote_volume": "21808813.788490996"
+      },
+      {
+        "timestamp": "2026-07-09T04:00:00Z",
+        "open": "1730.7",
+        "high": "1762.36",
+        "low": "1730.35",
+        "close": "1753.31",
+        "volume": "0",
+        "quote_volume": "65808618.565405",
+        "trade_count": 313659,
+        "taker_buy_quote_volume": "37449069.533086"
+      },
+      {
+        "timestamp": "2026-07-09T08:00:00Z",
+        "open": "1753.3",
+        "high": "1758.68",
+        "low": "1741.26",
+        "close": "1744.02",
+        "volume": "0",
+        "quote_volume": "35397227.751036994",
+        "trade_count": 222511,
+        "taker_buy_quote_volume": "16252168.095564"
+      },
+      {
+        "timestamp": "2026-07-09T12:00:00Z",
+        "open": "1744.02",
+        "high": "1752.0",
+        "low": "1733.36",
+        "close": "1739.51",
+        "volume": "0",
+        "quote_volume": "88395030.74909097",
+        "trade_count": 539130,
+        "taker_buy_quote_volume": "42261389.392283015"
+      },
+      {
+        "timestamp": "2026-07-09T16:00:00Z",
+        "open": "1739.51",
+        "high": "1759.82",
+        "low": "1731.99",
+        "close": "1748.51",
+        "volume": "0",
+        "quote_volume": "41825612.733619004",
+        "trade_count": 241982,
+        "taker_buy_quote_volume": "23151729.822205994"
+      },
+      {
+        "timestamp": "2026-07-09T20:00:00Z",
+        "open": "1748.51",
+        "high": "1751.08",
+        "low": "1741.56",
+        "close": "1745.16",
+        "volume": "0",
+        "quote_volume": "23369634.994497",
+        "trade_count": 163828,
+        "taker_buy_quote_volume": "11356144.708362"
+      },
+      {
+        "timestamp": "2026-07-10T00:00:00Z",
+        "open": "1745.17",
+        "high": "1779.68",
+        "low": "1737.68",
+        "close": "1776.12",
+        "volume": "0",
+        "quote_volume": "80059828.145824",
+        "trade_count": 401212,
+        "taker_buy_quote_volume": "42610443.46249999"
+      },
+      {
+        "timestamp": "2026-07-10T04:00:00Z",
+        "open": "1776.13",
+        "high": "1780.33",
+        "low": "1768.57",
+        "close": "1773.2",
+        "volume": "0",
+        "quote_volume": "42342687.787891984",
+        "trade_count": 211473,
+        "taker_buy_quote_volume": "20530957.592234004"
+      },
+      {
+        "timestamp": "2026-07-10T08:00:00Z",
+        "open": "1773.2",
+        "high": "1802.99",
+        "low": "1772.63",
+        "close": "1801.22",
+        "volume": "0",
+        "quote_volume": "82878197.71512802",
+        "trade_count": 358180,
+        "taker_buy_quote_volume": "46504797.55861801"
+      },
+      {
+        "timestamp": "2026-07-10T12:00:00Z",
+        "open": "1801.22",
+        "high": "1812.0",
+        "low": "1775.0",
+        "close": "1791.11",
+        "volume": "0",
+        "quote_volume": "102658845.23542203",
+        "trade_count": 476852,
+        "taker_buy_quote_volume": "53175236.755652"
+      },
+      {
+        "timestamp": "2026-07-10T16:00:00Z",
+        "open": "1791.11",
+        "high": "1799.53",
+        "low": "1781.2",
+        "close": "1792.68",
+        "volume": "0",
+        "quote_volume": "47368296.41289699",
+        "trade_count": 245279,
+        "taker_buy_quote_volume": "21394978.167921998"
+      },
+      {
+        "timestamp": "2026-07-10T20:00:00Z",
+        "open": "1792.68",
+        "high": "1798.0",
+        "low": "1789.6",
+        "close": "1796.85",
+        "volume": "0",
+        "quote_volume": "29647779.573533997",
+        "trade_count": 192375,
+        "taker_buy_quote_volume": "14935020.922193004"
+      },
+      {
+        "timestamp": "2026-07-11T00:00:00Z",
+        "open": "1796.85",
+        "high": "1799.29",
+        "low": "1786.77",
+        "close": "1796.5",
+        "volume": "0",
+        "quote_volume": "29504422.885496996",
+        "trade_count": 149024,
+        "taker_buy_quote_volume": "14901918.515612997"
+      },
+      {
+        "timestamp": "2026-07-11T04:00:00Z",
+        "open": "1796.5",
+        "high": "1803.29",
+        "low": "1794.6",
+        "close": "1800.0",
+        "volume": "0",
+        "quote_volume": "41393222.39503701",
+        "trade_count": 144104,
+        "taker_buy_quote_volume": "21405285.640278"
+      },
+      {
+        "timestamp": "2026-07-11T08:00:00Z",
+        "open": "1799.99",
+        "high": "1803.52",
+        "low": "1795.15",
+        "close": "1800.48",
+        "volume": "0",
+        "quote_volume": "23683229.598781005",
+        "trade_count": 121112,
+        "taker_buy_quote_volume": "10338666.901952002"
+      },
+      {
+        "timestamp": "2026-07-11T12:00:00Z",
+        "open": "1800.47",
+        "high": "1828.0",
+        "low": "1798.42",
+        "close": "1814.83",
+        "volume": "0",
+        "quote_volume": "88826829.55745299",
+        "trade_count": 297261,
+        "taker_buy_quote_volume": "42144727.15895801"
+      },
+      {
+        "timestamp": "2026-07-11T16:00:00Z",
+        "open": "1814.82",
+        "high": "1830.0",
+        "low": "1810.62",
+        "close": "1824.38",
+        "volume": "0",
+        "quote_volume": "80367089.18780997",
+        "trade_count": 228758,
+        "taker_buy_quote_volume": "37566168.46427801"
+      },
+      {
+        "timestamp": "2026-07-11T20:00:00Z",
+        "open": "1824.38",
+        "high": "1829.17",
+        "low": "1786.58",
+        "close": "1787.76",
+        "volume": "0",
+        "quote_volume": "59683615.720579",
+        "trade_count": 256371,
+        "taker_buy_quote_volume": "23605705.511424"
+      },
+      {
+        "timestamp": "2026-07-12T00:00:00Z",
+        "open": "1787.76",
+        "high": "1813.67",
+        "low": "1779.46",
+        "close": "1811.53",
+        "volume": "0",
+        "quote_volume": "54799124.238865994",
+        "trade_count": 279870,
+        "taker_buy_quote_volume": "26017189.595372006"
+      },
+      {
+        "timestamp": "2026-07-12T04:00:00Z",
+        "open": "1811.53",
+        "high": "1812.63",
+        "low": "1789.44",
+        "close": "1798.78",
+        "volume": "0",
+        "quote_volume": "26061931.562103003",
+        "trade_count": 123951,
+        "taker_buy_quote_volume": "9917525.946170004"
+      },
+      {
+        "timestamp": "2026-07-12T08:00:00Z",
+        "open": "1798.78",
+        "high": "1808.94",
+        "low": "1796.48",
+        "close": "1803.77",
+        "volume": "0",
+        "quote_volume": "24623648.558767",
+        "trade_count": 161726,
+        "taker_buy_quote_volume": "11961076.910348002"
+      },
+      {
+        "timestamp": "2026-07-12T12:00:00Z",
+        "open": "1803.77",
+        "high": "1826.92",
+        "low": "1803.0",
+        "close": "1820.93",
+        "volume": "0",
+        "quote_volume": "59384458.66234702",
+        "trade_count": 232037,
+        "taker_buy_quote_volume": "34266690.527661994"
+      },
+      {
+        "timestamp": "2026-07-12T16:00:00Z",
+        "open": "1820.94",
+        "high": "1824.39",
+        "low": "1814.85",
+        "close": "1821.4",
+        "volume": "0",
+        "quote_volume": "49580419.31472598",
+        "trade_count": 136910,
+        "taker_buy_quote_volume": "22390758.984601997"
+      },
+      {
+        "timestamp": "2026-07-12T20:00:00Z",
+        "open": "1821.4",
+        "high": "1824.0",
+        "low": "1797.63",
+        "close": "1806.8",
+        "volume": "0",
+        "quote_volume": "40749264.656368",
+        "trade_count": 228671,
+        "taker_buy_quote_volume": "17686536.877706"
+      },
+      {
+        "timestamp": "2026-07-13T00:00:00Z",
+        "open": "1806.8",
+        "high": "1846.0",
+        "low": "1775.0",
+        "close": "1780.55",
+        "volume": "0",
+        "quote_volume": "180341311.895032",
+        "trade_count": 799801,
+        "taker_buy_quote_volume": "86695057.83941099"
+      },
+      {
+        "timestamp": "2026-07-13T04:00:00Z",
+        "open": "1780.54",
+        "high": "1791.39",
+        "low": "1773.99",
+        "close": "1787.57",
+        "volume": "0",
+        "quote_volume": "60874562.194488",
+        "trade_count": 291810,
+        "taker_buy_quote_volume": "28344922.326876998"
+      },
+      {
+        "timestamp": "2026-07-13T08:00:00Z",
+        "open": "1787.58",
+        "high": "1793.56",
+        "low": "1777.1",
+        "close": "1780.74",
+        "volume": "0",
+        "quote_volume": "44563351.99543599",
+        "trade_count": 219523,
+        "taker_buy_quote_volume": "19159332.438987006"
+      },
+      {
+        "timestamp": "2026-07-13T12:00:00Z",
+        "open": "1780.74",
+        "high": "1786.53",
+        "low": "1762.44",
+        "close": "1777.01",
+        "volume": "0",
+        "quote_volume": "102116332.02966404",
+        "trade_count": 622834,
+        "taker_buy_quote_volume": "46233412.12376801"
+      },
+      {
+        "timestamp": "2026-07-13T16:00:00Z",
+        "open": "1777.0",
+        "high": "1780.73",
+        "low": "1750.2",
+        "close": "1774.92",
+        "volume": "0",
+        "quote_volume": "87092641.007233",
+        "trade_count": 442620,
+        "taker_buy_quote_volume": "41291520.74008799"
+      },
+      {
+        "timestamp": "2026-07-13T20:00:00Z",
+        "open": "1774.93",
+        "high": "1778.05",
+        "low": "1752.59",
+        "close": "1776.72",
+        "volume": "0",
+        "quote_volume": "51946850.96844899",
+        "trade_count": 272714,
+        "taker_buy_quote_volume": "26718331.678659"
+      },
+      {
+        "timestamp": "2026-07-14T00:00:00Z",
+        "open": "1776.71",
+        "high": "1794.47",
+        "low": "1773.41",
+        "close": "1783.65",
+        "volume": "0",
+        "quote_volume": "46070956.04283002",
+        "trade_count": 354675,
+        "taker_buy_quote_volume": "24136799.203262996"
+      },
+      {
+        "timestamp": "2026-07-14T04:00:00Z",
+        "open": "1783.64",
+        "high": "1793.26",
+        "low": "1779.41",
+        "close": "1781.21",
+        "volume": "0",
+        "quote_volume": "41308137.62174699",
+        "trade_count": 228043,
+        "taker_buy_quote_volume": "22267496.03579501"
+      },
+      {
+        "timestamp": "2026-07-14T08:00:00Z",
+        "open": "1781.21",
+        "high": "1805.0",
+        "low": "1779.0",
+        "close": "1798.09",
+        "volume": "0",
+        "quote_volume": "85264476.000115",
+        "trade_count": 336202,
+        "taker_buy_quote_volume": "45116210.542867996"
+      },
+      {
+        "timestamp": "2026-07-14T12:00:00Z",
+        "open": "1798.09",
+        "high": "1888.8",
+        "low": "1794.37",
+        "close": "1875.22",
+        "volume": "0",
+        "quote_volume": "358144351.18996596",
+        "trade_count": 1571099,
+        "taker_buy_quote_volume": "202872122.43925"
+      },
+      {
+        "timestamp": "2026-07-14T16:00:00Z",
+        "open": "1875.22",
+        "high": "1881.56",
+        "low": "1860.56",
+        "close": "1876.74",
+        "volume": "0",
+        "quote_volume": "72936315.895528",
+        "trade_count": 437205,
+        "taker_buy_quote_volume": "37951705.77282701"
+      },
+      {
+        "timestamp": "2026-07-14T20:00:00Z",
+        "open": "1876.74",
+        "high": "1896.14",
+        "low": "1872.06",
+        "close": "1891.87",
+        "volume": "0",
+        "quote_volume": "76249268.519352",
+        "trade_count": 356683,
+        "taker_buy_quote_volume": "40105851.221682"
+      },
+      {
+        "timestamp": "2026-07-15T00:00:00Z",
+        "open": "1891.87",
+        "high": "1893.32",
+        "low": "1864.38",
+        "close": "1876.08",
+        "volume": "0",
+        "quote_volume": "65889958.334445",
+        "trade_count": 409790,
+        "taker_buy_quote_volume": "27958056.300028"
+      },
+      {
+        "timestamp": "2026-07-15T04:00:00Z",
+        "open": "1876.08",
+        "high": "1891.89",
+        "low": "1864.7",
+        "close": "1870.04",
+        "volume": "0",
+        "quote_volume": "68211903.29679298",
+        "trade_count": 288693,
+        "taker_buy_quote_volume": "31023220.246952005"
+      },
+      {
+        "timestamp": "2026-07-15T08:00:00Z",
+        "open": "1870.04",
+        "high": "1886.59",
+        "low": "1870.03",
+        "close": "1884.62",
+        "volume": "0",
+        "quote_volume": "65955633.69310801",
+        "trade_count": 273069,
+        "taker_buy_quote_volume": "35789525.68178401"
+      },
+      {
+        "timestamp": "2026-07-15T12:00:00Z",
+        "open": "1884.62",
+        "high": "1946.52",
+        "low": "1879.25",
+        "close": "1931.95",
+        "volume": "0",
+        "quote_volume": "264343318.43361002",
+        "trade_count": 1078775,
+        "taker_buy_quote_volume": "147921191.14772505"
+      },
+      {
+        "timestamp": "2026-07-15T16:00:00Z",
+        "open": "1931.96",
+        "high": "1937.0",
+        "low": "1904.36",
+        "close": "1924.15",
+        "volume": "0",
+        "quote_volume": "106323551.22314301",
+        "trade_count": 534814,
+        "taker_buy_quote_volume": "52651556.59768901"
+      },
+      {
+        "timestamp": "2026-07-15T20:00:00Z",
+        "open": "1924.15",
+        "high": "1930.71",
+        "low": "1914.89",
+        "close": "1917.86",
+        "volume": "0",
+        "quote_volume": "39744884.66162799",
+        "trade_count": 181016,
+        "taker_buy_quote_volume": "18797933.570093"
+      },
+      {
+        "timestamp": "2026-07-16T00:00:00Z",
+        "open": "1917.86",
+        "high": "1929.0",
+        "low": "1908.12",
+        "close": "1918.7",
+        "volume": "0",
+        "quote_volume": "54089213.981933",
+        "trade_count": 447454,
+        "taker_buy_quote_volume": "23513943.295940995"
+      },
+      {
+        "timestamp": "2026-07-16T04:00:00Z",
+        "open": "1918.7",
+        "high": "1929.48",
+        "low": "1905.0",
+        "close": "1910.63",
+        "volume": "0",
+        "quote_volume": "55879345.03525802",
+        "trade_count": 261782,
+        "taker_buy_quote_volume": "23858754.713574"
+      },
+      {
+        "timestamp": "2026-07-16T08:00:00Z",
+        "open": "1910.64",
+        "high": "1912.85",
+        "low": "1875.56",
+        "close": "1885.26",
+        "volume": "0",
+        "quote_volume": "161340583.68196902",
+        "trade_count": 531557,
+        "taker_buy_quote_volume": "79684056.81481901"
+      },
+      {
+        "timestamp": "2026-07-16T12:00:00Z",
+        "open": "1885.26",
+        "high": "1894.38",
+        "low": "1867.68",
+        "close": "1881.88",
+        "volume": "0",
+        "quote_volume": "120415111.17147402",
+        "trade_count": 694530,
+        "taker_buy_quote_volume": "49826820.691647"
+      },
+      {
+        "timestamp": "2026-07-16T16:00:00Z",
+        "open": "1881.89",
+        "high": "1883.0",
+        "low": "1862.57",
+        "close": "1875.59",
+        "volume": "0",
+        "quote_volume": "62446348.311839014",
+        "trade_count": 367055,
+        "taker_buy_quote_volume": "29265100.660020005"
+      },
+      {
+        "timestamp": "2026-07-16T20:00:00Z",
+        "open": "1875.59",
+        "high": "1881.59",
+        "low": "1857.54",
+        "close": "1864.71",
+        "volume": "0",
+        "quote_volume": "59060103.558587",
+        "trade_count": 274650,
+        "taker_buy_quote_volume": "28312224.894515"
+      },
+      {
+        "timestamp": "2026-07-17T00:00:00Z",
+        "open": "1864.71",
+        "high": "1871.08",
+        "low": "1843.2",
+        "close": "1852.53",
+        "volume": "0",
+        "quote_volume": "82539730.34891702",
+        "trade_count": 524250,
+        "taker_buy_quote_volume": "37269916.164302"
+      },
+      {
+        "timestamp": "2026-07-17T04:00:00Z",
+        "open": "1852.53",
+        "high": "1853.08",
+        "low": "1820.74",
+        "close": "1828.52",
+        "volume": "0",
+        "quote_volume": "83511831.86148602",
+        "trade_count": 407374,
+        "taker_buy_quote_volume": "44485464.537282005"
+      },
+      {
+        "timestamp": "2026-07-17T08:00:00Z",
+        "open": "1828.52",
+        "high": "1843.26",
+        "low": "1821.41",
+        "close": "1839.04",
+        "volume": "0",
+        "quote_volume": "67599773.93389799",
+        "trade_count": 286025,
+        "taker_buy_quote_volume": "42150515.97749602"
+      },
+      {
+        "timestamp": "2026-07-17T12:00:00Z",
+        "open": "1839.05",
+        "high": "1840.58",
+        "low": "1803.05",
+        "close": "1830.88",
+        "volume": "0",
+        "quote_volume": "132843157.48288801",
+        "trade_count": 798408,
+        "taker_buy_quote_volume": "62246572.99877"
+      },
+      {
+        "timestamp": "2026-07-17T16:00:00Z",
+        "open": "1830.89",
+        "high": "1856.17",
+        "low": "1825.32",
+        "close": "1843.76",
+        "volume": "0",
+        "quote_volume": "75428073.814757",
+        "trade_count": 459243,
+        "taker_buy_quote_volume": "37786525.425680004"
+      },
+      {
+        "timestamp": "2026-07-17T20:00:00Z",
+        "open": "1843.76",
+        "high": "1846.65",
+        "low": "1835.27",
+        "close": "1841.93",
+        "volume": "0",
+        "quote_volume": "22437794.154728997",
+        "trade_count": 178801,
+        "taker_buy_quote_volume": "9184092.428217001"
+      },
+      {
+        "timestamp": "2026-07-18T00:00:00Z",
+        "open": "1841.94",
+        "high": "1846.74",
+        "low": "1839.38",
+        "close": "1845.96",
+        "volume": "0",
+        "quote_volume": "25110095.560929995",
+        "trade_count": 128932,
+        "taker_buy_quote_volume": "11904328.610625003"
+      },
+      {
+        "timestamp": "2026-07-18T04:00:00Z",
+        "open": "1845.96",
+        "high": "1849.68",
+        "low": "1842.56",
+        "close": "1844.2",
+        "volume": "0",
+        "quote_volume": "18809339.973007",
+        "trade_count": 118273,
+        "taker_buy_quote_volume": "10153614.201057995"
+      },
+      {
+        "timestamp": "2026-07-18T08:00:00Z",
+        "open": "1844.2",
+        "high": "1849.44",
+        "low": "1842.3",
+        "close": "1845.56",
+        "volume": "0",
+        "quote_volume": "18754926.018809006",
+        "trade_count": 92079,
+        "taker_buy_quote_volume": "9609756.702561"
+      },
+      {
+        "timestamp": "2026-07-18T12:00:00Z",
+        "open": "1845.56",
+        "high": "1850.64",
+        "low": "1837.58",
+        "close": "1844.15",
+        "volume": "0",
+        "quote_volume": "32500010.651193",
+        "trade_count": 192569,
+        "taker_buy_quote_volume": "18319444.243806"
+      },
+      {
+        "timestamp": "2026-07-18T16:00:00Z",
+        "open": "1844.15",
+        "high": "1867.58",
+        "low": "1841.51",
+        "close": "1858.45",
+        "volume": "0",
+        "quote_volume": "50644842.77186201",
+        "trade_count": 239431,
+        "taker_buy_quote_volume": "27806860.761901006"
+      },
+      {
+        "timestamp": "2026-07-18T20:00:00Z",
+        "open": "1858.45",
+        "high": "1865.86",
+        "low": "1855.47",
+        "close": "1862.61",
+        "volume": "0",
+        "quote_volume": "25444665.062101003",
+        "trade_count": 126864,
+        "taker_buy_quote_volume": "14108057.736164005"
+      },
+      {
+        "timestamp": "2026-07-19T00:00:00Z",
+        "open": "1862.61",
+        "high": "1877.33",
+        "low": "1858.17",
+        "close": "1867.08",
+        "volume": "0",
+        "quote_volume": "51096557.43929499",
+        "trade_count": 204006,
+        "taker_buy_quote_volume": "23311559.676727004"
+      },
+      {
+        "timestamp": "2026-07-19T04:00:00Z",
+        "open": "1867.08",
+        "high": "1871.99",
+        "low": "1864.21",
+        "close": "1870.25",
+        "volume": "0",
+        "quote_volume": "32035355.048292004",
+        "trade_count": 103978,
+        "taker_buy_quote_volume": "16303898.564294998"
+      },
+      {
+        "timestamp": "2026-07-19T08:00:00Z",
+        "open": "1870.26",
+        "high": "1879.38",
+        "low": "1863.46",
+        "close": "1871.41",
+        "volume": "0",
+        "quote_volume": "40842585.193339996",
+        "trade_count": 207232,
+        "taker_buy_quote_volume": "21136412.874322005"
+      },
+      {
+        "timestamp": "2026-07-19T12:00:00Z",
+        "open": "1871.4",
+        "high": "1879.26",
+        "low": "1864.47",
+        "close": "1870.91",
+        "volume": "0",
+        "quote_volume": "44426977.899932995",
+        "trade_count": 233247,
+        "taker_buy_quote_volume": "25678130.343002997"
+      },
+      {
+        "timestamp": "2026-07-19T16:00:00Z",
+        "open": "1870.91",
+        "high": "1873.85",
+        "low": "1851.71",
+        "close": "1862.37",
+        "volume": "0",
+        "quote_volume": "50892782.59134601",
+        "trade_count": 299983,
+        "taker_buy_quote_volume": "22997606.289817996"
+      },
+      {
+        "timestamp": "2026-07-19T20:00:00Z",
+        "open": "1862.37",
+        "high": "1877.03",
+        "low": "1857.0",
+        "close": "1872.23",
+        "volume": "0",
+        "quote_volume": "49535943.453386",
+        "trade_count": 326699,
+        "taker_buy_quote_volume": "25974586.105589006"
+      },
+      {
+        "timestamp": "2026-07-20T00:00:00Z",
+        "open": "1872.24",
+        "high": "1891.71",
+        "low": "1862.08",
+        "close": "1879.94",
+        "volume": "0",
+        "quote_volume": "75733997.94476102",
+        "trade_count": 616195,
+        "taker_buy_quote_volume": "40838819.337468"
+      },
+      {
+        "timestamp": "2026-07-20T04:00:00Z",
+        "open": "1879.94",
+        "high": "1879.99",
+        "low": "1843.14",
+        "close": "1863.95",
+        "volume": "0",
+        "quote_volume": "76871498.46691702",
+        "trade_count": 455920,
+        "taker_buy_quote_volume": "38224162.93856799"
+      },
+      {
+        "timestamp": "2026-07-20T08:00:00Z",
+        "open": "1863.95",
+        "high": "1896.5",
+        "low": "1854.31",
+        "close": "1893.2",
+        "volume": "0",
+        "quote_volume": "82556285.88529003",
+        "trade_count": 408523,
+        "taker_buy_quote_volume": "44614828.954758994"
+      },
+      {
+        "timestamp": "2026-07-20T12:00:00Z",
+        "open": "1893.21",
+        "high": "1904.92",
+        "low": "1853.65",
+        "close": "1902.34",
+        "volume": "0",
+        "quote_volume": "122363679.28201303",
+        "trade_count": 752281,
+        "taker_buy_quote_volume": "63581417.145358995"
+      },
+      {
+        "timestamp": "2026-07-20T16:00:00Z",
+        "open": "1902.34",
+        "high": "1918.16",
+        "low": "1890.07",
+        "close": "1898.46",
+        "volume": "0",
+        "quote_volume": "110924838.13988903",
+        "trade_count": 463219,
+        "taker_buy_quote_volume": "55817423.031658"
+      },
+      {
+        "timestamp": "2026-07-20T20:00:00Z",
+        "open": "1898.46",
+        "high": "1907.58",
+        "low": "1894.4",
+        "close": "1904.77",
+        "volume": "0",
+        "quote_volume": "41760734.10321101",
+        "trade_count": 202624,
+        "taker_buy_quote_volume": "20226721.926311"
+      },
+      {
+        "timestamp": "2026-07-21T00:00:00Z",
+        "open": "1904.77",
+        "high": "1928.57",
+        "low": "1900.74",
+        "close": "1926.75",
+        "volume": "0",
+        "quote_volume": "75497345.33068",
+        "trade_count": 350782,
+        "taker_buy_quote_volume": "41226536.99024202"
+      },
+      {
+        "timestamp": "2026-07-21T04:00:00Z",
+        "open": "1926.74",
+        "high": "1940.25",
+        "low": "1921.81",
+        "close": "1934.08",
+        "volume": "0",
+        "quote_volume": "78340198.82902001",
+        "trade_count": 311313,
+        "taker_buy_quote_volume": "39711825.21247099"
+      },
+      {
+        "timestamp": "2026-07-21T08:00:00Z",
+        "open": "1934.07",
+        "high": "1953.0",
+        "low": "1925.98",
+        "close": "1935.69",
+        "volume": "0",
+        "quote_volume": "220906489.74269494",
+        "trade_count": 461182,
+        "taker_buy_quote_volume": "129568305.00734997"
+      },
+      {
+        "timestamp": "2026-07-21T12:00:00Z",
+        "open": "1935.69",
+        "high": "1945.23",
+        "low": "1923.36",
+        "close": "1931.81",
+        "volume": "0",
+        "quote_volume": "120803100.61364499",
+        "trade_count": 635584,
+        "taker_buy_quote_volume": "55851450.81687101"
+      },
+      {
+        "timestamp": "2026-07-21T16:00:00Z",
+        "open": "1931.81",
+        "high": "1935.36",
+        "low": "1915.0",
+        "close": "1923.39",
+        "volume": "0",
+        "quote_volume": "96037996.76919802",
+        "trade_count": 450944,
+        "taker_buy_quote_volume": "56542433.828743994"
+      },
+      {
+        "timestamp": "2026-07-21T20:00:00Z",
+        "open": "1923.38",
+        "high": "1932.0",
+        "low": "1916.67",
+        "close": "1930.09",
+        "volume": "0",
+        "quote_volume": "39803033.821404",
+        "trade_count": 220537,
+        "taker_buy_quote_volume": "22481825.433428004"
+      },
+      {
+        "timestamp": "2026-07-22T00:00:00Z",
+        "open": "1930.09",
+        "high": "1944.68",
+        "low": "1926.76",
+        "close": "1928.77",
+        "volume": "0",
+        "quote_volume": "73872413.04519801",
+        "trade_count": 420834,
+        "taker_buy_quote_volume": "40750093.059738"
+      },
+      {
+        "timestamp": "2026-07-22T04:00:00Z",
+        "open": "1928.76",
+        "high": "1939.4",
+        "low": "1910.68",
+        "close": "1914.44",
+        "volume": "0",
+        "quote_volume": "92250525.77918999",
+        "trade_count": 411324,
+        "taker_buy_quote_volume": "44115627.97568999"
+      },
+      {
+        "timestamp": "2026-07-22T08:00:00Z",
+        "open": "1914.43",
+        "high": "1933.62",
+        "low": "1914.08",
+        "close": "1927.27",
+        "volume": "0",
+        "quote_volume": "70134235.56252098",
+        "trade_count": 330907,
+        "taker_buy_quote_volume": "33784334.495253004"
+      },
+      {
+        "timestamp": "2026-07-22T12:00:00Z",
+        "open": "1927.26",
+        "high": "1955.92",
+        "low": "1913.26",
+        "close": "1943.03",
+        "volume": "0",
+        "quote_volume": "119835277.61654301",
+        "trade_count": 640676,
+        "taker_buy_quote_volume": "63062880.66409301"
+      },
+      {
+        "timestamp": "2026-07-22T16:00:00Z",
+        "open": "1943.04",
+        "high": "1956.45",
+        "low": "1921.0",
+        "close": "1925.13",
+        "volume": "0",
+        "quote_volume": "80123330.781702",
+        "trade_count": 474808,
+        "taker_buy_quote_volume": "36900741.623631"
+      },
+      {
+        "timestamp": "2026-07-22T20:00:00Z",
+        "open": "1925.14",
+        "high": "1939.7",
+        "low": "1922.95",
+        "close": "1934.25",
+        "volume": "0",
+        "quote_volume": "48980304.458261006",
+        "trade_count": 256919,
+        "taker_buy_quote_volume": "20953750.821487002"
+      },
+      {
+        "timestamp": "2026-07-23T00:00:00Z",
+        "open": "1934.26",
+        "high": "1941.5",
+        "low": "1917.57",
+        "close": "1920.55",
+        "volume": "0",
+        "quote_volume": "48214379.808529",
+        "trade_count": 238170,
+        "taker_buy_quote_volume": "17355927.837405995"
+      },
+      {
+        "timestamp": "2026-07-23T04:00:00Z",
+        "open": "1920.56",
+        "high": "1928.69",
+        "low": "1912.6",
+        "close": "1915.65",
+        "volume": "0",
+        "quote_volume": "54407839.03310701",
+        "trade_count": 253043,
+        "taker_buy_quote_volume": "27595088.482429"
+      },
+      {
+        "timestamp": "2026-07-23T08:00:00Z",
+        "open": "1915.65",
+        "high": "1931.66",
+        "low": "1914.44",
+        "close": "1926.04",
+        "volume": "0",
+        "quote_volume": "48913071.262118995",
+        "trade_count": 255383,
+        "taker_buy_quote_volume": "23101452.115491003"
+      },
+      {
+        "timestamp": "2026-07-23T12:00:00Z",
+        "open": "1926.03",
+        "high": "1927.99",
+        "low": "1882.98",
+        "close": "1895.23",
+        "volume": "0",
+        "quote_volume": "151773538.45488098",
+        "trade_count": 681357,
+        "taker_buy_quote_volume": "65800293.05658599"
+      },
+      {
+        "timestamp": "2026-07-23T16:00:00Z",
+        "open": "1895.23",
+        "high": "1895.41",
+        "low": "1869.44",
+        "close": "1875.65",
+        "volume": "0",
+        "quote_volume": "75977811.928967",
+        "trade_count": 401029,
+        "taker_buy_quote_volume": "35390717.235157005"
+      },
+      {
+        "timestamp": "2026-07-23T20:00:00Z",
+        "open": "1875.64",
+        "high": "1889.09",
+        "low": "1874.23",
+        "close": "1878.38",
+        "volume": "0",
+        "quote_volume": "39264185.92889899",
+        "trade_count": 211827,
+        "taker_buy_quote_volume": "20723678.809611"
+      },
+      {
+        "timestamp": "2026-07-24T00:00:00Z",
+        "open": "1878.38",
+        "high": "1881.2",
+        "low": "1859.67",
+        "close": "1880.67",
+        "volume": "0",
+        "quote_volume": "62823597.090216964",
+        "trade_count": 323469,
+        "taker_buy_quote_volume": "27537500.976510007"
+      },
+      {
+        "timestamp": "2026-07-24T04:00:00Z",
+        "open": "1880.67",
+        "high": "1909.8",
+        "low": "1873.48",
+        "close": "1895.98",
+        "volume": "0",
+        "quote_volume": "65197193.46869099",
+        "trade_count": 306204,
+        "taker_buy_quote_volume": "36956560.419892006"
+      },
+      {
+        "timestamp": "2026-07-24T08:00:00Z",
+        "open": "1895.98",
+        "high": "1896.04",
+        "low": "1876.71",
+        "close": "1883.93",
+        "volume": "0",
+        "quote_volume": "43543529.57437401",
+        "trade_count": 273771,
+        "taker_buy_quote_volume": "20623639.948679995"
+      },
+      {
+        "timestamp": "2026-07-24T12:00:00Z",
+        "open": "1883.93",
+        "high": "1886.09",
+        "low": "1848.09",
+        "close": "1861.81",
+        "volume": "0",
+        "quote_volume": "126685739.63925101",
+        "trade_count": 770893,
+        "taker_buy_quote_volume": "64795127.55373701"
+      },
+      {
+        "timestamp": "2026-07-24T16:00:00Z",
+        "open": "1861.82",
+        "high": "1866.76",
+        "low": "1853.5",
+        "close": "1863.83",
+        "volume": "0",
+        "quote_volume": "55477384.287484",
+        "trade_count": 339037,
+        "taker_buy_quote_volume": "29135786.41654101"
+      },
+      {
+        "timestamp": "2026-07-24T20:00:00Z",
+        "open": "1863.84",
+        "high": "1865.82",
+        "low": "1856.97",
+        "close": "1861.44",
+        "volume": "0",
+        "quote_volume": "21976612.421104997",
+        "trade_count": 121160,
+        "taker_buy_quote_volume": "12005929.559190007"
+      },
+      {
+        "timestamp": "2026-07-25T00:00:00Z",
+        "open": "1861.44",
+        "high": "1864.69",
+        "low": "1855.93",
+        "close": "1858.74",
+        "volume": "0",
+        "quote_volume": "26039463.44031401",
+        "trade_count": 112861,
+        "taker_buy_quote_volume": "13403120.195832005"
+      },
+      {
+        "timestamp": "2026-07-25T04:00:00Z",
+        "open": "1858.74",
+        "high": "1862.96",
+        "low": "1854.61",
+        "close": "1856.02",
+        "volume": "0",
+        "quote_volume": "24132356.560450997",
+        "trade_count": 107612,
+        "taker_buy_quote_volume": "10692572.826905997"
+      },
+      {
+        "timestamp": "2026-07-25T08:00:00Z",
+        "open": "1856.03",
+        "high": "1860.09",
+        "low": "1851.22",
+        "close": "1857.75",
+        "volume": "0",
+        "quote_volume": "29755614.850639",
+        "trade_count": 118603,
+        "taker_buy_quote_volume": "14712302.109531999"
+      },
+      {
+        "timestamp": "2026-07-25T12:00:00Z",
+        "open": "1857.75",
+        "high": "1872.35",
+        "low": "1856.96",
+        "close": "1867.88",
+        "volume": "0",
+        "quote_volume": "38883665.09790301",
+        "trade_count": 149234,
+        "taker_buy_quote_volume": "20573483.09676001"
+      },
+      {
+        "timestamp": "2026-07-25T16:00:00Z",
+        "open": "1867.88",
+        "high": "1877.07",
+        "low": "1864.65",
+        "close": "1874.76",
+        "volume": "0",
+        "quote_volume": "30385128.70675701",
+        "trade_count": 170723,
+        "taker_buy_quote_volume": "18020761.168009005"
+      },
+      {
+        "timestamp": "2026-07-25T20:00:00Z",
+        "open": "1874.77",
+        "high": "1876.92",
+        "low": "1867.92",
+        "close": "1874.89",
+        "volume": "0",
+        "quote_volume": "15648697.010210996",
+        "trade_count": 104080,
+        "taker_buy_quote_volume": "7080895.055815001"
+      },
+      {
+        "timestamp": "2026-07-26T00:00:00Z",
+        "open": "1874.88",
+        "high": "1883.98",
+        "low": "1873.85",
+        "close": "1882.21",
+        "volume": "0",
+        "quote_volume": "19473769.985198997",
+        "trade_count": 113287,
+        "taker_buy_quote_volume": "11687619.964332"
+      },
+      {
+        "timestamp": "2026-07-26T04:00:00Z",
+        "open": "1882.21",
+        "high": "1889.36",
+        "low": "1878.46",
+        "close": "1881.56",
+        "volume": "0",
+        "quote_volume": "21173822.659788005",
+        "trade_count": 96548,
+        "taker_buy_quote_volume": "10204889.356801"
+      },
+      {
+        "timestamp": "2026-07-26T08:00:00Z",
+        "open": "1881.57",
+        "high": "1887.89",
+        "low": "1878.74",
+        "close": "1885.87",
+        "volume": "0",
+        "quote_volume": "18091980.477335006",
+        "trade_count": 105053,
+        "taker_buy_quote_volume": "8853463.838669"
+      },
+      {
+        "timestamp": "2026-07-26T12:00:00Z",
+        "open": "1885.87",
+        "high": "1917.82",
+        "low": "1881.61",
+        "close": "1914.63",
+        "volume": "0",
+        "quote_volume": "65165309.72197899",
+        "trade_count": 374375,
+        "taker_buy_quote_volume": "34331570.52436599"
+      },
+      {
+        "timestamp": "2026-07-26T16:00:00Z",
+        "open": "1914.63",
+        "high": "1928.08",
+        "low": "1908.75",
+        "close": "1914.2",
+        "volume": "0",
+        "quote_volume": "54448948.14418901",
+        "trade_count": 295254,
+        "taker_buy_quote_volume": "26569752.448735006"
+      },
+      {
+        "timestamp": "2026-07-26T20:00:00Z",
+        "open": "1914.21",
+        "high": "1967.36",
+        "low": "1911.14",
+        "close": "1954.72",
+        "volume": "0",
+        "quote_volume": "115302944.890536",
+        "trade_count": 531446,
+        "taker_buy_quote_volume": "63053539.06346301"
+      },
+      {
+        "timestamp": "2026-07-27T00:00:00Z",
+        "open": "1954.72",
+        "high": "1955.42",
+        "low": "1936.51",
+        "close": "1949.64",
+        "volume": "0",
+        "quote_volume": "66645251.541259006",
+        "trade_count": 362357,
+        "taker_buy_quote_volume": "34093355.184656"
+      },
+      {
+        "timestamp": "2026-07-27T04:00:00Z",
+        "open": "1949.65",
+        "high": "1981.24",
+        "low": "1948.54",
+        "close": "1964.36",
+        "volume": "0",
+        "quote_volume": "137044174.517423",
+        "trade_count": 477109,
+        "taker_buy_quote_volume": "74006442.41491699"
+      },
+      {
+        "timestamp": "2026-07-27T08:00:00Z",
+        "open": "1964.37",
+        "high": "1972.0",
+        "low": "1956.87",
+        "close": "1959.67",
+        "volume": "0",
+        "quote_volume": "63477420.78172001",
+        "trade_count": 308712,
+        "taker_buy_quote_volume": "31830458.574814"
+      },
+      {
+        "timestamp": "2026-07-27T12:00:00Z",
+        "open": "1959.67",
+        "high": "1977.99",
+        "low": "1919.09",
+        "close": "1927.75",
+        "volume": "0",
+        "quote_volume": "193781812.56846598",
+        "trade_count": 1050482,
+        "taker_buy_quote_volume": "85553844.566177"
+      },
+      {
+        "timestamp": "2026-07-27T16:00:00Z",
+        "open": "1927.74",
+        "high": "1955.41",
+        "low": "1922.65",
+        "close": "1948.31",
+        "volume": "0",
+        "quote_volume": "72633786.766492",
+        "trade_count": 431754,
+        "taker_buy_quote_volume": "37693962.009695"
+      },
+      {
+        "timestamp": "2026-07-27T20:00:00Z",
+        "open": "1948.32",
+        "high": "1950.54",
+        "low": "1882.49",
+        "close": "1892.53",
+        "volume": "0",
+        "quote_volume": "132530190.96339498",
+        "trade_count": 565329,
+        "taker_buy_quote_volume": "53033806.18767301"
+      },
+      {
+        "timestamp": "2026-07-28T00:00:00Z",
+        "open": "1892.53",
+        "high": "1894.45",
+        "low": "1866.31",
+        "close": "1881.38",
+        "volume": "0",
+        "quote_volume": "93967372.84841503",
+        "trade_count": 423354,
+        "taker_buy_quote_volume": "46381836.71439101"
+      },
+      {
+        "timestamp": "2026-07-28T04:00:00Z",
+        "open": "1881.37",
+        "high": "1889.66",
+        "low": "1876.48",
+        "close": "1883.83",
+        "volume": "0",
+        "quote_volume": "62649039.05183602",
+        "trade_count": 258640,
+        "taker_buy_quote_volume": "27896602.484875012"
+      },
+      {
+        "timestamp": "2026-07-28T08:00:00Z",
+        "open": "1883.84",
+        "high": "1885.85",
+        "low": "1872.0",
+        "close": "1876.68",
+        "volume": "0",
+        "quote_volume": "57023763.99464598",
+        "trade_count": 296306,
+        "taker_buy_quote_volume": "26591347.589741003"
+      },
+      {
+        "timestamp": "2026-07-28T12:00:00Z",
+        "open": "1876.69",
+        "high": "1924.41",
+        "low": "1856.88",
+        "close": "1920.02",
+        "volume": "0",
+        "quote_volume": "179069374.28192097",
+        "trade_count": 801789,
+        "taker_buy_quote_volume": "92561257.11065"
+      },
+      {
+        "timestamp": "2026-07-28T16:00:00Z",
+        "open": "1920.02",
+        "high": "1928.95",
+        "low": "1892.71",
+        "close": "1922.23",
+        "volume": "0",
+        "quote_volume": "99019857.24444497",
+        "trade_count": 461899,
+        "taker_buy_quote_volume": "49744986.18959"
+      },
+      {
+        "timestamp": "2026-07-28T20:00:00Z",
+        "open": "1922.24",
+        "high": "1929.67",
+        "low": "1904.06",
+        "close": "1922.23",
+        "volume": "0",
+        "quote_volume": "55839239.941337004",
+        "trade_count": 263208,
+        "taker_buy_quote_volume": "26031724.392523997"
+      },
+      {
+        "timestamp": "2026-07-29T00:00:00Z",
+        "open": "1922.22",
+        "high": "1928.51",
+        "low": "1891.17",
+        "close": "1892.7",
+        "volume": "0",
+        "quote_volume": "64441106.318646",
+        "trade_count": 463804,
+        "taker_buy_quote_volume": "31295233.612327002"
+      },
+      {
+        "timestamp": "2026-07-29T04:00:00Z",
+        "open": "1892.7",
+        "high": "1925.68",
+        "low": "1884.51",
+        "close": "1924.71",
+        "volume": "0",
+        "quote_volume": "74396844.871569",
+        "trade_count": 337978,
+        "taker_buy_quote_volume": "40028284.022240005"
+      },
+      {
+        "timestamp": "2026-07-29T08:00:00Z",
+        "open": "1924.71",
+        "high": "1925.35",
+        "low": "1910.0",
+        "close": "1915.26",
+        "volume": "0",
+        "quote_volume": "56626357.92662399",
+        "trade_count": 242025,
+        "taker_buy_quote_volume": "23554943.69768"
+      },
+      {
+        "timestamp": "2026-07-29T12:00:00Z",
+        "open": "1915.26",
+        "high": "1915.27",
+        "low": "1887.31",
+        "close": "1892.11",
+        "volume": "0",
+        "quote_volume": "120129701.00171703",
+        "trade_count": 667071,
+        "taker_buy_quote_volume": "56391208.271378994"
+      },
+      {
+        "timestamp": "2026-07-29T16:00:00Z",
+        "open": "1892.11",
+        "high": "1935.68",
+        "low": "1883.7",
+        "close": "1888.56",
+        "volume": "0",
+        "quote_volume": "162125039.597002",
+        "trade_count": 891662,
+        "taker_buy_quote_volume": "83279923.07079598"
+      },
+      {
+        "timestamp": "2026-07-29T20:00:00Z",
+        "open": "1888.57",
+        "high": "1913.17",
+        "low": "1872.0",
+        "close": "1910.72",
+        "volume": "0",
+        "quote_volume": "91213959.97501001",
+        "trade_count": 448329,
+        "taker_buy_quote_volume": "45140264.558035"
+      },
+      {
+        "timestamp": "2026-07-30T00:00:00Z",
+        "open": "1910.72",
+        "high": "1921.92",
+        "low": "1893.99",
+        "close": "1909.99",
+        "volume": "0",
+        "quote_volume": "62688624.09682999",
+        "trade_count": 366831,
+        "taker_buy_quote_volume": "33310676.306121998"
+      },
+      {
+        "timestamp": "2026-07-30T04:00:00Z",
+        "open": "1910.0",
+        "high": "1910.93",
+        "low": "1899.59",
+        "close": "1903.25",
+        "volume": "0",
+        "quote_volume": "55466800.58839599",
+        "trade_count": 298425,
+        "taker_buy_quote_volume": "28595952.566062994"
+      },
+      {
+        "timestamp": "2026-07-30T08:00:00Z",
+        "open": "1903.26",
+        "high": "1926.44",
+        "low": "1900.51",
+        "close": "1923.22",
+        "volume": "0",
+        "quote_volume": "55345520.105829015",
+        "trade_count": 332450,
+        "taker_buy_quote_volume": "27714916.59621201"
+      },
+      {
+        "timestamp": "2026-07-30T12:00:00Z",
+        "open": "1923.25",
+        "high": "1936.99",
+        "low": "1913.49",
+        "close": "1918.9",
+        "volume": "0",
+        "quote_volume": "80375524.99873498",
+        "trade_count": 480095,
+        "taker_buy_quote_volume": "38392526.768558"
+      },
+      {
+        "timestamp": "2026-07-30T16:00:00Z",
+        "open": "1918.9",
+        "high": "1929.34",
+        "low": "1914.81",
+        "close": "1923.68",
+        "volume": "0",
+        "quote_volume": "42445238.58286802",
+        "trade_count": 227765,
+        "taker_buy_quote_volume": "21160662.385528002"
+      },
+      {
+        "timestamp": "2026-07-30T20:00:00Z",
+        "open": "1923.69",
+        "high": "1936.79",
+        "low": "1916.0",
+        "close": "1918.31",
+        "volume": "0",
+        "quote_volume": "42078053.326291",
+        "trade_count": 231583,
+        "taker_buy_quote_volume": "20727690.828890007"
+      },
+      {
+        "timestamp": "2026-07-31T00:00:00Z",
+        "open": "1918.32",
+        "high": "1936.15",
+        "low": "1899.09",
+        "close": "1908.9",
+        "volume": "0",
+        "quote_volume": "74599836.758693",
+        "trade_count": 376686,
+        "taker_buy_quote_volume": "37110151.71725901"
+      },
+      {
+        "timestamp": "2026-07-31T04:00:00Z",
+        "open": "1908.9",
+        "high": "1911.16",
+        "low": "1884.53",
+        "close": "1890.2",
+        "volume": "0",
+        "quote_volume": "54184628.012895",
+        "trade_count": 278492,
+        "taker_buy_quote_volume": "24812357.995507"
+      },
+      {
+        "timestamp": "2026-07-31T08:00:00Z",
+        "open": "1890.2",
+        "high": "1893.33",
+        "low": "1877.93",
+        "close": "1884.26",
+        "volume": "0",
+        "quote_volume": "67185097.376898",
+        "trade_count": 225597,
+        "taker_buy_quote_volume": "25001513.982550003"
+      },
+      {
+        "timestamp": "2026-07-31T12:00:00Z",
+        "open": "1884.27",
+        "high": "1890.61",
+        "low": "1848.7",
+        "close": "1862.94",
+        "volume": "0",
+        "quote_volume": "168679330.66698897",
+        "trade_count": 847280,
+        "taker_buy_quote_volume": "75200007.88946599"
+      },
+      {
+        "timestamp": "2026-07-31T16:00:00Z",
+        "open": "1862.93",
+        "high": "1878.14",
+        "low": "1860.83",
+        "close": "1868.19",
+        "volume": "0",
+        "quote_volume": "57502059.177435994",
+        "trade_count": 299054,
+        "taker_buy_quote_volume": "22738363.158026006"
+      }
+    ]
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "3b159e026cbffc0e9c42f326efb1206c7eb25f7af70c85fece0396d9dd8b14b7"
+  }
+}
