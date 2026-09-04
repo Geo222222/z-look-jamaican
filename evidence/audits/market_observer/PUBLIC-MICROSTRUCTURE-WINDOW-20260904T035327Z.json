@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T035327Z",
+  "stream_id": "COINBASE-BTC-USD-OBS-20260904T035327Z",
+  "observer_id": "PUBLIC-MICROSTRUCTURE-OBSERVER-001",
+  "completed_at": "2026-09-04T03:55:25.623322Z",
+  "outcome": "VALID_PUBLIC_OBSERVATION_WINDOW",
+  "preregistration": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T035327Z-preregistration.json",
+  "observation_id": "OBS-COINBASE-BTC-USD-OBS-20260904T035327Z",
+  "quality": {
+    "status": "VALID",
+    "provider": "coinbase_advanced_trade_public_websocket",
+    "source_event_at": 1788494067,
+    "received_at": 1788494067,
+    "observed_at": 1788494067,
+    "event_age_seconds": 0,
+    "transport_age_seconds": 0,
+    "action_permitted": true,
+    "reasons": [],
+    "source_clock_ahead_seconds": 0,
+    "clock_skew_tolerance_seconds": 1,
+    "schema_version": 1
+  },
+  "stream_summary_hash": "41f7d292cafb4fb36d76c62a45922ee672e90b671182c3e8071065556a8916cd",
+  "microstructure_feature_hash": "6e3e7be8b7e45872ca43a9488b879ca0a3346028116dd0ad24e7e050be76cc5f",
+  "microstructure_features": {
+    "schema_version": 1,
+    "depth_band_bps": 10,
+    "depth_sample_count": 927,
+    "bid_depth_10bps_base_percentiles": {
+      "50": "32.75198712",
+      "90": "33.51522351",
+      "99": "34.18134464",
+      "100": "35.36103308"
+    },
+    "ask_depth_10bps_base_percentiles": {
+      "50": "22.12183509",
+      "90": "22.43428095",
+      "99": "22.60197577",
+      "100": "22.88110603"
+    },
+    "total_depth_10bps_base_percentiles": {
+      "50": "54.40572720",
+      "90": "55.66285885",
+      "99": "56.17088348",
+      "100": "57.50768356"
+    },
+    "book_imbalance_10bps_percentiles": {
+      "50": "0.1937688588271855164033150667",
+      "90": "0.2211394124213621196203177457",
+      "99": "0.2402433369429682632729452391",
+      "100": "0.2698379746765998229540333460"
+    },
+    "book_impact_proxy": {
+      "truth_class": "PUBLIC_ORDER_BOOK_PROXY_NOT_ACTUAL_FILL",
+      "quote_currency": "USD",
+      "buy_slippage_bps_by_quote_notional": {
+        "100": {
+          "50": "0.0006177013565895423283894369856",
+          "90": "0.0006177247086362423657744436293",
+          "99": "0.0006177247086362423657744436293",
+          "100": "0.02071235844960111066103029934"
+        },
+        "1000": {
+          "50": "0.0006177247086362423657744436293",
+          "90": "0.06710301606631394360155470490",
+          "99": "0.1136979394554480346204504807",
+          "100": "0.1237047631020275947959608958"
+        }
+      },
+      "sell_slippage_bps_by_quote_notional": {
+        "100": {
+          "50": "0.0006177013565895423283869661802",
+          "90": "0.2234892840840405817953686831",
+          "99": "0.3433822515893894473012102684",
+          "100": "0.3785652515893894473012102684"
+        },
+        "1000": {
+          "50": "0.0006177247086362423657719727304",
+          "90": "0.2819286009403950015940386106",
+          "99": "0.4623693586903283027686236124",
+          "100": "0.5002475606903283027686236124"
+        }
+      }
+    }
+  },
+  "public_features": {
+    "message_rate_per_second": "17.23333333333333333333333333",
+    "level2_update_rate_per_second": "15.43333333333333333333333333",
+    "trade_message_rate_per_second": "0.8833333333333333333333333333",
+    "spread_bps_p50": "0.001235402713179084656773932360",
+    "spread_bps_p90": "0.001235449417272484731543945461",
+    "total_depth_10bps_base_p50": "54.40572720",
+    "book_imbalance_10bps_p50": "0.1937688588271855164033150667",
+    "depth_sample_count": 927,
+    "book_impact_proxy": {
+      "truth_class": "PUBLIC_ORDER_BOOK_PROXY_NOT_ACTUAL_FILL",
+      "quote_currency": "USD",
+      "buy_slippage_bps_by_quote_notional": {
+        "100": {
+          "50": "0.0006177013565895423283894369856",
+          "90": "0.0006177247086362423657744436293",
+          "99": "0.0006177247086362423657744436293",
+          "100": "0.02071235844960111066103029934"
+        },
+        "1000": {
+          "50": "0.0006177247086362423657744436293",
+          "90": "0.06710301606631394360155470490",
+          "99": "0.1136979394554480346204504807",
+          "100": "0.1237047631020275947959608958"
+        }
+      },
+      "sell_slippage_bps_by_quote_notional": {
+        "100": {
+          "50": "0.0006177013565895423283869661802",
+          "90": "0.2234892840840405817953686831",
+          "99": "0.3433822515893894473012102684",
+          "100": "0.3785652515893894473012102684"
+        },
+        "1000": {
+          "50": "0.0006177247086362423657719727304",
+          "90": "0.2819286009403950015940386106",
+          "99": "0.4623693586903283027686236124",
+          "100": "0.5002475606903283027686236124"
+        }
+      }
+    },
+    "truth_class": "OBSERVED_PUBLIC_MARKET_DATA",
+    "actual_fill_truth_available": false,
+    "economic_edge_inferred": false
+  },
+  "safety": {
+    "authentication_used": false,
+    "account_or_order_surface_accessed": false,
+    "wallet_or_signer_accessed": false,
+    "capital_used_usd": "0.00",
+    "capability_promoted": false
+  }
+}

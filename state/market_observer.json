@@ -1,14 +1,332 @@
 {
   "schema_version": 1,
   "observer_id": "PUBLIC-MICROSTRUCTURE-OBSERVER-001",
-  "status": "IDLE",
-  "updated_at": null,
-  "active_window": null,
-  "last_attempt_at": null,
-  "last_success_at": null,
-  "next_eligible_at": null,
+  "status": "CAPTURING",
+  "updated_at": "2026-09-04T15:42:58.015809Z",
+  "active_window": {
+    "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T154258Z",
+    "stream_id": "COINBASE-BTC-USD-OBS-20260904T154258Z",
+    "started_at": "2026-09-04T15:42:58.015809Z",
+    "preregistration": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T154258Z-preregistration.json"
+  },
+  "last_attempt_at": "2026-09-04T15:42:58.015809Z",
+  "last_success_at": "2026-09-04T15:27:56.076944Z",
+  "next_eligible_at": "2026-09-04T15:41:06.370457Z",
   "consecutive_failures": 0,
-  "windows": [],
-  "failures": [],
+  "windows": [
+    {
+      "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T031825Z",
+      "stream_id": "COINBASE-BTC-USD-OBS-20260904T031825Z",
+      "started_at": "2026-09-04T03:18:25.021646Z",
+      "completed_at": "2026-09-04T03:20:50.730607Z",
+      "quality": "VALID",
+      "observation_id": "OBS-COINBASE-BTC-USD-OBS-20260904T031825Z",
+      "manifest_path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T031825Z.manifest.json",
+      "audit_path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T031825Z.json",
+      "public_features": {
+        "message_rate_per_second": "21.48333333333333333333333333",
+        "level2_update_rate_per_second": "19.75",
+        "trade_message_rate_per_second": "0.85",
+        "spread_bps_p50": "0.001235784386024934545135263707",
+        "spread_bps_p90": "0.001235870371286974229074876257",
+        "total_depth_10bps_base_p50": "38.56110013",
+        "book_imbalance_10bps_p50": "0.04986759423827731138012576649",
+        "depth_sample_count": 1186,
+        "book_impact_proxy": {
+          "truth_class": "PUBLIC_ORDER_BOOK_PROXY_NOT_ACTUAL_FILL",
+          "quote_currency": "USD",
+          "buy_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006178921930124672725639245002",
+              "90": "0.0006179351856434871145374381285",
+              "99": "0.01050694852318348920803504673",
+              "100": "0.2941117953535526542291953905"
+            },
+            "1000": {
+              "50": "0.0006178921930124672725639245002",
+              "90": "0.0006179351856434871145374381285",
+              "99": "0.06736457603486048827204114851",
+              "100": "0.2941117953535526542291953905"
+            }
+          },
+          "sell_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006178921930124672725676318534",
+              "90": "0.2353503044861988526607024829",
+              "99": "0.7360702364726801276431636873",
+              "100": "1.188941032734999669713643274"
+            },
+            "1000": {
+              "50": "0.0006179328945886195175217035026",
+              "90": "0.2465185280717513587004378133",
+              "99": "0.7370840324726801276431636873",
+              "100": "1.206134066239939968832585107"
+            }
+          }
+        },
+        "truth_class": "OBSERVED_PUBLIC_MARKET_DATA",
+        "actual_fill_truth_available": false,
+        "economic_edge_inferred": false
+      }
+    },
+    {
+      "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T033551Z",
+      "stream_id": "COINBASE-BTC-USD-OBS-20260904T033551Z",
+      "started_at": "2026-09-04T03:35:51.456230Z",
+      "completed_at": "2026-09-04T03:38:27.059314Z",
+      "quality": "VALID",
+      "observation_id": "OBS-COINBASE-BTC-USD-OBS-20260904T033551Z",
+      "manifest_path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T033551Z.manifest.json",
+      "audit_path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T033551Z.json",
+      "public_features": {
+        "message_rate_per_second": "18.85",
+        "level2_update_rate_per_second": "16.75",
+        "trade_message_rate_per_second": "1.116666666666666666666666667",
+        "spread_bps_p50": "0.001237201383661283459106194995",
+        "spread_bps_p90": "0.002473282061371773742673056473",
+        "total_depth_10bps_base_p50": "41.01356458",
+        "book_imbalance_10bps_p50": "0.01464142023677113165840530106",
+        "depth_sample_count": 1006,
+        "book_impact_proxy": {
+          "truth_class": "PUBLIC_ORDER_BOOK_PROXY_NOT_ACTUAL_FILL",
+          "quote_currency": "USD",
+          "buy_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006186006918306417295568091017",
+              "90": "0.03897925579691139513995378050",
+              "99": "0.2278820932012523128042212750",
+              "100": "0.8736118958618413625551405197"
+            },
+            "1000": {
+              "50": "0.0006186543463715767921757547506",
+              "90": "0.1777336989575198621779235393",
+              "99": "0.5183019111734372419064372461",
+              "100": "0.8759286981831386661591160179"
+            }
+          },
+          "sell_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006187159725549968894054479798",
+              "90": "0.5962319231108292938413655894",
+              "99": "0.6236165015397436467568414582",
+              "100": "0.6784805176504882345564885987"
+            },
+            "1000": {
+              "50": "0.0006187159725549968894054479798",
+              "90": "0.6734277674345561480054435650",
+              "99": "0.7504414131583779175772313362",
+              "100": "0.7988868376504882345564885987"
+            }
+          }
+        },
+        "truth_class": "OBSERVED_PUBLIC_MARKET_DATA",
+        "actual_fill_truth_available": false,
+        "economic_edge_inferred": false
+      }
+    },
+    {
+      "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T035327Z",
+      "stream_id": "COINBASE-BTC-USD-OBS-20260904T035327Z",
+      "started_at": "2026-09-04T03:53:27.855658Z",
+      "completed_at": "2026-09-04T03:55:25.623322Z",
+      "quality": "VALID",
+      "observation_id": "OBS-COINBASE-BTC-USD-OBS-20260904T035327Z",
+      "manifest_path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T035327Z.manifest.json",
+      "audit_path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T035327Z.json",
+      "public_features": {
+        "message_rate_per_second": "17.23333333333333333333333333",
+        "level2_update_rate_per_second": "15.43333333333333333333333333",
+        "trade_message_rate_per_second": "0.8833333333333333333333333333",
+        "spread_bps_p50": "0.001235402713179084656773932360",
+        "spread_bps_p90": "0.001235449417272484731543945461",
+        "total_depth_10bps_base_p50": "54.40572720",
+        "book_imbalance_10bps_p50": "0.1937688588271855164033150667",
+        "depth_sample_count": 927,
+        "book_impact_proxy": {
+          "truth_class": "PUBLIC_ORDER_BOOK_PROXY_NOT_ACTUAL_FILL",
+          "quote_currency": "USD",
+          "buy_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006177013565895423283894369856",
+              "90": "0.0006177247086362423657744436293",
+              "99": "0.0006177247086362423657744436293",
+              "100": "0.02071235844960111066103029934"
+            },
+            "1000": {
+              "50": "0.0006177247086362423657744436293",
+              "90": "0.06710301606631394360155470490",
+              "99": "0.1136979394554480346204504807",
+              "100": "0.1237047631020275947959608958"
+            }
+          },
+          "sell_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006177013565895423283869661802",
+              "90": "0.2234892840840405817953686831",
+              "99": "0.3433822515893894473012102684",
+              "100": "0.3785652515893894473012102684"
+            },
+            "1000": {
+              "50": "0.0006177247086362423657719727304",
+              "90": "0.2819286009403950015940386106",
+              "99": "0.4623693586903283027686236124",
+              "100": "0.5002475606903283027686236124"
+            }
+          }
+        },
+        "truth_class": "OBSERVED_PUBLIC_MARKET_DATA",
+        "actual_fill_truth_available": false,
+        "economic_edge_inferred": false
+      }
+    },
+    {
+      "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T150906Z",
+      "stream_id": "COINBASE-BTC-USD-OBS-20260904T150906Z",
+      "started_at": "2026-09-04T15:09:06.874451Z",
+      "completed_at": "2026-09-04T15:11:03.997435Z",
+      "quality": "VALID",
+      "observation_id": "OBS-COINBASE-BTC-USD-OBS-20260904T150906Z",
+      "manifest_path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T150906Z.manifest.json",
+      "audit_path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T150906Z.json",
+      "public_features": {
+        "message_rate_per_second": "19.66666666666666666666666667",
+        "level2_update_rate_per_second": "15.01666666666666666666666667",
+        "trade_message_rate_per_second": "3.683333333333333333333333333",
+        "spread_bps_p50": "0.001263600687019693532607373679",
+        "spread_bps_p90": "0.1833163997442925861222026312",
+        "total_depth_10bps_base_p50": "52.50503980",
+        "book_imbalance_10bps_p50": "0.01887724745779459611095704793",
+        "depth_sample_count": 902,
+        "book_impact_proxy": {
+          "truth_class": "PUBLIC_ORDER_BOOK_PROXY_NOT_ACTUAL_FILL",
+          "quote_currency": "USD",
+          "buy_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006318322788579126093845416546",
+              "90": "0.1409040822945553714816089528",
+              "99": "0.6033620965262010863309583240",
+              "100": "0.9364934592839559247207395486"
+            },
+            "1000": {
+              "50": "0.0006321979290333801138765485609",
+              "90": "0.2922221066523514753396768962",
+              "99": "0.7013177009375274849343347681",
+              "100": "1.043382752376237594421899031"
+            }
+          },
+          "sell_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006318449740554975978201853871",
+              "90": "0.1498548014757363110837920677",
+              "99": "0.6673443091990196752969787305",
+              "100": "1.168259565438569397901683372"
+            },
+            "1000": {
+              "50": "0.0006319824981294898011612425610",
+              "90": "0.1968598261124915315072157592",
+              "99": "0.7804269342854715748340577140",
+              "100": "1.225893765438569397901683372"
+            }
+          }
+        },
+        "truth_class": "OBSERVED_PUBLIC_MARKET_DATA",
+        "actual_fill_truth_available": false,
+        "economic_edge_inferred": false
+      }
+    },
+    {
+      "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T152606Z",
+      "stream_id": "COINBASE-BTC-USD-OBS-20260904T152606Z",
+      "started_at": "2026-09-04T15:26:06.370457Z",
+      "completed_at": "2026-09-04T15:27:56.076944Z",
+      "quality": "VALID",
+      "observation_id": "OBS-COINBASE-BTC-USD-OBS-20260904T152606Z",
+      "manifest_path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T152606Z.manifest.json",
+      "audit_path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T152606Z.json",
+      "public_features": {
+        "message_rate_per_second": "17.05",
+        "level2_update_rate_per_second": "13.31666666666666666666666667",
+        "trade_message_rate_per_second": "2.816666666666666666666666667",
+        "spread_bps_p50": "0.001259911169962961761381013832",
+        "spread_bps_p90": "0.2065948867009706558417664568",
+        "total_depth_10bps_base_p50": "54.15495453",
+        "book_imbalance_10bps_p50": "-0.02139673103809180441205479034",
+        "depth_sample_count": 800,
+        "book_impact_proxy": {
+          "truth_class": "PUBLIC_ORDER_BOOK_PROXY_NOT_ACTUAL_FILL",
+          "quote_currency": "USD",
+          "buy_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006300890322103403533047823190",
+              "90": "0.3716140710393263011054430029",
+              "99": "1.058326846396124693603700611",
+              "100": "1.375572344314973240180478495"
+            },
+            "1000": {
+              "50": "0.04535392502315884796495174657",
+              "90": "0.5142088944397625344571831075",
+              "99": "1.098579673010602483873077809",
+              "100": "1.471614074271722959672724215"
+            }
+          },
+          "sell_slippage_bps_by_quote_notional": {
+            "100": {
+              "50": "0.0006300890322103403533022619629",
+              "90": "0.2355078145426198477883728440",
+              "99": "1.028560530170985729318132894",
+              "100": "1.507512527607111130934460291"
+            },
+            "1000": {
+              "50": "0.0006300890322103403533022619629",
+              "90": "0.2627347328614255521656596517",
+              "99": "1.084403967984985954926113821",
+              "100": "1.612054388328236170678280461"
+            }
+          }
+        },
+        "truth_class": "OBSERVED_PUBLIC_MARKET_DATA",
+        "actual_fill_truth_available": false,
+        "economic_edge_inferred": false
+      }
+    }
+  ],
+  "failures": [
+    {
+      "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T030316Z",
+      "stream_id": "COINBASE-BTC-USD-OBS-20260904T030316Z",
+      "failed_at": "2026-09-04T03:03:24.733716Z",
+      "kind": "gaierror",
+      "error": "[Errno -3] Temporary failure in name resolution",
+      "preregistration": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T030316Z-preregistration.json",
+      "partial_journal_path": "runtime/market_stream/COINBASE-BTC-USD-OBS-20260904T030316Z.jsonl"
+    },
+    {
+      "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T041026Z",
+      "stream_id": "COINBASE-BTC-USD-OBS-20260904T041026Z",
+      "failed_at": "2026-09-04T04:10:34.798658Z",
+      "kind": "gaierror",
+      "error": "[Errno -3] Temporary failure in name resolution",
+      "preregistration": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T041026Z-preregistration.json",
+      "partial_journal_path": "runtime/market_stream/COINBASE-BTC-USD-OBS-20260904T041026Z.jsonl"
+    },
+    {
+      "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T042535Z",
+      "stream_id": "COINBASE-BTC-USD-OBS-20260904T042535Z",
+      "failed_at": "2026-09-04T04:25:43.547031Z",
+      "kind": "gaierror",
+      "error": "[Errno -3] Temporary failure in name resolution",
+      "preregistration": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T042535Z-preregistration.json",
+      "partial_journal_path": "runtime/market_stream/COINBASE-BTC-USD-OBS-20260904T042535Z.jsonl"
+    },
+    {
+      "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T044044Z",
+      "stream_id": "COINBASE-BTC-USD-OBS-20260904T044044Z",
+      "failed_at": "2026-09-04T15:09:06.874451Z",
+      "kind": "INTERRUPTED_PREVIOUS_PROCESS",
+      "error": "Previous process ended while a window was active; partial evidence is preserved and the stream identity will not be reused.",
+      "preregistration": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T044044Z-preregistration.json",
+      "partial_journal_path": "runtime/market_stream/COINBASE-BTC-USD-OBS-20260904T044044Z.jsonl"
+    }
+  ],
   "authority": "Public read-only market observation only. No authentication, accounts, orders, wallets, signers, capital, or capability promotion."
 }

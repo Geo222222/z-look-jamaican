@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T033551Z",
+  "stream_id": "COINBASE-BTC-USD-OBS-20260904T033551Z",
+  "frozen_at": "2026-09-04T03:35:51.456230Z",
+  "objective": "Collect one independent bounded public BTC-USD microstructure window for activity/spread/depth calibration.",
+  "frozen_parameters": {
+    "provider": "coinbase_advanced_trade_public_websocket",
+    "endpoint": "wss://advanced-trade-ws.coinbase.com",
+    "instrument": "BTC-USD",
+    "channels": [
+      "level2",
+      "market_trades",
+      "heartbeats"
+    ],
+    "capture_seconds": 60,
+    "message_idle_timeout_seconds": 10,
+    "maximum_messages": 100000,
+    "maximum_uncompressed_bytes": 67108864,
+    "maximum_source_clock_ahead_seconds": 1,
+    "distribution_percentiles": [
+      50,
+      90,
+      99,
+      100
+    ],
+    "depth_band_bps": 10,
+    "book_impact_quote_probe_usd": [
+      "100",
+      "1000"
+    ]
+  },
+  "pass_gate": "VALID market-data quality, required public channels, snapshot/update/trade/heartbeat evidence, no unexplained connection-global gap or out-of-order event, deterministic bundle validation, and zero external financial effect.",
+  "failure_gate": "Any provenance, freshness, sequence, replay, resource, provider, or zero-effect invariant failure.",
+  "scope_limit": "Public-observable microstructure evidence only; book-impact values are proxies, never actual-fill truth; no fee tier, order latency, rejection, partial-fill, strategy-edge, capital, or live-readiness inference.",
+  "safety": {
+    "authentication_allowed": false,
+    "accounts_allowed": false,
+    "orders_allowed": false,
+    "wallets_or_signers_allowed": false,
+    "capital_used_usd": "0.00"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "e57d8b4fb6065039f06f017c4fd4b0032295fb24000ae03944a5e8d56c6d8b3b"
+  }
+}

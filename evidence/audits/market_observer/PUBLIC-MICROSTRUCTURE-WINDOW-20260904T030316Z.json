@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "window_id": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T030316Z",
+  "stream_id": "COINBASE-BTC-USD-OBS-20260904T030316Z",
+  "failed_at": "2026-09-04T03:03:24.733716Z",
+  "kind": "gaierror",
+  "error": "[Errno -3] Temporary failure in name resolution",
+  "preregistration": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T030316Z-preregistration.json",
+  "partial_journal_path": "runtime/market_stream/COINBASE-BTC-USD-OBS-20260904T030316Z.jsonl",
+  "observer_id": "PUBLIC-MICROSTRUCTURE-OBSERVER-001",
+  "outcome": "REJECTED_PUBLIC_OBSERVATION_WINDOW",
+  "safety": {
+    "authentication_used": false,
+    "account_or_order_surface_accessed": false,
+    "wallet_or_signer_accessed": false,
+    "capital_used_usd": "0.00",
+    "capability_promoted": false
+  }
+}
