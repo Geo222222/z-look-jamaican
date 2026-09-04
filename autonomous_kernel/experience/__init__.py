@@ -28,6 +28,7 @@ from .market_wide import (
     build_market_wide_experience,
 )
 from .material_evidence import MaterialEvidenceIntent, material_graph_evidence
+from .relationship_recovery import recover_economic_relationship_state
 from .relationships import (
     RELATIONSHIP_STATE_SCHEMA_VERSION,
     EconomicRelationshipState,
@@ -84,5 +85,6 @@ __all__ = [
     "build_spot_derivative_relationship_state",
     "material_graph_evidence",
     "normalized_amounts_comparable",
+    "recover_economic_relationship_state",
     "same_native_series_compatible",
 ]
