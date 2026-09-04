@@ -5,6 +5,7 @@ import json
 import os
 import tempfile
 from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, Dict, Iterable, Mapping, Optional, Sequence, Tuple
 
@@ -40,6 +41,16 @@ def _digest(value: str, field: str) -> str:
     return text
 
 
+def _positive_decimal(value: object, field: str) -> str:
+    try:
+        number = Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise RootPathExperienceError("%s must be decimal-compatible" % field) from exc
+    if not number.is_finite() or number <= 0:
+        raise RootPathExperienceError("%s must be finite and positive" % field)
+    return format(number, "f")
+
+
 @dataclass(frozen=True)
 class RootPathPoint:
     target_at_ns: int
@@ -58,12 +69,7 @@ class RootPathPoint:
         if not self.frame_id or not self.midpoint_source:
             raise RootPathExperienceError("root-path point identity/source is required")
         _digest(self.frame_content_hash, "root-path frame_content_hash")
-        try:
-            midpoint = float(self.midpoint)
-        except (TypeError, ValueError) as exc:
-            raise RootPathExperienceError("root-path midpoint must be numeric") from exc
-        if midpoint <= 0:
-            raise RootPathExperienceError("root-path midpoint must be positive")
+        _positive_decimal(self.midpoint, "root-path midpoint")
 
     def to_wire(self) -> Dict[str, Any]:
         return {
@@ -100,6 +106,7 @@ class EconomicRootPathExperience:
     known_at_ns: int
     grid_interval_ns: int
     max_point_lag_ns: int
+    max_source_age_ns: int
     status: str
     baseline_experience_id: str
     baseline_experience_hash: str
@@ -119,8 +126,12 @@ class EconomicRootPathExperience:
             raise RootPathExperienceError("root-path window is invalid")
         if self.known_at_ns < 0 or self.known_at_ns > self.cutoff_at_ns:
             raise RootPathExperienceError("root-path known_at is invalid")
-        if self.grid_interval_ns <= 0 or self.max_point_lag_ns < 0 or self.max_point_lag_ns >= self.grid_interval_ns:
-            raise RootPathExperienceError("root-path grid/lag contract is invalid")
+        if self.grid_interval_ns <= 0:
+            raise RootPathExperienceError("root-path grid interval must be positive")
+        if self.max_point_lag_ns < 0 or self.max_point_lag_ns >= self.grid_interval_ns:
+            raise RootPathExperienceError("root-path point lag must be in 0..grid_interval-1")
+        if self.max_source_age_ns < 0 or self.max_source_age_ns >= self.grid_interval_ns:
+            raise RootPathExperienceError("root-path source age must be in 0..grid_interval-1")
         if (self.cutoff_at_ns - self.window_start_ns) % self.grid_interval_ns != 0:
             raise RootPathExperienceError("root-path window must divide exactly by grid interval")
         if self.status not in ROOT_PATH_STATUSES:
@@ -139,12 +150,18 @@ class EconomicRootPathExperience:
             raise RootPathExperienceError("root-path missing target lies outside preregistered grid")
         if set(point_targets).intersection(missing) or set(point_targets).union(missing) != set(expected_targets):
             raise RootPathExperienceError("root-path points and missing targets must partition the grid")
+
         frame_ids = [point.frame_id for point in self.points]
         if len(frame_ids) != len(set(frame_ids)):
             raise RootPathExperienceError("one representation frame cannot satisfy multiple root-path grid points")
         for point in self.points:
             if point.frame_cutoff_at_ns > point.target_at_ns + self.max_point_lag_ns:
                 raise RootPathExperienceError("root-path point exceeds declared grid lag")
+            oldest_allowed = max(0, point.target_at_ns - self.max_source_age_ns)
+            if point.frame_known_at_ns < oldest_allowed:
+                raise RootPathExperienceError("root-path point exceeds declared source-age bound")
+            if point.frame_known_at_ns > point.target_at_ns + self.max_point_lag_ns:
+                raise RootPathExperienceError("root-path point knowledge exceeds declared grid lag")
             if point.frame_cutoff_at_ns > self.cutoff_at_ns or point.frame_known_at_ns > self.cutoff_at_ns:
                 raise RootPathExperienceError("root-path point exceeds causal cutoff")
         max_known = max((point.frame_known_at_ns for point in self.points), default=0)
@@ -169,6 +186,7 @@ class EconomicRootPathExperience:
             "known_at_ns": self.known_at_ns,
             "grid_interval_ns": self.grid_interval_ns,
             "max_point_lag_ns": self.max_point_lag_ns,
+            "max_source_age_ns": self.max_source_age_ns,
             "status": self.status,
             "builder_version": self.builder_version,
             "baseline_experience": {
@@ -178,9 +196,10 @@ class EconomicRootPathExperience:
             "points": [point.to_wire() for point in self.points],
             "missing_target_ns": list(self.missing_target_ns),
             "truth_boundary": {
-                "point_selection": "FIRST_QUALIFIED_SAME_INSTRUMENT_FRAME_BY_CUTOFF_WITHIN_NONOVERLAPPING_GRID_LAG",
+                "point_selection": "FIRST_QUALIFIED_SAME_INSTRUMENT_FRAME_WITHIN_GRID_LAG_AND_SOURCE_AGE",
                 "interpolation": False,
                 "future_known_inputs": False,
+                "stale_carry_forward": False,
                 "capital_decision": False,
                 "risk_authorization": False,
                 "external_execution": False,
@@ -214,6 +233,7 @@ class EconomicRootPathExperience:
             known_at_ns=int(value.get("known_at_ns", -1)),
             grid_interval_ns=int(value.get("grid_interval_ns", -1)),
             max_point_lag_ns=int(value.get("max_point_lag_ns", -1)),
+            max_source_age_ns=int(value.get("max_source_age_ns", -1)),
             status=str(value.get("status", "")),
             builder_version=str(value.get("builder_version", "")),
             baseline_experience_id=str(baseline.get("experience_id", "")),
@@ -228,6 +248,10 @@ class EconomicRootPathExperience:
             raise RootPathExperienceError("root-path truth boundary is malformed")
         if truth.get("interpolation") is not False or truth.get("future_known_inputs") is not False:
             raise RootPathExperienceError("root-path truth boundary is invalid")
+        if truth.get("stale_carry_forward") is not False:
+            raise RootPathExperienceError("root-path stale-carry-forward boundary is invalid")
+        if truth.get("point_selection") != "FIRST_QUALIFIED_SAME_INSTRUMENT_FRAME_WITHIN_GRID_LAG_AND_SOURCE_AGE":
+            raise RootPathExperienceError("root-path point-selection policy is invalid")
         if any(truth.get(key) is not False for key in ("capital_decision", "risk_authorization", "external_execution")):
             raise RootPathExperienceError("root-path authority boundary is invalid")
         integrity = value.get("integrity")
@@ -256,8 +280,11 @@ def _durable_representations(root: Path) -> Tuple[RepresentationFrame, ...]:
             path.relative_to(root.resolve())
         except ValueError as exc:
             raise RootPathExperienceError("representation path escapes repository") from exc
-        document = json.loads(path.read_text(encoding="utf-8"))
-        frames.append(RepresentationFrame.from_wire(document.get("frame", {})))
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+            frames.append(RepresentationFrame.from_wire(document.get("frame", {})))
+        except (OSError, ValueError, TypeError) as exc:
+            raise RootPathExperienceError("durable representation cannot be recovered") from exc
     return tuple(frames)
 
 
@@ -286,14 +313,26 @@ def build_economic_root_path(
     *,
     grid_interval_ns: int,
     max_point_lag_ns: int,
+    max_source_age_ns: int,
     builder_version: str = ROOT_PATH_BUILDER_VERSION,
 ) -> EconomicRootPathExperience:
-    """Build causal per-root price-path memory from durable Z2 history only."""
+    """Build causal per-root price-path memory from durable Z2 history only.
+
+    Grid slots are non-overlapping because max_point_lag_ns is smaller than the
+    grid interval. A representation may satisfy a target only if its own cutoff
+    is inside that slot and its known-at time is neither too stale before the
+    target nor later than the permitted slot lag. No interpolation or stale
+    carry-forward is performed.
+    """
     root = root.resolve()
     restored_experience = MarketExperienceFrame.from_wire(baseline_experience.to_wire())
     instrument_id, lookback_ns = _short_spot_instrument(restored_experience)
-    if grid_interval_ns <= 0 or max_point_lag_ns < 0 or max_point_lag_ns >= grid_interval_ns:
-        raise RootPathExperienceError("root-path grid/lag contract is invalid")
+    if grid_interval_ns <= 0:
+        raise RootPathExperienceError("root-path grid interval must be positive")
+    if max_point_lag_ns < 0 or max_point_lag_ns >= grid_interval_ns:
+        raise RootPathExperienceError("root-path point lag must be in 0..grid_interval-1")
+    if max_source_age_ns < 0 or max_source_age_ns >= grid_interval_ns:
+        raise RootPathExperienceError("root-path source age must be in 0..grid_interval-1")
     if lookback_ns % grid_interval_ns != 0:
         raise RootPathExperienceError("SHORT lookback must divide exactly by root-path grid interval")
     window_start = restored_experience.cutoff_at_ns - lookback_ns
@@ -313,12 +352,15 @@ def build_economic_root_path(
     points = []
     missing = []
     for target in range(window_start, cutoff + 1, grid_interval_ns):
+        oldest_allowed = max(0, target - max_source_age_ns)
         eligible = [
             frame
             for frame in frames
             if frame.frame_id not in used
             and frame.cutoff_at_ns >= target
             and frame.cutoff_at_ns <= target + max_point_lag_ns
+            and frame.known_at_ns >= oldest_allowed
+            and frame.known_at_ns <= target + max_point_lag_ns
         ]
         if not eligible:
             missing.append(target)
@@ -358,6 +400,7 @@ def build_economic_root_path(
         "cutoff_at_ns": cutoff,
         "grid_interval_ns": grid_interval_ns,
         "max_point_lag_ns": max_point_lag_ns,
+        "max_source_age_ns": max_source_age_ns,
         "baseline_experience_hash": restored_experience.content_hash(),
         "points": [point.to_wire() for point in points],
         "missing_target_ns": missing,
@@ -373,6 +416,7 @@ def build_economic_root_path(
         known_at_ns=known_at,
         grid_interval_ns=int(grid_interval_ns),
         max_point_lag_ns=int(max_point_lag_ns),
+        max_source_age_ns=int(max_source_age_ns),
         status=status,
         baseline_experience_id=restored_experience.experience_id,
         baseline_experience_hash=restored_experience.content_hash(),
@@ -404,12 +448,12 @@ class RootPathExperienceStore:
         else:
             self._atomic_create(snapshot_path, snapshot + b"\n")
 
-        existing_event = next((item for item in self._events() if item.get("root_path_id") == path_state.root_path_id), None)
+        events = tuple(self._events())
+        existing_event = next((item for item in events if item.get("root_path_id") == path_state.root_path_id), None)
         if existing_event is not None:
             if existing_event.get("content_hash") != path_state.content_hash():
                 raise RootPathStoreError("root-path journal identity conflicts with content")
             return existing_event
-        events = tuple(self._events())
         body = {
             "schema_version": "ZLJ.ECONOMIC_ROOT_PATH.EVENT.v1",
             "journal_name": self.JOURNAL_NAME,
@@ -470,6 +514,9 @@ class RootPathExperienceStore:
         if start <= 0 or end < start or end > len(events):
             raise RootPathStoreError("invalid root-path commitment range")
         selected = events[start - 1:end]
+        for offset, event in enumerate(selected, start=start):
+            if int(event.get("sequence", -1)) != offset:
+                raise RootPathStoreError("root-path journal sequence is not contiguous")
         hashes = [str(item["event_hash"]) for item in selected]
         last = selected[-1]
         return ExperienceJournalCommitment(
