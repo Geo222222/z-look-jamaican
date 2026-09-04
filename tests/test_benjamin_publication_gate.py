@@ -78,12 +78,16 @@ def _world(*, samples=12, answers=(0.72, 0.68), shared_evidence=False, context=N
     contracts = _contracts(2)
     records = []
     latest = []
+    all_claims = []
+    claim_contracts = []
     for index, contract in enumerate(contracts):
         last = None
         for sample in range(samples):
             evidence = "evidence:shared" if shared_evidence else "evidence:%d:%d" % (index, sample)
             claim = _claim(contract, answers[index], evidence, cutoff_ns=1_000_000_000 + sample)
             last = claim
+            all_claims.append(claim)
+            claim_contracts.append(contract)
             records.append(score_expert_claim(contract, claim, True, resolved_at_ns=12_000_000_000 + sample, context=CONTEXT))
         latest.append(last)
     memory = build_competence_memory(records, now_ns=competence_now)
@@ -106,12 +110,62 @@ def _world(*, samples=12, answers=(0.72, 0.68), shared_evidence=False, context=N
     return {
         "contracts": contracts,
         "claims": latest,
+        "all_claims": all_claims,
+        "claim_contracts": claim_contracts,
+        "scores": records,
         "memory": memory,
         "assembly": assembly,
         "context": z9,
         "publication": publication,
         "data_quality": {"state": "VALID"},
+        "competence_now": competence_now,
     }
+
+
+def _journal_chain(
+    runtime,
+    world,
+    *,
+    claims=True,
+    scores=True,
+    competence=True,
+    assembly=True,
+    publication=True,
+    omit_claim_hashes=(),
+):
+    omitted = set(omit_claim_hashes)
+    for contract, claim, score in zip(world["claim_contracts"], world["all_claims"], world["scores"]):
+        digest = claim["integrity"]["content_hash"]
+        if digest in omitted:
+            continue
+        if claims:
+            runtime.record_claim(contract, claim, occurred_at_ns=int(claim["cutoff_ns"]) + 1)
+        if scores:
+            runtime.record_score(score, occurred_at_ns=int(score["resolved_at_ns"]) + 1)
+    if competence:
+        rebuilt = runtime.rebuild_competence(known_at_ns=world["competence_now"])
+        if rebuilt["integrity"]["content_hash"] != world["memory"]["integrity"]["content_hash"]:
+            raise AssertionError("journaled competence diverged from world competence")
+    if assembly:
+        runtime.record_assembly(world["assembly"], occurred_at_ns=PUBLISHED - 1)
+    if publication:
+        runtime.publish(world["publication"], occurred_at_ns=PUBLISHED)
+
+
+def _qualify_runtime(runtime, world, **overrides):
+    kwargs = {
+        "qualification_cutoff_ns": CUTOFF,
+        "claims": world["claims"],
+        "data_quality": world["data_quality"],
+    }
+    kwargs.update(overrides)
+    return runtime.qualify_for_benjamin(
+        world["publication"],
+        world["assembly"],
+        world["memory"],
+        world["context"],
+        **kwargs,
+    )
 
 
 def _qualify(world, **overrides):
@@ -262,30 +316,22 @@ class BenjaminPublicationQualificationTests(unittest.TestCase):
         world = _world()
         with tempfile.TemporaryDirectory() as temporary:
             runtime = IntelligenceRuntime(Path(temporary))
-            runtime.publish(world["publication"], occurred_at_ns=PUBLISHED)
-            first = runtime.qualify_for_benjamin(
-                world["publication"], world["assembly"], world["memory"], world["context"],
-                qualification_cutoff_ns=CUTOFF, claims=world["claims"], data_quality=world["data_quality"],
-            )
-            second = runtime.qualify_for_benjamin(
-                world["publication"], world["assembly"], world["memory"], world["context"],
-                qualification_cutoff_ns=CUTOFF, claims=world["claims"], data_quality=world["data_quality"],
-            )
+            _journal_chain(runtime, world)
+            baseline = runtime.state()["event_count"]
+            first = _qualify_runtime(runtime, world)
+            second = _qualify_runtime(runtime, world)
             self.assertTrue(second["idempotent"])
             self.assertEqual(first["qualification"]["integrity"]["content_hash"], second["qualification"]["integrity"]["content_hash"])
             self.assertEqual(first["handoff"]["integrity"]["content_hash"], second["handoff"]["integrity"]["content_hash"])
-            self.assertEqual(runtime.state()["event_count"], 3)
+            self.assertEqual(runtime.state()["event_count"], baseline + 2)
 
     def test_18_conflicting_duplicate_identity_fails(self):
         world = _world()
-        result = _qualify(world)
-        handoff = build_benjamin_handoff(
-            world["publication"], result, world["assembly"], world["memory"], world["context"], world["claims"], created_at_ns=CUTOFF
-        )
         with tempfile.TemporaryDirectory() as temporary:
             runtime = IntelligenceRuntime(Path(temporary))
-            runtime.record_handoff(handoff, occurred_at_ns=CUTOFF)
-            conflict = dict(handoff)
+            _journal_chain(runtime, world)
+            result = _qualify_runtime(runtime, world)
+            conflict = dict(result["handoff"])
             conflict["created_at_ns"] = CUTOFF + 1
             body = {key: value for key, value in conflict.items() if key != "integrity"}
             conflict["integrity"] = {"algorithm": "sha256", "content_hash": canonical_hash(body)}
@@ -370,17 +416,19 @@ class BenjaminPublicationQualificationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             runtime = IntelligenceRuntime(root)
-            runtime.publish(world["publication"], occurred_at_ns=PUBLISHED)
-            first = runtime.qualify_for_benjamin(
-                world["publication"], world["assembly"], world["memory"], world["context"],
-                qualification_cutoff_ns=CUTOFF, claims=world["claims"], data_quality=world["data_quality"],
+            _journal_chain(runtime, world)
+            first = _qualify_runtime(runtime, world)
+            cutoff_count = next(
+                index + 1
+                for index, event in enumerate(runtime.events())
+                if event["event_type"] == "BENJAMIN_HANDOFF_PUBLISHED"
             )
             later_claim = _claim(world["contracts"][0], 0.9, "evidence:later", cutoff_ns=20_000_000_000)
             later_score = score_expert_claim(world["contracts"][0], later_claim, True, resolved_at_ns=32_000_000_000, context=CONTEXT)
             runtime.record_claim(world["contracts"][0], later_claim, occurred_at_ns=20_000_000_001)
             runtime.record_score(later_score, occurred_at_ns=32_000_000_001)
             runtime.rebuild_competence(known_at_ns=40_000_000_000)
-            replayed = project_runtime(runtime.events()[:3])
+            replayed = project_runtime(runtime.events()[:cutoff_count])
             self.assertEqual(replayed["qualifications"][0]["integrity"]["content_hash"], first["qualification"]["integrity"]["content_hash"])
             self.assertEqual(replayed["handoffs"][0]["integrity"]["content_hash"], first["handoff"]["integrity"]["content_hash"])
             self.assertEqual(replayed["qualifications"][0]["status"], "ELIGIBLE")
