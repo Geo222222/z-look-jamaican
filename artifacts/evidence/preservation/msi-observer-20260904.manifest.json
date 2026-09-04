@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "campaign_id": "MSI-ZLJ-LOCAL-RECONCILIATION-20260904",
+  "workstream": "coinbase_public_market_observer",
+  "source_checkout": "C:/Users/epinn/Documents/dev/z-look-jamaican",
+  "source_branch": "codex/intelligence-laboratory-console-v1",
+  "source_head": "b649d742ee98e39f27ebbaa5a1af5c001382d36c",
+  "preservation_branch": "codex/preserve-msi-observer-20260904",
+  "preservation_payload_commit": "0a35a00f5152c5d5ee07c47a1f9e12c8f8e2f22c",
+  "hash_scope": "exact Git blob bytes stored by preservation_payload_commit",
+  "completed_windows": [
+    "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T031825Z",
+    "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T033551Z",
+    "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T035327Z",
+    "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T150906Z",
+    "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T152606Z"
+  ],
+  "failed_windows": [
+    "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T030316Z",
+    "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T041026Z",
+    "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T042535Z",
+    "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T044044Z"
+  ],
+  "incomplete_capture": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T154258Z",
+  "notes": [
+    "A fifth valid window completed before the preservation boundary and was retained in addition to the four initially identified windows.",
+    "state/market_data.json and state/market_observer.json are preserved as source-checkout snapshots only; they are not canonical merged projections.",
+    "Partial JSONL journals are retained because raw interrupted capture bytes are not regenerable, even though their original path is under runtime/."
+  ],
+  "preserved_paths": [
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T030316Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "d2bd4de54a9e5a230fa1611ba22d07597f4e1b4d146d51763d3eeab871aedae5"
+    },
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T031825Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "5293b2a86930d58bf2967d7c448368237a6592e90845725f196de6cc8d405155"
+    },
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T033551Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "50392bc989bd8c08faa0c2ab933d3ee1cf365b414b139b02233b73affbc6a339"
+    },
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T035327Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "06280418f14221b5bb365fe12cdc44486cb864636a10bbc1bfe21b1f81f6d09f"
+    },
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T041026Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "5f58b77589b82de6417ae5af0005ab7824ea92fd25782188d0e8240c19a55ee5"
+    },
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T042535Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "260469fafeb8c9685353bc37bac03e582002d8280dbd62ad6b98ea072fac182c"
+    },
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T044044Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "116abda6690b68a098c8c57e05337f6ef32abc121cb8f7b2a287e90151aeede5"
+    },
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T150906Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "0533b155ca475bc192d0b560e2d480217ea03147e54d314d2d3514e74b6cdfdd"
+    },
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T152606Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "7c50f9add951bdbd235a7e67f5d2d0a36c82580006d3d83ce8f8b7a42e794298"
+    },
+    {
+      "path": "artifacts/evidence/market/observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T154258Z-preregistration.json",
+      "bytes": 1857,
+      "sha256": "a10916714d1f383d244427b5956d65a5c287406704f0243fa8cb1f383c6a59a2"
+    },
+    {
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-OBS-20260904T031825Z.json",
+      "bytes": 2923,
+      "sha256": "2c376f5a5e8925ce5865f1fd12831c5ce3d38d54bb36066bf72584c3c7034348"
+    },
+    {
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-OBS-20260904T033551Z.json",
+      "bytes": 2920,
+      "sha256": "691d299cc7ac9db78da11bcac327127b2a1be5cba2e6abd4f7219fdfa0d6ecd3"
+    },
+    {
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-OBS-20260904T035327Z.json",
+      "bytes": 2923,
+      "sha256": "979158ff086e98906fe4eaf3dcff3f086940b291ae4dc9e1a7ec2414d7a24598"
+    },
+    {
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-OBS-20260904T150906Z.json",
+      "bytes": 2913,
+      "sha256": "13f23235715e551168550bdd45b45cc88fb0bca345646dbde409b81218380641"
+    },
+    {
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-OBS-20260904T152606Z.json",
+      "bytes": 2913,
+      "sha256": "ccf66b71d12ac5092743053fefd73c274a2037c8cfc5fa3b9c2e5bc0ba28c968"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T031825Z.jsonl.gz",
+      "bytes": 515473,
+      "sha256": "4603a7f1bf20b953d610dfdd0fa179d5308b6d2b2a2485a736cccd235a482d2b"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T031825Z.manifest.json",
+      "bytes": 1733,
+      "sha256": "b7e8ce6141622be51e2d6d55ec83d75a4c481090380bce4bc6542dc812cd63c6"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T033551Z.jsonl.gz",
+      "bytes": 527546,
+      "sha256": "1dcd2ca0a84f2f079d06e3142d607317cb982f4dca7075b0155aaefdbc308253"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T033551Z.manifest.json",
+      "bytes": 1730,
+      "sha256": "66606f7a9061bceab8d49c4b482951c17a0752f217ff17dd29da3f8493de791c"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T035327Z.jsonl.gz",
+      "bytes": 458663,
+      "sha256": "3d2f8d303ac9977528c6f8cb6a181bd56f49b6f877eeb086cbd9be55dd5e8dab"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T035327Z.manifest.json",
+      "bytes": 1733,
+      "sha256": "e97dbe15b777f6a8429b961c85684c56537a58c194ab9fccc2a01ffb867759e3"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T150906Z.jsonl.gz",
+      "bytes": 671861,
+      "sha256": "a5efd53cf695481f69eebf1af2fc66559a1f6237c84cd1c8d5e85cb5ed25798f"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T150906Z.manifest.json",
+      "bytes": 1723,
+      "sha256": "ec231f96fa2f4bc5259d4ce58a30b894f2393fd072265b42a53c3323b479619f"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T152606Z.jsonl.gz",
+      "bytes": 563054,
+      "sha256": "cfddbf236d5a5968628af42c0727527e96c3ef89e7d6d9ddd7c2f9a97ef632cf"
+    },
+    {
+      "path": "artifacts/market_data/streams/COINBASE-BTC-USD-OBS-20260904T152606Z.manifest.json",
+      "bytes": 1723,
+      "sha256": "ad2056f1f4235b4d581ca8ebfbe3866d5a1423a98819ba61743b101eb4d15737"
+    },
+    {
+      "path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T030316Z.json",
+      "bytes": 809,
+      "sha256": "1fd92fcca46e40b254ee7499a7d1fed5e5cc93c52d4ce090be89b2f91dafa154"
+    },
+    {
+      "path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T031825Z.json",
+      "bytes": 5036,
+      "sha256": "43115734b0823e9cc5f56f950060abcd663f08d4682132b3624671d2d89dbe81"
+    },
+    {
+      "path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T033551Z.json",
+      "bytes": 5027,
+      "sha256": "1f655d73a3568a77f7322da3f2b3da6c3210e52fbd5e708d29a61a4377c7b61c"
+    },
+    {
+      "path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T035327Z.json",
+      "bytes": 5086,
+      "sha256": "b3e6804a7a4b26b070b059e9bad22b971fbf1d331205bb0e4076eff62f00f547"
+    },
+    {
+      "path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T041026Z.json",
+      "bytes": 809,
+      "sha256": "5735b4319f4cca95c9450560e8314db0fdff64e826f62d4550219fd2c4805295"
+    },
+    {
+      "path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T042535Z.json",
+      "bytes": 809,
+      "sha256": "be57d063bdbe911940f90ea48b639fe75f78f001c44bda1ef085921897ca3308"
+    },
+    {
+      "path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T150906Z.json",
+      "bytes": 5063,
+      "sha256": "fe67a3e331c6768f980abdfe901eece2c4c859573bceba1842af2d8befc17490"
+    },
+    {
+      "path": "evidence/audits/market_observer/PUBLIC-MICROSTRUCTURE-WINDOW-20260904T152606Z.json",
+      "bytes": 5028,
+      "sha256": "332123041f6c6917273d69c72da488f7018cdd114bada873e6456d2124f0da62"
+    },
+    {
+      "path": "runtime/market_stream/COINBASE-BTC-USD-OBS-20260904T044044Z.jsonl",
+      "bytes": 5273218,
+      "sha256": "ea8dc48dd1e799bdeec8c2469978adaa1253be711388347c166711433ac27eb3"
+    },
+    {
+      "path": "runtime/market_stream/COINBASE-BTC-USD-OBS-20260904T154258Z.jsonl",
+      "bytes": 4986086,
+      "sha256": "d30194d884d3d6e6e8f6c6c065d6413f560cb7de4457467f033f2d090f91b4d8"
+    },
+    {
+      "path": "state/market_data.json",
+      "bytes": 8229,
+      "sha256": "069ac92a01919d013d32315796ad6a29dbc7ac43fc59c815ec20114b5677cbaf"
+    },
+    {
+      "path": "state/market_observer.json",
+      "bytes": 15468,
+      "sha256": "718d5e5598534582e9365e267312575ab79ddf5c32dab3e4f3e0de0547aad681"
+    }
+  ],
+  "excluded": [
+    {
+      "path_class": "runtime/market_observer/observer.lock",
+      "reason": "Ephemeral stale process lock; not evidence and unsafe to restore."
+    },
+    {
+      "path_class": "runtime/market_observer/observer.stale.*",
+      "reason": "Regenerable stale lock quarantine record; session provenance is already represented by preregistrations, audits, and observer state."
+    },
+    {
+      "path_class": "Python caches and test caches",
+      "reason": "Regenerable build/runtime cache excluded by repository policy."
+    }
+  ]
+}
