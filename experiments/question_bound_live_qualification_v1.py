@@ -7,7 +7,7 @@ import shutil
 import tempfile
 import time
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 
 import websockets
 
@@ -469,10 +469,10 @@ async def run_live(source_root: Path, artifact_dir: Path) -> Mapping[str, Any]:
             "qualification": {
                 "decision": decision,
                 "reasons": reasons,
-                "model_performance_claim": false,
-                "model_qualification": false,
+                "model_performance_claim": False,
+                "model_qualification": False,
                 "capital_effect": "NONE",
-                "live_execution": false,
+                "live_execution": False,
             },
         }
         result = dict(body)
