@@ -11,10 +11,14 @@ services:
       - no-new-privileges:true
     environment:
       ZLOOK_SOURCE_ROOT: /zlook
+      PYTHONPATH: /zlook
+      ZLOOK_OPERATOR_MUTATIONS_ENABLED: "false"
       ZLOOK_MONITOR_REFRESH_SECONDS: ${ZLOOK_MONITOR_REFRESH_SECONDS:-3}
       ZLOOK_MONITOR_COMMAND_TIMEOUT_SECONDS: ${ZLOOK_MONITOR_COMMAND_TIMEOUT_SECONDS:-15}
     volumes:
       - ./:/zlook:ro
+      - ./monitor/app:/monitor/app:ro
+      - ./monitor/web:/monitor/web:ro
     ports:
       - "127.0.0.1:${ZLOOK_MONITOR_PORT:-3000}:3000"
     healthcheck:
