@@ -14,6 +14,11 @@ from .competence import (
 )
 from .contracts import OutcomeContractError, PredictionOutcome, RESOLUTION_POLICY_ID
 from .journal import OutcomeJournal, OutcomeJournalError, validate_outcome_journal
+from .liquidity_resolver import (
+    LIQUIDITY_RESOLVER_IMPLEMENTATION_REF,
+    LIQUIDITY_RESOLVER_POLICY_ID,
+    resolve_liquidity_question,
+)
 from .question_journal import (
     QuestionOutcomeJournal,
     QuestionOutcomeJournalError,
@@ -42,6 +47,8 @@ from .resolver import (
 
 __all__ = [
     "COMPETENCE_SCHEMA_VERSION",
+    "LIQUIDITY_RESOLVER_IMPLEMENTATION_REF",
+    "LIQUIDITY_RESOLVER_POLICY_ID",
     "MAX_RESOLUTION_LAG_NS_V1",
     "MIDPOINT_RESOLVER_IMPLEMENTATION_REF",
     "MIDPOINT_RESOLVER_POLICY_ID",
@@ -64,6 +71,7 @@ __all__ = [
     "ResolutionEvidenceRef",
     "build_competence_profiles",
     "build_question_outcome_id",
+    "resolve_liquidity_question",
     "resolve_midpoint_question",
     "resolve_prediction",
     "select_resolution_frame",
