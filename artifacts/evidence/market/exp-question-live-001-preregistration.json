@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-QUESTION-LIVE-001",
+  "status": "PREREGISTERED_BEFORE_LIVE_DATA",
+  "base_head": "794629c0a5c6820eeaab81b2d249a641c544d3c1",
+  "branch": "codex/question-bound-live-market-qualification-v1",
+  "provider": "coinbase_advanced_trade_public_websocket",
+  "instrument": "BTC-USD",
+  "economic_root_id": "ASSET.BTC",
+  "scope": {
+    "mode": "PROSPECTIVE_SHADOW",
+    "evidence_class": "FORWARD_EVALUABLE",
+    "capital_effect": "NONE",
+    "live_execution": false,
+    "claim_ceiling": "SINGLE_SESSION_QUESTION_BOUND_LEARNING_MECHANISM_ONLY_NO_MODEL_PERFORMANCE_OR_EMPIRICAL_QUALIFICATION"
+  },
+  "questions": [
+    "ECONOMIC_ROOT_DIRECTION_10S@1.0.0",
+    "ECONOMIC_ROOT_LIQUIDITY_DETERIORATION_30S@1.0.0"
+  ],
+  "prediction_policy": {
+    "model_ref": "MECHANISM_PROBE_V1:NO_MODEL_QUALIFICATION",
+    "direction_answer": {"value": 1, "probability_1": "0.5"},
+    "liquidity_answer": {"value": 0, "probability_1": "0.5"},
+    "interpretation": "Fixed uninformative answers test causal prediction/outcome mechanics only; accuracy is not a qualification target."
+  },
+  "session_policy": {
+    "capture_seconds": 90,
+    "warmup_seconds": 15,
+    "frame_interval_seconds": 1.0,
+    "prediction_anchor_offsets_seconds": [20, 45],
+    "depth_bands_bps": [1, 5, 10],
+    "minimum_resolved_predictions": 4
+  },
+  "quality_gates": {
+    "market_data_quality": "VALID",
+    "sequence_gaps": 0,
+    "duplicate_messages": 0,
+    "out_of_order_messages": false,
+    "prediction_journal_errors": 0,
+    "outcome_journal_errors": 0,
+    "all_predictions_journaled_before_their_resolution_target": true,
+    "all_resolved_outcomes_bind_exact_prediction_subject_and_hash": true
+  },
+  "explicit_exclusions": [
+    "SPOT_DERIVATIVE_BASIS",
+    "RELATIVE_VALUE",
+    "MARKET_WIDE_REGIME",
+    "MODEL_ACCURACY_CLAIM",
+    "MODEL_QUALIFICATION",
+    "CAPITAL_DECISION",
+    "WATCHMAN_AUTHORIZATION",
+    "HAND_EXECUTION"
+  ]
+}

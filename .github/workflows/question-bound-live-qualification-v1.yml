@@ -1,0 +1,43 @@
+name: question-bound-live-qualification-v1
+
+on:
+  push:
+    branches:
+      - codex/question-bound-live-market-qualification-v1
+    paths:
+      - "experiments/question_bound_live_qualification_v1.py"
+      - "artifacts/evidence/market/exp-question-live-001-preregistration.json"
+      - ".github/workflows/question-bound-live-qualification-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prospective-question-learning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install project dependencies
+        run: python -m pip install -e .
+      - name: Compile live qualification runner
+        run: python -m py_compile experiments/question_bound_live_qualification_v1.py
+      - name: Run preregistered public-market qualification
+        run: |
+          rm -rf /tmp/exp-question-live-001
+          mkdir -p /tmp/exp-question-live-001
+          python experiments/question_bound_live_qualification_v1.py \
+            --root . \
+            --artifact-dir /tmp/exp-question-live-001
+      - name: Preserve complete live evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: exp-question-live-001
+          path: /tmp/exp-question-live-001
+          if-no-files-found: warn
+          retention-days: 30
