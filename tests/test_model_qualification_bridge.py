@@ -45,7 +45,7 @@ def _register(root):
     return registry, record
 
 
-def _receipt(record, target, *, receipt_id=None, verdict="SUPPORTED", at=200):
+def _receipt(record, target, *, receipt_id=None, supported=True, blocked=False, at=200):
     kwargs = {}
     if target == "WALK_FORWARD_QUALIFIED":
         kwargs = {
@@ -65,7 +65,8 @@ def _receipt(record, target, *, receipt_id=None, verdict="SUPPORTED", at=200):
         sample_count=250,
         metrics={"score": 0.8},
         thresholds={"minimum_score": 0.7},
-        verdict=verdict,
+        qualification_checks={"minimum_score_met": supported, "minimum_samples_met": supported},
+        blocking_reasons=("INTEGRITY_BLOCK",) if blocked else (),
         evaluated_at_ns=at,
         **kwargs
     )
@@ -99,16 +100,26 @@ class ModelQualificationBridgeTests(unittest.TestCase):
                 record, receipt, proposal = self._persist_and_apply(root, registry, record, target, 200 + index * 10)
                 self.assertEqual(record["state"], target)
                 self.assertEqual(record["last_evidence_refs"], ["qualification-receipt:%s" % receipt["integrity"]["content_hash"]])
+                self.assertEqual(receipt["verdict"], "SUPPORTED")
                 self.assertFalse(proposal["authority"]["model_self_certification"])
             self.assertTrue(registry.eligible(record["model_ref"], "QUALIFIED_SERVING"))
 
-    def test_unsupported_evaluation_cannot_propose_promotion(self):
+    def test_failed_checks_cannot_propose_promotion(self):
         with tempfile.TemporaryDirectory() as temporary:
             registry, record = _register(Path(temporary))
-            receipt = _receipt(record, "REPLAY_QUALIFIED", verdict="NOT_SUPPORTED")
-            with self.assertRaisesRegex(ModelQualificationError, "only SUPPORTED"):
+            receipt = _receipt(record, "REPLAY_QUALIFIED", supported=False)
+            self.assertEqual(receipt["verdict"], "NOT_SUPPORTED")
+            with self.assertRaisesRegex(ModelQualificationError, "only mechanically SUPPORTED"):
                 build_transition_proposal(registry, receipt, proposed_at_ns=201)
             self.assertEqual(registry.state()["models"][record["model_ref"]]["state"], "CANDIDATE")
+
+    def test_blocking_reason_overrides_passing_checks(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            registry, record = _register(Path(temporary))
+            receipt = _receipt(record, "REPLAY_QUALIFIED", supported=True, blocked=True)
+            self.assertEqual(receipt["verdict"], "BLOCKED")
+            with self.assertRaisesRegex(ModelQualificationError, "only mechanically SUPPORTED"):
+                build_transition_proposal(registry, receipt, proposed_at_ns=201)
 
     def test_illegal_skip_is_rejected_before_proposal_is_created(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -133,7 +144,7 @@ class ModelQualificationBridgeTests(unittest.TestCase):
                     sample_count=100,
                     metrics={},
                     thresholds={},
-                    verdict="SUPPORTED",
+                    qualification_checks={"minimum_samples_met": True},
                     evaluated_at_ns=200,
                 )
 
@@ -190,9 +201,9 @@ class ModelQualificationBridgeTests(unittest.TestCase):
             store.persist_proposal(proposal)
             path = store.receipt_path(receipt["integrity"]["content_hash"])
             value = json.loads(path.read_text(encoding="utf-8"))
-            value["verdict"] = "BLOCKED"
+            value["qualification_checks"]["minimum_score_met"] = False
             path.write_text(json.dumps(value), encoding="utf-8")
-            with self.assertRaisesRegex(ModelQualificationError, "content hash mismatch"):
+            with self.assertRaises(ModelQualificationError):
                 apply_transition_proposal(root, proposal_hash=proposal["integrity"]["content_hash"], occurred_at_ns=202)
 
 
