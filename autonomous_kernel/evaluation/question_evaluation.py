@@ -488,6 +488,7 @@ def build_question_evaluation(
         "outcome_hash": outcome.content_hash(),
         "outcome_journal_entry_hash": outcome_journal_entry_hash,
         "scoring_policy_id": scoring_policy_id,
+        "evaluated_at_ns": evaluated,
     }
     evaluation_id = "QEVAL-%s" % hashlib.sha256(
         canonical_hash(material).encode("utf-8")
