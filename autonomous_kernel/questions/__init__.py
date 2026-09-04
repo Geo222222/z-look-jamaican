@@ -1,6 +1,17 @@
 """Immutable economic-question contracts for ZLJ learning."""
 
 from .catalog import default_question_registry_v1, question_catalog_v1
+from .certification import (
+    DEFERRED_QUESTION_FAMILIES_V1,
+    QUESTION_REGISTRY_V1_CERTIFICATION_SCHEMA_VERSION,
+    QUESTION_REGISTRY_V1_QUALIFIED,
+    QUESTION_REGISTRY_V1_QUALIFIED_VERSION,
+    build_question_registry_v1_qualified,
+    certify_question_registry_v1,
+    resolver_ready_refs_v1_qualified,
+    validate_question_registry_v1_certificate,
+    verify_question_registry_v1_certificate,
+)
 from .contracts import (
     EVIDENCE_CUTOFF_POLICY,
     QUESTION_REGISTRY_SCHEMA_VERSION,
@@ -39,8 +50,12 @@ from .readiness import (
 )
 
 __all__ = [
+    "DEFERRED_QUESTION_FAMILIES_V1",
     "EVIDENCE_CUTOFF_POLICY",
     "QUESTION_REGISTRY_SCHEMA_VERSION",
+    "QUESTION_REGISTRY_V1_CERTIFICATION_SCHEMA_VERSION",
+    "QUESTION_REGISTRY_V1_QUALIFIED",
+    "QUESTION_REGISTRY_V1_QUALIFIED_VERSION",
     "QUESTION_SCHEMA_VERSION",
     "RESOLVER_READY_IMPLEMENTATIONS_V1",
     "REVERSAL_QUESTION_V1_1_REF",
@@ -61,12 +76,17 @@ __all__ = [
     "build_complete_resolver_ready_registry_v1_1",
     "build_learning_journal_commitment",
     "build_question_registry_snapshot",
+    "build_question_registry_v1_qualified",
     "build_resolver_ready_registry",
     "build_resolver_ready_registry_v1",
     "build_reversal_v1_1_registry",
+    "certify_question_registry_v1",
     "default_question_registry_v1",
     "material_question_registry_evidence",
     "question_catalog_v1",
     "resolver_ready_refs_v1",
+    "resolver_ready_refs_v1_qualified",
     "reversal_question_v1_1",
+    "validate_question_registry_v1_certificate",
+    "verify_question_registry_v1_certificate",
 ]
