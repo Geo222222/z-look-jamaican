@@ -15,6 +15,7 @@ from ..questions.certification import (
     certify_question_registry_v1,
 )
 from .contracts import STAGE_METADATA, command_catalog
+from .intelligence_projection import expert_intelligence_projection
 from .journal import validate_operator_journal
 
 
@@ -97,12 +98,6 @@ def _stage_availability(stage_id: str, metric: Mapping[str, Any]) -> str:
 
 
 def _question_registry() -> Dict[str, Any]:
-    """Project the frozen resolver examination contract into the owner console.
-
-    The operator surface derives this from the canonical question definitions and
-    certification code. It never upgrades resolver readiness into model competence
-    or capital/execution authority.
-    """
     base = default_question_registry_v1(registered_at_ns=0, effective_at_ns=0)
     qualified = build_question_registry_v1_qualified(base, known_at_ns=0, effective_at_ns=0)
     certificate = certify_question_registry_v1(qualified)
@@ -210,6 +205,7 @@ def build_operator_snapshot(root: Path) -> Dict[str, Any]:
         },
         "stages": stages,
         "question_registry": _question_registry(),
+        "expert_intelligence": expert_intelligence_projection(root),
         "certification": _certification(root),
         "controls": command_catalog(),
         "monitor": monitor,
