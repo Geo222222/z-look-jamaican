@@ -82,6 +82,12 @@ def certification():
     return {"certification": snap.get("certification", {}), "contract": snap.get("contract", {})}
 
 
+@app.get("/api/shadow-intelligence")
+def shadow_intelligence():
+    snap = invoke_operator_snapshot(ROOT)
+    return {"shadow_intelligence": snap.get("shadow_intelligence", {}), "contract": snap.get("contract", {})}
+
+
 @app.get("/api/control/catalog")
 def control_catalog():
     return invoke_operator_catalog(ROOT)
