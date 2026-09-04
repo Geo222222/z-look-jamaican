@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "ARTIFACT-OPP-SHOPIFY-001-REJECT-001",
+  "opportunity_id": "OPP-SHOPIFY-001",
+  "captured_at": "2026-08-21T20:21:19Z",
+  "created_by": "root-agent with /root/opportunity_refresh",
+  "method": "Read-only review of twelve current Shopify App Store listings/reviews and official economics/access documentation; stopped early after decisive competition evidence.",
+  "hypothesis": "A permission-minimal catalog-quality anomaly monitor has a repeated unmet workflow absent from adopted substitutes.",
+  "observed": {
+    "listings_reviewed": 12,
+    "adopted_substitutes_clearing_competition_gate": 7,
+    "new_exact_purpose_apps": 7,
+    "repeated_unmet_catalog_specific_complaints": 0,
+    "covered_capabilities": [
+      "Scheduled product and inventory rules, alerts and integrations",
+      "Catalog checks, health scores, history and scheduled reports",
+      "Bulk editing with preview, scheduling, undo and rollback",
+      "Real-time catalog-change alerts, attribution and revert",
+      "Missing field, SKU, SEO and quality scoring",
+      "Large-catalog and unlimited-product tiers"
+    ]
+  },
+  "representative_adoption": [
+    {"app": "Shopify Flow", "reviews": 12144, "price": "free"},
+    {"app": "Ablestar Bulk Product Editor", "reviews": 793, "price": "free and USD 30-120/month"},
+    {"app": "Rewind Backups", "reviews": 544, "price": "USD 19/99 per month"},
+    {"app": "Mechanic", "reviews": 128, "price": "USD 16-199/month"},
+    {"app": "QuickEdit", "reviews": 99, "price": "varied"},
+    {"app": "Store Health", "reviews": 6, "price": "free/USD 19.99"},
+    {"app": "Catalog Canary", "reviews": 1, "price": "free/USD 10-39"}
+  ],
+  "economics_model": {
+    "hypothetical_price_usd_per_month": 19,
+    "paid_merchants": 6,
+    "gross_mrr_usd": 114,
+    "shopify_processing_usd_at_2_9_percent": 3.31,
+    "assumed_low_scale_hosting_email_monitoring_usd": 10,
+    "modeled_contribution_before_support_refunds_tax_and_acquisition_usd": 100.69,
+    "warning": "Six willing paid merchants are not evidenced; this is a mechanical threshold, not expected or realized revenue."
+  },
+  "permission_boundary": "A basic checker can use read_products, but revenue-impact scoring can trigger protected-customer-data review and automated remediation requires write_products. Incumbents already occupy both read-only and remediation positions.",
+  "decision": "REJECT",
+  "reason": "More than five credible adopted substitutes and seven new exact-purpose apps cover the wedge; no repeated unmet complaint survived comparison.",
+  "reopening_conditions": [
+    "At least ten independent long-tenure merchant reviews repeat the same unsolved catalog workflow.",
+    "A new Shopify product/catalog surface is not covered by incumbents.",
+    "Verifiable buyer demand identifies a permission-minimal paid wedge.",
+    "Incumbent discontinuation or material pricing changes leave a demonstrable gap."
+  ],
+  "urls": [
+    "https://apps.shopify.com/flow",
+    "https://apps.shopify.com/bulk-product-editor",
+    "https://apps.shopify.com/backup",
+    "https://apps.shopify.com/mechanic",
+    "https://apps.shopify.com/quick-bulk-edit/reviews",
+    "https://apps.shopify.com/store-scanner-health-check",
+    "https://apps.shopify.com/catalog-canary",
+    "https://apps.shopify.com/loggr-product-history-revert",
+    "https://apps.shopify.com/catalog-dog",
+    "https://apps.shopify.com/catalogpilot-1",
+    "https://apps.shopify.com/catalog-risk-audit",
+    "https://apps.shopify.com/listinghealth",
+    "https://apps.shopify.com/product-iq",
+    "https://shopify.dev/docs/apps/launch/distribution/revenue-share",
+    "https://shopify.dev/docs/apps/launch/billing",
+    "https://shopify.dev/docs/apps/build/authentication-authorization/manage-access-scopes",
+    "https://shopify.dev/docs/apps/launch/protected-customer-data"
+  ]
+}

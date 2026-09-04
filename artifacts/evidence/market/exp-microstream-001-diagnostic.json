@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MICROSTREAM-001",
+  "captured_at": "2026-09-01T15:11:15Z",
+  "method": "Unauthenticated bounded read of the first two provider messages after subscribing only to the documented level2 channel; no persistence through the failed collector.",
+  "endpoint": "wss://advanced-trade-ws.coinbase.com",
+  "subscription_channel_sent": "level2",
+  "observed_response_channel": "l2_data",
+  "messages": [
+    {"sequence_num": 0, "event_types": ["snapshot"], "bytes": 4863429, "provider_timestamp": "2026-09-01T15:11:15.907309537Z"},
+    {"sequence_num": 1, "event_types": ["update"], "bytes": 2234, "provider_timestamp": "2026-09-01T15:11:15.932383321Z"}
+  ],
+  "root_cause_supported": "The provider uses l2_data in response messages even though the subscription channel is level2; the collector accepted only level2 and therefore discarded the valid L2 stream.",
+  "authentication_used": false,
+  "financial_effect": false
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-DATA-001",
+  "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+  "status": "SUCCESS",
+  "completed_at": "2026-09-01T15:00:00Z",
+  "hypothesis": "A provider-neutral immutable observation bundle can preserve raw public payload, normalized candle data, timestamp provenance, quality, lineage, replay, and crash recovery without changing the active forward experiment.",
+  "implementation": {
+    "contract_store": "autonomous_kernel/market_data.py",
+    "quality_contract": "autonomous_kernel/market_data_quality.py",
+    "capture": "python -m experiments.market_data_capture --root .",
+    "index": "state/market_data.json",
+    "bundle_directory": "artifacts/market_data/observations",
+    "monitor_section": "sections.market_data"
+  },
+  "observed_result": {
+    "provider": "coinbase_exchange_public",
+    "instruments": ["BTC-USD", "ETH-USD"],
+    "completed_candle_start_at": 1788272400,
+    "observation_count": 2,
+    "valid_quality_count": 2,
+    "capital_used_usd": "0.00",
+    "authentication": false
+  },
+  "verification": {
+    "repository_tests": "56 passed",
+    "repository_validation": "passed including market_data_store",
+    "raw_normalized_lineage": "passed",
+    "idempotent_retry": "passed",
+    "conflicting_id": "fails closed",
+    "orphan_recovery": "deterministic index rebuild passed",
+    "bundle_tampering": "fails validation and recovery",
+    "exp_mkt_002_modified": false
+  },
+  "decision": "qualify_market_data_plane_to_SHADOW_QUALIFIED_for_future_preregistered_consumers",
+  "limitations": [
+    "Only public five-minute candle bundles are qualified.",
+    "No trades, order book, account, fee, precision, minimum-notional, latency-distribution, fill, or venue-balance truth is claimed.",
+    "Cross-provider reconciliation and repeated prospective capture remain unqualified."
+  ],
+  "owner_action_required": false
+}

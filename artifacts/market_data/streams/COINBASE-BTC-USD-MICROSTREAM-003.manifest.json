@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "stream_id": "COINBASE-BTC-USD-MICROSTREAM-003",
+  "journal_sha256": "1a79adda73b9048317df48024f8f017b9260634140a387dccbbbc506180dcb9b",
+  "compressed_sha256": "2c7c8e78de0f67041d71860eb2550fca81665dfdb38bd533c5c48c26dc737d0c",
+  "compressed_path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-003.jsonl.gz",
+  "summary": {
+    "schema_version": 1,
+    "record_count": 1129,
+    "unique_message_count": 1129,
+    "duplicate_count": 0,
+    "channels": [
+      "heartbeats",
+      "level2",
+      "market_trades",
+      "subscriptions"
+    ],
+    "sequence_scope": "CONNECTION_GLOBAL",
+    "last_global_sequence": 1128,
+    "last_sequences_observed_by_channel": {
+      "level2": 1128,
+      "subscriptions": 6,
+      "market_trades": 1126,
+      "heartbeats": 1123
+    },
+    "gaps": [],
+    "out_of_order": [],
+    "level2_snapshot_count": 1,
+    "level2_update_count": 915,
+    "market_trade_message_count": 151,
+    "heartbeat_message_count": 59,
+    "latest_provider_at": "2026-09-01T18:15:38.432173759Z",
+    "spread_bps_percentiles": {
+      "50": "0.001295493102568010634961977601",
+      "90": "0.003885558138084576555435873169",
+      "99": "0.6723071814259790764792166728",
+      "100": "1.187797601102203636564762397"
+    },
+    "spread_sample_count": 916,
+    "final_book_hash": "f5bd180a26321331853d869cac03a1ad6672c9c1e1231cf863738ca15240baad"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "a0a037b72d28ac83440f3a0d095eb3a85aec3a50fe4955572e0ed83804861eab"
+  }
+}

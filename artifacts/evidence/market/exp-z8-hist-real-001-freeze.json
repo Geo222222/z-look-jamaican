@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "checkpoint_id": "FREEZE-EXP-Z8-HIST-REAL-001",
+  "status": "FROZEN_HISTORICAL_EVIDENCE",
+  "experiment_id": "EXP-Z8-HIST-REAL-001",
+  "freeze_policy": {
+    "edit_in_place_allowed": false,
+    "reinterpret_result_allowed": false,
+    "parameter_retuning_against_this_result_allowed": false,
+    "new_hypothesis_requires_new_experiment_id": true,
+    "future_certifications_must_not_upgrade_this_experiment": true
+  },
+  "source_state": {
+    "repository": "Geo222222/z-look-jamaican",
+    "working_branch": "codex/z8-real-data-qualification",
+    "source_head_before_freeze": "d293122e954064769f266408652c0a2babf2841e",
+    "successful_evidence_lock_workflow_run_id": 33706429603,
+    "supported_runtime_results_matched": true,
+    "python_versions": [
+      "3.9.25",
+      "3.12.14"
+    ]
+  },
+  "preregistration": {
+    "path": "artifacts/evidence/market/exp-z8-hist-real-001-preregistration.json",
+    "git_blob_sha": "4fdfa3e545330b347010c5e6c38c7e50135361e5",
+    "status": "PREREGISTERED_BEFORE_RESULT"
+  },
+  "result": {
+    "path": "artifacts/evidence/market/exp-z8-hist-real-001-result.json",
+    "git_blob_sha": "6be3883e7b1b52a5c3b19681fd11cc808b81ce25",
+    "result_content_hash": "2320855eff796b173d5d09429ae204803d60f7cf5771d79d112fcbc4a79671bc",
+    "decision": "NOT_EARNED",
+    "reasons": [
+      "adaptive_mae_worse_than_equal_weight",
+      "adaptive_brier_worse_than_equal_weight"
+    ]
+  },
+  "dataset": {
+    "stream_id": "COINBASE-BTC-USD-MICROSTREAM-004",
+    "journal_sha256": "d16930cd9df5e3e853d62f1143de3eb9b321aa2fe9999e7061a69d0dac090f76",
+    "compressed_sha256": "4f920029c92e47c345c10906aa479e4710ee49bbd18a7e1a46804db49158868f",
+    "manifest_content_hash": "83fface77a0fb8aa29ece5b364f8d151c97795c8694a4fd00d37da92dd88c479",
+    "canonical_batch_content_hash": "bb9909d22d575aa97a868543bd6696fc77a920442e93aae398c4a939c36fa092"
+  },
+  "qualified_findings": {
+    "z8_mechanical_correctness": "CERTIFIED",
+    "lineage_and_integrity": "CERTIFIED",
+    "cross_runtime_reproducibility": "CERTIFIED",
+    "adaptive_weight_change_observed": true,
+    "adaptive_performance_support_on_this_window": "NOT_EARNED",
+    "broad_historical_qualification": false,
+    "walk_forward_qualification": false,
+    "prospective_shadow_qualification": false,
+    "contextual_qualification": false
+  },
+  "scope_boundary": {
+    "mode": "HISTORICAL_REPLAY",
+    "evidence_class": "RESEARCH_ONLY",
+    "capital_effect": "NONE",
+    "live_execution": false,
+    "maximum_claim_allowed_by_preregistration": "SINGLE_WINDOW_HISTORICAL_SUPPORTED",
+    "maximum_claim_was_earned": false
+  }
+}

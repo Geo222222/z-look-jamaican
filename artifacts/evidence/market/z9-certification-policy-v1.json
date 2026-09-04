@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "policy_id": "Z9-CERTIFICATION-POLICY-V1",
+  "status": "FROZEN_BEFORE_EMPIRICAL_Z9_RESULT",
+  "authority": "Evidence qualification only. Z9 cannot decide trades, allocate capital, authorize risk, promote models, or execute externally.",
+  "scope": {
+    "system": "Z9 Market Context",
+    "input_contract": "Z2 INSTRUMENT_STATE frames",
+    "output_contract": "MARKET_CONTEXT",
+    "provider_neutral": true,
+    "capital_effect": "NONE",
+    "live_execution": false
+  },
+  "mechanical_invariants": {
+    "future_known_z2_frames_hard_rejected": true,
+    "exact_source_frame_hashes_required": true,
+    "input_order_must_not_change_context": true,
+    "source_quality_and_freshness_attributable": true,
+    "spot_derivative_join_requires_exact_asset_class_base_quote_identity": true,
+    "basis_is_representational_not_trade_intent": true,
+    "lead_lag_is_explicit_proxy_not_causality": true,
+    "model_context_profiles_are_explicit_and_hashable": true,
+    "base_z8_remains_independently_reproducible": true,
+    "context_multiplier_bounds": ["0.75", "1.25"],
+    "authority_leakage_allowed": false
+  },
+  "market_wide_historical": {
+    "claim_if_earned": "Z9_MARKET_WIDE_CONTEXT_HISTORICAL_SUPPORTED",
+    "minimum_qualified_contexts": 12,
+    "minimum_distinct_utc_dates": 3,
+    "minimum_distinct_utc_six_hour_buckets": 3,
+    "minimum_qualified_spot_instruments_per_context": 2,
+    "population_rule": "All preregistered eligible contexts including degraded or negative findings remain represented.",
+    "claim_boundary": "Representation validity and stability only; no predictive edge claim."
+  },
+  "spot_derivatives": {
+    "claim_if_earned": "Z9_SPOT_DERIVATIVE_CONTEXT_HISTORICAL_SUPPORTED",
+    "minimum_qualified_relationship_contexts": 12,
+    "minimum_distinct_utc_dates": 3,
+    "minimum_distinct_utc_six_hour_buckets": 3,
+    "exact_underlying_identity_required": true,
+    "basis_lineage_required": true,
+    "lead_lag_sample_count_required": true,
+    "causal_claim_allowed": false
+  },
+  "contextual_assembly": {
+    "claim_if_earned": "Z8_Z9_CONTEXTUAL_ASSEMBLY_WALK_FORWARD_SUPPORTED",
+    "prerequisites": ["Z8 broad historical evidence minimum met", "Z9 market-wide historical evidence minimum met"],
+    "minimum_resolved_contextual_predictions": 100,
+    "minimum_chronological_folds": 4,
+    "minimum_folds_without_degradation_on_both_mae_and_brier": 3,
+    "baseline": "Same Z8 base assembly without Z9 overlay",
+    "competence_rule": "Z7 competence remains inherited from the point-in-time Z8 base receipt; Z9 may change relevance only.",
+    "parameter_rule": "No profile, threshold, feature dependency, model, horizon, or weighting-policy changes after evaluation outcomes are inspected.",
+    "population_rule": "Resolved, unresolved, losing, null and abstaining eligible predictions remain in the population.",
+    "performance_gates": {
+      "aggregate_contextual_mae_must_be_lte_base_z8_mae": true,
+      "aggregate_contextual_brier_must_be_lte_base_z8_brier": true,
+      "lineage_integrity_errors_allowed": 0
+    }
+  },
+  "anti_cherry_picking": {
+    "policy_changes_require_new_policy_id": true,
+    "thresholds_cannot_be_lowered_after_results": true,
+    "failed_or_degraded_contexts_cannot_be_silently_removed": true,
+    "new_context_profile_hypothesis_requires_new_preregistration": true,
+    "historical_z8_receipts_cannot_be_rewritten_by_z9": true
+  }
+}

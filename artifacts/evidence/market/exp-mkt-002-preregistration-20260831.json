@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MKT-002",
+  "created_at": "2026-08-31T17:30:00Z",
+  "created_before_forward_observations": true,
+  "hypothesis": "The fixed 48/24-candle breakout family has positive prospective net expectancy on both BTC-USD and ETH-USD when entry/holding is limited to objectively active weekdays.",
+  "provenance": "This narrower hypothesis was selected from the post-hoc regime decomposition of EXP-MKT-001 and therefore receives no evidentiary credit until prospective observations exist.",
+  "fixed_activity_thresholds": {
+    "BTC-USD": {"quote_volume_training_median": 794705.2274048326, "absolute_log_return_training_median": 0.0004311985809890824},
+    "ETH-USD": {"quote_volume_training_median": 303456.35020704503, "absolute_log_return_training_median": 0.0005949453936603113}
+  },
+  "signal": "Existing EXP-MKT-001 breakout target AND UTC weekday AND prior completed candle quote-volume or absolute-return activity above its frozen threshold.",
+  "timestamp_rule": "Every decision must be durably written before its actionable_at timestamp. Missed scheduler intervals are skipped and never backfilled as prospective decisions.",
+  "execution": {"mode":"zero-capital shadow","capital_usd":0,"orders":false,"credentials":false,"per_side_cost_bps":20,"funding_bps":0,"action_latency":"at least one future five-minute boundary after observation"},
+  "evidence_gate": "At least 100 eligible prospective observations or 14 calendar days, positive net return on both products, and deterministic reconciliation/restart behavior.",
+  "failure_gate": "Reject if either product is non-positive at the evidence gate, timestamp integrity fails, state cannot resume, or parameters would need revision.",
+  "next_stage_if_supported": "A deeper historical level-2/order-book and venue-specific fee-capacity replay; not live trading."
+}

@@ -1,0 +1,85 @@
+{
+  "adaptive_metrics": {
+    "brier_score": "0.2601215465149661688247923852",
+    "directional_accuracy": "0.3846153846153846153846153846",
+    "mae_bps": "3.610548230342531252569281616",
+    "resolved_count": 13
+  },
+  "experiment_id": "EXP-Z8-PROSPECTIVE-002",
+  "integrity": {
+    "assembly_journal_entries": 13,
+    "assembly_receipt_set_hash": "b49fa4c689f0c311f67ed47b21e6c7521942f5ee23611aa17b45ce244430b53a",
+    "errors": [],
+    "outcome_journal_entries": 52,
+    "prediction_journal_entries": 52,
+    "result_content_hash": "d901919a3bb5e7f2377c055d61977b15535b905cbdae3c18aa19e41109bdbec6"
+  },
+  "preregistration_ref": "artifacts/evidence/market/exp-z8-prospective-002-preregistration.json",
+  "qualification": {
+    "broad_historical_qualification": false,
+    "contextual_qualification": false,
+    "decision": "SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED",
+    "reasons": [],
+    "walk_forward_qualification": false
+  },
+  "schema_version": 1,
+  "scope": {
+    "capital_effect": "NONE",
+    "claim_ceiling": "SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED",
+    "evidence_class": "FORWARD_EVALUABLE",
+    "live_execution": false,
+    "mode": "PROSPECTIVE_SHADOW",
+    "registry_scope": "EXPERIMENT_LOCAL_MECHANISM_ONLY"
+  },
+  "session": {
+    "adaptive_prediction_count": 13,
+    "assembly_receipt_count": 13,
+    "canonical_observation_count": 2496,
+    "capture_seconds": 90,
+    "component_prediction_count": 39,
+    "first_live_message_ns": 1788402668466208997,
+    "qualified_frame_count": 59,
+    "raw_bundle_files": {
+      "compressed": "COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.jsonl.gz",
+      "journal": "COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.jsonl",
+      "manifest": "COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.manifest.json",
+      "observation": "OBS-COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620.json"
+    },
+    "raw_stream_manifest_hash": "f3a9b5d1fe43efce91ec1b5e842c1538622b2e8b471a673427900c23b54fba80",
+    "raw_stream_summary": {
+      "channels": ["heartbeats", "level2", "market_trades", "subscriptions"],
+      "duplicate_count": 0,
+      "final_book_hash": "625498cfd2f2af55d6ed903fdbe0cfd095850fbba2d21c29fa60757eb16f608f",
+      "gaps": [],
+      "heartbeat_message_count": 89,
+      "last_global_sequence": 1799,
+      "last_sequences_observed_by_channel": {
+        "heartbeats": 1794,
+        "level2": 1799,
+        "market_trades": 1785,
+        "subscriptions": 9
+      },
+      "latest_provider_at": "2026-09-03T02:32:37.347774631Z",
+      "level2_snapshot_count": 1,
+      "level2_update_count": 1488,
+      "market_trade_message_count": 219,
+      "out_of_order": [],
+      "record_count": 1800,
+      "schema_version": 1,
+      "sequence_scope": "CONNECTION_GLOBAL",
+      "signed_provider_minus_receive_seconds_percentiles": {
+        "50": "-0.079894945",
+        "90": "-0.022173989",
+        "99": "-0.021330896"
+      },
+      "spread_bps_percentiles": {
+        "50": "0.001287794764148437663489569667",
+        "90": "0.3769871355391626909856392991",
+        "99": "0.9174876819557903477593580366"
+      },
+      "spread_sample_count": 1489,
+      "unique_message_count": 1800
+    },
+    "stream_id": "COINBASE-BTC-USD-PROSPECTIVE-V2-1788402667122611620"
+  }
+}

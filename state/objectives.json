@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-31T16:45:44.0046593Z",
+  "items": [
+    {
+      "id": "MISSION-001",
+      "kind": "mission",
+      "parent_objective_id": null,
+      "status": "active",
+      "objective": "Build lawful machine-operated systems capable of sustainable risk-adjusted realized economic value within the Governor.",
+      "success_evidence": "Reconciled realized outcomes, controlled risk, reproducible systems, and durable institutional memory."
+    },
+    {
+      "id": "PROGRAM-BOOTSTRAP-KERNEL",
+      "kind": "program",
+      "parent_objective_id": "MISSION-001",
+      "status": "active",
+      "objective": "Establish the minimum durable, validated, resumable autonomous operating kernel.",
+      "success_evidence": "The repository can validate state, select work, record transitions and results, reflect, reprioritize, and resume without chat history."
+    },
+    {
+      "id": "PROGRAM-OPPORTUNITY-DISCOVERY",
+      "kind": "program",
+      "parent_objective_id": "MISSION-001",
+      "status": "active",
+      "objective": "Maintain a current evidence-backed opportunity register and execute cheap high-information falsification experiments.",
+      "success_evidence": "Ranked candidates, cited current evidence, explicit economics and risks, and reproducible experiment results."
+    },
+    {
+      "id": "PROGRAM-CRYPTO-MARKETS",
+      "kind": "program",
+      "parent_objective_id": "MISSION-001",
+      "status": "active",
+      "objective": "Discover, falsify, replay, shadow, and—only after earning promotion—operate cryptocurrency-market strategies that produce sustainable net realized USD profit conditioned on actual market activity.",
+      "success_evidence": "Reproducible activity-segmented market data, walk-forward strategy evidence, execution-aware net economics, shadow results, deterministic risk controls, and reconciled realized outcomes if live authority is later granted."
+    },
+    {
+      "id": "PROGRAM-WALLET-SIGNING",
+      "kind": "program",
+      "parent_objective_id": "MISSION-001",
+      "status": "conditional",
+      "objective": "Create isolated operational wallet and deterministic signing capabilities only when an active validated opportunity justifies blockchain work.",
+      "success_evidence": "Independent review and all readiness gates in docs/WALLET_AND_SIGNING.md; no live value under the current Governor."
+    }
+  ]
+}

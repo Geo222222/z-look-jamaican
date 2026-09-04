@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MICROSTREAM-002",
+  "frozen_at": "2026-09-01T18:05:00Z",
+  "parent_experiment_id": "EXP-MICROSTREAM-001",
+  "objective": "Repeat the bounded continuous public microstructure qualification with a tested provider-response alias contract while preserving the failed first attempt unchanged.",
+  "frozen_parameters": {
+    "endpoint": "wss://advanced-trade-ws.coinbase.com",
+    "instrument": "BTC-USD",
+    "subscription_channels": ["level2", "market_trades", "heartbeats"],
+    "provider_to_logical_channel": {"l2_data": "level2", "market_trades": "market_trades", "heartbeats": "heartbeats"},
+    "capture_seconds": 60,
+    "maximum_messages": 100000,
+    "maximum_uncompressed_bytes": 67108864,
+    "message_idle_timeout_seconds": 10,
+    "flush_and_fsync_every_messages": 1,
+    "compression": "deterministic_gzip_mtime_zero",
+    "distribution_percentiles": [50, 90, 99, 100]
+  },
+  "provenance_rule": "Every accepted record must preserve the raw provider channel and payload hash while also recording the normalized logical channel; l2_data is the only added alias supported by the failed-attempt diagnostic.",
+  "pass_gate": "At least one logical level2 snapshot and update, one market-trades message, and one heartbeat are durably captured; raw l2_data provenance remains visible; per-logical-channel gaps/out-of-order/duplicates are explicit; replay, restart, corruption, bounds, quality, and zero-effect gates pass.",
+  "failure_gate": "Any first-attempt artifact is rewritten, alias provenance is lost, a required channel is missing, replay diverges, integrity/restart fails, bounds are exceeded, or authentication/account/order/signer/wallet/capital access occurs.",
+  "scope_limit": "Public spread/depth distribution evidence only; no fee tier, order latency, rejection, partial-fill, actual-fill, economic-edge, capital, or live qualification.",
+  "capital_used_usd": "0.00",
+  "live_trading": false
+}

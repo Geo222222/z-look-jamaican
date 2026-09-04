@@ -1,0 +1,1498 @@
+{
+  "schema_version": 1,
+  "stream_id": "COINBASE-BTC-USD-MICROSTREAM-001",
+  "journal_sha256": "fa3a6fc6ace2d81148af89c1ad12072e4efdd5cff26c98bc87861a963c7347f3",
+  "compressed_sha256": "cbe1677eea1d42c3dcda40b768a7e94916978ff93eef58e8de7ae1d436f99810",
+  "compressed_path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-001.jsonl.gz",
+  "summary": {
+    "schema_version": 1,
+    "record_count": 263,
+    "unique_message_count": 263,
+    "duplicate_count": 0,
+    "channels": [
+      "heartbeats",
+      "market_trades"
+    ],
+    "last_sequences": {
+      "market_trades": 1134,
+      "heartbeats": 1141
+    },
+    "gaps": [
+      {
+        "channel": "market_trades",
+        "after": 4,
+        "before": 11,
+        "missing": 6
+      },
+      {
+        "channel": "market_trades",
+        "after": 11,
+        "before": 14,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 14,
+        "before": 28,
+        "missing": 13
+      },
+      {
+        "channel": "market_trades",
+        "after": 28,
+        "before": 32,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 32,
+        "before": 37,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 37,
+        "before": 42,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 42,
+        "before": 45,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 25,
+        "before": 50,
+        "missing": 24
+      },
+      {
+        "channel": "market_trades",
+        "after": 45,
+        "before": 55,
+        "missing": 9
+      },
+      {
+        "channel": "market_trades",
+        "after": 55,
+        "before": 57,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 57,
+        "before": 59,
+        "missing": 1
+      },
+      {
+        "channel": "heartbeats",
+        "after": 50,
+        "before": 68,
+        "missing": 17
+      },
+      {
+        "channel": "market_trades",
+        "after": 59,
+        "before": 69,
+        "missing": 9
+      },
+      {
+        "channel": "market_trades",
+        "after": 69,
+        "before": 74,
+        "missing": 4
+      },
+      {
+        "channel": "heartbeats",
+        "after": 68,
+        "before": 82,
+        "missing": 13
+      },
+      {
+        "channel": "market_trades",
+        "after": 74,
+        "before": 83,
+        "missing": 8
+      },
+      {
+        "channel": "market_trades",
+        "after": 83,
+        "before": 96,
+        "missing": 12
+      },
+      {
+        "channel": "market_trades",
+        "after": 96,
+        "before": 100,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 100,
+        "before": 103,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 82,
+        "before": 106,
+        "missing": 23
+      },
+      {
+        "channel": "market_trades",
+        "after": 103,
+        "before": 109,
+        "missing": 5
+      },
+      {
+        "channel": "market_trades",
+        "after": 109,
+        "before": 117,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 117,
+        "before": 120,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 106,
+        "before": 124,
+        "missing": 17
+      },
+      {
+        "channel": "market_trades",
+        "after": 120,
+        "before": 127,
+        "missing": 6
+      },
+      {
+        "channel": "market_trades",
+        "after": 127,
+        "before": 130,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 130,
+        "before": 134,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 134,
+        "before": 137,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 137,
+        "before": 139,
+        "missing": 1
+      },
+      {
+        "channel": "heartbeats",
+        "after": 124,
+        "before": 144,
+        "missing": 19
+      },
+      {
+        "channel": "market_trades",
+        "after": 139,
+        "before": 149,
+        "missing": 9
+      },
+      {
+        "channel": "market_trades",
+        "after": 149,
+        "before": 152,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 152,
+        "before": 157,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 157,
+        "before": 160,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 160,
+        "before": 164,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 164,
+        "before": 168,
+        "missing": 3
+      },
+      {
+        "channel": "heartbeats",
+        "after": 144,
+        "before": 170,
+        "missing": 25
+      },
+      {
+        "channel": "market_trades",
+        "after": 168,
+        "before": 171,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 171,
+        "before": 178,
+        "missing": 6
+      },
+      {
+        "channel": "market_trades",
+        "after": 178,
+        "before": 181,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 181,
+        "before": 183,
+        "missing": 1
+      },
+      {
+        "channel": "heartbeats",
+        "after": 170,
+        "before": 191,
+        "missing": 20
+      },
+      {
+        "channel": "market_trades",
+        "after": 183,
+        "before": 193,
+        "missing": 9
+      },
+      {
+        "channel": "market_trades",
+        "after": 194,
+        "before": 199,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 199,
+        "before": 202,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 202,
+        "before": 209,
+        "missing": 6
+      },
+      {
+        "channel": "market_trades",
+        "after": 209,
+        "before": 212,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 191,
+        "before": 213,
+        "missing": 21
+      },
+      {
+        "channel": "market_trades",
+        "after": 212,
+        "before": 215,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 215,
+        "before": 218,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 218,
+        "before": 221,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 221,
+        "before": 226,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 226,
+        "before": 230,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 231,
+        "before": 239,
+        "missing": 7
+      },
+      {
+        "channel": "heartbeats",
+        "after": 213,
+        "before": 240,
+        "missing": 26
+      },
+      {
+        "channel": "market_trades",
+        "after": 239,
+        "before": 241,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 241,
+        "before": 246,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 246,
+        "before": 248,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 248,
+        "before": 250,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 250,
+        "before": 253,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 253,
+        "before": 255,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 255,
+        "before": 259,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 259,
+        "before": 262,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 262,
+        "before": 265,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 240,
+        "before": 267,
+        "missing": 26
+      },
+      {
+        "channel": "market_trades",
+        "after": 265,
+        "before": 271,
+        "missing": 5
+      },
+      {
+        "channel": "market_trades",
+        "after": 272,
+        "before": 274,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 275,
+        "before": 282,
+        "missing": 6
+      },
+      {
+        "channel": "market_trades",
+        "after": 282,
+        "before": 287,
+        "missing": 4
+      },
+      {
+        "channel": "heartbeats",
+        "after": 267,
+        "before": 289,
+        "missing": 21
+      },
+      {
+        "channel": "market_trades",
+        "after": 287,
+        "before": 291,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 291,
+        "before": 294,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 294,
+        "before": 297,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 297,
+        "before": 302,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 302,
+        "before": 305,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 305,
+        "before": 307,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 307,
+        "before": 310,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 310,
+        "before": 312,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 312,
+        "before": 315,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 289,
+        "before": 317,
+        "missing": 27
+      },
+      {
+        "channel": "market_trades",
+        "after": 315,
+        "before": 319,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 319,
+        "before": 322,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 322,
+        "before": 324,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 324,
+        "before": 326,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 326,
+        "before": 329,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 329,
+        "before": 331,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 332,
+        "before": 335,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 335,
+        "before": 337,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 337,
+        "before": 341,
+        "missing": 3
+      },
+      {
+        "channel": "heartbeats",
+        "after": 317,
+        "before": 343,
+        "missing": 25
+      },
+      {
+        "channel": "market_trades",
+        "after": 341,
+        "before": 344,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 344,
+        "before": 348,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 348,
+        "before": 351,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 351,
+        "before": 353,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 353,
+        "before": 358,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 358,
+        "before": 361,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 361,
+        "before": 364,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 343,
+        "before": 366,
+        "missing": 22
+      },
+      {
+        "channel": "market_trades",
+        "after": 364,
+        "before": 372,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 372,
+        "before": 380,
+        "missing": 7
+      },
+      {
+        "channel": "heartbeats",
+        "after": 366,
+        "before": 387,
+        "missing": 20
+      },
+      {
+        "channel": "market_trades",
+        "after": 380,
+        "before": 388,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 388,
+        "before": 391,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 391,
+        "before": 394,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 394,
+        "before": 397,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 397,
+        "before": 403,
+        "missing": 5
+      },
+      {
+        "channel": "market_trades",
+        "after": 403,
+        "before": 406,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 387,
+        "before": 409,
+        "missing": 21
+      },
+      {
+        "channel": "market_trades",
+        "after": 406,
+        "before": 410,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 410,
+        "before": 412,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 412,
+        "before": 414,
+        "missing": 1
+      },
+      {
+        "channel": "heartbeats",
+        "after": 409,
+        "before": 430,
+        "missing": 20
+      },
+      {
+        "channel": "market_trades",
+        "after": 415,
+        "before": 433,
+        "missing": 17
+      },
+      {
+        "channel": "market_trades",
+        "after": 433,
+        "before": 435,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 435,
+        "before": 441,
+        "missing": 5
+      },
+      {
+        "channel": "market_trades",
+        "after": 441,
+        "before": 445,
+        "missing": 3
+      },
+      {
+        "channel": "heartbeats",
+        "after": 430,
+        "before": 452,
+        "missing": 21
+      },
+      {
+        "channel": "market_trades",
+        "after": 445,
+        "before": 453,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 453,
+        "before": 455,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 455,
+        "before": 458,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 458,
+        "before": 465,
+        "missing": 6
+      },
+      {
+        "channel": "market_trades",
+        "after": 465,
+        "before": 469,
+        "missing": 3
+      },
+      {
+        "channel": "heartbeats",
+        "after": 452,
+        "before": 471,
+        "missing": 18
+      },
+      {
+        "channel": "market_trades",
+        "after": 469,
+        "before": 473,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 473,
+        "before": 481,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 481,
+        "before": 488,
+        "missing": 6
+      },
+      {
+        "channel": "heartbeats",
+        "after": 471,
+        "before": 494,
+        "missing": 22
+      },
+      {
+        "channel": "market_trades",
+        "after": 488,
+        "before": 501,
+        "missing": 12
+      },
+      {
+        "channel": "market_trades",
+        "after": 501,
+        "before": 510,
+        "missing": 8
+      },
+      {
+        "channel": "heartbeats",
+        "after": 494,
+        "before": 512,
+        "missing": 17
+      },
+      {
+        "channel": "market_trades",
+        "after": 510,
+        "before": 513,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 512,
+        "before": 519,
+        "missing": 6
+      },
+      {
+        "channel": "market_trades",
+        "after": 516,
+        "before": 524,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 524,
+        "before": 527,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 527,
+        "before": 533,
+        "missing": 5
+      },
+      {
+        "channel": "heartbeats",
+        "after": 519,
+        "before": 542,
+        "missing": 22
+      },
+      {
+        "channel": "market_trades",
+        "after": 533,
+        "before": 553,
+        "missing": 19
+      },
+      {
+        "channel": "heartbeats",
+        "after": 542,
+        "before": 557,
+        "missing": 14
+      },
+      {
+        "channel": "market_trades",
+        "after": 553,
+        "before": 558,
+        "missing": 4
+      },
+      {
+        "channel": "heartbeats",
+        "after": 557,
+        "before": 565,
+        "missing": 7
+      },
+      {
+        "channel": "heartbeats",
+        "after": 565,
+        "before": 586,
+        "missing": 20
+      },
+      {
+        "channel": "market_trades",
+        "after": 564,
+        "before": 595,
+        "missing": 30
+      },
+      {
+        "channel": "market_trades",
+        "after": 595,
+        "before": 599,
+        "missing": 3
+      },
+      {
+        "channel": "heartbeats",
+        "after": 586,
+        "before": 605,
+        "missing": 18
+      },
+      {
+        "channel": "heartbeats",
+        "after": 605,
+        "before": 620,
+        "missing": 14
+      },
+      {
+        "channel": "market_trades",
+        "after": 599,
+        "before": 622,
+        "missing": 22
+      },
+      {
+        "channel": "market_trades",
+        "after": 622,
+        "before": 625,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 625,
+        "before": 634,
+        "missing": 8
+      },
+      {
+        "channel": "heartbeats",
+        "after": 620,
+        "before": 642,
+        "missing": 21
+      },
+      {
+        "channel": "market_trades",
+        "after": 634,
+        "before": 646,
+        "missing": 11
+      },
+      {
+        "channel": "market_trades",
+        "after": 646,
+        "before": 654,
+        "missing": 7
+      },
+      {
+        "channel": "heartbeats",
+        "after": 642,
+        "before": 655,
+        "missing": 12
+      },
+      {
+        "channel": "market_trades",
+        "after": 654,
+        "before": 662,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 662,
+        "before": 667,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 667,
+        "before": 669,
+        "missing": 1
+      },
+      {
+        "channel": "heartbeats",
+        "after": 655,
+        "before": 677,
+        "missing": 21
+      },
+      {
+        "channel": "market_trades",
+        "after": 669,
+        "before": 687,
+        "missing": 17
+      },
+      {
+        "channel": "market_trades",
+        "after": 687,
+        "before": 689,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 689,
+        "before": 694,
+        "missing": 4
+      },
+      {
+        "channel": "heartbeats",
+        "after": 677,
+        "before": 697,
+        "missing": 19
+      },
+      {
+        "channel": "market_trades",
+        "after": 694,
+        "before": 703,
+        "missing": 8
+      },
+      {
+        "channel": "market_trades",
+        "after": 703,
+        "before": 706,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 706,
+        "before": 709,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 709,
+        "before": 713,
+        "missing": 3
+      },
+      {
+        "channel": "heartbeats",
+        "after": 697,
+        "before": 717,
+        "missing": 19
+      },
+      {
+        "channel": "market_trades",
+        "after": 713,
+        "before": 719,
+        "missing": 5
+      },
+      {
+        "channel": "market_trades",
+        "after": 719,
+        "before": 722,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 722,
+        "before": 725,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 725,
+        "before": 729,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 729,
+        "before": 732,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 732,
+        "before": 738,
+        "missing": 5
+      },
+      {
+        "channel": "heartbeats",
+        "after": 717,
+        "before": 740,
+        "missing": 22
+      },
+      {
+        "channel": "market_trades",
+        "after": 738,
+        "before": 744,
+        "missing": 5
+      },
+      {
+        "channel": "market_trades",
+        "after": 744,
+        "before": 753,
+        "missing": 8
+      },
+      {
+        "channel": "market_trades",
+        "after": 753,
+        "before": 759,
+        "missing": 5
+      },
+      {
+        "channel": "heartbeats",
+        "after": 740,
+        "before": 762,
+        "missing": 21
+      },
+      {
+        "channel": "market_trades",
+        "after": 759,
+        "before": 763,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 763,
+        "before": 765,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 765,
+        "before": 770,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 770,
+        "before": 774,
+        "missing": 3
+      },
+      {
+        "channel": "heartbeats",
+        "after": 762,
+        "before": 779,
+        "missing": 16
+      },
+      {
+        "channel": "market_trades",
+        "after": 774,
+        "before": 781,
+        "missing": 6
+      },
+      {
+        "channel": "market_trades",
+        "after": 782,
+        "before": 788,
+        "missing": 5
+      },
+      {
+        "channel": "market_trades",
+        "after": 788,
+        "before": 792,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 792,
+        "before": 797,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 797,
+        "before": 800,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 800,
+        "before": 803,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 779,
+        "before": 804,
+        "missing": 24
+      },
+      {
+        "channel": "market_trades",
+        "after": 803,
+        "before": 808,
+        "missing": 4
+      },
+      {
+        "channel": "heartbeats",
+        "after": 804,
+        "before": 822,
+        "missing": 17
+      },
+      {
+        "channel": "market_trades",
+        "after": 808,
+        "before": 824,
+        "missing": 15
+      },
+      {
+        "channel": "market_trades",
+        "after": 824,
+        "before": 836,
+        "missing": 11
+      },
+      {
+        "channel": "heartbeats",
+        "after": 822,
+        "before": 837,
+        "missing": 14
+      },
+      {
+        "channel": "market_trades",
+        "after": 836,
+        "before": 848,
+        "missing": 11
+      },
+      {
+        "channel": "heartbeats",
+        "after": 837,
+        "before": 855,
+        "missing": 17
+      },
+      {
+        "channel": "market_trades",
+        "after": 848,
+        "before": 857,
+        "missing": 8
+      },
+      {
+        "channel": "market_trades",
+        "after": 857,
+        "before": 867,
+        "missing": 9
+      },
+      {
+        "channel": "heartbeats",
+        "after": 855,
+        "before": 874,
+        "missing": 18
+      },
+      {
+        "channel": "market_trades",
+        "after": 867,
+        "before": 882,
+        "missing": 14
+      },
+      {
+        "channel": "heartbeats",
+        "after": 874,
+        "before": 891,
+        "missing": 16
+      },
+      {
+        "channel": "market_trades",
+        "after": 882,
+        "before": 908,
+        "missing": 25
+      },
+      {
+        "channel": "heartbeats",
+        "after": 891,
+        "before": 910,
+        "missing": 18
+      },
+      {
+        "channel": "market_trades",
+        "after": 908,
+        "before": 919,
+        "missing": 10
+      },
+      {
+        "channel": "market_trades",
+        "after": 919,
+        "before": 923,
+        "missing": 3
+      },
+      {
+        "channel": "heartbeats",
+        "after": 910,
+        "before": 930,
+        "missing": 19
+      },
+      {
+        "channel": "market_trades",
+        "after": 923,
+        "before": 931,
+        "missing": 7
+      },
+      {
+        "channel": "heartbeats",
+        "after": 930,
+        "before": 932,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 931,
+        "before": 945,
+        "missing": 13
+      },
+      {
+        "channel": "heartbeats",
+        "after": 932,
+        "before": 951,
+        "missing": 18
+      },
+      {
+        "channel": "heartbeats",
+        "after": 951,
+        "before": 968,
+        "missing": 16
+      },
+      {
+        "channel": "market_trades",
+        "after": 945,
+        "before": 970,
+        "missing": 24
+      },
+      {
+        "channel": "market_trades",
+        "after": 970,
+        "before": 981,
+        "missing": 10
+      },
+      {
+        "channel": "heartbeats",
+        "after": 968,
+        "before": 983,
+        "missing": 14
+      },
+      {
+        "channel": "market_trades",
+        "after": 981,
+        "before": 984,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 984,
+        "before": 992,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 992,
+        "before": 995,
+        "missing": 2
+      },
+      {
+        "channel": "market_trades",
+        "after": 995,
+        "before": 1001,
+        "missing": 5
+      },
+      {
+        "channel": "heartbeats",
+        "after": 983,
+        "before": 1008,
+        "missing": 24
+      },
+      {
+        "channel": "market_trades",
+        "after": 1001,
+        "before": 1009,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 1009,
+        "before": 1014,
+        "missing": 4
+      },
+      {
+        "channel": "heartbeats",
+        "after": 1008,
+        "before": 1027,
+        "missing": 18
+      },
+      {
+        "channel": "market_trades",
+        "after": 1016,
+        "before": 1030,
+        "missing": 13
+      },
+      {
+        "channel": "market_trades",
+        "after": 1030,
+        "before": 1032,
+        "missing": 1
+      },
+      {
+        "channel": "heartbeats",
+        "after": 1027,
+        "before": 1043,
+        "missing": 15
+      },
+      {
+        "channel": "market_trades",
+        "after": 1032,
+        "before": 1053,
+        "missing": 20
+      },
+      {
+        "channel": "market_trades",
+        "after": 1053,
+        "before": 1065,
+        "missing": 11
+      },
+      {
+        "channel": "heartbeats",
+        "after": 1043,
+        "before": 1066,
+        "missing": 22
+      },
+      {
+        "channel": "market_trades",
+        "after": 1065,
+        "before": 1069,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 1069,
+        "before": 1073,
+        "missing": 3
+      },
+      {
+        "channel": "market_trades",
+        "after": 1073,
+        "before": 1078,
+        "missing": 4
+      },
+      {
+        "channel": "market_trades",
+        "after": 1078,
+        "before": 1081,
+        "missing": 2
+      },
+      {
+        "channel": "heartbeats",
+        "after": 1066,
+        "before": 1084,
+        "missing": 17
+      },
+      {
+        "channel": "market_trades",
+        "after": 1081,
+        "before": 1089,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 1089,
+        "before": 1091,
+        "missing": 1
+      },
+      {
+        "channel": "market_trades",
+        "after": 1091,
+        "before": 1096,
+        "missing": 4
+      },
+      {
+        "channel": "heartbeats",
+        "after": 1084,
+        "before": 1101,
+        "missing": 16
+      },
+      {
+        "channel": "market_trades",
+        "after": 1096,
+        "before": 1103,
+        "missing": 6
+      },
+      {
+        "channel": "market_trades",
+        "after": 1103,
+        "before": 1116,
+        "missing": 12
+      },
+      {
+        "channel": "heartbeats",
+        "after": 1101,
+        "before": 1123,
+        "missing": 21
+      },
+      {
+        "channel": "market_trades",
+        "after": 1116,
+        "before": 1130,
+        "missing": 13
+      },
+      {
+        "channel": "heartbeats",
+        "after": 1123,
+        "before": 1131,
+        "missing": 7
+      },
+      {
+        "channel": "market_trades",
+        "after": 1130,
+        "before": 1134,
+        "missing": 3
+      },
+      {
+        "channel": "heartbeats",
+        "after": 1131,
+        "before": 1141,
+        "missing": 9
+      }
+    ],
+    "out_of_order": [],
+    "level2_snapshot_count": 0,
+    "level2_update_count": 0,
+    "market_trade_message_count": 204,
+    "heartbeat_message_count": 59,
+    "latest_provider_at": "2026-09-01T15:10:28.554919681Z",
+    "spread_bps_percentiles": {},
+    "spread_sample_count": 0,
+    "final_book_hash": "43c3e25ec2b175e8049d0d680d1974c815d7c65600072f9ba67a19977d615eb8",
+    "final_book": {
+      "bids": [],
+      "asks": []
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "8aad7c6f01ef1dfee45b4149ab5d43cf346b923b128f6baec9a1227a8a771668"
+  }
+}

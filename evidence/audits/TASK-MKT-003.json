@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-MKT-003",
+  "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+  "status": "SUCCESS",
+  "completed_at": "2026-09-01T14:00:00Z",
+  "subject": "EPI/Epinnox predecessor discovery beginning with epi_trade",
+  "conclusion": "The predecessor family contains useful concepts and tested deterministic primitives, but no predecessor runtime, strategy, risk limit, execution model, or economic claim inherits authority. Preserve exact sources as hashed evidence and qualify ideas independently under the Z Look Jamaican Governor.",
+  "sources": [
+    {
+      "id": "PREDECESSOR-EPI-TRADE-001",
+      "path_label": "epi_trade - Copy (2)",
+      "git_head": "bc0b61389e82ffae988e0d266a2d41a46229430a",
+      "state": "dirty and one commit ahead of origin; exact observed files are hash-pinned in evidence/predecessors/epi_trade_manifest.json"
+    },
+    {
+      "id": "PREDECESSOR-EPINNOX-LLM-001",
+      "path_label": "epinnox-llm",
+      "git_head": "a628ed3",
+      "state": "dirty; README architecture claims only, implementation not qualified in this cycle"
+    },
+    {
+      "id": "PREDECESSOR-EPI-CALC-001",
+      "path_label": "epi-calc-appr",
+      "state": "simple leverage/compounding calculator with fixed assumed profit and fee rates; not an evidence-grade economic model"
+    }
+  ],
+  "verification": {
+    "command": "python -m pytest -q -p no:cacheprovider tests/test_decision_contract.py tests/test_live_guard.py tests/test_data_quality_gate.py tests/test_execution_realism.py",
+    "result": "30 passed in 0.80s",
+    "scope": "structural behavior only; no exchange, credentials, orders, capital, or economic performance",
+    "secret_values_inspected": false
+  },
+  "qualified_for_independent_adaptation": [
+    "Fail-closed typed decision contracts with explicit gate reasons and trace IDs",
+    "Timestamp-chain and multi-channel data-quality states that block or downgrade actions",
+    "Explicit live permission gates and kill-switch semantics",
+    "Fee-aware reconciliation boundaries and separation of realized from unrealized outcomes",
+    "Scanner decomposition of activity, spread, depth, movement, slippage, and freshness"
+  ],
+  "rejected_or_deferred": [
+    "Any MAINNET-by-default startup behavior is rejected as incompatible with the current Governor.",
+    "Existing strategies have no inherited edge and require fresh preregistration and replay.",
+    "Execution-realism coefficients are heuristic and one output contains nondeterministic random state; defer until calibrated with venue data.",
+    "The exit PnL helper explicitly ignores fees/funding and is wrong for inverse contracts; do not reuse as accounting truth.",
+    "The UI-coupled execution scanner is too broad to migrate; only its measurable feature taxonomy is useful.",
+    "Operational exchange abstractions and automated execution remain unqualified while financial exposure is zero."
+  ],
+  "next_action": "Independently specify and test a minimal market-data quality contract for future observations without changing EXP-MKT-002 parameters, decisions, cadence, or state.",
+  "owner_action_required": false
+}

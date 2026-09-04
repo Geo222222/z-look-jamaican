@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "receipt_id": "RECEIPT-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+  "request_hash": "6bf0595fa9d3f4dbc6525850b071e892c648ee49b17142d31218dd17a02a631e",
+  "decision": {
+    "decision_id": "DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001",
+    "market_observation_id": "OBS-COINBASE-BTC-USD-1788273600",
+    "decided_at": "2026-09-01T14:47:22Z",
+    "action": "BUY",
+    "quantity": "0.001",
+    "order_type": "MARKET",
+    "limit_price": null,
+    "rationale_code": "PREREGISTERED_ZERO_CAPITAL_LIFECYCLE",
+    "schema_version": 1
+  },
+  "market_observation": {
+    "observation_id": "OBS-COINBASE-BTC-USD-1788273600",
+    "content_hash": "5efef3626bedd22496a440b9d1eb118c95bc4408a11e64a5e11e0ba355816eea",
+    "quality": {
+      "status": "VALID",
+      "provider": "coinbase_exchange_public",
+      "source_event_at": 1788273900,
+      "received_at": 1788274042,
+      "observed_at": 1788274042,
+      "event_age_seconds": 142,
+      "transport_age_seconds": 142,
+      "action_permitted": true,
+      "reasons": [],
+      "schema_version": 1
+    }
+  },
+  "request": {
+    "request_id": "REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "idempotency_key": "IDEMP-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001",
+    "decision_id": "DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "market_observation_id": "OBS-COINBASE-BTC-USD-1788273600",
+    "mode": "SHADOW",
+    "instrument": "BTC-USD",
+    "side": "BUY",
+    "order_type": "MARKET",
+    "quantity": "0.001",
+    "limit_price": null,
+    "created_at": "2026-09-01T14:47:22Z",
+    "capital_effect": "NONE",
+    "schema_version": 1
+  },
+  "risk_authorization": {
+    "schema_version": 1,
+    "authorization_id": "AUTH-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "request_id": "REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "authorized_at": "2026-09-01T14:47:22.754166Z",
+    "allowed": true,
+    "authorized_mode": "SHADOW",
+    "authorized_financial_exposure_usd": "0.00",
+    "reasons": [],
+    "governor_policy": "zero_exposure_v1"
+  },
+  "execution_result": {
+    "schema_version": 1,
+    "result_id": "RESULT-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "request_id": "REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "processed_at": "2026-09-01T14:47:22.754166Z",
+    "status": "PARTIALLY_FILLED",
+    "adapter": "deterministic_shadow_v1",
+    "fills": [
+      {
+        "fill_id": "FILL-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900-1",
+        "request_id": "REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+        "instrument": "BTC-USD",
+        "side": "BUY",
+        "quantity": "0.0005",
+        "price": "78417.84",
+        "notional": "39.208920",
+        "fee_usd": "0.07841784",
+        "filled_at": "2026-09-01T14:47:22.754166Z",
+        "truth_class": "MODELED",
+        "source": "deterministic_shadow_v1"
+      }
+    ],
+    "capital_moved": false,
+    "observed_venue_truth": false,
+    "modeled_execution": true,
+    "facts": {
+      "truth_class": "OBSERVED",
+      "reference_price": "78370.82",
+      "market_observation_id": "OBS-COINBASE-BTC-USD-1788273600"
+    },
+    "configured_assumptions": {
+      "assumption_id": "ASSUME-EXP-SHADOW-LIFECYCLE-001",
+      "fee_bps": "20",
+      "half_spread_bps": "2",
+      "slippage_bps": "3",
+      "latency_ms": 150,
+      "latency_price_penalty_bps": "1",
+      "fill_ratio": "0.5",
+      "quantity_step": "0.0001",
+      "price_step": "0.01",
+      "minimum_notional": "10",
+      "available_capacity": "0.01",
+      "schema_version": 1,
+      "truth_class": "CONFIGURED"
+    },
+    "modeled": {
+      "truth_class": "MODELED",
+      "configured_price_penalty_bps": "6",
+      "latency_ms": 150
+    }
+  },
+  "accounting": {
+    "schema_version": 1,
+    "accounting_receipt_id": "ACCT-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "request_id": "REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "events": [
+      {
+        "event_id": "EVT-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900-INTENT",
+        "type": "EXECUTION_INTENT",
+        "at": "2026-09-01T14:47:22Z",
+        "request_id": "REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900"
+      },
+      {
+        "event_id": "EVT-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900-FILL-1",
+        "type": "MODELED_FILL",
+        "at": "2026-09-01T14:47:22.754166Z",
+        "fill": {
+          "fill_id": "FILL-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900-1",
+          "request_id": "REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+          "instrument": "BTC-USD",
+          "side": "BUY",
+          "quantity": "0.0005",
+          "price": "78417.84",
+          "notional": "39.208920",
+          "fee_usd": "0.07841784",
+          "filled_at": "2026-09-01T14:47:22.754166Z",
+          "truth_class": "MODELED",
+          "source": "deterministic_shadow_v1"
+        }
+      },
+      {
+        "event_id": "EVT-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900-FEE-1",
+        "type": "MODELED_FEE",
+        "at": "2026-09-01T14:47:22.754166Z",
+        "amount_usd": "0.07841784",
+        "fill_id": "FILL-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900-1"
+      },
+      {
+        "event_id": "EVT-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900-POSITION",
+        "type": "POSITION_PROJECTION",
+        "at": "2026-09-01T14:47:22.754166Z",
+        "position": {
+          "instrument": "BTC-USD",
+          "quantity": "0.0005",
+          "average_entry_price": "78417.84",
+          "mark_price": "78370.82",
+          "unrealized_pnl_usd": "-0.10192784",
+          "realized_pnl_usd": "0.00",
+          "truth_class": "MODELED"
+        }
+      }
+    ],
+    "position_projection": {
+      "instrument": "BTC-USD",
+      "quantity": "0.0005",
+      "average_entry_price": "78417.84",
+      "mark_price": "78370.82",
+      "unrealized_pnl_usd": "-0.10192784",
+      "realized_pnl_usd": "0.00",
+      "truth_class": "MODELED"
+    },
+    "fees_realized_usd": "0.00",
+    "pnl_realized_usd": "0.00",
+    "financial_exposure_usd": "0.00",
+    "shadow_modeled_fee_usd": "0.07841784",
+    "shadow_modeled_unrealized_pnl_usd": "-0.10192784",
+    "comparison_performed": true,
+    "truth_source": "DECLARED_SHADOW_FILL_EVENTS",
+    "reconciliation_state": "MATCHED",
+    "discrepancy_count": 0,
+    "external_truth_available": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "45ed2216ed8676c851712641a76301369ed31a7dec045ba19e63df843b334462"
+  }
+}

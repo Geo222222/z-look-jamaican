@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-01T18:23:00Z",
+  "items": [
+    {
+      "id": "INC-DATA-001",
+      "opened_at": "2026-08-21T19:48:53.478932Z",
+      "resolved_at": "2026-08-21T19:50:26.264757Z",
+      "status": "resolved",
+      "severity": "low",
+      "type": "research_data_quality",
+      "subject": "EXP-OPP-001 Apify run-count normalization",
+      "impact": "The initial snapshot recorded 30-day run counts as zero because the collector read a nonexistent field. No external action, ranking promotion, financial claim, or product decision used the faulty field.",
+      "root_cause": "The implementation expected stats.totalRuns30Days; the documented response uses stats.publicActorRunStats30Days.TOTAL.",
+      "containment": "Preserved the flawed snapshot, stopped using its run-count fields, and did not rewrite evidence.",
+      "remediation": "Updated normalization to TOTAL with outcome-sum fallback, added regression tests, versioned the collector, recaptured, and made comparisons reject old revisions.",
+      "evidence": ["artifacts/evidence/apify_store/snapshot-20260821T194047Z.json","artifacts/evidence/apify_store/snapshot-20260821T195023Z.json","tests/test_apify_snapshot.py","tests/test_apify_compare.py"],
+      "reopen_if": "A source schema change, incompatible snapshot, or unexplained zero/negative telemetry is observed."
+    },
+    {
+      "id": "INC-PLATFORM-001",
+      "opened_at": "2026-08-21T21:33:40.8510827Z",
+      "resolved_at": "2026-08-21T21:36:01.5313588Z",
+      "status": "resolved_with_graceful_degradation",
+      "severity": "low",
+      "type": "external_capability_boundary_platform_cyber_safeguard",
+      "subject": "EXP-CANTINA-001 generic invariant-scan specialist response",
+      "impact": "One specialist method returned no content. The notice did not establish a policy violation and did not falsify the economic opportunity. No live system, capital, credential, wallet, or external submission was involved.",
+      "root_cause": "An OpenAI additional automated cybersecurity safeguard prevented the specialist result from being returned; the provider did not expose a more specific trigger or event timestamp.",
+      "containment": "Did not retry, obfuscate, fragment, change model/account, or otherwise attempt to defeat the safeguard.",
+      "remediation": "Narrowed the work to secure-code review, defensive invariant analysis, non-executing source inventory, and comparison with already-public adjudicated findings. Two independent narrowed reviews completed.",
+      "evidence": ["ARTIFACT-PLATFORM-CYBER-SAFEGUARD-001","ARTIFACT-CANTINA-EIP7702-CANDIDATES-001","https://help.openai.com/en/articles/20001326-additional-safety-checks-for-biological-and-cybersecurity-requests-in-chatgpt-codex-and-the-api"],
+      "owner_action_required": false,
+      "reopen_if": "Clearly defensive authorized methods are repeatedly blocked and the economic hypothesis cannot be evaluated through a narrower safe workflow; supported provider verification or OpenAI Support would then be an external owner/provider boundary."
+    },
+    {
+      "id": "INC-DATA-002",
+      "opened_at": "2026-09-01T15:10:29Z",
+      "resolved_at": "2026-09-01T18:23:00Z",
+      "status": "resolved",
+      "severity": "low",
+      "type": "research_data_quality",
+      "subject": "EXP-MICROSTREAM-001 Advanced Trade level2 response alias",
+      "impact": "The first 60-second attempt preserved trades and heartbeats but discarded valid L2 messages, then failed its required-channel gate. No capability promotion, economic claim, account access, order, wallet action, or financial effect occurred.",
+      "root_cause": "Attempts 1 and 2 exposed channel-alias, ingest-complexity, control-message, sequence-scope, and manifest-size defects. Attempt 3 fixed them and exposed a stable approximately 0.51-second provider-clock lead that the strict zero-tolerance timestamp gate correctly rejected.",
+      "containment": "Preserved all failed journals/bundles/observations and resolved each attempt as failed instead of appending windows, rewriting evidence, weakening unmeasured gates, or promoting capability.",
+      "remediation": "The fourth separately preregistered attempt retained corrected O(1) ingest, raw/logical provenance, control messages, connection-global sequence, compact manifests, and an evidence-supported one-second clock tolerance. It passed with 1155 contiguous messages and VALID quality.",
+      "evidence": ["evidence/audits/EXP-MICROSTREAM-001.json", "artifacts/evidence/market/exp-microstream-001-diagnostic.json", "evidence/audits/EXP-MICROSTREAM-002.json", "evidence/audits/EXP-MICROSTREAM-003.json", "evidence/audits/EXP-MICROSTREAM-004.json"],
+      "owner_action_required": false,
+      "reopen_if": "The provider schema changes again, alias normalization loses raw provenance, or the next bounded attempt misses required channel evidence."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "system_id": "z-look-jamaican",
+  "updated_at": "2026-09-01T18:23:00Z",
+  "root_state": "DISCOVERY",
+  "strategy_stage": "DISCOVERY",
+  "mission_objective_id": "MISSION-001",
+  "active_program_ids": [
+    "PROGRAM-BOOTSTRAP-KERNEL",
+    "PROGRAM-OPPORTUNITY-DISCOVERY",
+    "PROGRAM-CRYPTO-MARKETS"
+  ],
+  "next_task_id": "TASK-DATA-004",
+  "governor": {
+    "source": "docs/GOVERNOR.md",
+    "external_owner_funding_authorized_usd": 0,
+    "production_financial_trading": "disabled",
+    "max_daily_loss_usd": 0,
+    "max_single_trade_usd": 0,
+    "max_concurrent_financial_exposure_usd": 0,
+    "treasury_sweeps": "disabled"
+  },
+  "treasury_registry": {
+    "path": "config/treasury_destinations.yaml",
+    "sha256_at_inspection": "9b0ea44bb2871dc149ca22d71c3f829f3dd18f6278437856208ffd275156ba1a",
+    "active_destination_ids": [
+      "treasury-btc",
+      "treasury-doge",
+      "treasury-eth"
+    ],
+    "blocked_destination_ids": [
+      "treasury-trx-usdt"
+    ],
+    "root_agent_mutation_permitted": false
+  },
+  "repository_observation": {
+    "commit_at_inspection": "2b0bffa7f3d02f337ca6c6659d8781f629ceefac",
+    "branch": "main",
+    "worktree_clean_at_inspection": true,
+    "tracked_application_code_found": false,
+    "ci_found": false,
+    "deployment_manifest_found": false,
+    "persistent_operating_state_found": false
+  },
+  "runtime_observation": {
+    "python": "3.9.13",
+    "node": "22.14.0",
+    "npm": "10.9.2",
+    "docker_client": "28.0.1",
+    "docker_server": "28.0.1",
+    "uv_found": false,
+    "sqlite_cli_found": false
+  },
+  "credential_boundary_observation": {
+    "repository_env_file_found": false,
+    "repository_secret_material_found": false,
+    "secret_values_inspected": false
+  },
+  "prior_art_observation": {
+    "ref": "origin/agent/zero-human-intervention",
+    "commit": "7aa7014977ea1e0d0466a789429538fbf384a142",
+    "disposition": "rejected_wholesale_merge",
+    "evidence": "evidence/audits/TASK-BOOT-001.json"
+  },
+  "capabilities": {
+    "durable_state": "verified_bootstrap",
+    "state_validation": "verified_bootstrap",
+    "single_writer_recovery": "verified_failure_injection",
+    "opportunity_ranking": "verified_initial_register",
+    "experiment_execution": "crypto_market_baseline_rejected_forward_shadow_active",
+    "strategic_focus": "cryptocurrency_markets",
+    "market_activity_model": "continuous_availability_but_opportunity_conditioned_on_activity_liquidity_volatility_spread_and_execution_cost",
+    "autonomous_cadence": "crypto_forward_shadow_heartbeat_active_every_15_minutes",
+    "deployment": "not_configured",
+    "operational_wallets": "not_justified",
+    "capital_movement": "disabled"
+    ,
+    "experiment_platform": "canonical_registry_validated",
+    "capability_registry": "canonical_lifecycle_validated",
+    "execution_plane": "zero_exposure_prospective_supported_live_disabled",
+    "accounting_reconciliation": "declared_shadow_matched_external_truth_unavailable_realized_ledger_unchanged"
+    ,
+    "market_data_plane": "provider_neutral_shadow_qualified_continuous_public_stream_mechanism_qualified_single_regime"
+  },
+  "known_incident_ids": [
+    "INC-DATA-001",
+    "INC-PLATFORM-001"
+  ],
+  "owner_only_blockers": []
+}

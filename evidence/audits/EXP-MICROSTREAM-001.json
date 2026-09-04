@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "audit_id": "AUDIT-EXP-MICROSTREAM-001",
+  "experiment_id": "EXP-MICROSTREAM-001",
+  "completed_at": "2026-09-01T15:12:00Z",
+  "outcome": "FAILED_IMPLEMENTATION_CHANNEL_ALIAS",
+  "preregistration_sha256": "645cbe2b86b4743136ebbc930230a96224c88876c587f10d9706dd3371ceacae",
+  "attempt": {
+    "capture_seconds": 60,
+    "accepted_message_count": 263,
+    "accepted_channels": {"market_trades": 204, "heartbeats": 59},
+    "missing_required_channel": "level2",
+    "gate_passed": false,
+    "journal_path": "runtime/market_stream/COINBASE-BTC-USD-MICROSTREAM-001.jsonl",
+    "journal_sha256": "fa3a6fc6ace2d81148af89c1ad12072e4efdd5cff26c98bc87861a963c7347f3",
+    "compressed_path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-001.jsonl.gz",
+    "compressed_sha256": "cbe1677eea1d42c3dcda40b768a7e94916978ff93eef58e8de7ae1d436f99810",
+    "manifest_sha256": "5b12871b61e6648bac8ffa9cf125055884529f26d633249bd40449f8da75ff22",
+    "observation_sha256": "ce34394bb7efdd7f91e94a2b667238877936fc884ac425f78b36a4078c7c0434"
+  },
+  "root_cause": {
+    "classification": "IMPLEMENTATION_PROVIDER_SCHEMA_ALIAS_MISMATCH",
+    "subscription_channel": "level2",
+    "actual_response_channel": "l2_data",
+    "collector_allowed_response_channel": "level2",
+    "effect": "Valid L2 snapshot/update messages were ignored before durable ingest, so the required-channel gate correctly failed.",
+    "diagnostic_path": "artifacts/evidence/market/exp-microstream-001-diagnostic.json",
+    "diagnostic_sha256": "7654e188128efee86ef5c1ca4ac25cd24d679e4a775808882d22462d92aa456c"
+  },
+  "preservation": {
+    "failed_raw_journal_preserved": true,
+    "failed_bundle_preserved": true,
+    "failed_observation_not_promoted": true,
+    "capability_promotion": false,
+    "parameters_rewritten": false
+  },
+  "safety": {
+    "authentication_used": false,
+    "account_or_user_channel_accessed": false,
+    "order_submitted": false,
+    "signer_or_wallet_accessed": false,
+    "capital_used_usd": "0.00"
+  },
+  "recovery_decision": "Resolve this attempt as failed, preserve all evidence, add a tested provider-response alias normalization while retaining the raw channel, and preregister a separate attempt rather than appending another 60-second window to the failed journal."
+}

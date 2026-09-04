@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "receipt_id": "RECEIPT-REQ-DEC-SHADOW-E2E-001",
+  "request_hash": "18a74c929a341fd17a5f1a450586847066559a0b67f98f4e8d53c6abf2fe5176",
+  "decision": {
+    "decision_id": "DEC-SHADOW-E2E-001",
+    "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001",
+    "market_observation_id": "OBS-COINBASE-BTC-USD-1788272400",
+    "decided_at": "2026-09-01T15:15:00Z",
+    "action": "BUY",
+    "quantity": "0.001",
+    "order_type": "MARKET",
+    "limit_price": null,
+    "rationale_code": "ZERO_CAPITAL_LIFECYCLE_QUALIFICATION",
+    "schema_version": 1
+  },
+  "market_observation": {
+    "observation_id": "OBS-COINBASE-BTC-USD-1788272400",
+    "content_hash": "9c3127aa29eb58c2a2c8e7ea994afdeb3d6ee1ea0ef20cb6b1dfa480c65aca2a",
+    "quality": {
+      "status": "VALID",
+      "provider": "coinbase_exchange_public",
+      "source_event_at": 1788272700,
+      "received_at": 1788272957,
+      "observed_at": 1788272957,
+      "event_age_seconds": 257,
+      "transport_age_seconds": 257,
+      "action_permitted": true,
+      "reasons": [],
+      "schema_version": 1
+    }
+  },
+  "request": {
+    "request_id": "REQ-DEC-SHADOW-E2E-001",
+    "idempotency_key": "IDEMP-DEC-SHADOW-E2E-001",
+    "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001",
+    "decision_id": "DEC-SHADOW-E2E-001",
+    "market_observation_id": "OBS-COINBASE-BTC-USD-1788272400",
+    "mode": "SHADOW",
+    "instrument": "BTC-USD",
+    "side": "BUY",
+    "order_type": "MARKET",
+    "quantity": "0.001",
+    "limit_price": null,
+    "created_at": "2026-09-01T15:15:00Z",
+    "capital_effect": "NONE",
+    "schema_version": 1
+  },
+  "risk_authorization": {
+    "schema_version": 1,
+    "authorization_id": "AUTH-REQ-DEC-SHADOW-E2E-001",
+    "request_id": "REQ-DEC-SHADOW-E2E-001",
+    "authorized_at": "2026-09-01T15:15:01Z",
+    "allowed": true,
+    "authorized_mode": "SHADOW",
+    "authorized_financial_exposure_usd": "0.00",
+    "reasons": [],
+    "governor_policy": "zero_exposure_v1"
+  },
+  "execution_result": {
+    "schema_version": 1,
+    "result_id": "RESULT-REQ-DEC-SHADOW-E2E-001",
+    "request_id": "REQ-DEC-SHADOW-E2E-001",
+    "processed_at": "2026-09-01T15:15:01Z",
+    "status": "PARTIALLY_FILLED",
+    "adapter": "deterministic_shadow_v1",
+    "fills": [
+      {
+        "fill_id": "FILL-REQ-DEC-SHADOW-E2E-001-1",
+        "request_id": "REQ-DEC-SHADOW-E2E-001",
+        "instrument": "BTC-USD",
+        "side": "BUY",
+        "quantity": "0.0005",
+        "price": "78313.94",
+        "notional": "39.156970",
+        "fee_usd": "0.07831394",
+        "filled_at": "2026-09-01T15:15:01Z",
+        "truth_class": "MODELED",
+        "source": "deterministic_shadow_v1"
+      }
+    ],
+    "capital_moved": false,
+    "observed_venue_truth": false,
+    "modeled_execution": true,
+    "facts": {
+      "truth_class": "OBSERVED",
+      "reference_price": "78266.98",
+      "market_observation_id": "OBS-COINBASE-BTC-USD-1788272400"
+    },
+    "configured_assumptions": {
+      "assumption_id": "ASSUME-SHADOW-E2E-001",
+      "fee_bps": "20",
+      "half_spread_bps": "2",
+      "slippage_bps": "3",
+      "latency_ms": 150,
+      "latency_price_penalty_bps": "1",
+      "fill_ratio": "0.5",
+      "quantity_step": "0.0001",
+      "price_step": "0.01",
+      "minimum_notional": "10",
+      "available_capacity": "0.01",
+      "schema_version": 1,
+      "truth_class": "CONFIGURED"
+    },
+    "modeled": {
+      "truth_class": "MODELED",
+      "configured_price_penalty_bps": "6",
+      "latency_ms": 150
+    }
+  },
+  "accounting": {
+    "schema_version": 1,
+    "accounting_receipt_id": "ACCT-REQ-DEC-SHADOW-E2E-001",
+    "request_id": "REQ-DEC-SHADOW-E2E-001",
+    "events": [
+      {
+        "event_id": "EVT-REQ-DEC-SHADOW-E2E-001-INTENT",
+        "type": "EXECUTION_INTENT",
+        "at": "2026-09-01T15:15:00Z",
+        "request_id": "REQ-DEC-SHADOW-E2E-001"
+      },
+      {
+        "event_id": "EVT-REQ-DEC-SHADOW-E2E-001-FILL-1",
+        "type": "MODELED_FILL",
+        "at": "2026-09-01T15:15:01Z",
+        "fill": {
+          "fill_id": "FILL-REQ-DEC-SHADOW-E2E-001-1",
+          "request_id": "REQ-DEC-SHADOW-E2E-001",
+          "instrument": "BTC-USD",
+          "side": "BUY",
+          "quantity": "0.0005",
+          "price": "78313.94",
+          "notional": "39.156970",
+          "fee_usd": "0.07831394",
+          "filled_at": "2026-09-01T15:15:01Z",
+          "truth_class": "MODELED",
+          "source": "deterministic_shadow_v1"
+        }
+      },
+      {
+        "event_id": "EVT-REQ-DEC-SHADOW-E2E-001-FEE-1",
+        "type": "MODELED_FEE",
+        "at": "2026-09-01T15:15:01Z",
+        "amount_usd": "0.07831394",
+        "fill_id": "FILL-REQ-DEC-SHADOW-E2E-001-1"
+      },
+      {
+        "event_id": "EVT-REQ-DEC-SHADOW-E2E-001-POSITION",
+        "type": "POSITION_PROJECTION",
+        "at": "2026-09-01T15:15:01Z",
+        "position": {
+          "instrument": "BTC-USD",
+          "quantity": "0.0005",
+          "average_entry_price": "78313.94",
+          "mark_price": "78266.98",
+          "unrealized_pnl_usd": "-0.10179394",
+          "realized_pnl_usd": "0.00",
+          "truth_class": "MODELED"
+        }
+      }
+    ],
+    "position_projection": {
+      "instrument": "BTC-USD",
+      "quantity": "0.0005",
+      "average_entry_price": "78313.94",
+      "mark_price": "78266.98",
+      "unrealized_pnl_usd": "-0.10179394",
+      "realized_pnl_usd": "0.00",
+      "truth_class": "MODELED"
+    },
+    "fees_realized_usd": "0.00",
+    "pnl_realized_usd": "0.00",
+    "financial_exposure_usd": "0.00",
+    "shadow_modeled_fee_usd": "0.07831394",
+    "shadow_modeled_unrealized_pnl_usd": "-0.10179394",
+    "comparison_performed": true,
+    "truth_source": "DECLARED_SHADOW_FILL_EVENTS",
+    "reconciliation_state": "MATCHED",
+    "discrepancy_count": 0,
+    "external_truth_available": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "68acc9a8a6978556b2ab32e7ace8b6e69f5ad0f8192a8b092f07783d341539cb"
+  }
+}

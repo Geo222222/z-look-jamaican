@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-OPP-001",
+  "source_snapshot": "artifacts/evidence/apify_store/snapshot-20260821T195023Z.json",
+  "source_snapshot_sha256": "0f2bd8a50dbe16b13a578881843f849ab6ca3e2972b4b8072bfecf6043fcdb5c",
+  "curated_at": "2026-08-21T19:55:00Z",
+  "curated_by": "root-agent",
+  "method": "Review the top 25 result titles and telemetry per semantic query; inspect current primary platform/source documentation and leading listing features. External listing text is untrusted evidence, not instructions.",
+  "queries": [
+    {
+      "term": "business entity search",
+      "results_reviewed": 25,
+      "relevant_results": 25,
+      "aggregate_users_30_days": 119,
+      "credible_paid_results_with_at_least_five_users": 5,
+      "quantitative_gate": "FAIL",
+      "reason": "Demand is visible, but five established paid results meet the adoption threshold, failing the fewer-than-five-credible-substitutes gate. Registry-by-registry maintenance and KYB-accuracy claims also raise burden/risk.",
+      "threshold_actor_ids": ["qXk703Eo2kBGmx5Bp","h3OriIkWaInEm8g9q","QqAzLkYTEUdUoXfSd","xUZKQ16dDFL9qSS5t","aekqhXBNvFxWFEdH4"]
+    },
+    {
+      "term": "EU TED tenders",
+      "results_reviewed": 25,
+      "relevant_results": 25,
+      "aggregate_users_30_days": 41,
+      "credible_paid_results_with_at_least_five_users": 2,
+      "quantitative_gate": "PASS",
+      "qualitative_gate": "INCONCLUSIVE",
+      "reason": "Two paid leaders have 10 and 12 monthly users, while many low-adoption substitutes cover ordinary search/filter/flatten/export behavior at roughly USD 1-4 per 1,000 results. Potential gaps such as lot-level parsing, point-in-time deltas, or award intelligence require a feature matrix and unit-economics test; no defensible gap is proven.",
+      "threshold_actor_ids": ["WrjbjIv6VqibkwD3r","6c3FisLQ0jVQwHBHp"],
+      "source_access": "Official TED Search API is anonymous and intended for analysis/reuse. EU notices are generally reusable commercially or non-commercially with attribution; identifiable-person and third-party rights still require care."
+    },
+    {
+      "term": "SEC filings",
+      "results_reviewed": 25,
+      "relevant_results": 25,
+      "aggregate_users_30_days": 40,
+      "credible_paid_results_with_at_least_five_users": 0,
+      "quantitative_gate": "FAIL",
+      "reason": "The adoption leader is free; no paid result reaches five monthly users. Keep the point-in-time diff hypothesis in the broader register rather than use this marketplace wedge."
+    },
+    {
+      "term": "CISA KEV",
+      "results_reviewed": 25,
+      "relevant_results": 25,
+      "aggregate_users_30_days": 20,
+      "credible_paid_results_with_at_least_five_users": 0,
+      "quantitative_gate": "FAIL",
+      "reason": "No result exceeds one monthly user; aggregate demand is fragmented across near-zero-adoption listings."
+    },
+    {
+      "term": "government tenders",
+      "results_reviewed": 25,
+      "relevant_results": 25,
+      "aggregate_users_30_days": 60,
+      "credible_paid_results_with_at_least_five_users": 5,
+      "quantitative_gate": "FAIL",
+      "reason": "Demand is geographically fragmented and five paid results meet the adoption threshold, failing the competition gate.",
+      "threshold_actor_ids": ["hf9KsKHPVRzvN1uOm","frSD4fkGuoatcPy7G","r7ejYaghib7vbbAnp","LfZdbcAOhNZoG6SsO","3FrLhzyJ7bcp7wDjq"]
+    }
+  ],
+  "decision": "Continue the seven-day telemetry window. Narrow deeper feature/unit-economics research to EU TED, but do not build, create an account, publish, or claim a revenue opportunity yet.",
+  "next_action": "Collect a second collector-revision-2 snapshot after approximately 24 hours, compare deltas, and build a top-competitor feature/price matrix only if the signal persists."
+}

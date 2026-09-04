@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "receipt_id": "RECEIPT-REQ-DEC-REPLAY-E2E-001",
+  "request_hash": "7f463cd732a7c0b1eaf64baa079193fbc2c508b5b53fd57a7d896a214aab29a1",
+  "decision": {
+    "decision_id": "DEC-REPLAY-E2E-001",
+    "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001",
+    "market_observation_id": "OBS-COINBASE-ETH-USD-1788272400",
+    "decided_at": "2026-09-01T15:16:00Z",
+    "action": "SELL",
+    "quantity": "0.01",
+    "order_type": "MARKET",
+    "limit_price": null,
+    "rationale_code": "DETERMINISTIC_REPLAY_QUALIFICATION",
+    "schema_version": 1
+  },
+  "market_observation": {
+    "observation_id": "OBS-COINBASE-ETH-USD-1788272400",
+    "content_hash": "a15226e8d30e58cd93826e041dfd5999a0f64b007b45b8f753405bc9001570c0",
+    "quality": {
+      "status": "VALID",
+      "provider": "coinbase_exchange_public",
+      "source_event_at": 1788272700,
+      "received_at": 1788272957,
+      "observed_at": 1788272957,
+      "event_age_seconds": 257,
+      "transport_age_seconds": 257,
+      "action_permitted": true,
+      "reasons": [],
+      "schema_version": 1
+    }
+  },
+  "request": {
+    "request_id": "REQ-DEC-REPLAY-E2E-001",
+    "idempotency_key": "IDEMP-DEC-REPLAY-E2E-001",
+    "capability_id": "CAP-ZERO-EXPOSURE-EXECUTION-001",
+    "decision_id": "DEC-REPLAY-E2E-001",
+    "market_observation_id": "OBS-COINBASE-ETH-USD-1788272400",
+    "mode": "SHADOW",
+    "instrument": "ETH-USD",
+    "side": "SELL",
+    "order_type": "MARKET",
+    "quantity": "0.01",
+    "limit_price": null,
+    "created_at": "2026-09-01T15:16:00Z",
+    "capital_effect": "NONE",
+    "schema_version": 1
+  },
+  "risk_authorization": {
+    "schema_version": 1,
+    "authorization_id": "AUTH-REQ-DEC-REPLAY-E2E-001",
+    "request_id": "REQ-DEC-REPLAY-E2E-001",
+    "authorized_at": "2026-09-01T15:16:01Z",
+    "allowed": true,
+    "authorized_mode": "SHADOW",
+    "authorized_financial_exposure_usd": "0.00",
+    "reasons": [],
+    "governor_policy": "zero_exposure_v1"
+  },
+  "execution_result": {
+    "schema_version": 1,
+    "result_id": "RESULT-REQ-DEC-REPLAY-E2E-001",
+    "request_id": "REQ-DEC-REPLAY-E2E-001",
+    "processed_at": "2026-09-01T15:16:01Z",
+    "status": "FILLED",
+    "adapter": "deterministic_shadow_v1",
+    "fills": [
+      {
+        "fill_id": "FILL-REQ-DEC-REPLAY-E2E-001-1",
+        "request_id": "REQ-DEC-REPLAY-E2E-001",
+        "instrument": "ETH-USD",
+        "side": "SELL",
+        "quantity": "0.01",
+        "price": "2447.47",
+        "notional": "24.4747",
+        "fee_usd": "0.0489494",
+        "filled_at": "2026-09-01T15:16:01Z",
+        "truth_class": "MODELED",
+        "source": "deterministic_shadow_v1"
+      }
+    ],
+    "capital_moved": false,
+    "observed_venue_truth": false,
+    "modeled_execution": true,
+    "facts": {
+      "truth_class": "OBSERVED",
+      "reference_price": "2448.94",
+      "market_observation_id": "OBS-COINBASE-ETH-USD-1788272400"
+    },
+    "configured_assumptions": {
+      "assumption_id": "ASSUME-REPLAY-E2E-001",
+      "fee_bps": "20",
+      "half_spread_bps": "2",
+      "slippage_bps": "3",
+      "latency_ms": 150,
+      "latency_price_penalty_bps": "1",
+      "fill_ratio": "1",
+      "quantity_step": "0.001",
+      "price_step": "0.01",
+      "minimum_notional": "10",
+      "available_capacity": "0.1",
+      "schema_version": 1,
+      "truth_class": "CONFIGURED"
+    },
+    "modeled": {
+      "truth_class": "MODELED",
+      "configured_price_penalty_bps": "6",
+      "latency_ms": 150
+    }
+  },
+  "accounting": {
+    "schema_version": 1,
+    "accounting_receipt_id": "ACCT-REQ-DEC-REPLAY-E2E-001",
+    "request_id": "REQ-DEC-REPLAY-E2E-001",
+    "events": [
+      {
+        "event_id": "EVT-REQ-DEC-REPLAY-E2E-001-INTENT",
+        "type": "EXECUTION_INTENT",
+        "at": "2026-09-01T15:16:00Z",
+        "request_id": "REQ-DEC-REPLAY-E2E-001"
+      },
+      {
+        "event_id": "EVT-REQ-DEC-REPLAY-E2E-001-FILL-1",
+        "type": "MODELED_FILL",
+        "at": "2026-09-01T15:16:01Z",
+        "fill": {
+          "fill_id": "FILL-REQ-DEC-REPLAY-E2E-001-1",
+          "request_id": "REQ-DEC-REPLAY-E2E-001",
+          "instrument": "ETH-USD",
+          "side": "SELL",
+          "quantity": "0.01",
+          "price": "2447.47",
+          "notional": "24.4747",
+          "fee_usd": "0.0489494",
+          "filled_at": "2026-09-01T15:16:01Z",
+          "truth_class": "MODELED",
+          "source": "deterministic_shadow_v1"
+        }
+      },
+      {
+        "event_id": "EVT-REQ-DEC-REPLAY-E2E-001-FEE-1",
+        "type": "MODELED_FEE",
+        "at": "2026-09-01T15:16:01Z",
+        "amount_usd": "0.0489494",
+        "fill_id": "FILL-REQ-DEC-REPLAY-E2E-001-1"
+      },
+      {
+        "event_id": "EVT-REQ-DEC-REPLAY-E2E-001-POSITION",
+        "type": "POSITION_PROJECTION",
+        "at": "2026-09-01T15:16:01Z",
+        "position": {
+          "instrument": "ETH-USD",
+          "quantity": "-0.01",
+          "average_entry_price": "2447.47",
+          "mark_price": "2448.94",
+          "unrealized_pnl_usd": "-0.0636494",
+          "realized_pnl_usd": "0.00",
+          "truth_class": "MODELED"
+        }
+      }
+    ],
+    "position_projection": {
+      "instrument": "ETH-USD",
+      "quantity": "-0.01",
+      "average_entry_price": "2447.47",
+      "mark_price": "2448.94",
+      "unrealized_pnl_usd": "-0.0636494",
+      "realized_pnl_usd": "0.00",
+      "truth_class": "MODELED"
+    },
+    "fees_realized_usd": "0.00",
+    "pnl_realized_usd": "0.00",
+    "financial_exposure_usd": "0.00",
+    "shadow_modeled_fee_usd": "0.0489494",
+    "shadow_modeled_unrealized_pnl_usd": "-0.0636494",
+    "comparison_performed": true,
+    "truth_source": "DECLARED_SHADOW_FILL_EVENTS",
+    "reconciliation_state": "MATCHED",
+    "discrepancy_count": 0,
+    "external_truth_available": false
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "76e5f7d22a4174e1aab335f10e8121d267bf432d9c0037bb6be4d4fc508dfadd"
+  }
+}

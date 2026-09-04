@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "z-look-autonomous-kernel"
+version = "0.1.0"
+description = "Minimal durable operating kernel for autonomous economic experiments"
+requires-python = ">=3.9"
+dependencies = ["websockets>=12,<18", "cryptography>=43"]
+
+[project.scripts]
+autokernel = "autonomous_kernel.cli:main"
+zlj-canonicalize = "autonomous_kernel.observation.materialize:main"
+zlj-represent = "autonomous_kernel.representation.materialize:main"
+
+[tool.setuptools]
+packages = ["autonomous_kernel", "autonomous_kernel.observation", "autonomous_kernel.representation", "autonomous_kernel.prediction", "autonomous_kernel.models", "autonomous_kernel.evaluation", "autonomous_kernel.assembly", "autonomous_kernel.context", "autonomous_kernel.operator", "autonomous_kernel.experience", "autonomous_kernel.questions", "experiments"]

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "id": "ARTIFACT-PLATFORM-CYBER-SAFEGUARD-001",
+  "incident_id": "INC-PLATFORM-001",
+  "first_persisted_at": "2026-08-21T21:36:01.5313588Z",
+  "event_timestamp_precision": "The collaboration result did not expose a provider event timestamp; first_persisted_at is the earliest durable timestamp available after the notice.",
+  "classification": "EXTERNAL_CAPABILITY_BOUNDARY / PLATFORM_CYBER_SAFEGUARD",
+  "affected": {
+    "program_id": "PROGRAM-OPPORTUNITY-DISCOVERY",
+    "task_id": "TASK-EXP-002",
+    "experiment_id": "EXP-CANTINA-001",
+    "specialist_task": "/root/cantina_invariant_scan"
+  },
+  "exact_observed_message": "Agent errored: This content was flagged for possible cybersecurity risk. If this seems wrong, try rephrasing your request. To get authorized for security work, join the Trusted Access for Cyber program: https://chatgpt.com/cyber\n\nThis agent's turn failed. If you still need this agent, use the available collaboration tools to give it another task.",
+  "platform_guidance": {
+    "url": "https://help.openai.com/en/articles/20001326-additional-safety-checks-for-biological-and-cybersecurity-requests-in-chatgpt-codex-and-the-api",
+    "retrieved_at": "2026-08-21T21:33:40.8510827Z",
+    "interpretation": "An additional-check notice is not itself a determination of a Usage Policy violation. Allowed cybersecurity work may be retried with a narrower defensive outcome and unnecessary exploit detail omitted; wording changes do not make prohibited work permissible. Repeated blocking of clearly benign authorized work may require supported verification or OpenAI Support."
+  },
+  "work_completed_before_interruption": [
+    "Bootstrap and first discovery cycle were committed and validated.",
+    "EXP-CANTINA-001 was active in durable state.",
+    "A reproducible small completed public scope had been selected and cloned read-only without execution.",
+    "A preregistration draft existed locally but had not yet been committed."
+  ],
+  "work_not_completed_by_affected_method": [
+    "Reusable rule definitions",
+    "Raw source signal locations",
+    "Defensive candidate assessment"
+  ],
+  "durable_state_at_interruption": "All completed kernel/discovery work was committed through bcc364f. The active replay draft was recoverable from repository/runtime files but not yet committed.",
+  "containment": "No retry of the affected generic cybersecurity request, no obfuscation, alternate model/account, fragmented proxy task, or other safeguard-evasion technique.",
+  "recovery_decision": "Narrow to secure-code review, defensive invariant analysis, deterministic non-executing source inventory, and later comparison with already-public adjudicated findings.",
+  "legitimate_alternative_paths": [
+    "Two independent source-only secure-code reviews completed with exploit detail excluded where unnecessary.",
+    "A deterministic source inventory completed without compiling or executing target code.",
+    "Candidate claims were bounded to prevention invariants and offline falsifiers before public report comparison."
+  ],
+  "underlying_opportunity_disposition": "unchanged_pending_experiment_result",
+  "owner_action_required": false,
+  "owner_boundary_if_repeated": "If clearly defensive authorized work is repeatedly blocked and no narrower safe method can answer the economic hypothesis, supported Trusted Access/identity verification or OpenAI Support becomes an external owner/provider boundary."
+}

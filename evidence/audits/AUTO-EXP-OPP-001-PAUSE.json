@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "AUDIT-AUTO-EXP-OPP-001-PAUSE-001",
+  "captured_at": "2026-08-21T20:20:07.6282757Z",
+  "created_by": "root-agent",
+  "subject": "AUTO-EXP-OPP-001",
+  "external_id": "continue-exp-opp-001-daily",
+  "app_view_resolved_after_pause": true,
+  "persisted_status": "PAUSED",
+  "metadata_sha256": "9fecd5b4ba77b03ce921ba1653ae1cace68b6cebc0bd7b0e0bc2facf37a568d5",
+  "completed_runs": 0,
+  "failed_runs": 0,
+  "pause_reason": "The EU TED feature-gap and contribution-margin gates failed decisively before the next observation was due; additional snapshots would have low information value.",
+  "rollback": "The exact automation can be resumed only if EXP-OPP-001 meets a recorded reopening condition; all repository evidence and the cold-start preflight are retained."
+}

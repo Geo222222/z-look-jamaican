@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "audit_id": "AUDIT-EXP-SHADOW-LIFECYCLE-001",
+  "experiment_id": "EXP-SHADOW-LIFECYCLE-001",
+  "completed_at": "2026-09-01T14:48:00Z",
+  "code_commit_at_execution": "4bfbfc4460687d7042813948b5ccaa9105612de1",
+  "preregistration": {
+    "path": "artifacts/evidence/operations/exp-shadow-lifecycle-001-preregistration.json",
+    "sha256": "dd4dc932d06ed4ebb218140f97e5b8070224df421d63256178a692133e1cb446",
+    "frozen_at": "2026-09-01T14:43:00Z"
+  },
+  "prospective_observation": {
+    "observation_id": "OBS-COINBASE-BTC-USD-1788273600",
+    "source_event_at_epoch": 1788273900,
+    "source_event_at": "2026-09-01T14:45:00Z",
+    "observed_at": "2026-09-01T14:47:22Z",
+    "quality": "VALID",
+    "provider": "coinbase_exchange_public",
+    "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-1788273600.json",
+    "sha256": "81351d3d29f4a52c8549f04656593c0041c114d80a92b3d50b935e8af7d9b29a",
+    "prospective_to_preregistration": true
+  },
+  "execution": {
+    "decision_action": "BUY",
+    "requested_quantity": "0.001",
+    "adapter_interface": "provider-neutral ExecutionAdapter",
+    "adapter": "deterministic_shadow_v1",
+    "result": "PARTIALLY_FILLED",
+    "modeled_fill_quantity": "0.0005",
+    "modeled_fill_price": "78417.84",
+    "modeled_fee_usd": "0.07841784",
+    "randomness": "NONE",
+    "venue_order_submitted": false,
+    "credentials_accessed": false,
+    "signer_accessed": false,
+    "wallet_action": false
+  },
+  "accounting": {
+    "authoritative_source": "immutable execution receipt economic events",
+    "event_count": 4,
+    "modeled_position_quantity": "0.0005",
+    "modeled_unrealized_pnl_usd": "-0.10192784",
+    "realized_pnl_usd": "0.00",
+    "realized_fee_usd": "0.00",
+    "actual_financial_exposure_usd": "0.00",
+    "realized_ledger_entries_added": 0
+  },
+  "reconciliation": {
+    "state": "MATCHED",
+    "comparison_performed": true,
+    "truth_source": "DECLARED_SHADOW_FILL_EVENTS",
+    "discrepancy_count": 0,
+    "external_venue_truth_available": false,
+    "external_comparison_performed": false,
+    "external_discrepancy_count": null
+  },
+  "receipt": {
+    "receipt_id": "RECEIPT-REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900",
+    "path": "receipts/execution/REQ-DEC-EXP-SHADOW-LIFECYCLE-001-1788273900.json",
+    "sha256": "db69870209ff2a15f583872f1cd745d935d0e5a5eab4dc81ee7f2c2514923b87",
+    "integrity_state": "VALID"
+  },
+  "qualification": {
+    "owned_repository_tests": {"passed": 68, "failed": 0},
+    "focused_fault_and_replay_tests": {"passed": 21, "failed": 0},
+    "restart_stages_covered": ["PREPARED", "AUTHORIZED", "EXECUTED", "ACCOUNTED"],
+    "faults_covered": [
+      "duplicate execution request",
+      "duplicate market evidence",
+      "crash before execution",
+      "crash after modeled fill before accounting",
+      "crash after accounting before receipt finalization",
+      "corrupted receipt",
+      "corrupted market bundle",
+      "stale market evidence",
+      "capability not qualified",
+      "Governor denial",
+      "restart with partially completed work"
+    ],
+    "kernel_validation": "PASS",
+    "monitor_visibility": "PASS"
+  },
+  "scope_limit": "This qualifies the canonical zero-capital pipeline only. It does not establish strategy edge, venue fill realism, external reconciliation, capital eligibility, or live readiness.",
+  "decision": "SUPPORTED_FOR_PIPELINE_ONLY"
+}

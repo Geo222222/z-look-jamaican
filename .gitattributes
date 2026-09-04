@@ -1,0 +1,11 @@
+# Evidence checksums cover exact checkout bytes. Most evidence is stored without
+# newline conversion. Three legacy Apify snapshots and the owner treasury anchor
+# were originally hashed on Windows CRLF bytes, so their checkout representation
+# is fixed explicitly to CRLF on every platform.
+artifacts/evidence/** -text
+evidence/audits/** -text
+
+artifacts/evidence/apify_store/snapshot-20260821T194047Z.json text eol=crlf
+artifacts/evidence/apify_store/snapshot-20260821T194850Z.json text eol=crlf
+artifacts/evidence/apify_store/snapshot-20260821T195023Z.json text eol=crlf
+config/treasury_destinations.yaml text eol=crlf

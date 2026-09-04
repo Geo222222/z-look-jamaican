@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#050914" />
+  <title>ZLJ — Intelligence Laboratory + Perception Console</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="stylesheet" href="/assets/product.css" />
+</head>
+<body>
+<div class="ambient ambient-a"></div>
+<div class="ambient ambient-b"></div>
+<div id="app" class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="brand-copy"><strong>ZLJ</strong><small>Intelligence Laboratory</small></div>
+    </div>
+    <nav id="nav" aria-label="Intelligence laboratory navigation"></nav>
+    <div class="sidebar-foot">
+      <div class="mode-row"><span class="status-dot" id="side-dot"></span><span id="side-health">Connecting</span></div>
+      <small id="contract-version">Contract —</small>
+      <small>Purpose: <b>PERCEPTION → INTELLIGENCE</b></small>
+    </div>
+  </aside>
+
+  <main class="main-shell">
+    <header class="topbar">
+      <div><div class="eyebrow">EPINNOX / MARKET PERCEPTION</div><h1 id="page-title">Overview</h1></div>
+      <div class="topbar-actions">
+        <div class="system-mode"><span class="status-dot cyan"></span><span>SHADOW ONLY</span></div>
+        <div class="system-mode locked"><span class="lock-glyph">◆</span><span>CAPITAL AUTHORITY NONE</span></div>
+        <button class="icon-button" id="refresh-button" aria-label="Refresh">↻</button>
+      </div>
+    </header>
+    <section id="view" class="view" aria-live="polite"><div class="loading-state"><div class="orbital-loader"><span></span><span></span><span></span></div><p>Resolving durable market intelligence state…</p></div></section>
+  </main>
+</div>
+<script src="/assets/product-app.js"></script>
+<script src="/assets/resolver-console.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "manifest_id": "PREDECESSOR-EPI-TRADE-001",
+  "observed_at": "2026-09-01T14:00:00Z",
+  "source_repository": "Geo222222/epi_trade",
+  "source_worktree_label": "epi_trade - Copy (2)",
+  "git_head": "bc0b61389e82ffae988e0d266a2d41a46229430a",
+  "git_branch": "ml/integrated-with-latest-main-2026-04-23",
+  "worktree_state": "dirty_ahead_of_origin",
+  "authority": "historical_evidence_only",
+  "secret_policy": "credentials.yaml, env files, databases, logs, and runtime data are excluded and must not be inspected or manifested",
+  "files": [
+    {"path": "README.md", "sha256": "db67ae9bfa54e5df36876549ac56f13866487ff3b20f7c6d48768f8d0b2bf334"},
+    {"path": "core/decision_contract.py", "sha256": "36e16c30fa0fa2a0912bc750998dece9f188c80f08d1cfea2c85df69464b5cf4"},
+    {"path": "intelligence/live_guard.py", "sha256": "dfcc232a7db759d327eaa7b658d169f8072e4c50fc9563910895a7fa4dd4074f"},
+    {"path": "intelligence/data_quality_gate.py", "sha256": "3e0459598cc135ba364fcacfe0a7bc8c35dca6224b41951381044a5227e1cf71"},
+    {"path": "intelligence/execution_realism.py", "sha256": "544973a1856f10259fbac1ce11c7faafc438027ac017df80bd3aaa43fd223e66"},
+    {"path": "core/execution_scanner.py", "sha256": "1d5fbdd39ce4a359023224c3760da5650edcf5c16836d2f1c3f16994230df827"},
+    {"path": "core/exit_order_pnl.py", "sha256": "4f70cca394669626b56b77963f43f7da20c6f167cb4e8342d191364f0b510a9d"}
+  ]
+}

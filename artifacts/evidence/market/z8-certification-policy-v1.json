@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "policy_id": "Z8-CERTIFICATION-POLICY-V1",
+  "status": "FROZEN_BEFORE_BROAD_OR_WALK_FORWARD_RESULT",
+  "authority": "Evidence qualification only. This policy cannot authorize capital, execution, model production promotion, or Benjamin decisions.",
+  "scope": {
+    "system": "Z8 Adaptive Assembly",
+    "provider": "coinbase_advanced_trade_public_websocket",
+    "venue": "COINBASE",
+    "instrument": "BTC-USD",
+    "market_type": "SPOT",
+    "representation": "INSTRUMENT_STATE",
+    "target_metric": "ZLJ_AGGREGATE_MIDPOINT_RETURN_BPS_V1",
+    "prediction_horizon_ns": 10000000000,
+    "contextual_z9_features_required": false,
+    "capital_effect": "NONE",
+    "live_execution": false
+  },
+  "admissible_window": {
+    "required": [
+      "complete immutable raw or compressed microstructure journal",
+      "manifest with content hash",
+      "VALID market-data quality or equivalent frozen qualification",
+      "level2 snapshot and updates",
+      "market trades",
+      "heartbeats",
+      "zero unexplained connection-global sequence gaps",
+      "zero duplicates",
+      "zero out-of-order messages",
+      "explicit source and receive timestamps",
+      "reconstructable Z1 canonical observations and Z2 point-in-time frames",
+      "zero capital and zero external execution"
+    ],
+    "excluded": [
+      "failed or incomplete captures",
+      "captures whose raw evidence was not durably preserved",
+      "captures with material processing backlog that invalidates the configured freshness gate",
+      "candle-only datasets that cannot reconstruct the Z4 microstructure inputs",
+      "synthetic unit-test frames"
+    ]
+  },
+  "broad_historical": {
+    "claim_if_earned": "BTC_COINBASE_MICROSTRUCTURE_BROAD_HISTORICAL_SUPPORTED",
+    "minimum_qualified_windows": 12,
+    "minimum_distinct_utc_dates": 3,
+    "utc_bucket_definition": [
+      "00:00-05:59",
+      "06:00-11:59",
+      "12:00-17:59",
+      "18:00-23:59"
+    ],
+    "minimum_distinct_utc_six_hour_buckets": 3,
+    "minimum_total_resolved_adaptive_predictions": 100,
+    "all_windows_count_in_population_including_negative_results": true,
+    "performance_gates": {
+      "aggregate_adaptive_mae_must_be_lte_equal_weight_mae": true,
+      "aggregate_adaptive_brier_must_be_lte_equal_weight_brier": true,
+      "adaptive_directional_accuracy_max_shortfall_vs_equal": "0.05",
+      "lineage_integrity_errors_allowed": 0
+    },
+    "failure_states": {
+      "evidence_minimum_not_met": "DATA_BLOCKED",
+      "performance_gate_failed": "NOT_EARNED",
+      "integrity_gate_failed": "INVALID_EVIDENCE"
+    }
+  },
+  "walk_forward": {
+    "claim_if_earned": "BTC_COINBASE_MICROSTRUCTURE_WALK_FORWARD_SUPPORTED",
+    "prerequisite": "broad_historical evidence minimum must be met before scoring",
+    "minimum_chronological_evaluation_folds": 4,
+    "fold_rule": "Each evaluation fold contains only windows later than all competence/training windows used for that fold.",
+    "competence_rule": "Z7 competence and Z8 weights may use only outcomes knowable before the first prediction in the evaluation fold.",
+    "parameter_rule": "No model, horizon, weighting-policy, endpoint, or metric changes after any evaluation-fold outcome is inspected.",
+    "population_rule": "Every resolved, unresolved, losing, null, and abstaining eligible prediction remains in its fold population.",
+    "performance_gates": {
+      "minimum_folds_without_adaptive_degradation_on_both_mae_and_brier": 3,
+      "total_folds": 4,
+      "aggregate_adaptive_mae_must_be_lte_equal_weight_mae": true,
+      "aggregate_adaptive_brier_must_be_lte_equal_weight_brier": true,
+      "lineage_integrity_errors_allowed": 0
+    },
+    "failure_states": {
+      "prerequisite_or_fold_minimum_not_met": "DATA_BLOCKED",
+      "performance_gate_failed": "NOT_EARNED",
+      "integrity_gate_failed": "INVALID_EVIDENCE"
+    }
+  },
+  "prospective": {
+    "current_claim_ceiling": "SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED",
+    "source_experiment": "EXP-Z8-PROSPECTIVE-002",
+    "does_not_satisfy_broad_historical_by_itself": true,
+    "does_not_satisfy_walk_forward_by_itself": true
+  },
+  "contextual": {
+    "status": "ARCHITECTURALLY_BLOCKED_UNTIL_Z9",
+    "reason": "Z9 market/spot-futures context does not exist yet, so contextual adaptive-weight qualification would certify a nonexistent input layer."
+  },
+  "anti_cherry_picking": {
+    "policy_changes_require_new_policy_id": true,
+    "thresholds_cannot_be_lowered_after_results_to_convert_failure_to_pass": true,
+    "failed_windows_cannot_be silently_removed": true,
+    "new_model_or_horizon_hypothesis_requires_new_preregistration": true
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "AUDIT-AUTO-EXP-OPP-001-PROMPT-001",
+  "captured_at": "2026-08-21T20:15:25.1870433Z",
+  "created_by": "root-agent",
+  "subject": "AUTO-EXP-OPP-001",
+  "external_id": "continue-exp-opp-001-daily",
+  "kind": "heartbeat",
+  "status": "ACTIVE",
+  "metadata_sha256": "46cab2543d27b59441e7a8ddebcff21e874653c1ac22dc2fc6d216b779240b27",
+  "app_view_resolved_after_update": true,
+  "prompt_contract": {
+    "explicit_repository_root": true,
+    "repository_state_not_conversation_memory": true,
+    "entrypoint": "python -m experiments.apify_store_continue",
+    "wait_does_not_capture_or_manufacture_activity": true,
+    "capture_registers_hashes_compares_tests_validates_and_commits": true,
+    "finalize_classifies_reranks_commits_and_pauses": true,
+    "preserves_unrelated_work": true,
+    "prohibits_accounts_terms_spend_deployment_messages_wallets_capital_trading_sweeps_treasury_mutation_and_governor_weakening": true,
+    "failure_path_preserves_evidence_and_records_incident": true
+  },
+  "decision": "The saved heartbeat prompt now delegates cadence and action selection to the committed deterministic preflight before any external read or repository write."
+}

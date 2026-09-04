@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "checkpoint_id": "FREEZE-EXP-Z8-PROSPECTIVE-002",
+  "status": "FROZEN_PROSPECTIVE_EVIDENCE",
+  "experiment_id": "EXP-Z8-PROSPECTIVE-002",
+  "freeze_policy": {
+    "edit_in_place_allowed": false,
+    "reinterpret_result_allowed": false,
+    "parameter_retuning_against_this_result_allowed": false,
+    "new_hypothesis_requires_new_experiment_id": true,
+    "future_certifications_must_not_upgrade_this_experiment": true
+  },
+  "predecessor": {
+    "experiment_id": "EXP-Z8-PROSPECTIVE-001",
+    "decision": "NOT_EARNED",
+    "frozen_failure": "synchronous receive-path computation accumulated material backlog"
+  },
+  "workflow": {
+    "prospective_run_id": 33707908037,
+    "artifact_id": 9875923892,
+    "artifact_digest": "sha256:4e25eb982ddd07cf2e9442d682708e3ea6c313c6950528fc4682916a6000f614",
+    "raw_evidence_import_run_id": 33708192014,
+    "raw_evidence_commit": "8c9f45fc99e673646ae05faa63f3c2a1d2ba2380"
+  },
+  "result": {
+    "path": "artifacts/evidence/market/exp-z8-prospective-002-result.json",
+    "file_sha256": "1f3f7b9645e50116241db70e3a52309f0b569d69d6436eb298adb362e4d060fe",
+    "result_content_hash": "d901919a3bb5e7f2377c055d61977b15535b905cbdae3c18aa19e41109bdbec6",
+    "decision": "SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED",
+    "reasons": []
+  },
+  "raw_evidence": {
+    "directory": "artifacts/evidence/market/exp-z8-prospective-002-data",
+    "journal_sha256": "69504f0988753bb4cdcc6a2ee657f6ada838e910f90b42dffbd36c9f9213edd7",
+    "compressed_sha256": "0d63a1097cd89e0d222eb0905c7956a5263b27a36fa617b26e1be039e51c8423",
+    "manifest_file_sha256": "eeb674268bea25dc89ee60f330c7513be4586b70e929a0163c8db3d8c79d7599",
+    "observation_file_sha256": "2e6b499428cb3d15f8e1c9917755bd34c8dd2a94ff95dfc108ce4f24f9ea5743"
+  },
+  "qualified_findings": {
+    "prospective_z1_z8_mechanism": "SUPPORTED_SINGLE_SESSION",
+    "capital_effect": "NONE",
+    "live_execution": false,
+    "lineage_integrity_errors": 0,
+    "unique_messages": 1800,
+    "sequence_gaps": 0,
+    "duplicates": 0,
+    "out_of_order": 0,
+    "canonical_observations": 2496,
+    "qualified_frames": 59,
+    "component_predictions": 39,
+    "adaptive_predictions": 13,
+    "resolved_adaptive_predictions": 13,
+    "provider_minus_receive_seconds_p50": "-0.079894945",
+    "raw_bundle_durably_preserved": true
+  },
+  "performance_observation_not_qualification": {
+    "directional_accuracy": "0.3846153846153846153846153846",
+    "mae_bps": "3.610548230342531252569281616",
+    "brier_score": "0.2601215465149661688247923852",
+    "note": "Predictive outperformance was not a gate for this mechanism-only prospective claim and cannot upgrade its scope."
+  },
+  "scope_boundary": {
+    "broad_historical_qualification": false,
+    "walk_forward_qualification": false,
+    "contextual_qualification": false,
+    "production_model_qualification": false,
+    "capital_eligibility": false
+  }
+}

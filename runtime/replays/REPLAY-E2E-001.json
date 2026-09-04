@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "replay_id": "REPLAY-E2E-001",
+  "ordered_observation_ids": [
+    "OBS-COINBASE-ETH-USD-1788272400"
+  ],
+  "processed_observation_ids": [
+    "OBS-COINBASE-ETH-USD-1788272400"
+  ],
+  "receipt_paths": [
+    "receipts/execution/REQ-DEC-REPLAY-E2E-001.json"
+  ],
+  "gaps": [],
+  "status": "COMPLETE",
+  "timestamp_ordered": true,
+  "duplicate_safe": true,
+  "randomness": "NONE",
+  "provenance_preserved": true
+}

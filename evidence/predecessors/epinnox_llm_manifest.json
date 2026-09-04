@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "manifest_id": "PREDECESSOR-EPINNOX-LLM-001",
+  "observed_at": "2026-09-01T14:15:00Z",
+  "source_repository": "epinnox-llm",
+  "source_worktree_label": "epinnox-llm",
+  "git_head": "a628ed3da41f888512cb0b8a26de111ab374b567",
+  "git_branch": "main",
+  "worktree_state": "dirty_with_substantial_untracked_implementation",
+  "authority": "historical_evidence_only",
+  "secret_policy": "credential stores, configs containing values, databases, logs, model artifacts, and runtime data are excluded",
+  "files": [
+    {"path": "README.md", "sha256": "bb67ff2496cceb675b1a16bb8d15deb6b8d3a24a429c0c770ee6f36976333c93"},
+    {"path": "src/main.py", "sha256": "1e5dd5a8acccb155e8d970e219f7f442b1544f6a144da43bf2f67f9436939f88"},
+    {"path": "src/signals/llm/llm.py", "sha256": "9b800c94bf04a6943e3760d1a7f4cf62d38966f200cf2622cb2d05b511e7bb77"},
+    {"path": "binance_trader/binance_client.py", "sha256": "f44e37e0ad810357c2c5fbb694a9318ca075a0fb3126deb85cd1f497b68ae7d3"},
+    {"path": "binance_trader/huobi_client.py", "sha256": "c7e367630e65147c107223be1fd6b6e51992358b3d8ae58e906de337c746409d"},
+    {"path": "binance_trader/trading_strategy.py", "sha256": "a31665bad547a93b3774c0e15d7373a36c6a6c761f99c0784e87def8b143c26f"}
+  ]
+}

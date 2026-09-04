@@ -1,0 +1,109 @@
+name: kernel-tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install project dependencies
+        run: python -m pip install -e .
+      - name: Compile
+        run: python -m compileall -q autonomous_kernel experiments tests monitor/app monitor/tests
+      - name: Frontend syntax
+        run: |
+          node --check monitor/web/product-app.js
+          node --check monitor/web/resolver-console.js
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Generate question registry v1 qualification
+        run: |
+          python experiments/question_registry_v1_certification.py --output /tmp/question-registry-v1-qualified.json
+          cat /tmp/question-registry-v1-qualified.json
+      - name: Verify frozen question registry v1 qualification
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          generated = json.loads(Path('/tmp/question-registry-v1-qualified.json').read_text(encoding='utf-8'))
+          frozen_path = Path('artifacts/evidence/market/question-registry-v1-qualified.json')
+          if not frozen_path.is_file():
+              raise SystemExit('missing frozen QUESTION_REGISTRY_V1_QUALIFIED evidence artifact')
+          committed = json.loads(frozen_path.read_text(encoding='utf-8'))
+          if generated != committed:
+              raise SystemExit('generated question registry v1 qualification differs from frozen evidence artifact')
+          if committed.get('certification_id') != 'QUESTION_REGISTRY_V1_QUALIFIED':
+              raise SystemExit('question registry v1 certification id drifted')
+          if committed.get('registry', {}).get('version') != '1.3.0-question-registry-v1-qualified':
+              raise SystemExit('question registry v1 frozen version drifted')
+          if len(committed.get('resolver_ready_questions', [])) != 10:
+              raise SystemExit('question registry v1 active examination count drifted')
+          PY
+      - name: Run preregistered Z8 real-data qualification
+        run: |
+          python experiments/z8_real_data_qualification.py --root . --output /tmp/z8-real-data-result.json
+          cat /tmp/z8-real-data-result.json
+      - name: Verify frozen Z8 qualification result
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          generated = json.loads(Path('/tmp/z8-real-data-result.json').read_text(encoding='utf-8'))
+          committed = json.loads(Path('artifacts/evidence/market/exp-z8-hist-real-001-result.json').read_text(encoding='utf-8'))
+          if generated != committed: raise SystemExit('generated Z8 real-data result differs from frozen evidence artifact')
+          if committed['integrity']['result_content_hash'] != '2320855eff796b173d5d09429ae204803d60f7cf5771d79d112fcbc4a79671bc': raise SystemExit('frozen Z8 result hash drifted')
+          if committed['qualification']['decision'] != 'NOT_EARNED': raise SystemExit('frozen Z8 qualification decision drifted')
+          PY
+      - name: Validate Z8 empirical certification readiness
+        run: |
+          python experiments/z8_certification_status.py --root . --output /tmp/z8-certification-status.json
+          cat /tmp/z8-certification-status.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('/tmp/z8-certification-status.json').read_text(encoding='utf-8'))
+          if value['broad_historical']['status'] != 'DATA_BLOCKED': raise SystemExit('broad historical status changed without a new certification inventory')
+          if value['walk_forward']['status'] != 'DATA_BLOCKED': raise SystemExit('walk-forward status changed without new certification inventory')
+          if value['prospective']['status'] != 'SINGLE_SESSION_PROSPECTIVE_MECHANISM_SUPPORTED': raise SystemExit('prospective mechanism support drifted')
+          if value['capital_effect'] != 'NONE' or value['live_execution'] is not False: raise SystemExit('certification status violated zero-capital boundary')
+          PY
+      - name: Validate Z9 construction and empirical readiness
+        run: |
+          python experiments/z9_certification_status.py --root . --output /tmp/z9-certification-status.json
+          cat /tmp/z9-certification-status.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('/tmp/z9-certification-status.json').read_text(encoding='utf-8'))
+          if value['construction']['status'] != 'CONSTRUCTED': raise SystemExit('Z9 construction validation failed')
+          for key in ('market_wide_historical', 'spot_derivatives', 'contextual_assembly'):
+              if value[key]['status'] != 'DATA_BLOCKED': raise SystemExit('%s changed without new preregistered empirical evidence' % key)
+          if value['construction']['base_z8_rewritten'] is not False: raise SystemExit('Z9 rewrote the frozen Z8 boundary')
+          if value['capital_effect'] != 'NONE' or value['live_execution'] is not False: raise SystemExit('Z9 violated zero-capital boundary')
+          PY
+      - name: Verify Z9 read-only status
+        run: python -m autonomous_kernel context_status
+      - name: Monitor contract tests
+        run: python -m unittest discover -s monitor/tests -v
+      - name: Validate durable state
+        run: python -m autonomous_kernel validate
+      - name: Verify authoritative monitor snapshot
+        run: python -m autonomous_kernel monitor_snapshot --json > /tmp/monitor-snapshot.json
+      - name: Verify clean recovery path
+        run: python -m autonomous_kernel recover
+      - name: Verify resumable status
+        run: python -m autonomous_kernel status

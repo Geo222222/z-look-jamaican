@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "authority": "governed immutable Z9 model-context profiles; activation is explicit and time-versioned",
+  "profiles": {},
+  "active_by_model": {},
+  "last_event_hash": null,
+  "event_count": 0
+}

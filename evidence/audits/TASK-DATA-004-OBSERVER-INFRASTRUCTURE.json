@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "audit_id": "AUDIT-TASK-DATA-004-OBSERVER-INFRASTRUCTURE",
+  "task_id": "TASK-DATA-004",
+  "completed_at": "2026-09-02T15:50:00Z",
+  "base_commit": "fd486c6f0e4091a62ae4e5659752708e20874a73",
+  "implementation_commit": "4bbf2ff1b5820420474906d84d1b86050e3bce65",
+  "branch": "codex/continuous-market-observer",
+  "outcome": "OBSERVER_INFRASTRUCTURE_QUALIFIED_PENDING_RUNTIME_ACTIVATION_AND_TIME_SEPARATED_EVIDENCE",
+  "implemented": [
+    "frozen public-read-only observer configuration",
+    "durable observer state and independent window identities",
+    "single-writer filesystem lease with stale-lease recovery",
+    "preregistration before every network capture",
+    "bounded Coinbase BTC-USD level2/trade/heartbeat capture using the qualified journal",
+    "connection-global gap and out-of-order rejection",
+    "deterministic nanosecond-safe provider timestamp replay",
+    "spread, activity, 10-bps depth, imbalance, and public-book impact proxy distributions",
+    "durable success and failure audit receipts",
+    "interrupted-window preservation without stream identity reuse",
+    "storage-footprint and free-disk circuit breakers",
+    "verified raw-journal compaction only after compressed bundle and audit integrity checks",
+    "once and daemon operational entrypoints",
+    "hardened Docker Compose supervision with restart policy, read-only root filesystem, dropped capabilities, no exposed ports, and no secrets",
+    "operator documentation and deterministic unit tests"
+  ],
+  "verification": {
+    "github_actions_run_id": 33650974513,
+    "python_3_9": "PASS",
+    "python_3_12": "PASS",
+    "compile": "PASS",
+    "unit_tests": "PASS",
+    "monitor_contract": "PASS",
+    "durable_state_validation": "PASS",
+    "authoritative_monitor_snapshot": "PASS",
+    "clean_recovery": "PASS",
+    "resumable_status": "PASS",
+    "legacy_integrity_repair": "CRLF checkout representation was made deterministic for pre-existing owner/evidence hashes; no treasury destination or evidence content was changed"
+  },
+  "safety": {
+    "network_policy": "PUBLIC_READ_ONLY",
+    "authentication_allowed": false,
+    "account_access_allowed": false,
+    "orders_allowed": false,
+    "wallet_or_signer_access_allowed": false,
+    "capital_used_usd": "0.00",
+    "capability_promotion_permitted": false,
+    "actual_fill_truth_claimed": false,
+    "strategy_edge_claimed": false,
+    "live_trading_enabled": false
+  },
+  "deployment": {
+    "manifest": "docker-compose.observer.yml",
+    "container_entrypoint": "python -m experiments.market_observer --mode daemon --root /app",
+    "activation_command": "docker compose -f docker-compose.observer.yml up -d --build",
+    "status": "MANIFEST_READY_NOT_STARTED_FROM_GITHUB",
+    "reason": "Repository access can build and qualify the service but cannot start the owner's host runtime."
+  },
+  "task_boundary": {
+    "task_data_004_complete": false,
+    "reason": "Acceptance requires several genuinely time-separated public windows. Infrastructure qualification cannot substitute for future observations.",
+    "next_evidence": "Activate the daemon on a durable host and allow independent windows to accumulate until public-observable activity/spread/depth bounds can be evaluated reproducibly."
+  }
+}

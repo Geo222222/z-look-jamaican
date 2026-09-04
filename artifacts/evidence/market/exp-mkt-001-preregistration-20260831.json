@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-MKT-001",
+  "created_at": "2026-08-31T17:00:00Z",
+  "created_before_result_inspection": true,
+  "hypothesis": "At least one fixed crypto spot strategy family retains positive out-of-sample net expectancy across BTC-USD and ETH-USD after conservative execution costs.",
+  "null_hypothesis": "Any apparent gross edge disappears after costs or is isolated to one asset, activity regime, or fragile assumption.",
+  "data": {
+    "source": "Coinbase Exchange public REST product candles",
+    "endpoint": "https://api.exchange.coinbase.com/products/{product_id}/candles",
+    "products": ["BTC-USD", "ETH-USD"],
+    "granularity_seconds": 300,
+    "lookback_days": 60,
+    "authentication": "none",
+    "capital_or_credentials": "none"
+  },
+  "families": {
+    "trend": "12-candle mean above 48-candle mean; otherwise flat",
+    "mean_reversion": "enter below -1.5 rolling 48-candle z-score; exit at zero",
+    "breakout": "enter above prior 48-candle high with above-median quote volume; exit below prior 24-candle low"
+  },
+  "bias_controls": [
+    "Parameters fixed before results",
+    "Signals formed at close execute no earlier than next candle open",
+    "First 60 percent fixes activity thresholds; last 40 percent is reported out of sample",
+    "No same-bar high/low execution assumption"
+  ],
+  "execution_model": {
+    "instrument": "unlevered spot, long or flat",
+    "per_side_cost_scenarios_bps": [5, 10, 20, 40],
+    "primary_per_side_cost_bps": 20,
+    "cost_scope": "fee, half-spread and slippage scenario bound",
+    "fill_probability": 0.995,
+    "failed_transition_cost_bps": 1,
+    "latency_candles": 1,
+    "funding_bps": 0,
+    "infrastructure_cost_usd": 0
+  },
+  "promotion_gate": "At the primary 20 bps per-side cost, a family must have positive out-of-sample net return on both products, avoid dependence on weekend or quiet activity alone, and remain positive at 40 bps per side on at least one product. Otherwise reject it from shadow promotion.",
+  "limitations_known_in_advance": [
+    "Candles do not contain historical spread, depth, queue position, or exact venue fee tier",
+    "Cost scenarios bound rather than reconstruct those missing variables",
+    "Two products and sixty days cannot establish durable edge",
+    "The replay can reject weak ideas but cannot authorize capital"
+  ]
+}

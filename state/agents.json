@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-31T16:45:44.0046593Z",
+  "items": [
+    {
+      "task_id": "TASK-BOOT-001",
+      "agent_id": "/root/runtime_audit",
+      "role": "SRE and Security Reviewer",
+      "status": "completed",
+      "scope": "Read-only repository/runtime/deployment/credential-boundary audit",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-OPP-001",
+      "agent_id": "/root/opportunity_research",
+      "role": "Opportunity Researcher",
+      "status": "completed",
+      "scope": "Public primary-source research and candidate ranking",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-BOOT-002",
+      "agent_id": "/root/kernel_design_review",
+      "role": "Product Engineer and Independent Design Reviewer",
+      "status": "completed",
+      "scope": "Read-only minimum-kernel and prior-art review",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-EXP-001",
+      "agent_id": "/root/eu_ted_falsification",
+      "role": "Opportunity Falsification Researcher",
+      "status": "completed",
+      "scope": "Read-only EU TED competition, feature, source and unit-economics falsification",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-DISC-001",
+      "agent_id": "/root/sec_gap_falsification",
+      "role": "Opportunity Falsification Researcher",
+      "status": "completed",
+      "scope": "Read-only SEC source, competitor, demand and unit-economics falsification",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-DISC-002",
+      "agent_id": "/root/opportunity_refresh",
+      "role": "Opportunity Researcher",
+      "status": "completed",
+      "scope": "Read-only current primary-source opportunity refresh",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-DISC-003",
+      "agent_id": "/root/opportunity_refresh",
+      "role": "Opportunity Falsification Researcher",
+      "status": "completed",
+      "scope": "Read-only Shopify competitor, review, permission and economics falsification",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-DISC-004",
+      "agent_id": "/root/opportunity_refresh",
+      "role": "Opportunity Falsification Researcher",
+      "status": "completed",
+      "scope": "Read-only Atlassian competitor, review, scope, security and economics falsification",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-EXP-002",
+      "agent_id": "/root with scoped specialists",
+      "role": "Defensive Replay Coordinator",
+      "status": "deferred_candidate_set_preserved",
+      "scope": "Completed public EIP-7702 proxy secure-code review, deterministic inventory, platform-safeguard recovery, and adjudicated-result comparison; one generic scan blocked, two narrower reviews completed",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-MKT-001",
+      "agent_id": "/root",
+      "role": "Crypto Market Research and Replay Coordinator",
+      "status": "in_progress",
+      "scope": "Public-data activity segmentation, execution-aware strategy falsification, deterministic replay, and zero-capital shadow selection",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    },
+    {
+      "task_id": "TASK-MKT-002",
+      "agent_id": "/root",
+      "role": "Crypto Forward Shadow Coordinator",
+      "status": "in_progress",
+      "scope": "Timestamped public-data decisions and after-cost reconciliation for an active-weekday breakout hypothesis; no account, wallet, credential, order or capital",
+      "production_authority": false,
+      "capital_authority_usd": 0
+    }
+  ]
+}

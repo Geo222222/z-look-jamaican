@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "audit_id": "AUDIT-EXP-MICROSTREAM-003",
+  "experiment_id": "EXP-MICROSTREAM-003",
+  "completed_at": "2026-09-01T18:16:00Z",
+  "outcome": "FAILED_CLOCK_SKEW_TOLERANCE_MISSING",
+  "passed_components": {
+    "accepted_unique_messages": 1129,
+    "logical_channels": ["level2", "market_trades", "heartbeats"],
+    "control_messages_preserved": 3,
+    "level2_snapshot_count": 1,
+    "level2_update_count": 916,
+    "connection_global_sequence_range": [0, 1128],
+    "connection_global_missing_sequences": [],
+    "duplicates": 0,
+    "out_of_order": 0,
+    "manifest_bytes": 1541,
+    "raw_l2_data_provenance_preserved": true,
+    "deterministic_final_book_hash": "9e72ee35ddda630860161275ec1d0db48e65bce1073245383dd200567b6fcaa0"
+  },
+  "failed_gate": {
+    "quality": "UNAVAILABLE",
+    "reason": ["source_event_after_receive", "negative_timestamp_age"],
+    "integer_timestamp_observation": {"source_event_at": 1788286538, "received_at": 1788286537},
+    "signed_provider_minus_receive_seconds": {"minimum": -0.03864908218383789, "p50": 0.5073328018188477, "p90": 0.5105443000793457, "p99": 0.511488676071167, "maximum": 0.5121350288391113},
+    "interpretation": "Provider timestamps consistently led the local wall clock by about 0.51 seconds. The strict zero-tolerance quality gate failed correctly; no tolerance was preregistered for this attempt."
+  },
+  "preserved_artifacts": {
+    "journal": {"path": "runtime/market_stream/COINBASE-BTC-USD-MICROSTREAM-003.jsonl", "sha256": "1a79adda73b9048317df48024f8f017b9260634140a387dccbbbc506180dcb9b"},
+    "compressed": {"path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-003.jsonl.gz", "sha256": "2c7c8e78de0f67041d71860eb2550fca81665dfdb38bd533c5c48c26dc737d0c"},
+    "manifest": {"path": "artifacts/market_data/streams/COINBASE-BTC-USD-MICROSTREAM-003.manifest.json", "sha256": "228fc64b3540fdac03632528267e3bf8f2e643683846c14b626ea2bd3337826f"},
+    "observation": {"path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-003.json", "sha256": "8c6a413fec26301eb7d16f2b358282f754d592719f210d9f3cee62bfdc2c44a7"}
+  },
+  "safety": {"authentication_used": false, "account_or_order_surface_accessed": false, "signer_or_wallet_accessed": false, "capital_used_usd": "0.00", "capability_promotion": false},
+  "recovery_decision": "Preserve and fail this attempt. Add an explicit deterministic one-second source-clock-ahead tolerance supported by the measured maximum 0.513 seconds, retain raw signed skew metrics, preregister a separate attempt, and do not weaken any age, idle, sequence, replay, integrity, or zero-effect gate."
+}

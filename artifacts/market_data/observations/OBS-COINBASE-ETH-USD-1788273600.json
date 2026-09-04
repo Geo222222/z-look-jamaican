@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "observation_id": "OBS-COINBASE-ETH-USD-1788273600",
+  "observed_at": 1788274042,
+  "raw": {
+    "provider": "coinbase_exchange_public",
+    "instrument": "ETH-USD",
+    "channel": "candles",
+    "provider_payload": [
+      1788273600,
+      "2450.47",
+      "2454.21",
+      "2453.01",
+      "2454.07",
+      "281.53616066"
+    ],
+    "source_event_at": 1788273900,
+    "received_at": 1788274042
+  },
+  "normalized": {
+    "schema_version": 1,
+    "type": "candle",
+    "instrument": "ETH-USD",
+    "interval_seconds": 300,
+    "start_at": 1788273600,
+    "end_at": 1788273900,
+    "open": "2453.01",
+    "high": "2454.21",
+    "low": "2450.47",
+    "close": "2454.07",
+    "volume": "281.53616066",
+    "raw_observation_id": "OBS-COINBASE-ETH-USD-1788273600"
+  },
+  "quality": {
+    "status": "VALID",
+    "provider": "coinbase_exchange_public",
+    "source_event_at": 1788273900,
+    "received_at": 1788274042,
+    "observed_at": 1788274042,
+    "event_age_seconds": 142,
+    "transport_age_seconds": 142,
+    "action_permitted": true,
+    "reasons": [],
+    "schema_version": 1
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "59e2ba8c12c0bdb9961d3b4603770bc7e84a3658b199e70d95f0fa490fa13bb1"
+  }
+}

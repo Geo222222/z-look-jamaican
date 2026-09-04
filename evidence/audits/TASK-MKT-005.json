@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-MKT-005",
+  "parent_objective_id": "PROGRAM-CRYPTO-MARKETS",
+  "status": "SUCCESS",
+  "completed_at": "2026-09-01T14:15:00Z",
+  "subject": "epinnox-llm and epi-calc-appr predecessor follow-on",
+  "conclusion": "The epinnox-llm README is architectural research rather than proof of a complete risk-guarded system. Its Git-tracked core is LLM-oriented, while substantial later exchange and strategy code is untracked in a dirty worktree. Direct authenticated order clients lack the current Governor boundary and are rejected for migration. epi-calc-appr is a presentation calculator with fixed assumed returns, not an accounting or strategy-evidence source.",
+  "epinnox_llm": {
+    "manifest": "evidence/predecessors/epinnox_llm_manifest.json",
+    "git_head": "a628ed3da41f888512cb0b8a26de111ab374b567",
+    "useful_historical_hypotheses": [
+      "LLM cognition should remain outside deterministic execution and risk enforcement.",
+      "Market ingest, signals, strategies, risk, execution, and observability benefit from explicit boundaries.",
+      "Local inference may reduce provider dependency only when its measured task quality and operating cost justify it."
+    ],
+    "rejected": [
+      "README claims as implementation evidence.",
+      "Direct signed Binance/Huobi execution clients without a Governor-enforcing request contract.",
+      "LLM-generated trading advice as an execution authorization.",
+      "Untracked dirty worktree code as a production dependency."
+    ]
+  },
+  "epi_calc_appr": {
+    "git_head": "c1d14d1026a39404c58fd5602e7274788350efc5",
+    "disposition": "reject_as_economic_evidence",
+    "reason": "Fixed 0.75% profit and 0.10% fee assumptions manufacture projected compounding and omit realized fill, loss, liquidation, funding, slippage, and reconciliation truth."
+  },
+  "secret_values_inspected": false,
+  "owner_action_required": false,
+  "next_action": "Continue EXP-MKT-002 unchanged and use predecessor material only when a current measured bottleneck calls for a separately tested primitive."
+}

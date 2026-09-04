@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "authority": "immutable bundles listed here; index is deterministically rebuildable",
+  "items": [
+    {
+      "observation_id": "OBS-COINBASE-BTC-USD-1788272400",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-1788272400.json",
+      "provider": "coinbase_exchange_public",
+      "instrument": "BTC-USD",
+      "channel": "candles",
+      "source_event_at": 1788272700,
+      "observed_at": 1788272957,
+      "quality_status": "VALID",
+      "content_hash": "9c3127aa29eb58c2a2c8e7ea994afdeb3d6ee1ea0ef20cb6b1dfa480c65aca2a",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
+      "observation_id": "OBS-COINBASE-BTC-USD-1788273600",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-1788273600.json",
+      "provider": "coinbase_exchange_public",
+      "instrument": "BTC-USD",
+      "channel": "candles",
+      "source_event_at": 1788273900,
+      "observed_at": 1788274042,
+      "quality_status": "VALID",
+      "content_hash": "5efef3626bedd22496a440b9d1eb118c95bc4408a11e64a5e11e0ba355816eea",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
+      "observation_id": "OBS-COINBASE-BTC-USD-MICRO-135395387999",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICRO-135395387999.json",
+      "provider": "coinbase_exchange_public",
+      "instrument": "BTC-USD",
+      "channel": "microstructure_snapshot",
+      "source_event_at": 1788274718,
+      "observed_at": 1788274719,
+      "quality_status": "VALID",
+      "content_hash": "5868556d9565bc070db2bc5be6a9f727ff862936aa2a0db28f198f6567cff3c9",
+      "provider_sequence": 135395387999,
+      "sequence_gap_state": "NOT_APPLICABLE_SNAPSHOT_ONLY"
+    },
+    {
+      "observation_id": "OBS-COINBASE-BTC-USD-MICROSTREAM-001",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-001.json",
+      "provider": "coinbase_advanced_trade_public_websocket",
+      "instrument": "BTC-USD",
+      "channel": "microstructure_stream",
+      "source_event_at": 1788275428,
+      "observed_at": 1788275427,
+      "quality_status": "UNAVAILABLE",
+      "content_hash": "e7003f0c34d1ceb570114b5e5d1cb083134cdb1342b59628d73e6dd10a308119",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
+      "observation_id": "OBS-COINBASE-BTC-USD-MICROSTREAM-002",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-002.json",
+      "provider": "coinbase_advanced_trade_public_websocket",
+      "instrument": "BTC-USD",
+      "channel": "microstructure_stream",
+      "source_event_at": 1788286129,
+      "observed_at": 1788286169,
+      "quality_status": "STALE",
+      "content_hash": "1376cb23a9f022900b4f44851588418b42beebe889fd352148e61d61147aeb7c",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
+      "observation_id": "OBS-COINBASE-BTC-USD-MICROSTREAM-003",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-003.json",
+      "provider": "coinbase_advanced_trade_public_websocket",
+      "instrument": "BTC-USD",
+      "channel": "microstructure_stream",
+      "source_event_at": 1788286538,
+      "observed_at": 1788286537,
+      "quality_status": "UNAVAILABLE",
+      "content_hash": "2f4b04c2220fcd1b050263c84427fc7be0b9c3eff94eb486b922442e2bcf6d9c",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
+      "observation_id": "OBS-COINBASE-BTC-USD-MICROSTREAM-004",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-BTC-USD-MICROSTREAM-004.json",
+      "provider": "coinbase_advanced_trade_public_websocket",
+      "instrument": "BTC-USD",
+      "channel": "microstructure_stream",
+      "source_event_at": 1788286907,
+      "observed_at": 1788286906,
+      "quality_status": "VALID",
+      "content_hash": "cb037eba26867ff6b819d96960fe90efd3f86bd834c8a03c220a5870df1a6fae",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
+      "observation_id": "OBS-COINBASE-ETH-USD-1788272400",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-ETH-USD-1788272400.json",
+      "provider": "coinbase_exchange_public",
+      "instrument": "ETH-USD",
+      "channel": "candles",
+      "source_event_at": 1788272700,
+      "observed_at": 1788272957,
+      "quality_status": "VALID",
+      "content_hash": "a15226e8d30e58cd93826e041dfd5999a0f64b007b45b8f753405bc9001570c0",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    },
+    {
+      "observation_id": "OBS-COINBASE-ETH-USD-1788273600",
+      "path": "artifacts/market_data/observations/OBS-COINBASE-ETH-USD-1788273600.json",
+      "provider": "coinbase_exchange_public",
+      "instrument": "ETH-USD",
+      "channel": "candles",
+      "source_event_at": 1788273900,
+      "observed_at": 1788274042,
+      "quality_status": "VALID",
+      "content_hash": "59e2ba8c12c0bdb9961d3b4603770bc7e84a3658b199e70d95f0fa490fa13bb1",
+      "provider_sequence": null,
+      "sequence_gap_state": "UNSUPPORTED_BY_CHANNEL"
+    }
+  ]
+}
