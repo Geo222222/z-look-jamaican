@@ -1,8 +1,8 @@
 """Outcome resolution and model-evaluation primitives.
 
-Z6 resolves journaled Z3 claims against future Z2 state. Z7 derives segmented
-competence from those immutable claims and outcomes. Evaluation never grants
-capital, execution, or model self-promotion.
+Legacy Z6/Z7 contracts remain intact for frozen evidence. Question-bound
+outcomes are the forward architecture: market truth is resolved separately
+from model scoring, competence, capital judgment, and execution authority.
 """
 
 from .competence import (
@@ -14,6 +14,12 @@ from .competence import (
 )
 from .contracts import OutcomeContractError, PredictionOutcome, RESOLUTION_POLICY_ID
 from .journal import OutcomeJournal, OutcomeJournalError, validate_outcome_journal
+from .question_outcome import (
+    QuestionBoundOutcome,
+    QuestionOutcomeError,
+    ResolutionEvidenceRef,
+    build_question_outcome_id,
+)
 from .resolver import (
     MAX_RESOLUTION_LAG_NS_V1,
     OutcomePendingError,
@@ -34,8 +40,12 @@ __all__ = [
     "OutcomePendingError",
     "OutcomeResolutionError",
     "PredictionOutcome",
+    "QuestionBoundOutcome",
+    "QuestionOutcomeError",
     "RESOLUTION_POLICY_ID",
+    "ResolutionEvidenceRef",
     "build_competence_profiles",
+    "build_question_outcome_id",
     "resolve_prediction",
     "select_resolution_frame",
     "validate_outcome_journal",
