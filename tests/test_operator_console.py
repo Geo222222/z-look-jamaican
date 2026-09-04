@@ -34,13 +34,27 @@ class OperatorConsoleContractTests(unittest.TestCase):
     def test_operator_snapshot_has_exact_z1_through_z9_story_and_claim_ceiling(self):
         snapshot = operator_snapshot(ROOT)
         self.assertEqual("zlj-operator-console", snapshot["contract"]["name"])
-        self.assertEqual("1.1", snapshot["contract"]["schema_version"])
+        self.assertEqual("1.2", snapshot["contract"]["schema_version"])
         self.assertEqual(["Z1", "Z2", "Z3", "Z4", "Z5", "Z6", "Z7", "Z8", "Z9"], [stage["id"] for stage in snapshot["stages"]])
         self.assertEqual("NONE", snapshot["system"]["capital_authority"])
         self.assertEqual("LOCKED_FALSE", snapshot["system"]["live_execution"])
         self.assertEqual("NOT_EARNED", snapshot["certification"]["z8_historical"]["decision"])
         self.assertEqual("CERTIFIED", snapshot["certification"]["z9"]["construction"])
         self.assertEqual("DATA_BLOCKED", snapshot["certification"]["z9"]["contextual_performance"])
+
+    def test_operator_snapshot_exposes_pretraining_and_governed_model_qualification_state(self):
+        snapshot = operator_snapshot(ROOT)
+        research = snapshot["research_qualification"]
+        self.assertEqual("PRE_TRAINING_INFRASTRUCTURE", research["status"])
+        self.assertEqual("NOT_RUN", research["training"])
+        self.assertEqual("BUILT", research["construction"]["point_in_time_feature_plane"])
+        self.assertEqual("BUILT", research["construction"]["walk_forward_evaluation_plan"])
+        self.assertEqual("NOT_EARNED", research["construction"]["trained_expert_population"])
+        self.assertFalse(research["authority"]["trains_models"])
+        self.assertFalse(research["authority"]["promotes_models"])
+        qualification = snapshot["model_qualification"]
+        self.assertEqual("VALID", qualification["status"])
+        self.assertIn("ModelRegistry remains lifecycle authority", qualification["authority"])
 
     def test_operator_snapshot_exposes_frozen_question_registry_without_granting_model_or_capital_authority(self):
         snapshot = operator_snapshot(ROOT)

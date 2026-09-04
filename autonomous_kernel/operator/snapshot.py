@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, Mapping
 
 from ..context.status import market_context_status
+from ..models.qualification_status import qualification_evidence_status
 from ..monitor import monitor_snapshot
 from ..questions.catalog import default_question_registry_v1
 from ..questions.certification import (
@@ -17,6 +18,7 @@ from ..questions.certification import (
 from .contracts import STAGE_METADATA, command_catalog
 from .intelligence_projection import expert_intelligence_projection
 from .journal import validate_operator_journal
+from .research_projection import research_qualification_projection
 
 
 def _json(root: Path, relative: str) -> Mapping[str, Any]:
@@ -192,7 +194,7 @@ def build_operator_snapshot(root: Path) -> Dict[str, Any]:
     return {
         "contract": {
             "name": "zlj-operator-console",
-            "schema_version": "1.1",
+            "schema_version": "1.2",
             "generated_at_ns": time.time_ns(),
             "authority": "read/control projection only; domain journals and services remain authoritative",
         },
@@ -206,6 +208,8 @@ def build_operator_snapshot(root: Path) -> Dict[str, Any]:
         "stages": stages,
         "question_registry": _question_registry(),
         "expert_intelligence": expert_intelligence_projection(root),
+        "research_qualification": research_qualification_projection(),
+        "model_qualification": qualification_evidence_status(root),
         "certification": _certification(root),
         "controls": command_catalog(),
         "monitor": monitor,
