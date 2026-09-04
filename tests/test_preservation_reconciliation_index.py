@@ -57,7 +57,8 @@ class PreservationReconciliationIndexTests(unittest.TestCase):
         observer = next(item for item in value["preserved_workstreams"] if item["workstream"] == "coinbase_public_market_observer")
         self.assertEqual(5, len(observer["completed_windows"]))
         self.assertEqual(4, observer["failed_window_count"])
-        self.assertIn("noncanonical", observer["canonical_state_policy"])
+        self.assertIn("source-checkout snapshots only", observer["canonical_state_policy"])
+        self.assertIn("rebuild current projections", observer["canonical_state_policy"])
         self.assertEqual("7762aacae1d670857d0d22c28e82033f46dd38c2", observer["tip_commit"])
 
     def test_old_strategy_and_opportunity_layers_remain_historical_only(self):
