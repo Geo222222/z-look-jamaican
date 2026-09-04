@@ -63,6 +63,9 @@ class ExpertIntelligenceRuntimeTests(unittest.TestCase):
             self.assertGreater(projection["school"]["curriculum_expert_count"], projection["school"]["implemented_expert_count"])
             self.assertEqual(projection["qualification"]["earned_competence"], "NOT_YET_EARNED")
             self.assertEqual(projection["qualification"]["benjamin_handoff"], "NO_RUNTIME_PUBLICATION")
+            self.assertEqual(projection["qualification"]["benjamin_eligibility"], "NONE")
+            self.assertFalse(projection["runtime"]["internal_intelligence_exists"])
+            self.assertEqual(projection["construction"]["benjamin_publication_gate"], "BUILT")
             self.assertEqual(projection["qualification"]["live_capital_authority"], "NONE")
 
 

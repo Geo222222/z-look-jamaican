@@ -102,9 +102,18 @@ class ExpertSchoolIntelligenceTests(unittest.TestCase):
         records = [score_expert_claim(contract, claim, True, resolved_at_ns=12_000_000_000, context={"regime": "TREND"}) for contract, claim in zip(contracts[:2], (claim_a, claim_b))]
         memory = build_competence_memory(records, now_ns=13_000_000_000)
         assembly = assemble_expert_claims((claim_a, claim_b), memory, {"regime": "TREND"})
-        publication = build_intelligence_publication(assembly, published_at_ns=13_000_000_001, evidence_refs=("evidence:a", "evidence:b"), competence_memory_hash=memory["integrity"]["content_hash"], market_context_hash="2" * 64)
+        publication = build_intelligence_publication(
+            assembly,
+            published_at_ns=13_000_000_001,
+            evidence_refs=("evidence:a", "evidence:b"),
+            competence_memory_hash=memory["integrity"]["content_hash"],
+            market_context_hash="2" * 64,
+            question_definition_hash=claim_a["question_definition_hash"],
+            horizon_ns=claim_a["horizon_ns"],
+        )
         validate_intelligence_publication(publication)
-        self.assertEqual(publication["consumer_boundary"]["may_be_consumed_by"], ["BENJAMIN"])
+        self.assertEqual(publication["publication_type"], "ZLJ_INTERNAL_INTELLIGENCE")
+        self.assertNotIn("BENJAMIN", publication["consumer_boundary"]["may_be_consumed_by"])
         self.assertFalse(publication["authority"]["economic_decision"])
         self.assertFalse(publication["authority"]["risk_authorization"])
         self.assertFalse(publication["authority"]["external_execution"])

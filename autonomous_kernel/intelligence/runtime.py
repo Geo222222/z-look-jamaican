@@ -11,6 +11,12 @@ from ..store import writer_lock
 from ..experts.contracts import validate_expert_claim
 from ..experts.school import build_competence_memory
 from .publication import validate_intelligence_publication
+from .gate import (
+    assess_benjamin_publication_qualification,
+    build_benjamin_handoff,
+    validate_benjamin_handoff,
+    validate_benjamin_publication_qualification,
+)
 
 
 RUNTIME_SCHEMA_VERSION = 1
@@ -21,11 +27,23 @@ ALLOWED_EVENT_TYPES = {
     "COMPETENCE_REBUILT",
     "EXPERT_ASSEMBLY_RECORDED",
     "INTELLIGENCE_PUBLISHED",
+    "BENJAMIN_PUBLICATION_QUALIFIED",
+    "BENJAMIN_PUBLICATION_BLOCKED",
+    "BENJAMIN_HANDOFF_PUBLISHED",
 }
 
 
 class IntelligenceRuntimeError(RuntimeError):
     pass
+
+
+def _content_hash(value: Mapping[str, Any]) -> str:
+    if not isinstance(value, Mapping):
+        return ""
+    integrity = value.get("integrity")
+    if not isinstance(integrity, Mapping):
+        return ""
+    return str(integrity.get("content_hash") or "")
 
 
 def _atomic_json(path: Path, value: Mapping[str, Any]) -> None:
@@ -102,6 +120,8 @@ def project_runtime(events: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
         "competence": None,
         "assemblies": [],
         "publications": [],
+        "qualifications": [],
+        "handoffs": [],
         "event_count": 0,
         "last_event_hash": None,
     }
@@ -118,6 +138,12 @@ def project_runtime(events: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
             state["assemblies"].append(payload["assembly"])
         elif event["event_type"] == "INTELLIGENCE_PUBLISHED":
             state["publications"].append(payload["publication"])
+        elif event["event_type"] == "BENJAMIN_PUBLICATION_QUALIFIED":
+            state["qualifications"].append(payload["qualification"])
+        elif event["event_type"] == "BENJAMIN_PUBLICATION_BLOCKED":
+            state["qualifications"].append(payload["qualification"])
+        elif event["event_type"] == "BENJAMIN_HANDOFF_PUBLISHED":
+            state["handoffs"].append(payload["handoff"])
     state["event_count"] = len(events)
     state["last_event_hash"] = None if not events else events[-1]["event_hash"]
     return state
@@ -186,6 +212,227 @@ class IntelligenceRuntime:
     def publish(self, publication: Mapping[str, Any], *, occurred_at_ns: int) -> Mapping[str, Any]:
         validate_intelligence_publication(publication)
         return self._append("INTELLIGENCE_PUBLISHED", occurred_at_ns, {"publication": dict(publication)})
+
+    def qualify_for_benjamin(
+        self,
+        publication: Mapping[str, Any],
+        assembly: Mapping[str, Any],
+        competence_memory: Mapping[str, Any],
+        market_context,
+        *,
+        qualification_cutoff_ns: int,
+        claims: Sequence[Mapping[str, Any]],
+        data_quality: Mapping[str, Any],
+        policy: Mapping[str, Any] = None,
+    ) -> Mapping[str, Any]:
+        cutoff = int(qualification_cutoff_ns)
+        self._require_recorded_qualification_inputs(
+            publication,
+            assembly,
+            competence_memory,
+            claims,
+            qualification_cutoff_ns=cutoff,
+        )
+        qualification = assess_benjamin_publication_qualification(
+            publication,
+            assembly,
+            competence_memory,
+            market_context,
+            qualification_cutoff_ns=cutoff,
+            claims=claims,
+            data_quality=data_quality,
+            policy=policy,
+        )
+        validate_benjamin_publication_qualification(qualification)
+        state = project_runtime(self.events())
+        existing = next((item for item in state["qualifications"] if item.get("qualification_id") == qualification["qualification_id"]), None)
+        if existing is not None:
+            if existing.get("integrity", {}).get("content_hash") != qualification["integrity"]["content_hash"]:
+                raise IntelligenceRuntimeError("conflicting qualification identity reuse")
+            handoff = None
+            if existing.get("status") == "ELIGIBLE":
+                handoff = self._ensure_recorded_handoff(
+                    publication,
+                    existing,
+                    assembly,
+                    competence_memory,
+                    market_context,
+                    claims,
+                    occurred_at_ns=cutoff,
+                )
+            return {"qualification": existing, "handoff": handoff, "idempotent": True}
+        event_type = "BENJAMIN_PUBLICATION_QUALIFIED" if qualification["status"] == "ELIGIBLE" else "BENJAMIN_PUBLICATION_BLOCKED"
+        self._append(event_type, cutoff, {"qualification": dict(qualification)})
+        handoff = None
+        if qualification["status"] == "ELIGIBLE":
+            handoff = self._ensure_recorded_handoff(
+                publication,
+                qualification,
+                assembly,
+                competence_memory,
+                market_context,
+                claims,
+                occurred_at_ns=cutoff,
+            )
+        return {"qualification": qualification, "handoff": handoff, "idempotent": False}
+
+    def record_handoff(self, handoff: Mapping[str, Any], *, occurred_at_ns: int) -> Mapping[str, Any]:
+        validate_benjamin_handoff(handoff)
+        recorded = self._require_recorded_eligible_qualification_for_handoff(handoff, occurred_at_ns=int(occurred_at_ns))
+        state = project_runtime(self.events())
+        existing = next((item for item in state["handoffs"] if item.get("handoff_id") == handoff.get("handoff_id")), None)
+        if existing is not None:
+            if existing.get("integrity", {}).get("content_hash") != handoff.get("integrity", {}).get("content_hash"):
+                raise IntelligenceRuntimeError("conflicting handoff identity reuse")
+            return existing
+        if recorded.get("status") != "ELIGIBLE":
+            raise IntelligenceRuntimeError("handoff cannot be published from a blocked qualification")
+        return self._append("BENJAMIN_HANDOFF_PUBLISHED", int(occurred_at_ns), {"handoff": dict(handoff)})
+
+    def _events_known_at(self, cutoff_ns: int) -> Tuple[Mapping[str, Any], ...]:
+        return tuple(event for event in self.events() if int(event.get("occurred_at_ns", -1)) <= int(cutoff_ns))
+
+    def _require_recorded_qualification_inputs(
+        self,
+        publication: Mapping[str, Any],
+        assembly: Mapping[str, Any],
+        competence_memory: Mapping[str, Any],
+        claims: Sequence[Mapping[str, Any]],
+        *,
+        qualification_cutoff_ns: int,
+    ) -> None:
+        events = self._events_known_at(qualification_cutoff_ns)
+        publication_hash = _content_hash(publication)
+        assembly_hash = _content_hash(assembly)
+        competence_hash = _content_hash(competence_memory)
+        recorded_claims = {
+            _content_hash(event["payload"]["claim"]): event["payload"]["claim"]
+            for event in events
+            if event["event_type"] == "EXPERT_CLAIM_RECORDED"
+        }
+        recorded_score_claim_hashes = {
+            str(event["payload"]["score"].get("claim_hash") or "")
+            for event in events
+            if event["event_type"] == "EXPERT_SCORE_RECORDED"
+        }
+        recorded_competence_hashes = {
+            _content_hash(event["payload"]["competence"])
+            for event in events
+            if event["event_type"] == "COMPETENCE_REBUILT"
+        }
+        recorded_assembly_hashes = {
+            _content_hash(event["payload"]["assembly"])
+            for event in events
+            if event["event_type"] == "EXPERT_ASSEMBLY_RECORDED"
+        }
+        recorded_publication_hashes = {
+            _content_hash(event["payload"]["publication"])
+            for event in events
+            if event["event_type"] == "INTELLIGENCE_PUBLISHED"
+        }
+        contributions = assembly.get("expert_contributions") if isinstance(assembly, Mapping) else ()
+        required_claim_hashes: List[str] = []
+        for contribution in contributions or ():
+            if isinstance(contribution, Mapping) and contribution.get("claim_hash"):
+                required_claim_hashes.append(str(contribution["claim_hash"]))
+        for claim in claims:
+            digest = _content_hash(claim)
+            if digest:
+                required_claim_hashes.append(digest)
+        if not required_claim_hashes:
+            raise IntelligenceRuntimeError("qualification requires recorded expert claims")
+        for digest in required_claim_hashes:
+            if digest not in recorded_claims:
+                raise IntelligenceRuntimeError("qualification requires a recorded expert claim")
+            if digest not in recorded_score_claim_hashes:
+                raise IntelligenceRuntimeError("qualification requires a recorded expert score")
+        if competence_hash not in recorded_competence_hashes:
+            raise IntelligenceRuntimeError("qualification requires recorded competence memory")
+        if assembly_hash not in recorded_assembly_hashes:
+            raise IntelligenceRuntimeError("qualification requires a recorded assembly")
+        if publication_hash not in recorded_publication_hashes:
+            raise IntelligenceRuntimeError("qualification requires a recorded internal publication")
+        provenance = publication.get("provenance") if isinstance(publication, Mapping) else None
+        if not isinstance(provenance, Mapping):
+            raise IntelligenceRuntimeError("publication provenance does not reference the recorded assembly")
+        if provenance.get("assembly_hash") != assembly_hash:
+            raise IntelligenceRuntimeError("publication provenance does not reference the recorded assembly")
+        if provenance.get("competence_memory_hash") != competence_hash:
+            raise IntelligenceRuntimeError("publication provenance does not reference the recorded competence memory")
+
+    def _recorded_qualification(
+        self,
+        qualification_id: str,
+        *,
+        occurred_at_ns: int,
+    ) -> Mapping[str, Any]:
+        found = None
+        for event in self._events_known_at(occurred_at_ns):
+            if event["event_type"] not in {"BENJAMIN_PUBLICATION_QUALIFIED", "BENJAMIN_PUBLICATION_BLOCKED"}:
+                continue
+            qualification = event["payload"]["qualification"]
+            if qualification.get("qualification_id") == qualification_id:
+                found = qualification
+        if found is None:
+            raise IntelligenceRuntimeError("handoff requires a recorded eligible qualification")
+        return found
+
+    def _require_recorded_eligible_qualification_for_handoff(
+        self,
+        handoff: Mapping[str, Any],
+        *,
+        occurred_at_ns: int,
+    ) -> Mapping[str, Any]:
+        qualification = self._recorded_qualification(
+            str(handoff.get("qualification_result_id") or ""),
+            occurred_at_ns=occurred_at_ns,
+        )
+        if qualification.get("status") != "ELIGIBLE":
+            raise IntelligenceRuntimeError("handoff cannot be published from a blocked qualification")
+        if _content_hash(qualification) != str(handoff.get("qualification_result_hash") or ""):
+            raise IntelligenceRuntimeError("handoff qualification hash mismatch")
+        provenance = qualification.get("provenance") if isinstance(qualification.get("provenance"), Mapping) else {}
+        if provenance.get("publication_hash") != handoff.get("internal_publication_hash"):
+            raise IntelligenceRuntimeError("handoff publication lineage mismatch")
+        if provenance.get("assembly_hash") != handoff.get("assembly_hash"):
+            raise IntelligenceRuntimeError("handoff assembly lineage mismatch")
+        policy = qualification.get("policy") if isinstance(qualification.get("policy"), Mapping) else {}
+        if policy.get("policy_hash") != handoff.get("qualification_policy_hash"):
+            raise IntelligenceRuntimeError("handoff policy lineage mismatch")
+        return qualification
+
+    def _ensure_recorded_handoff(
+        self,
+        publication: Mapping[str, Any],
+        qualification: Mapping[str, Any],
+        assembly: Mapping[str, Any],
+        competence_memory: Mapping[str, Any],
+        market_context,
+        claims: Sequence[Mapping[str, Any]],
+        *,
+        occurred_at_ns: int,
+    ) -> Mapping[str, Any]:
+        if qualification.get("status") != "ELIGIBLE":
+            raise IntelligenceRuntimeError("handoff cannot be published from a blocked qualification")
+        recorded = self._recorded_qualification(str(qualification.get("qualification_id") or ""), occurred_at_ns=occurred_at_ns)
+        if recorded.get("status") != "ELIGIBLE":
+            raise IntelligenceRuntimeError("handoff cannot be published from a blocked qualification")
+        if _content_hash(recorded) != _content_hash(qualification):
+            raise IntelligenceRuntimeError("handoff qualification hash mismatch")
+        handoff = build_benjamin_handoff(
+            publication,
+            recorded,
+            assembly,
+            competence_memory,
+            market_context,
+            claims,
+            created_at_ns=int(occurred_at_ns),
+        )
+        validate_benjamin_handoff(handoff)
+        recorded_event = self.record_handoff(handoff, occurred_at_ns=int(occurred_at_ns))
+        if recorded_event.get("event_type") == "BENJAMIN_HANDOFF_PUBLISHED":
+            return recorded_event["payload"]["handoff"]
+        return recorded_event
 
     def rebuild_state(self) -> Mapping[str, Any]:
         with writer_lock(self.root):
