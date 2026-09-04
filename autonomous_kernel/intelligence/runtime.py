@@ -4,13 +4,14 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, Sequence, Tuple
+from typing import Any, Dict, List, Mapping, Sequence, Tuple
 
 from ..operations import canonical_hash
 from ..store import writer_lock
 from ..experts.contracts import validate_expert_claim
 from ..experts.school import build_competence_memory
-from .publication import validate_intelligence_publication
+from .gate import BenjaminPublicationGateError, validate_benjamin_handoff
+from .publication import IntelligencePublicationError, validate_intelligence_publication
 
 
 RUNTIME_SCHEMA_VERSION = 1
@@ -21,6 +22,7 @@ ALLOWED_EVENT_TYPES = {
     "COMPETENCE_REBUILT",
     "EXPERT_ASSEMBLY_RECORDED",
     "INTELLIGENCE_PUBLISHED",
+    "BENJAMIN_HANDOFF_PUBLISHED",
 }
 
 
@@ -82,7 +84,8 @@ def validate_event_chain(events: Sequence[Mapping[str, Any]]) -> Tuple[str, ...]
     for index, event in enumerate(events):
         if event.get("schema_version") != RUNTIME_SCHEMA_VERSION or event.get("sequence") != index:
             errors.append("sequence %d schema/sequence mismatch" % index)
-        if event.get("event_type") not in ALLOWED_EVENT_TYPES:
+        event_type = event.get("event_type")
+        if event_type not in ALLOWED_EVENT_TYPES:
             errors.append("sequence %d unknown event type" % index)
         if event.get("previous_hash") != previous:
             errors.append("sequence %d previous hash mismatch" % index)
@@ -90,6 +93,17 @@ def validate_event_chain(events: Sequence[Mapping[str, Any]]) -> Tuple[str, ...]
         expected = canonical_hash(body)
         if event.get("event_hash") != expected:
             errors.append("sequence %d event hash mismatch" % index)
+        payload = event.get("payload")
+        if isinstance(payload, Mapping):
+            try:
+                if event_type == "INTELLIGENCE_PUBLISHED":
+                    validate_intelligence_publication(payload.get("publication", {}))
+                elif event_type == "BENJAMIN_HANDOFF_PUBLISHED":
+                    validate_benjamin_handoff(payload.get("handoff", {}))
+            except (IntelligencePublicationError, BenjaminPublicationGateError, ValueError, TypeError) as exc:
+                errors.append("sequence %d invalid intelligence payload: %s" % (index, exc))
+        else:
+            errors.append("sequence %d payload invalid" % index)
         previous = expected
     return tuple(errors)
 
@@ -102,6 +116,7 @@ def project_runtime(events: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
         "competence": None,
         "assemblies": [],
         "publications": [],
+        "benjamin_handoffs": [],
         "event_count": 0,
         "last_event_hash": None,
     }
@@ -118,6 +133,8 @@ def project_runtime(events: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
             state["assemblies"].append(payload["assembly"])
         elif event["event_type"] == "INTELLIGENCE_PUBLISHED":
             state["publications"].append(payload["publication"])
+        elif event["event_type"] == "BENJAMIN_HANDOFF_PUBLISHED":
+            state["benjamin_handoffs"].append(payload["handoff"])
     state["event_count"] = len(events)
     state["last_event_hash"] = None if not events else events[-1]["event_hash"]
     return state
@@ -158,6 +175,9 @@ class IntelligenceRuntime:
                 handle.flush()
                 os.fsync(handle.fileno())
             events.append(event)
+            errors = validate_event_chain(events)
+            if errors:
+                raise IntelligenceRuntimeError("refusing to project invalid intelligence event: " + "; ".join(errors))
             _atomic_json(self.state_path, project_runtime(events))
             return event
 
@@ -184,8 +204,15 @@ class IntelligenceRuntime:
         return self._append("EXPERT_ASSEMBLY_RECORDED", occurred_at_ns, {"assembly": dict(assembly)})
 
     def publish(self, publication: Mapping[str, Any], *, occurred_at_ns: int) -> Mapping[str, Any]:
+        """Persist internal ZLJ intelligence only; this is not a Benjamin handoff."""
         validate_intelligence_publication(publication)
         return self._append("INTELLIGENCE_PUBLISHED", occurred_at_ns, {"publication": dict(publication)})
+
+    def publish_benjamin_handoff(self, handoff: Mapping[str, Any], *, occurred_at_ns: int) -> Mapping[str, Any]:
+        validate_benjamin_handoff(handoff)
+        if int(occurred_at_ns) < int(handoff["published_at_ns"]):
+            raise IntelligenceRuntimeError("Benjamin handoff cannot be recorded before published_at_ns")
+        return self._append("BENJAMIN_HANDOFF_PUBLISHED", occurred_at_ns, {"handoff": dict(handoff)})
 
     def rebuild_state(self) -> Mapping[str, Any]:
         with writer_lock(self.root):
