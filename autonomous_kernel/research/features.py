@@ -103,32 +103,65 @@ def extract_instrument_features(frame: RepresentationFrame) -> Mapping[str, Any]
 
 
 def extract_context_features(context: MarketContextFrame) -> Mapping[str, Any]:
-    """Flatten stable Z9 context dimensions without interpreting them economically."""
+    """Flatten the actual Z9 v1 state into stable contextual learning dimensions."""
     if context.status != "QUALIFIED":
         raise ResearchContractError("context feature extraction requires QUALIFIED context")
     state = context.state
     features: Dict[str, Any] = {}
-    for key in (
-        "regime",
-        "volatility_state",
-        "liquidity_state",
-        "breadth_state",
-        "basis_state",
-        "correlation_state",
-        "spot_confirmation_state",
-        "futures_state",
-        "microstructure_state",
-        "freshness_state",
-    ):
-        if key in state:
-            value = state.get(key)
-            if isinstance(value, (str, int, float, bool)) or value is None:
-                features["context.%s" % key] = value
-    summary = state.get("summary")
-    if isinstance(summary, Mapping):
-        for key, value in summary.items():
-            if isinstance(value, (str, int, float, bool)) or value is None:
-                features["context.summary.%s" % key] = value
+
+    regimes = state.get("regimes")
+    if isinstance(regimes, Mapping):
+        for key in ("direction", "volatility", "liquidity", "correlation", "derivatives", "structure"):
+            value = regimes.get(key)
+            if value is not None:
+                features["context.regime.%s" % key] = str(value)
+
+    market = state.get("market")
+    if isinstance(market, Mapping):
+        integer_fields = (
+            "member_instrument_count",
+            "qualified_spot_count",
+            "return_breadth_count",
+        )
+        numeric_fields = (
+            "aggregate_return_bps",
+            "breadth_positive",
+            "cross_sectional_return_dispersion_bps",
+            "median_realized_volatility_bps",
+            "median_spread_bps",
+            "liquidity_concentration_hhi",
+            "median_absolute_pairwise_correlation",
+        )
+        for key in integer_fields:
+            if market.get(key) is not None:
+                features["context.market.%s" % key] = int(market.get(key) or 0)
+        for key in numeric_fields:
+            features["context.market.%s" % key] = _decimal(market.get(key))
+
+    derivatives = state.get("derivatives")
+    if isinstance(derivatives, Mapping):
+        features["context.derivatives.relationship_count"] = int(derivatives.get("relationship_count", 0) or 0)
+        relationships = derivatives.get("relationships")
+        if isinstance(relationships, Sequence) and not isinstance(relationships, (str, bytes)):
+            bases = [_decimal(item.get("basis_bps")) for item in relationships if isinstance(item, Mapping)]
+            clean_bases = [value for value in bases if value is not None]
+            features["context.derivatives.mean_basis_bps"] = _mean(clean_bases)
+
+    quality = state.get("feature_quality")
+    if isinstance(quality, Mapping):
+        for family, item in sorted(quality.items()):
+            if isinstance(item, Mapping):
+                features["context.quality.%s" % family] = str(item.get("status", "UNAVAILABLE"))
+
+    input_quality = state.get("input_quality")
+    if isinstance(input_quality, Mapping):
+        reasons = input_quality.get("degraded_reasons")
+        if isinstance(reasons, Sequence) and not isinstance(reasons, (str, bytes)):
+            features["context.input_quality.degraded_reason_count"] = len(reasons)
+
+    if not features:
+        raise ResearchContractError("qualified context contains no supported Z9 feature dimensions")
+
     return {
         "schema_version": FEATURE_SCHEMA_VERSION,
         "cutoff_at_ns": int(context.cutoff_at_ns),
