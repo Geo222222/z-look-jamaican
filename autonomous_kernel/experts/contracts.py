@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Mapping, Sequence, Tuple
+from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
 from ..operations import canonical_hash
 from ..questions.catalog import question_catalog_v1
@@ -103,7 +103,7 @@ def build_expert_contract(
     question_refs: Sequence[str],
     required_artifact_types: Sequence[str],
     allowed_feature_families: Sequence[str],
-    parameters: Mapping[str, Any] | None = None,
+    parameters: Optional[Mapping[str, Any]] = None,
 ) -> Mapping[str, Any]:
     """Build a frozen Phase-9 expert definition.
 
@@ -198,8 +198,7 @@ def validate_expert_contract(value: Mapping[str, Any]) -> None:
     if integrity.get("content_hash") != canonical_hash(body):
         raise ExpertContractError("expert contract content hash mismatch")
 
-    # Silence lint-style concerns while making the empty-model case explicit:
-    # an expert may be a deterministic mathematical baseline with no ML model ref.
+    # Empty model_refs are legitimate for deterministic mathematical baselines.
     tuple(model_refs)
 
 
