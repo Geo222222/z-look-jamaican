@@ -17,6 +17,7 @@ from autonomous_kernel.questions import (
     QuestionDefinition,
     QuestionFamily,
     QuestionRegistryEntry,
+    QuestionRegistrySnapshot,
     QuestionScope,
     build_question_registry_snapshot,
     default_question_registry_v1,
@@ -88,6 +89,30 @@ class QuestionRegistryTests(unittest.TestCase):
             effective_at_ns=T + 1,
         )
         self.assertNotEqual(first.content_hash(), changed_registry.content_hash())
+
+    def test_registry_round_trip_recovers_exact_semantics_and_hash(self) -> None:
+        registry = default_question_registry_v1(registered_at_ns=T, effective_at_ns=T + 1)
+        restored = QuestionRegistrySnapshot.from_wire(registry.to_wire())
+        self.assertEqual(registry.to_wire(), restored.to_wire())
+        self.assertEqual(registry.content_hash(), restored.content_hash())
+        self.assertEqual(
+            tuple(entry.definition.question_ref for entry in registry.entries),
+            tuple(entry.definition.question_ref for entry in restored.entries),
+        )
+
+    def test_nested_question_semantic_tamper_is_rejected_on_recovery(self) -> None:
+        registry = default_question_registry_v1(registered_at_ns=T, effective_at_ns=T + 1)
+        wire = registry.to_wire()
+        wire["entries"][0]["definition"]["horizon_ns"] *= 2
+        with self.assertRaisesRegex(QuestionContractError, "content hash mismatch"):
+            QuestionRegistrySnapshot.from_wire(wire)
+
+    def test_entry_definition_hash_tamper_is_rejected_on_recovery(self) -> None:
+        registry = default_question_registry_v1(registered_at_ns=T, effective_at_ns=T + 1)
+        wire = registry.to_wire()
+        wire["entries"][0]["definition_hash"] = "0" * 64
+        with self.assertRaisesRegex(QuestionContractError, "definition hash mismatch"):
+            QuestionRegistrySnapshot.from_wire(wire)
 
     def test_required_evidence_cannot_be_forbidden_or_outside_allowed_set(self) -> None:
         outcome = OutcomeDefinition(
