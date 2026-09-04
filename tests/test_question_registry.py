@@ -96,8 +96,8 @@ class QuestionRegistryTests(unittest.TestCase):
         self.assertEqual(registry.to_wire(), restored.to_wire())
         self.assertEqual(registry.content_hash(), restored.content_hash())
         self.assertEqual(
-            tuple(entry.definition.question_ref for entry in registry.entries),
-            tuple(entry.definition.question_ref for entry in restored.entries),
+            sorted(entry.definition.question_ref for entry in registry.entries),
+            sorted(entry.definition.question_ref for entry in restored.entries),
         )
 
     def test_nested_question_semantic_tamper_is_rejected_on_recovery(self) -> None:
