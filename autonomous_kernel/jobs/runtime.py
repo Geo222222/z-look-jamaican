@@ -6,10 +6,14 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, Mapping, Optional, Sequence
+from typing import Any, Dict, Mapping, Sequence
 
+from ..operations import canonical_hash
 from ..store import writer_lock
 from .contracts import BoundedJobError, validate_job_spec
+
+
+RECEIPT_SCHEMA_VERSION = 1
 
 
 def _atomic_json(path: Path, value: Mapping[str, Any]) -> None:
@@ -27,10 +31,33 @@ def _atomic_json(path: Path, value: Mapping[str, Any]) -> None:
             os.unlink(temporary)
 
 
+def _spec_directory(root: Path) -> Path:
+    return root / "artifacts/evidence/jobs/specs"
+
+
+def _seal_receipt(body: Mapping[str, Any]) -> Mapping[str, Any]:
+    value = dict(body)
+    value["integrity"] = {"algorithm": "sha256", "content_hash": canonical_hash(body)}
+    return value
+
+
+def _validate_receipt(receipt: Mapping[str, Any]) -> None:
+    if receipt.get("schema_version") != RECEIPT_SCHEMA_VERSION:
+        raise BoundedJobError("bounded job receipt schema invalid")
+    if receipt.get("capital_effect") != "NONE" or receipt.get("credentials_used") is not False or receipt.get("shell_used") is not False:
+        raise BoundedJobError("bounded job receipt authority boundary invalid")
+    if receipt.get("status") not in {"SUCCEEDED", "FAILED"}:
+        raise BoundedJobError("bounded job receipt status invalid")
+    integrity = receipt.get("integrity")
+    body = {key: value for key, value in receipt.items() if key != "integrity"}
+    if not isinstance(integrity, Mapping) or integrity.get("algorithm") != "sha256" or integrity.get("content_hash") != canonical_hash(body):
+        raise BoundedJobError("bounded job receipt integrity mismatch")
+
+
 def persist_job_spec(root: Path, spec: Mapping[str, Any]) -> Mapping[str, Any]:
     root = root.resolve()
     validate_job_spec(spec, root=root)
-    path = root / "artifacts/evidence/jobs" / (str(spec["job_id"]) + ".json")
+    path = _spec_directory(root) / (str(spec["job_id"]) + ".json")
     with writer_lock(root):
         if path.is_file():
             existing = json.loads(path.read_text(encoding="utf-8"))
@@ -43,7 +70,7 @@ def persist_job_spec(root: Path, spec: Mapping[str, Any]) -> Mapping[str, Any]:
 
 def load_job_specs(root: Path) -> Sequence[Mapping[str, Any]]:
     root = root.resolve()
-    directory = root / "artifacts/evidence/jobs"
+    directory = _spec_directory(root)
     if not directory.is_dir():
         return ()
     specs = []
@@ -82,6 +109,8 @@ def job_status(root: Path, *, known_at_ns: int) -> Mapping[str, Any]:
         for run in spec["runs"]:
             receipt_path = root / "runtime/background_jobs" / (str(run["run_id"]) + ".json")
             receipt = json.loads(receipt_path.read_text(encoding="utf-8")) if receipt_path.is_file() else None
+            if receipt is not None:
+                _validate_receipt(receipt)
             state = str(receipt.get("status")) if receipt else ("READY" if int(run["not_before_ns"]) <= int(known_at_ns) else "SCHEDULED")
             runs.append({**dict(run), "state": state, "receipt": receipt})
         items.append({"job_id": spec["job_id"], "action": spec["action"], "runs": runs})
@@ -102,7 +131,9 @@ def execute_job_run(root: Path, *, job_id: str, run_id: str, known_at_ns: int, e
     runtime = root / "runtime/background_jobs"
     receipt_path = runtime / (str(run_id) + ".json")
     if receipt_path.is_file():
-        return json.loads(receipt_path.read_text(encoding="utf-8"))
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        _validate_receipt(receipt)
+        return receipt
     claim_path = runtime / (str(run_id) + ".claim")
     runtime.mkdir(parents=True, exist_ok=True)
     try:
@@ -113,16 +144,28 @@ def execute_job_run(root: Path, *, job_id: str, run_id: str, known_at_ns: int, e
     command = list(_command(spec))
 
     def default_executor(cmd, cwd, timeout_seconds):
-        env = {"PYTHONUTF8": "1"}
-        completed = subprocess.run(cmd, cwd=str(cwd), stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=int(timeout_seconds), check=False, shell=False, env=env)
+        env = os.environ.copy()
+        env["PYTHONUTF8"] = "1"
+        completed = subprocess.run(
+            cmd,
+            cwd=str(cwd),
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            timeout=int(timeout_seconds),
+            check=False,
+            shell=False,
+            env=env,
+        )
         return completed.returncode, completed.stdout, completed.stderr
 
     try:
         returncode, stdout, stderr = (executor or default_executor)(command, root, int(spec["timeout_seconds"]))
-        receipt = {
-            "schema_version": 1,
+        body: Dict[str, Any] = {
+            "schema_version": RECEIPT_SCHEMA_VERSION,
             "job_id": str(job_id),
             "run_id": str(run_id),
+            "job_spec_hash": spec["integrity"]["content_hash"],
             "action": spec["action"],
             "status": "SUCCEEDED" if int(returncode) == 0 else "FAILED",
             "completed_at_ns": int(known_at_ns),
@@ -133,6 +176,7 @@ def execute_job_run(root: Path, *, job_id: str, run_id: str, known_at_ns: int, e
             "credentials_used": False,
             "shell_used": False,
         }
+        receipt = _seal_receipt(body)
         _atomic_json(receipt_path, receipt)
         return receipt
     finally:
