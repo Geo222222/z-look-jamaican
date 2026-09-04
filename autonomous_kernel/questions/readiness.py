@@ -8,7 +8,7 @@ from .contracts import (
     QuestionRegistrySnapshot,
     build_question_registry_snapshot,
 )
-from .evolution import build_reversal_v1_1_registry
+from .evolution import build_reversal_v1_1_registry, build_reversal_v1_2_registry
 
 
 # Exact implementation identities that have executable resolver contracts in
@@ -141,13 +141,7 @@ def build_complete_resolver_ready_registry_v1_1(
     known_at_ns: int,
     effective_at_ns: int,
 ) -> QuestionRegistrySnapshot:
-    """Build the forward registry with every current logical question resolvable.
-
-    The nine original mechanically implemented questions become RESOLVER_READY,
-    reversal v1.0 remains DEFINED as historical evidence, and a new reversal
-    v1.1 definition is appended as RESOLVER_READY. This still grants no model
-    qualification, capital decision, risk authorization, or execution authority.
-    """
+    """Build the sign-reversal-era registry retained for historical replay."""
     original_ready = build_resolver_ready_registry_v1(
         base,
         version=str(version) + "-original-v1-ready",
@@ -156,6 +150,34 @@ def build_complete_resolver_ready_registry_v1_1(
     )
     return build_reversal_v1_1_registry(
         original_ready,
+        version=str(version),
+        known_at_ns=int(known_at_ns),
+        effective_at_ns=int(effective_at_ns),
+    )
+
+
+def build_complete_resolver_ready_registry_v1_2(
+    base: QuestionRegistrySnapshot,
+    *,
+    version: str,
+    known_at_ns: int,
+    effective_at_ns: int,
+) -> QuestionRegistrySnapshot:
+    """Build the final resolver campaign registry with material reversal active.
+
+    The nine original questions become RESOLVER_READY, reversal v1.0 remains
+    DEFINED, sign-only reversal v1.1 is retained as RETIRED historical truth,
+    and material reversal v1.2 becomes the single active RESOLVER_READY reversal
+    examination. No model or capital authority is granted.
+    """
+    sign_registry = build_complete_resolver_ready_registry_v1_1(
+        base,
+        version=str(version) + "-sign-reversal-stage",
+        known_at_ns=int(known_at_ns),
+        effective_at_ns=int(effective_at_ns),
+    )
+    return build_reversal_v1_2_registry(
+        sign_registry,
         version=str(version),
         known_at_ns=int(known_at_ns),
         effective_at_ns=int(effective_at_ns),
