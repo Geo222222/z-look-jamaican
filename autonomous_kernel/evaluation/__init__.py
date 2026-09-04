@@ -30,6 +30,11 @@ from .question_outcome import (
     ResolutionEvidenceRef,
     build_question_outcome_id,
 )
+from .question_path_resolvers import (
+    FIXED_GRID_RESOLVER_IMPLEMENTATION_REF,
+    FIXED_GRID_RESOLVER_POLICY_ID,
+    resolve_fixed_grid_question,
+)
 from .question_resolvers import (
     MIDPOINT_RESOLVER_IMPLEMENTATION_REF,
     MIDPOINT_RESOLVER_POLICY_ID,
@@ -61,6 +66,8 @@ from .resolver import (
 
 __all__ = [
     "COMPETENCE_SCHEMA_VERSION",
+    "FIXED_GRID_RESOLVER_IMPLEMENTATION_REF",
+    "FIXED_GRID_RESOLVER_POLICY_ID",
     "LIQUIDITY_RESOLVER_IMPLEMENTATION_REF",
     "LIQUIDITY_RESOLVER_POLICY_ID",
     "MAX_RESOLUTION_LAG_NS_V1",
@@ -92,6 +99,7 @@ __all__ = [
     "ResolutionEvidenceRef",
     "build_competence_profiles",
     "build_question_outcome_id",
+    "resolve_fixed_grid_question",
     "resolve_liquidity_question",
     "resolve_market_regime_question",
     "resolve_midpoint_question",
