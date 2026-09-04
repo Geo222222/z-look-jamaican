@@ -17,6 +17,7 @@ from .context.service import materialize_market_context
 from .context.status import market_context_status
 from .context.store import validate_market_context_store
 from .evaluation.journal import validate_outcome_journal
+from .experts.sync import sync_expert_learning
 from .models.registry import validate_model_registry
 from .monitor import monitor_snapshot
 from .operator import OperatorCommandError, execute_operator_command, operator_catalog, operator_snapshot, validate_operator_journal
@@ -63,6 +64,8 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("operator_catalog", help="emit the stable operator control catalog")
     operator_command = subparsers.add_parser("operator_command", help="execute one governed operator command request")
     operator_command.add_argument("--request-json", required=True)
+    expert_sync = subparsers.add_parser("expert_sync", help="project durable question predictions/outcomes into Expert School claims, scores, and competence")
+    expert_sync.add_argument("--known-at-ns", type=int, required=True)
     subparsers.add_parser("next-work", help="select the highest-scored ready task whose dependencies are complete")
     subparsers.add_parser("recover", help="idempotently roll a prepared state transaction forward")
     monitor_parser = subparsers.add_parser("monitor_snapshot", help="emit the authoritative read-only observer snapshot")
@@ -119,6 +122,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             if not isinstance(request, dict):
                 raise ValueError("operator request JSON must be an object")
             _print(execute_operator_command(root, request))
+        elif args.command == "expert_sync":
+            _print(sync_expert_learning(root, known_at_ns=args.known_at_ns))
         elif args.command == "next-work":
             _print({"status": "ok", "next_work": next_work(root)})
         elif args.command == "recover":
