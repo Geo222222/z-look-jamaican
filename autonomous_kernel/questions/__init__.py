@@ -21,6 +21,7 @@ from .learning_evidence import (
     LearningJournalCommitment,
     build_learning_journal_commitment,
 )
+from .readiness import build_resolver_ready_registry
 
 __all__ = [
     "EVIDENCE_CUTOFF_POLICY",
@@ -38,6 +39,7 @@ __all__ = [
     "QuestionScope",
     "build_learning_journal_commitment",
     "build_question_registry_snapshot",
+    "build_resolver_ready_registry",
     "default_question_registry_v1",
     "material_question_registry_evidence",
     "question_catalog_v1",
