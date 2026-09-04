@@ -243,8 +243,8 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
         self.assertEqual("ZLJ.QUESTION_REGISTRY", evidence.event_type)
         self.assertEqual("ANALYTICAL", evidence.evidence_class)
         self.assertEqual(snapshot.content_hash(), certificate["registry"]["content_hash"])
-        self.assertNotIn("question_predictions.jsonl", evidence.payload)
-        self.assertNotIn("question_outcomes.jsonl", evidence.payload)
+        self.assertNotIn(b"question_predictions.jsonl", evidence.payload)
+        self.assertNotIn(b"question_outcomes.jsonl", evidence.payload)
 
 
 if __name__ == "__main__":
