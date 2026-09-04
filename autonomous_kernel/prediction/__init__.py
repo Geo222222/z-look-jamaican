@@ -23,6 +23,11 @@ from .question_expert import (
     QuestionExpertPredictionError,
     build_prospective_question_expert_prediction,
 )
+from .question_expert_journal import (
+    QuestionExpertPredictionJournal,
+    QuestionExpertPredictionJournalError,
+    validate_question_expert_prediction_journal,
+)
 from .question_journal import (
     QuestionPredictionJournal,
     QuestionPredictionJournalError,
@@ -40,6 +45,8 @@ __all__ = [
     "QuestionBoundPrediction",
     "QuestionExpertPrediction",
     "QuestionExpertPredictionError",
+    "QuestionExpertPredictionJournal",
+    "QuestionExpertPredictionJournalError",
     "QuestionPredictionError",
     "QuestionPredictionJournal",
     "QuestionPredictionJournalError",
@@ -49,5 +56,6 @@ __all__ = [
     "normalize_question_answer",
     "representation_target_price",
     "validate_prediction_journal",
+    "validate_question_expert_prediction_journal",
     "validate_question_prediction_journal",
 ]
