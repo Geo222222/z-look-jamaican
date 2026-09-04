@@ -43,14 +43,18 @@ class ExpertPredictionAdapterTests(unittest.TestCase):
             artifact_refs=(artifact,),
         )
 
-    def test_existing_baselines_create_six_executable_expert_roles(self):
+    def test_existing_baselines_are_bound_only_to_roles_they_can_defend(self):
         contracts = implemented_baseline_expert_contracts()
-        self.assertEqual(len(contracts), 6)
+        self.assertEqual(len(contracts), 4)
         self.assertEqual(sum(1 for item in contracts if "DIRECTION" in item["expert_id"]), 3)
-        self.assertEqual(sum(1 for item in contracts if "MAGNITUDE" in item["expert_id"]), 3)
+        self.assertEqual(sum(1 for item in contracts if "MAGNITUDE" in item["expert_id"]), 1)
         self.assertTrue(all(item["model_refs"] for item in contracts))
+        magnitude = next(item for item in contracts if "MAGNITUDE" in item["expert_id"])
+        self.assertEqual(magnitude["parameters"]["implementation_class"], "BENCHMARK")
         inventory = operational_expert_inventory()
-        self.assertEqual(inventory["implemented_expert_count"], 6)
+        self.assertEqual(inventory["implemented_expert_count"], 4)
+        self.assertEqual(inventory["candidate_model_expert_count"], 2)
+        self.assertEqual(inventory["benchmark_expert_count"], 2)
         self.assertFalse(inventory["earned_competence"])
         self.assertFalse(inventory["capital_authority"])
 
