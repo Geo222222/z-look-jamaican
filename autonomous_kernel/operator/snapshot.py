@@ -10,6 +10,7 @@ from ..context.status import market_context_status
 from ..monitor import monitor_snapshot
 from .contracts import STAGE_METADATA, command_catalog
 from .journal import validate_operator_journal
+from .shadow_intelligence import build_shadow_intelligence_snapshot
 
 
 def _json(root: Path, relative: str) -> Mapping[str, Any]:
@@ -141,6 +142,7 @@ def build_operator_snapshot(root: Path) -> Dict[str, Any]:
         },
         "stages": stages,
         "certification": _certification(root),
+        "shadow_intelligence": build_shadow_intelligence_snapshot(root),
         "controls": command_catalog(),
         "monitor": monitor,
     }
