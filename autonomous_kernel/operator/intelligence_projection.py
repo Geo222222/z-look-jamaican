@@ -15,14 +15,37 @@ def expert_intelligence_projection(root: Path) -> Mapping[str, Any]:
     events = runtime.events()
     errors = validate_event_chain(events)
     state = runtime.state() if not errors else {
-        "claims": {}, "scores": [], "competence": None, "assemblies": [], "publications": [], "event_count": len(events)
+        "claims": {},
+        "scores": [],
+        "competence": None,
+        "assemblies": [],
+        "publications": [],
+        "qualifications": [],
+        "handoffs": [],
+        "event_count": len(events),
     }
     species_counts: Dict[str, int] = {}
     for expert in school["experts"]:
         species = str(expert["species"])
         species_counts[species] = species_counts.get(species, 0) + 1
-    publications = state.get("publications") or []
-    latest = publications[-1] if publications else None
+    publications = list(state.get("publications") or [])
+    qualifications = list(state.get("qualifications") or [])
+    handoffs = list(state.get("handoffs") or [])
+    latest_publication = publications[-1] if publications else None
+    latest_qualification = qualifications[-1] if qualifications else None
+    latest_handoff = handoffs[-1] if handoffs else None
+    if latest_qualification is None:
+        eligibility = "NONE"
+        benjamin_handoff = "NO_RUNTIME_PUBLICATION" if not publications else "NOT_QUALIFIED"
+    elif latest_qualification.get("status") == "ELIGIBLE" and latest_handoff:
+        eligibility = "ELIGIBLE"
+        benjamin_handoff = "HANDOFF_PUBLISHED"
+    elif latest_qualification.get("status") == "ELIGIBLE":
+        eligibility = "ELIGIBLE"
+        benjamin_handoff = "ELIGIBLE"
+    else:
+        eligibility = "BLOCKED"
+        benjamin_handoff = "BLOCKED"
     return {
         "construction": {
             "expert_contracts": "BUILT",
@@ -34,6 +57,7 @@ def expert_intelligence_projection(root: Path) -> Mapping[str, Any]:
             "contextual_competence": "BUILT",
             "adaptive_expert_assembly": "BUILT",
             "intelligence_publication": "BUILT",
+            "benjamin_publication_gate": "BUILT",
         },
         "school": {
             "schema_version": school["schema_version"],
@@ -60,12 +84,27 @@ def expert_intelligence_projection(root: Path) -> Mapping[str, Any]:
             "competence_available": bool(state.get("competence")),
             "assembly_count": len(state.get("assemblies") or []),
             "publication_count": len(publications),
-            "latest_publication": latest,
+            "internal_intelligence_exists": bool(publications),
+            "latest_publication": latest_publication,
+            "qualification_count": len(qualifications),
+            "handoff_count": len(handoffs),
+            "latest_qualification": latest_qualification,
+            "latest_handoff": latest_handoff,
+            "benjamin": {
+                "eligibility_status": eligibility,
+                "blocking_reasons": list((latest_qualification or {}).get("blocking_reasons") or []),
+                "policy_version": None if latest_qualification is None else (latest_qualification.get("policy") or {}).get("policy_version"),
+                "qualification_timestamp_ns": None if latest_qualification is None else latest_qualification.get("qualification_cutoff_ns"),
+                "handoff_count": len(handoffs),
+                "latest_handoff": latest_handoff,
+            },
         },
         "qualification": {
             "expert_population": "IMPLEMENTED_CANDIDATES_PRESENT" if implemented["implemented_expert_count"] else "CURRICULUM_ONLY",
             "earned_competence": "AVAILABLE" if state.get("competence") else "NOT_YET_EARNED",
-            "benjamin_handoff": "AVAILABLE" if latest else "NO_RUNTIME_PUBLICATION",
+            "internal_intelligence": "AVAILABLE" if publications else "NO_RUNTIME_PUBLICATION",
+            "benjamin_eligibility": eligibility,
+            "benjamin_handoff": benjamin_handoff,
             "live_capital_authority": "NONE",
         },
     }

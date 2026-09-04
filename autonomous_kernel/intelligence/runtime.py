@@ -11,6 +11,12 @@ from ..store import writer_lock
 from ..experts.contracts import validate_expert_claim
 from ..experts.school import build_competence_memory
 from .publication import validate_intelligence_publication
+from .gate import (
+    assess_benjamin_publication_qualification,
+    build_benjamin_handoff,
+    validate_benjamin_handoff,
+    validate_benjamin_publication_qualification,
+)
 
 
 RUNTIME_SCHEMA_VERSION = 1
@@ -21,6 +27,9 @@ ALLOWED_EVENT_TYPES = {
     "COMPETENCE_REBUILT",
     "EXPERT_ASSEMBLY_RECORDED",
     "INTELLIGENCE_PUBLISHED",
+    "BENJAMIN_PUBLICATION_QUALIFIED",
+    "BENJAMIN_PUBLICATION_BLOCKED",
+    "BENJAMIN_HANDOFF_PUBLISHED",
 }
 
 
@@ -102,6 +111,8 @@ def project_runtime(events: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
         "competence": None,
         "assemblies": [],
         "publications": [],
+        "qualifications": [],
+        "handoffs": [],
         "event_count": 0,
         "last_event_hash": None,
     }
@@ -118,6 +129,12 @@ def project_runtime(events: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
             state["assemblies"].append(payload["assembly"])
         elif event["event_type"] == "INTELLIGENCE_PUBLISHED":
             state["publications"].append(payload["publication"])
+        elif event["event_type"] == "BENJAMIN_PUBLICATION_QUALIFIED":
+            state["qualifications"].append(payload["qualification"])
+        elif event["event_type"] == "BENJAMIN_PUBLICATION_BLOCKED":
+            state["qualifications"].append(payload["qualification"])
+        elif event["event_type"] == "BENJAMIN_HANDOFF_PUBLISHED":
+            state["handoffs"].append(payload["handoff"])
     state["event_count"] = len(events)
     state["last_event_hash"] = None if not events else events[-1]["event_hash"]
     return state
@@ -186,6 +203,67 @@ class IntelligenceRuntime:
     def publish(self, publication: Mapping[str, Any], *, occurred_at_ns: int) -> Mapping[str, Any]:
         validate_intelligence_publication(publication)
         return self._append("INTELLIGENCE_PUBLISHED", occurred_at_ns, {"publication": dict(publication)})
+
+    def qualify_for_benjamin(
+        self,
+        publication: Mapping[str, Any],
+        assembly: Mapping[str, Any],
+        competence_memory: Mapping[str, Any],
+        market_context,
+        *,
+        qualification_cutoff_ns: int,
+        claims: Sequence[Mapping[str, Any]],
+        data_quality: Mapping[str, Any],
+        policy: Mapping[str, Any] = None,
+    ) -> Mapping[str, Any]:
+        qualification = assess_benjamin_publication_qualification(
+            publication,
+            assembly,
+            competence_memory,
+            market_context,
+            qualification_cutoff_ns=qualification_cutoff_ns,
+            claims=claims,
+            data_quality=data_quality,
+            policy=policy,
+        )
+        validate_benjamin_publication_qualification(qualification)
+        state = project_runtime(self.events())
+        existing = next((item for item in state["qualifications"] if item.get("qualification_id") == qualification["qualification_id"]), None)
+        if existing is not None:
+            if existing.get("integrity", {}).get("content_hash") != qualification["integrity"]["content_hash"]:
+                raise IntelligenceRuntimeError("conflicting qualification identity reuse")
+            handoff = next((item for item in state["handoffs"] if item.get("qualification_result_id") == qualification["qualification_id"]), None)
+            return {"qualification": existing, "handoff": handoff, "idempotent": True}
+        event_type = "BENJAMIN_PUBLICATION_QUALIFIED" if qualification["status"] == "ELIGIBLE" else "BENJAMIN_PUBLICATION_BLOCKED"
+        self._append(event_type, int(qualification_cutoff_ns), {"qualification": dict(qualification)})
+        handoff = None
+        if qualification["status"] == "ELIGIBLE":
+            handoff = build_benjamin_handoff(
+                publication,
+                qualification,
+                assembly,
+                competence_memory,
+                market_context,
+                claims,
+                created_at_ns=int(qualification_cutoff_ns),
+            )
+            validate_benjamin_handoff(handoff)
+            existing_handoff = next((item for item in project_runtime(self.events())["handoffs"] if item.get("handoff_id") == handoff["handoff_id"]), None)
+            if existing_handoff is not None and existing_handoff.get("integrity", {}).get("content_hash") != handoff["integrity"]["content_hash"]:
+                raise IntelligenceRuntimeError("conflicting handoff identity reuse")
+            if existing_handoff is None:
+                self._append("BENJAMIN_HANDOFF_PUBLISHED", int(qualification_cutoff_ns), {"handoff": dict(handoff)})
+        return {"qualification": qualification, "handoff": handoff, "idempotent": False}
+
+    def record_handoff(self, handoff: Mapping[str, Any], *, occurred_at_ns: int) -> Mapping[str, Any]:
+        validate_benjamin_handoff(handoff)
+        state = project_runtime(self.events())
+        existing = next((item for item in state["handoffs"] if item.get("handoff_id") == handoff.get("handoff_id")), None)
+        if existing is not None:
+            if existing.get("integrity", {}).get("content_hash") != handoff.get("integrity", {}).get("content_hash"):
+                raise IntelligenceRuntimeError("conflicting handoff identity reuse")
+            return existing
+        return self._append("BENJAMIN_HANDOFF_PUBLISHED", occurred_at_ns, {"handoff": dict(handoff)})
 
     def rebuild_state(self) -> Mapping[str, Any]:
         with writer_lock(self.root):
