@@ -18,6 +18,7 @@ from .context.status import market_context_status
 from .context.store import validate_market_context_store
 from .evaluation.journal import validate_outcome_journal
 from .experts.sync import sync_expert_learning
+from .jobs import execute_job_run, job_status
 from .models.qualification import apply_transition_proposal
 from .models.qualification_status import validate_qualification_evidence_store
 from .models.registry import validate_model_registry
@@ -69,6 +70,12 @@ def build_parser() -> argparse.ArgumentParser:
     operator_command.add_argument("--request-json", required=True)
     expert_sync = subparsers.add_parser("expert_sync", help="project durable question predictions/outcomes into Expert School claims, scores, and competence")
     expert_sync.add_argument("--known-at-ns", type=int, required=True)
+    jobs_status_parser = subparsers.add_parser("jobs_status", help="read bounded research-job readiness without mutation")
+    jobs_status_parser.add_argument("--known-at-ns", type=int, required=True)
+    job_execute_parser = subparsers.add_parser("job_execute", help="execute one due preregistered bounded research job")
+    job_execute_parser.add_argument("--job-id", required=True)
+    job_execute_parser.add_argument("--run-id", required=True)
+    job_execute_parser.add_argument("--known-at-ns", type=int, required=True)
     model_apply = subparsers.add_parser("model_qualification_apply", help="apply one persisted evidence-bound model lifecycle proposal through Z5")
     model_apply.add_argument("--proposal-hash", required=True)
     model_apply.add_argument("--occurred-at-ns", type=int, required=True)
@@ -130,6 +137,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             _print(execute_operator_command(root, request))
         elif args.command == "expert_sync":
             _print(sync_expert_learning(root, known_at_ns=args.known_at_ns))
+        elif args.command == "jobs_status":
+            _print(job_status(root, known_at_ns=args.known_at_ns))
+        elif args.command == "job_execute":
+            _print(execute_job_run(root, job_id=args.job_id, run_id=args.run_id, known_at_ns=args.known_at_ns))
         elif args.command == "model_qualification_apply":
             record = apply_transition_proposal(root, proposal_hash=args.proposal_hash, occurred_at_ns=args.occurred_at_ns)
             _print({"status": "ok", "model": record})
