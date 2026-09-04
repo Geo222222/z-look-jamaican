@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "campaign_id": "MSI-ZLJ-LOCAL-RECONCILIATION-20260904",
+  "artifact_type": "PRESERVATION_RECONCILIATION_INDEX",
+  "canonical_role": "discovery_and_lineage_only",
+  "integrity_basis": "exact preservation commit plus Git blob identity; source manifests retain per-file SHA-256 inventories",
+  "preserved_workstreams": [
+    {
+      "workstream": "coinbase_public_market_observer",
+      "disposition": "INTEGRATE_AS_EVIDENCE_REFERENCE",
+      "branch": "codex/preserve-msi-observer-20260904",
+      "tip_commit": "7762aacae1d670857d0d22c28e82033f46dd38c2",
+      "payload_commit": "0a35a00f5152c5d5ee07c47a1f9e12c8f8e2f22c",
+      "manifest_path": "artifacts/evidence/preservation/msi-observer-20260904.manifest.json",
+      "manifest_git_blob_sha1": "3709c9e7666d8c6b5c8361eaf09edc6740750e47",
+      "completed_windows": [
+        "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T031825Z",
+        "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T033551Z",
+        "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T035327Z",
+        "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T150906Z",
+        "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T152606Z"
+      ],
+      "failed_window_count": 4,
+      "incomplete_capture": "PUBLIC-MICROSTRUCTURE-WINDOW-20260904T154258Z",
+      "canonical_state_policy": "preserved state/market_data.json and state/market_observer.json are source-checkout snapshots only; rebuild current projections from authoritative artifacts"
+    },
+    {
+      "workstream": "old_generated_research_and_data",
+      "disposition": "PRESERVE_RAW_DATA_AND_INTEGRATE_RESEARCH_MEMORY",
+      "branch": "codex/preserve-msi-old-evidence-20260904",
+      "tip_commit": "dd712644a5759b38626c986254ef6938b31e074d",
+      "evidence_payload_commit": "3ff554a60b08e3668ba60e83d18fdfd98f0b2410",
+      "raw_dataset_payload_commit": "4a28c04b650f653d79f44c01ec276cf0684b25c5",
+      "manifest_path": "artifacts/evidence/preservation/msi-old-data-evidence-20260904.manifest.json",
+      "manifest_git_blob_sha1": "bf4af14cfd321d93517f5d8fc1bc08320976eea4",
+      "raw_dataset_disposition": "preservation_branch_only",
+      "binance_archive_count": 96,
+      "binance_archives_checksum_verified": true,
+      "historical_mechanism_family_aggregate_sha256": "e167ab645369ea0d2d8acd7bbb849bc52dc0e3c03edbae20b43dbdd11d4a8808",
+      "binance_raw_family_aggregate_sha256": "08f4329b597926ae3996cf931f8e572c17fdf3d2be02c8eca12f0a552f4580af",
+      "historical_results": [
+        {
+          "path": "artifacts/evidence/market/exp-historical-mechanisms-001-preregistration.json",
+          "git_blob_sha1": "b70ab188941cacf95073b2f0c6dcae56bb635286"
+        },
+        {
+          "path": "artifacts/evidence/market/exp-historical-mechanisms-001-result.json",
+          "git_blob_sha1": "a84ea41f7e042f294f10272cd0e0f31093b3c619"
+        },
+        {
+          "path": "artifacts/evidence/market/exp-historical-mechanisms-002-preregistration.json",
+          "git_blob_sha1": "11a41bcf196ce233662cc7eb660cf5a3835538ca"
+        },
+        {
+          "path": "artifacts/evidence/market/exp-historical-mechanisms-002-result.json",
+          "git_blob_sha1": "ae9558d24790be8fc8af79ceae75a4893c64e72b"
+        },
+        {
+          "path": "artifacts/evidence/market/exp-historical-mechanisms-002-report.md",
+          "git_blob_sha1": "cf13d196907732a371389c8cd2c2b2f82b10d27f"
+        }
+      ],
+      "research_memory": "EXP-HISTORICAL-MECHANISMS-001 and -002 are legitimate negative research evidence; no strategy or capital authority is conferred"
+    },
+    {
+      "workstream": "old_market_object_source",
+      "disposition": "ADAPT_SELECTED_RESPONSIBILITIES_ONLY",
+      "branch": "codex/preserve-msi-old-source-20260904",
+      "tip_commit": "a8e871c21e583c7ea804bc1e6af7131f58e5772e",
+      "source_payload_commit": "b98967d0609ac2022a37ed136d701a33236bcc55",
+      "adapted_responsibilities": [
+        "perception_lineage_graph",
+        "generic_falsification_controls"
+      ],
+      "historical_only_responsibilities": [
+        "strategy_registry",
+        "strategy_applicability",
+        "opportunity_candidates"
+      ]
+    },
+    {
+      "workstream": "old_orphaned_committed_history",
+      "disposition": "ADAPT_BOUNDED_JOBS_PRESERVE_CALIBRATION",
+      "branch": "codex/preserve-msi-old-history-20260904",
+      "tip_commit": "7c32f74b7abcb3e65d385a66e9b71a4fa3276fac",
+      "background_jobs_commit": "45bf88702f1284dced02d0e68b0f745be6b1be4b",
+      "detached_calibration_commit": "7c32f74b7abcb3e65d385a66e9b71a4fa3276fac",
+      "calibration_disposition": "historical_evidence_only"
+    }
+  ],
+  "authority": {
+    "evidence_discovery": true,
+    "rewrites_canonical_state": false,
+    "qualifies_strategy": false,
+    "selects_model": false,
+    "claims_model_competence": false,
+    "economic_decision": false,
+    "capital_allocation": false,
+    "risk_authorization": false,
+    "external_execution": false
+  }
+}
