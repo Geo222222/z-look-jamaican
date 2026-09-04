@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Mapping, Optional, Sequence, Tuple
 
@@ -88,8 +89,6 @@ def _durable_contexts(root: Path) -> Tuple[MarketContextFrame, ...]:
     store = MarketContextStore(root)
     if not store.index_path.is_file():
         raise QuestionResolverError("market-context discovery index is missing")
-    import json
-
     try:
         index = json.loads(store.index_path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
@@ -222,8 +221,6 @@ def resolve_market_regime_question(
     try:
         selected = _first_endpoint(prediction, baseline, contexts)
     except RegimeContractDiscontinuityError:
-        # Once the changed same-universe contract is knowable at the target,
-        # the preregistered question version has no comparable endpoint.
         window_closes = prediction.resolves_at_ns + prediction.max_resolution_lag_ns
         if now <= window_closes:
             raise QuestionOutcomePendingError("regime endpoint contract changed inside the open resolution window")
@@ -334,16 +331,16 @@ def resolve_regime_persistence_question(
         for context in interval_universe
         if context.cutoff_at_ns <= prediction.resolves_at_ns and _same_regime_contract(baseline, context)
     ]
-    # Endpoint is guaranteed at/after T+h and proves the interval reached its
-    # terminal boundary. Earlier durable contexts are all examined; callers
-    # cannot omit an inconvenient transition because the store is authoritative.
     observed = list(comparable_interval)
     if endpoint.context_id not in {item.context_id for item in observed}:
         observed.append(endpoint)
     observed.sort(key=lambda item: (item.cutoff_at_ns, item.known_at_ns, item.context_id))
     persistent = 1 if observed and all(_direction(item) == baseline_direction for item in observed) else 0
     evidence = [_evidence(baseline, "BASELINE", prediction.subject_id)]
-    evidence.extend(_evidence(item, "INTERVAL", prediction.subject_id) for item in observed)
+    # The generic outcome schema distinguishes only BASELINE vs FORWARD. Every
+    # post-cutoff context in the durable interval is therefore a FORWARD fact;
+    # its timestamp and ordered artifact identity preserve interval position.
+    evidence.extend(_evidence(item, "FORWARD", prediction.subject_id) for item in observed)
     return _outcome(
         prediction,
         entry_hash,
