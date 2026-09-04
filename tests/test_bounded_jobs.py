@@ -12,6 +12,7 @@ from autonomous_kernel.jobs import (
     job_status,
     persist_job_spec,
 )
+from autonomous_kernel.operations import canonical_hash
 
 
 class BoundedJobsTests(unittest.TestCase):
@@ -94,6 +95,9 @@ class BoundedJobsTests(unittest.TestCase):
             self.assertIn("--known-at-ns", command)
             self.assertFalse(first["credentials_used"])
             self.assertFalse(first["shell_used"])
+            self.assertEqual(spec["integrity"]["content_hash"], first["job_spec_hash"])
+            body = {key: value for key, value in first.items() if key != "integrity"}
+            self.assertEqual(canonical_hash(body), first["integrity"]["content_hash"])
         finally:
             temporary.cleanup()
 
