@@ -58,6 +58,7 @@ REASON_DATA_QUALITY_NOT_VALID = "DATA_QUALITY_NOT_VALID"
 REASON_INTEGRITY_FAILURE = "INTEGRITY_FAILURE"
 REASON_MISSING_REQUIRED_EVIDENCE = "MISSING_REQUIRED_EVIDENCE"
 REASON_FUTURE_INFORMATION_LEAKAGE = "FUTURE_INFORMATION_LEAKAGE"
+REASON_COMPETENCE_CONTAINS_FUTURE_OUTCOME = "COMPETENCE_CONTAINS_FUTURE_OUTCOME"
 REASON_INSUFFICIENT_EXPERT_COUNT = "INSUFFICIENT_EXPERT_COUNT"
 REASON_INSUFFICIENT_PER_EXPERT_SAMPLES = "INSUFFICIENT_PER_EXPERT_SAMPLES"
 REASON_INSUFFICIENT_ASSEMBLY_CONFIDENCE = "INSUFFICIENT_ASSEMBLY_CONFIDENCE"
@@ -294,14 +295,43 @@ def assess_benjamin_publication_qualification(
         for item in (competence_memory.get("entries") or ())
         if isinstance(item, Mapping)
     }
+    for entry in (competence_memory.get("entries") or ()) if isinstance(competence_memory, Mapping) else ():
+        if not isinstance(entry, Mapping):
+            reasons.append(REASON_MISSING_REQUIRED_EVIDENCE)
+            continue
+        last_resolved = int(entry.get("last_resolved_at_ns") or -1)
+        if competence_known >= 0 and last_resolved > competence_known:
+            reasons.append(REASON_COMPETENCE_CONTAINS_FUTURE_OUTCOME)
+
     sample_counts: List[int] = []
     supports: List[float] = []
     weights: List[float] = []
-    claim_by_hash = {
-        str(claim.get("integrity", {}).get("content_hash")): claim
-        for claim in claim_list
-        if isinstance(claim, Mapping)
-    }
+    supplied_by_hash: Dict[str, Mapping[str, Any]] = {}
+    for claim in claim_list:
+        if not isinstance(claim, Mapping):
+            reasons.append(REASON_MISSING_REQUIRED_EVIDENCE)
+            continue
+        try:
+            digest = _validate_hash_envelope(claim, "expert claim")
+        except BenjaminPublicationGateError:
+            reasons.append(REASON_INTEGRITY_FAILURE)
+            continue
+        if digest in supplied_by_hash:
+            reasons.append(REASON_INTEGRITY_FAILURE)
+            continue
+        supplied_by_hash[digest] = claim
+
+    required_claim_hashes: List[str] = []
+    for contribution in contributions:
+        if isinstance(contribution, Mapping) and contribution.get("claim_hash"):
+            required_claim_hashes.append(str(contribution["claim_hash"]))
+    required_set = set(required_claim_hashes)
+    for digest in supplied_by_hash:
+        if digest not in required_set:
+            reasons.append(REASON_INTEGRITY_FAILURE)
+            break
+
+    contributing_claims: List[Mapping[str, Any]] = []
     for contribution in contributions:
         if not isinstance(contribution, Mapping):
             reasons.append(REASON_MISSING_REQUIRED_EVIDENCE)
@@ -314,6 +344,8 @@ def assess_benjamin_publication_qualification(
         last_resolved = int(entry.get("last_resolved_at_ns") or -1)
         if last_resolved > cutoff:
             reasons.append(REASON_FUTURE_INFORMATION_LEAKAGE)
+        if competence_known >= 0 and last_resolved > competence_known:
+            reasons.append(REASON_COMPETENCE_CONTAINS_FUTURE_OUTCOME)
         sample_counts.append(int(entry.get("sample_count", 0) or 0))
         contextual = contribution.get("contextual_competence")
         if isinstance(contextual, Mapping):
@@ -323,10 +355,12 @@ def assess_benjamin_publication_qualification(
             reasons.append(REASON_MISSING_REQUIRED_EVIDENCE)
         weights.append(float(contribution.get("weight", 0.0) or 0.0))
         claim_hash = str(contribution.get("claim_hash", ""))
-        claim = claim_by_hash.get(claim_hash)
+        claim = supplied_by_hash.get(claim_hash)
         if claim is None:
             reasons.append(REASON_MISSING_REQUIRED_EVIDENCE)
-        elif str(claim.get("expert_ref")) != expert_ref or str(claim.get("question_ref")) != question_ref:
+            continue
+        contributing_claims.append(claim)
+        if str(claim.get("expert_ref")) != expert_ref or str(claim.get("question_ref")) != question_ref:
             reasons.append(REASON_COMPETENCE_PROVENANCE_MISMATCH)
         elif int(claim.get("cutoff_ns") or -1) > cutoff:
             reasons.append(REASON_FUTURE_INFORMATION_LEAKAGE)
@@ -338,7 +372,7 @@ def assess_benjamin_publication_qualification(
     max_weight = max(weights) if weights else 1.0
     confidence = float(assembly.get("assembly_confidence", 0.0) or 0.0)
     disagreement = float(assembly.get("disagreement", 1.0) or 0.0)
-    overlap = _mean_pairwise_jaccard(claim_list) if len(claim_list) >= 2 else 1.0 if claim_list else 1.0
+    overlap = _mean_pairwise_jaccard(contributing_claims) if len(contributing_claims) >= 2 else 1.0 if contributing_claims else 1.0
 
     if expert_count < int(settings.get("minimum_expert_count") or 0) or expert_count != len(tuple(contributions)):
         reasons.append(REASON_INSUFFICIENT_EXPERT_COUNT)

@@ -24,7 +24,13 @@ from autonomous_kernel.intelligence import (
     validate_benjamin_handoff,
     validate_intelligence_publication,
 )
-from autonomous_kernel.intelligence.gate import REASON_DATA_QUALITY_NOT_VALID
+from autonomous_kernel.intelligence.gate import (
+    REASON_COMPETENCE_CONTAINS_FUTURE_OUTCOME,
+    REASON_DATA_QUALITY_NOT_VALID,
+    REASON_INSUFFICIENT_EVIDENCE_INDEPENDENCE,
+    REASON_INTEGRITY_FAILURE,
+    REASON_MISSING_REQUIRED_EVIDENCE,
+)
 from autonomous_kernel.intelligence.policy import POLICY_THRESHOLDS, POLICY_VERSION
 from autonomous_kernel.operations import canonical_hash
 from autonomous_kernel.operator.intelligence_projection import expert_intelligence_projection
@@ -441,6 +447,162 @@ class BenjaminPublicationQualificationTests(unittest.TestCase):
         policy = build_benjamin_publication_policy_v1()
         self.assertEqual(policy["empirical_status"], "NOT_CLAIMED_OPTIMAL")
         self.assertEqual(policy["thresholds"]["minimum_total_scored_samples"], 20)
+
+
+def _reseal_competence(memory, *, entries=None, known_at_ns=None):
+    body = {key: value for key, value in memory.items() if key != "integrity"}
+    if entries is not None:
+        body["entries"] = entries
+    if known_at_ns is not None:
+        body["known_at_ns"] = int(known_at_ns)
+    body["integrity"] = {"algorithm": "sha256", "content_hash": canonical_hash({key: value for key, value in body.items() if key != "integrity"})}
+    return body
+
+
+def _world_with_memory(world, memory):
+    refs = []
+    for claim in world["claims"]:
+        for ref in claim["evidence_refs"]:
+            if ref not in refs:
+                refs.append(ref)
+    updated = dict(world)
+    updated["memory"] = memory
+    updated["competence_now"] = memory["known_at_ns"]
+    updated["publication"] = build_intelligence_publication(
+        world["assembly"],
+        published_at_ns=PUBLISHED,
+        evidence_refs=tuple(refs),
+        competence_memory_hash=memory["integrity"]["content_hash"],
+        market_context_hash=world["context"].content_hash(),
+        question_definition_hash=world["claims"][0]["question_definition_hash"],
+        horizon_ns=world["claims"][0]["horizon_ns"],
+    )
+    return updated
+
+
+class BenjaminCompetencePointInTimeTests(unittest.TestCase):
+    def test_01_competence_snapshot_cannot_include_outcomes_resolved_after_known_at(self):
+        world = _world()
+        known_at = int(world["memory"]["known_at_ns"])
+        future_resolved = known_at + 1
+        self.assertLessEqual(future_resolved, PUBLISHED)
+        entries = [dict(item) for item in world["memory"]["entries"]]
+        entries[0]["last_resolved_at_ns"] = future_resolved
+        hindsight = _world_with_memory(world, _reseal_competence(world["memory"], entries=entries))
+        result = _qualify(hindsight)
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertIn(REASON_COMPETENCE_CONTAINS_FUTURE_OUTCOME, result["blocking_reasons"])
+        with self.assertRaises(BenjaminPublicationGateError):
+            build_benjamin_handoff(
+                hindsight["publication"], result, hindsight["assembly"], hindsight["memory"],
+                hindsight["context"], hindsight["claims"], created_at_ns=CUTOFF,
+            )
+
+    def test_02_same_outcome_is_allowed_only_in_a_later_competence_snapshot(self):
+        world = _world()
+        known_at = int(world["memory"]["known_at_ns"])
+        future_resolved = known_at + 1
+        entries = [dict(item) for item in world["memory"]["entries"]]
+        entries[0]["last_resolved_at_ns"] = future_resolved
+        later = _world_with_memory(world, _reseal_competence(world["memory"], entries=entries, known_at_ns=future_resolved))
+        result = _qualify(later)
+        self.assertEqual(result["status"], "ELIGIBLE")
+        self.assertNotIn(REASON_COMPETENCE_CONTAINS_FUTURE_OUTCOME, result["blocking_reasons"])
+
+    def test_03_later_qualification_time_does_not_legalize_hindsight_competence(self):
+        world = _world()
+        known_at = int(world["memory"]["known_at_ns"])
+        future_resolved = known_at + 1
+        entries = [dict(item) for item in world["memory"]["entries"]]
+        entries[0]["last_resolved_at_ns"] = future_resolved
+        hindsight = _world_with_memory(world, _reseal_competence(world["memory"], entries=entries))
+        result = _qualify(hindsight, qualification_cutoff_ns=CUTOFF + 5_000_000)
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertIn(REASON_COMPETENCE_CONTAINS_FUTURE_OUTCOME, result["blocking_reasons"])
+
+    def test_04_historical_replay_remains_deterministic(self):
+        world = _world()
+        with tempfile.TemporaryDirectory() as temporary:
+            runtime = IntelligenceRuntime(Path(temporary))
+            _journal_chain(runtime, world)
+            first = _qualify_runtime(runtime, world)
+            cutoff_count = next(
+                index + 1
+                for index, event in enumerate(runtime.events())
+                if event["event_type"] == "BENJAMIN_HANDOFF_PUBLISHED"
+            )
+            later_claim = _claim(world["contracts"][0], 0.9, "evidence:later-hindsight", cutoff_ns=20_000_000_000)
+            later_score = score_expert_claim(world["contracts"][0], later_claim, True, resolved_at_ns=32_000_000_000, context=CONTEXT)
+            runtime.record_claim(world["contracts"][0], later_claim, occurred_at_ns=20_000_000_001)
+            runtime.record_score(later_score, occurred_at_ns=32_000_000_001)
+            runtime.rebuild_competence(known_at_ns=40_000_000_000)
+            replayed = project_runtime(runtime.events()[:cutoff_count])
+            self.assertEqual(replayed["qualifications"][0]["integrity"]["content_hash"], first["qualification"]["integrity"]["content_hash"])
+            self.assertEqual(replayed["handoffs"][0]["integrity"]["content_hash"], first["handoff"]["integrity"]["content_hash"])
+            self.assertEqual(project_runtime(runtime.events()[:cutoff_count]), replayed)
+
+
+class BenjaminEvidenceIndependenceTests(unittest.TestCase):
+    def test_01_identical_contributing_evidence_is_blocked(self):
+        world = _world(shared_evidence=True)
+        result = _qualify(world)
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertIn(REASON_INSUFFICIENT_EVIDENCE_INDEPENDENCE, result["blocking_reasons"])
+        self.assertEqual(result["diagnostics"]["mean_pairwise_evidence_jaccard"], 1.0)
+
+    def test_02_unrelated_extra_claims_cannot_lower_measured_overlap(self):
+        world = _world(shared_evidence=True)
+        extra = _claim(world["contracts"][0], 0.51, "evidence:decoy-unique")
+        baseline = _qualify(world)
+        gamed = _qualify(world, claims=list(world["claims"]) + [extra])
+        self.assertEqual(
+            gamed["diagnostics"]["mean_pairwise_evidence_jaccard"],
+            baseline["diagnostics"]["mean_pairwise_evidence_jaccard"],
+        )
+        self.assertEqual(gamed["diagnostics"]["mean_pairwise_evidence_jaccard"], 1.0)
+
+    def test_03_extra_unique_evidence_cannot_convert_blocked_to_eligible(self):
+        world = _world(shared_evidence=True)
+        extra = _claim(world["contracts"][1], 0.49, "evidence:another-decoy")
+        result = _qualify(world, claims=list(world["claims"]) + [extra])
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertIn(REASON_INSUFFICIENT_EVIDENCE_INDEPENDENCE, result["blocking_reasons"])
+        self.assertIn(REASON_INTEGRITY_FAILURE, result["blocking_reasons"])
+
+    def test_04_mutated_contributing_evidence_refs_without_reseal_are_rejected(self):
+        world = _world()
+        tampered = dict(world["claims"][0])
+        tampered["evidence_refs"] = ["evidence:mutated-without-hash"]
+        result = _qualify(world, claims=[tampered, world["claims"][1]])
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertIn(REASON_INTEGRITY_FAILURE, result["blocking_reasons"])
+
+    def test_05_missing_contributing_claim_is_rejected(self):
+        world = _world()
+        result = _qualify(world, claims=[world["claims"][0]])
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertIn(REASON_MISSING_REQUIRED_EVIDENCE, result["blocking_reasons"])
+
+    def test_06_duplicate_and_conflicting_claim_hashes_are_rejected(self):
+        world = _world()
+        duplicate = _qualify(world, claims=[world["claims"][0], world["claims"][1], world["claims"][0]])
+        self.assertEqual(duplicate["status"], "BLOCKED")
+        self.assertIn(REASON_INTEGRITY_FAILURE, duplicate["blocking_reasons"])
+        conflict = dict(world["claims"][1])
+        conflict["integrity"] = dict(world["claims"][0]["integrity"])
+        conflicting = _qualify(world, claims=[world["claims"][0], conflict])
+        self.assertEqual(conflicting["status"], "BLOCKED")
+        self.assertIn(REASON_INTEGRITY_FAILURE, conflicting["blocking_reasons"])
+
+    def test_07_exact_valid_contributing_claims_still_qualify(self):
+        world = _world()
+        result = _qualify(world, claims=list(world["claims"]))
+        self.assertEqual(result["status"], "ELIGIBLE")
+        self.assertLessEqual(result["diagnostics"]["mean_pairwise_evidence_jaccard"], 0.50)
+        handoff = build_benjamin_handoff(
+            world["publication"], result, world["assembly"], world["memory"], world["context"], world["claims"], created_at_ns=CUTOFF
+        )
+        self.assertEqual(handoff["authority"]["may_be_consumed_by"], "BENJAMIN")
 
 
 if __name__ == "__main__":
