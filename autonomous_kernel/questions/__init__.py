@@ -16,12 +16,19 @@ from .contracts import (
     build_question_registry_snapshot,
 )
 from .evidence import material_question_registry_evidence
+from .learning_evidence import (
+    LearningEvidenceError,
+    LearningJournalCommitment,
+    build_learning_journal_commitment,
+)
 
 __all__ = [
     "EVIDENCE_CUTOFF_POLICY",
     "QUESTION_REGISTRY_SCHEMA_VERSION",
     "QUESTION_SCHEMA_VERSION",
     "AnswerKind",
+    "LearningEvidenceError",
+    "LearningJournalCommitment",
     "OutcomeDefinition",
     "QuestionContractError",
     "QuestionDefinition",
@@ -29,6 +36,7 @@ __all__ = [
     "QuestionRegistryEntry",
     "QuestionRegistrySnapshot",
     "QuestionScope",
+    "build_learning_journal_commitment",
     "build_question_registry_snapshot",
     "default_question_registry_v1",
     "material_question_registry_evidence",
