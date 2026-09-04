@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Optional, Sequence
 
-SUPPORTED_SCHEMA = "1.0.0"
+SUPPORTED_SCHEMA = "1.1.0"
+SUPPORTED_SCHEMAS = {"1.0.0", "1.1.0"}
 VALID_AVAILABILITY = {"available", "unknown", "not_earned", "blocked", "unavailable"}
 
 
@@ -45,7 +46,7 @@ def validate_snapshot(payload: Mapping[str, Any]) -> ContractSnapshot:
         raise MonitorContractError("monitor_snapshot is missing contract or sections")
     if contract.get("name") != "z-look-jamaican-monitor-snapshot":
         raise MonitorContractError("unexpected monitor contract name")
-    if contract.get("schema_version") != SUPPORTED_SCHEMA:
+    if contract.get("schema_version") not in SUPPORTED_SCHEMAS:
         raise MonitorContractError("unsupported monitor contract schema: %r" % contract.get("schema_version"))
     if contract.get("read_only") is not True:
         raise MonitorContractError("monitor contract does not assert read_only=true")
