@@ -22,7 +22,6 @@ from autonomous_kernel.questions import (
     REVERSAL_QUESTION_V1_REF,
     QuestionContractError,
     QuestionFamily,
-    QuestionRegistryEntry,
     build_question_registry_v1_qualified,
     certify_question_registry_v1,
     default_question_registry_v1,
@@ -189,15 +188,19 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
         reversal = by_ref[REVERSAL_QUESTION_V1_1_REF].definition
         self.assertIn("ECONOMIC_ROOT_PATH", reversal.required_artifact_types)
         self.assertIn("ECONOMIC_ROOT_PATH", reversal.required_feature_families)
-        self.assertEqual("QUALIFIED", reversal.parameters["root_path_status"])
+        self.assertEqual("QUALIFIED", reversal.parameters["trailing_path_status"])
+        self.assertEqual("ECONOMIC_ROOT_PATH", reversal.parameters["trailing_path_type"])
         self.assertEqual(
             "EXACT_PREDICTION_BOUND_SPOT_INSTRUMENT",
-            reversal.parameters["reference_instrument_policy"],
+            reversal.parameters["instrument_policy"],
         )
+        self.assertEqual(60_000_000_000, reversal.parameters["trailing_window_ns"])
+        self.assertEqual(10_000_000_000, reversal.parameters["trailing_grid_interval_ns"])
+        self.assertEqual("EITHER_ZERO_MEANS_NO_REVERSAL", reversal.parameters["zero_return_policy"])
 
         weakened = replace(
             reversal,
-            parameters=dict(reversal.parameters, root_path_status="DEGRADED_ALLOWED"),
+            parameters=dict(reversal.parameters, trailing_path_status="DEGRADED_ALLOWED"),
         )
         entries = tuple(
             replace(entry, definition=weakened)
@@ -239,7 +242,7 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
         evidence = material_question_registry_evidence(snapshot)
         self.assertEqual("ZLJ.QUESTION_REGISTRY", evidence.event_type)
         self.assertEqual("ANALYTICAL", evidence.evidence_class)
-        self.assertIn(snapshot.content_hash(), certificate["registry"]["content_hash"])
+        self.assertEqual(snapshot.content_hash(), certificate["registry"]["content_hash"])
         self.assertNotIn("question_predictions.jsonl", evidence.payload)
         self.assertNotIn("question_outcomes.jsonl", evidence.payload)
 
