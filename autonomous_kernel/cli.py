@@ -18,6 +18,8 @@ from .context.status import market_context_status
 from .context.store import validate_market_context_store
 from .evaluation.journal import validate_outcome_journal
 from .experts.sync import sync_expert_learning
+from .models.qualification import apply_transition_proposal
+from .models.qualification_status import validate_qualification_evidence_store
 from .models.registry import validate_model_registry
 from .monitor import monitor_snapshot
 from .operator import OperatorCommandError, execute_operator_command, operator_catalog, operator_snapshot, validate_operator_journal
@@ -34,6 +36,7 @@ def _validate_learning_state_or_raise(root: Path) -> Sequence[str]:
     checks = []
     validators = (
         ("model_registry", validate_model_registry),
+        ("model_qualification_evidence", validate_qualification_evidence_store),
         ("outcome_journal", validate_outcome_journal),
         ("assembly_journal", validate_assembly_journal),
         ("assembly_lineage", validate_assembly_lineage),
@@ -66,6 +69,9 @@ def build_parser() -> argparse.ArgumentParser:
     operator_command.add_argument("--request-json", required=True)
     expert_sync = subparsers.add_parser("expert_sync", help="project durable question predictions/outcomes into Expert School claims, scores, and competence")
     expert_sync.add_argument("--known-at-ns", type=int, required=True)
+    model_apply = subparsers.add_parser("model_qualification_apply", help="apply one persisted evidence-bound model lifecycle proposal through Z5")
+    model_apply.add_argument("--proposal-hash", required=True)
+    model_apply.add_argument("--occurred-at-ns", type=int, required=True)
     subparsers.add_parser("next-work", help="select the highest-scored ready task whose dependencies are complete")
     subparsers.add_parser("recover", help="idempotently roll a prepared state transaction forward")
     monitor_parser = subparsers.add_parser("monitor_snapshot", help="emit the authoritative read-only observer snapshot")
@@ -124,6 +130,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             _print(execute_operator_command(root, request))
         elif args.command == "expert_sync":
             _print(sync_expert_learning(root, known_at_ns=args.known_at_ns))
+        elif args.command == "model_qualification_apply":
+            record = apply_transition_proposal(root, proposal_hash=args.proposal_hash, occurred_at_ns=args.occurred_at_ns)
+            _print({"status": "ok", "model": record})
         elif args.command == "next-work":
             _print({"status": "ok", "next_work": next_work(root)})
         elif args.command == "recover":
