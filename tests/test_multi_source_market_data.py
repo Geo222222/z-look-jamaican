@@ -188,7 +188,7 @@ class MultiSourceMarketDataTests(unittest.TestCase):
         with self.assertRaisesRegex(RepresentationError, "cannot mix canonical instruments"):
             build_instrument_state((coinbase, binance), cutoff_at_ns=max(coinbase.known_at_ns, binance.known_at_ns))
 
-    def test_kraken_book_snapshot_and_delta_remain_typed_and_venue_bound(self):
+    def test_kraken_book_snapshot_and_delta_keep_checksum_as_integrity_not_sequence(self):
         snapshot_message = {
             "channel": "book",
             "type": "snapshot",
@@ -225,8 +225,12 @@ class MultiSourceMarketDataTests(unittest.TestCase):
         self.assertEqual("BOOK_DELTA", delta.event_type)
         self.assertEqual("KRAKEN", snapshot.venue)
         self.assertEqual("KRAKEN", delta.venue)
-        self.assertEqual("123", snapshot.sequence)
-        self.assertEqual("124", delta.sequence)
+        self.assertIsNone(snapshot.sequence)
+        self.assertIsNone(delta.sequence)
+        self.assertEqual("NONE", snapshot.sequence_scope)
+        self.assertEqual("NONE", delta.sequence_scope)
+        self.assertEqual("123", snapshot.to_wire()["payload"]["checksum"])
+        self.assertEqual("124", delta.to_wire()["payload"]["checksum"])
 
     def test_coinbase_and_kraken_same_trade_payload_preserve_distinct_provenance(self):
         coinbase = adapt_coinbase_advanced_trade(
@@ -238,6 +242,8 @@ class MultiSourceMarketDataTests(unittest.TestCase):
         )[0]
         self.assertEqual(coinbase.instrument, kraken.instrument)
         self.assertEqual(coinbase.normalized_payload_hash(), kraken.normalized_payload_hash())
+        self.assertEqual("9001", kraken.sequence)
+        self.assertEqual("INSTRUMENT", kraken.sequence_scope)
         self.assertNotEqual(coinbase.provider, kraken.provider)
         self.assertNotEqual(coinbase.content_hash(), kraken.content_hash())
 
