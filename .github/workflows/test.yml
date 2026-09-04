@@ -28,6 +28,7 @@ jobs:
         run: |
           node --check monitor/web/product-app.js
           node --check monitor/web/resolver-console.js
+          node --check monitor/web/expert-console.js
       - name: Unit tests
         run: python -m unittest discover -s tests -v
       - name: Generate question registry v1 qualification
