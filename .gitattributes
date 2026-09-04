@@ -4,6 +4,8 @@
 # is fixed explicitly to CRLF on every platform.
 artifacts/evidence/** -text
 evidence/audits/** -text
+artifacts/market_data/** -text
+receipts/execution/** -text
 
 artifacts/evidence/apify_store/snapshot-20260821T194047Z.json text eol=crlf
 artifacts/evidence/apify_store/snapshot-20260821T194850Z.json text eol=crlf
