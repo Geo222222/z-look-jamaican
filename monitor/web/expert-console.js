@@ -1,0 +1,46 @@
+(()=>{
+'use strict';
+let snapshot=null;
+let expertActive=false;
+let queued=false;
+const $=(s)=>document.querySelector(s);
+const esc=(v)=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nice=(v)=>String(v??'unknown').replaceAll('_',' ').replace(/\b\w/g,m=>m.toUpperCase());
+const badge=(v)=>{const s=String(v??'');const u=s.toUpperCase();const t=/BUILT|AVAILABLE|VALID|QUALIFIED/.test(u)&&!u.includes('NOT_')?'good':/CANDIDATE|NOT_YET|NO_RUNTIME|BLOCK|DEFER/.test(u)?'warn':'muted';return `<span class="lab-badge ${t}">${esc(nice(s))}</span>`;};
+function intel(){return snapshot?.expert_intelligence||{};}
+
+function ensureNav(){
+  const nav=$('#nav');if(!nav||nav.querySelector('[data-expert-school]'))return;
+  const b=document.createElement('button');b.className='nav-item';b.dataset.expertSchool='true';b.innerHTML='<span class="nav-icon">◇</span><span>Expert School</span>';
+  const registry=nav.querySelector('[data-resolver-registry]');
+  if(registry?.nextSibling)nav.insertBefore(b,registry.nextSibling);else nav.appendChild(b);
+  b.onclick=(e)=>{e.preventDefault();e.stopPropagation();expertActive=true;nav.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));b.classList.add('active');render();};
+}
+function phaseRows(construction){
+  const labels=[['expert_contracts','Phase 9 · Expert Contracts'],['baseline_expert_factory','Phase 10 · Baseline Expert Factory'],['question_specific_evaluation','Phase 11 · Question-specific Evaluation'],['competence_memory','Phase 12 · Competence Memory'],['contextual_competence','Phase 13 · Contextual Competence'],['adaptive_expert_assembly','Phase 14 · Adaptive Expert Assembly'],['intelligence_publication','Phase 15 · Intelligence Publication']];
+  return labels.map(([key,label])=>`<article><span>${esc(label)}</span>${badge(construction?.[key]||'NOT_BUILT')}</article>`).join('');
+}
+function speciesRows(species){
+  return Object.entries(species||{}).sort((a,b)=>a[0].localeCompare(b[0])).map(([name,count])=>`<div><span>${esc(nice(name))}</span><b>${esc(count)}</b></div>`).join('')||'<div class="lab-empty">No candidate expert contracts.</div>';
+}
+function render(){
+  ensureNav();const view=$('#view');if(!view)return;const title=$('#page-title');if(title)title.textContent='Expert School';
+  document.querySelectorAll('#nav .nav-item').forEach(item=>item.classList.toggle('active',item.hasAttribute('data-expert-school')));
+  const x=intel();if(!x.school){view.innerHTML='<div class="loading-state"><p>Resolving Expert School state…</p></div>';return;}
+  const s=x.school||{},r=x.runtime||{},q=x.qualification||{},latest=r.latest_publication;
+  view.innerHTML=`<div class="lab-stack expert-owner-view" data-expert-view="true">
+    <section class="lab-stage-hero"><div class="lab-orb">◇</div><div><span class="lab-kicker">ZLJ / LEARNING POPULATION</span><h2>Expert School</h2><p>Specialists answer frozen examination questions. Truth is resolved independently; competence is earned from scored history; influence adapts to current context.</p></div>${badge(s.lifecycle_state)}</section>
+    <section class="expert-status-grid"><article><span>Candidate experts</span><strong>${esc(s.expert_count)}</strong><small>question-bound specialist identities</small></article><article><span>Recorded claims</span><strong>${esc(r.claim_count||0)}</strong><small>immutable known-at-T testimony</small></article><article><span>Scored outcomes</span><strong>${esc(r.score_count||0)}</strong><small>resolver-graded observations</small></article><article><span>Published intelligence</span><strong>${esc(r.publication_count||0)}</strong><small>Benjamin-consumable, no trade authority</small></article></section>
+    <section class="lab-panel"><header><div><span class="lab-kicker">CONSTRUCTION</span><h3>Intelligence lifecycle</h3></div>${badge(r.journal)}</header><div class="expert-phase-list">${phaseRows(x.construction)}</div></section>
+    <section class="expert-two-col"><section class="lab-panel"><header><div><span class="lab-kicker">MODEL SPECIES</span><h3>Mathematical diversity</h3></div><small>Not hyperparameter clones</small></header><div class="expert-species">${speciesRows(s.species_counts)}</div></section><section class="lab-panel"><header><div><span class="lab-kicker">EARNED STATE</span><h3>Qualification boundary</h3></div></header><div class="expert-boundary"><div><span>Population</span>${badge(q.expert_population)}</div><div><span>Competence</span>${badge(q.earned_competence)}</div><div><span>Benjamin handoff</span>${badge(q.benjamin_handoff)}</div><div><span>Capital authority</span><strong>NONE</strong></div></div></section></section>
+    <section class="lab-panel"><header><div><span class="lab-kicker">ADAPTIVE REASONING</span><h3>How ZLJ reasons on model testimony</h3></div></header><div class="expert-flow"><span>Expert claims</span><i>→</i><span>Resolver outcomes</span><i>→</i><span>Competence memory</span><i>→</i><span>Current context</span><i>→</i><span>Adaptive weights</span><i>→</i><span>ZLJ intelligence</span></div><p class="expert-note">Evidence overlap is penalized so correlated models do not masquerade as independent witnesses. Experts with little history shrink toward neutral trust until they earn stronger contextual competence.</p></section>
+    <section class="lab-panel"><header><div><span class="lab-kicker">LATEST BENJAMIN HANDOFF</span><h3>${latest?'Intelligence publication':'No runtime intelligence published yet'}</h3></div>${latest?badge('AVAILABLE'):badge('NO_RUNTIME_PUBLICATION')}</header>${latest?`<div class="expert-publication"><div><span>Question</span><code>${esc(latest.question_ref)}</code></div><div><span>Estimate</span><strong>${esc(JSON.stringify(latest.assembled_estimate))}</strong></div><div><span>Assembly confidence</span><strong>${esc(Number(latest.assembly_confidence||0).toFixed(3))}</strong></div><div><span>Disagreement</span><strong>${esc(Number(latest.disagreement||0).toFixed(3))}</strong></div></div>`:'<p>The publication machinery is built, but ZLJ will not manufacture intelligence. A handoff appears only after real expert claims have been recorded, resolved, scored, assembled, and published.</p>'}<div class="lab-boundary"><span>ZLJ perception</span><strong>YES</strong><span>Benjamin economic decision</span><strong>NO</strong><span>Watchman authorization</span><strong>NO</strong><span>Hand execution</span><strong>NO</strong></div></section>
+  </div>`;
+}
+function decorate(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;ensureNav();if(expertActive&&!$('#view [data-expert-view]'))render();});}
+document.addEventListener('click',(e)=>{if(e.target.closest?.('#nav [data-page], #nav [data-resolver-registry]'))expertActive=false;},true);
+new MutationObserver(decorate).observe(document.body,{childList:true,subtree:true});
+function accept(v){if(v?.contract?.name!=='zlj-operator-console')return;snapshot=v;if(expertActive)render();else decorate();}
+(async()=>{try{const r=await fetch('/api/operator',{cache:'no-store'});if(r.ok)accept(await r.json());}catch(_){}try{const es=new EventSource('/api/events');es.addEventListener('snapshot',e=>{try{accept(JSON.parse(e.data));}catch(_){}});}catch(_){}})();
+decorate();
+})();
