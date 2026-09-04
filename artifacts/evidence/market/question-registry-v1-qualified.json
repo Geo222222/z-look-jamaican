@@ -1,0 +1,152 @@
+{
+  "authority": {
+    "capital_decision": false,
+    "claims_model_competence": false,
+    "defines_examination_truth": true,
+    "external_execution": false,
+    "risk_authorization": false,
+    "selects_model": false,
+    "sets_adaptive_weights": false
+  },
+  "certification_id": "QUESTION_REGISTRY_V1_QUALIFIED",
+  "deferred_question_families": [
+    "EXECUTION_SUITABILITY"
+  ],
+  "guarantees": {
+    "deterministic_outcome_contract": true,
+    "exact_horizon": true,
+    "exact_input_contract": true,
+    "exact_resolver_identity_and_version": true,
+    "immutable_question_identity": true,
+    "leakage_protected": true,
+    "material_reversal_thresholds_preregistered": true,
+    "missing_or_invalid_evidence_fails_closed": true,
+    "provenance_bound": true,
+    "registry_version_frozen": true,
+    "relationship_compatibility_proof_required": true,
+    "replay_required": true,
+    "retrospective_definition_mutation_forbidden": true,
+    "same_evidence_same_answer_required": true,
+    "sign_reversal_history_preserved": true
+  },
+  "historical_defined_questions": [
+    "ECONOMIC_ROOT_REVERSAL_60S@1.0.0"
+  ],
+  "historical_retired_questions": [
+    "ECONOMIC_ROOT_REVERSAL_60S@1.1.0"
+  ],
+  "integrity": {
+    "algorithm": "sha256",
+    "content_hash": "7af070e4f5a92bf04a4d54047bb7df7ae93848413c53ce01488f757a6127734e"
+  },
+  "registry": {
+    "content_hash": "68855157da12216b07e476b74ec3ef8b51dad234dc08784cd05369601af5cc00",
+    "effective_at_ns": 1788700000000000003,
+    "known_at_ns": 1788700000000000002,
+    "registry_id": "ZLJ-MARKET-QUESTIONS",
+    "version": "1.3.0-question-registry-v1-qualified"
+  },
+  "resolver_ready_questions": [
+    {
+      "definition_hash": "baede8e1c02d1689ac5ed058d81bba7b26b2fbad868f8010e1292adda21717da",
+      "family": "DIRECTION",
+      "horizon_ns": 10000000000,
+      "outcome_metric_id": "AGGREGATE_MIDPOINT_DIRECTION_10S_V1",
+      "question_ref": "ECONOMIC_ROOT_DIRECTION_10S@1.0.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.question_resolvers.midpoint_v1",
+      "resolver_policy_id": "FIRST_QUALIFIED_AGGREGATE_MIDPOINT_AT_OR_AFTER_TARGET_V1",
+      "scope": "ECONOMIC_ROOT"
+    },
+    {
+      "definition_hash": "297f9dd15264cabc69d04405a5eff88998c1380cfac25c92e5904d50866696a6",
+      "family": "FRAGILITY",
+      "horizon_ns": 60000000000,
+      "outcome_metric_id": "MAX_ADVERSE_EXCURSION_BPS_60S_V1",
+      "question_ref": "ECONOMIC_ROOT_FRAGILITY_MAE_60S@1.0.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.question_path_resolvers.fixed_grid_v1",
+      "resolver_policy_id": "QUALIFIED_FIXED_GRID_AGGREGATE_MIDPOINT_PATH_V1",
+      "scope": "ECONOMIC_ROOT"
+    },
+    {
+      "definition_hash": "b02bbc1332a85a59243c2a1921911cb9b3d69b1d98e0631a8e47d0233d7f6a59",
+      "family": "LIQUIDITY",
+      "horizon_ns": 30000000000,
+      "outcome_metric_id": "SPREAD_UP_AND_DEPTH10_DOWN_30S_V1",
+      "question_ref": "ECONOMIC_ROOT_LIQUIDITY_DETERIORATION_30S@1.0.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.liquidity_resolver.liquidity_v1",
+      "resolver_policy_id": "FIRST_QUALIFIED_BOOK_STATE_AT_OR_AFTER_TARGET_V1",
+      "scope": "ECONOMIC_ROOT"
+    },
+    {
+      "definition_hash": "f46252e327782ed931146d5ed848307efbb2fa4e2e802c53462f6f0f12d6ee5c",
+      "family": "MAGNITUDE",
+      "horizon_ns": 30000000000,
+      "outcome_metric_id": "AGGREGATE_MIDPOINT_RETURN_BPS_30S_V1",
+      "question_ref": "ECONOMIC_ROOT_MAGNITUDE_30S@1.0.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.question_resolvers.midpoint_v1",
+      "resolver_policy_id": "FIRST_QUALIFIED_AGGREGATE_MIDPOINT_AT_OR_AFTER_TARGET_V1",
+      "scope": "ECONOMIC_ROOT"
+    },
+    {
+      "definition_hash": "a71e98733a9ffacac0585238c17e2f01f7e603cf011dc5f9b1a21c6fd4917102",
+      "family": "REVERSAL",
+      "horizon_ns": 60000000000,
+      "outcome_metric_id": "MATERIAL_RETURN_REVERSAL_60S_V1",
+      "question_ref": "ECONOMIC_ROOT_REVERSAL_60S@1.2.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.reversal_resolver.material_v1",
+      "resolver_policy_id": "PREDICTION_BOUND_MATERIAL_REVERSAL_V1",
+      "scope": "ECONOMIC_ROOT"
+    },
+    {
+      "definition_hash": "6e755565d32369acaf47693ba12eabe02745f4920fce7098307ceb23fa42ee9d",
+      "family": "VOLATILITY",
+      "horizon_ns": 60000000000,
+      "outcome_metric_id": "REALIZED_AGGREGATE_MIDPOINT_VOLATILITY_BPS_60S_V1",
+      "question_ref": "ECONOMIC_ROOT_VOLATILITY_60S@1.0.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.question_path_resolvers.fixed_grid_v1",
+      "resolver_policy_id": "QUALIFIED_FIXED_GRID_AGGREGATE_MIDPOINT_PATH_V1",
+      "scope": "ECONOMIC_ROOT"
+    },
+    {
+      "definition_hash": "359eb7e676bcabb499b03ca82fd59780e521f9b96da4143635367d589be5399d",
+      "family": "REGIME",
+      "horizon_ns": 900000000000,
+      "outcome_metric_id": "MARKET_DIRECTION_REGIME_15M_V1",
+      "question_ref": "MARKET_DIRECTION_REGIME_15M@1.0.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.regime_resolver.endpoint_v1",
+      "resolver_policy_id": "FIRST_QUALIFIED_MARKET_CONTEXT_AT_OR_AFTER_TARGET_V1",
+      "scope": "MARKET_WIDE"
+    },
+    {
+      "definition_hash": "7df779cd19e3630e6709292204d4062042571cd7b08a0f4f515bc6fecef374bc",
+      "family": "PERSISTENCE",
+      "horizon_ns": 300000000000,
+      "outcome_metric_id": "MARKET_DIRECTION_REGIME_PERSISTENCE_5M_V1",
+      "question_ref": "MARKET_REGIME_PERSISTENCE_5M@1.0.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.regime_resolver.persistence_v1",
+      "resolver_policy_id": "QUALIFIED_MARKET_CONTEXT_INTERVAL_V1",
+      "scope": "MARKET_WIDE"
+    },
+    {
+      "definition_hash": "624c66ca7234b1768487d722c18008a7cddbf8578bcd99f3b17dfc9e3c5107c5",
+      "family": "BASIS",
+      "horizon_ns": 300000000000,
+      "outcome_metric_id": "SPOT_DERIVATIVE_BASIS_CHANGE_BPS_5M_V1",
+      "question_ref": "SPOT_DERIVATIVE_BASIS_CHANGE_5M@1.0.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.relationship_resolver.basis_v1",
+      "resolver_policy_id": "FIRST_QUALIFIED_RELATIONSHIP_STATE_AT_OR_AFTER_TARGET_V1",
+      "scope": "RELATIONSHIP"
+    },
+    {
+      "definition_hash": "e1ddb52a5b5d717ab9cad5248c29f72b58c6110a8e725f0850cdd3ef33e15b41",
+      "family": "RELATIVE_VALUE",
+      "horizon_ns": 300000000000,
+      "outcome_metric_id": "ABSOLUTE_BASIS_CONVERGENCE_BPS_5M_V1",
+      "question_ref": "SPOT_DERIVATIVE_RELATIVE_VALUE_CONVERGENCE_5M@1.0.0",
+      "resolver_implementation_ref": "autonomous_kernel.evaluation.relationship_resolver.basis_v1",
+      "resolver_policy_id": "FIRST_QUALIFIED_RELATIONSHIP_STATE_AT_OR_AFTER_TARGET_V1",
+      "scope": "RELATIONSHIP"
+    }
+  ],
+  "schema_version": "1.1"
+}
