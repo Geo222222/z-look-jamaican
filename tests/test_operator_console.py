@@ -34,12 +34,36 @@ class OperatorConsoleContractTests(unittest.TestCase):
     def test_operator_snapshot_has_exact_z1_through_z9_story_and_claim_ceiling(self):
         snapshot = operator_snapshot(ROOT)
         self.assertEqual("zlj-operator-console", snapshot["contract"]["name"])
+        self.assertEqual("1.1", snapshot["contract"]["schema_version"])
         self.assertEqual(["Z1", "Z2", "Z3", "Z4", "Z5", "Z6", "Z7", "Z8", "Z9"], [stage["id"] for stage in snapshot["stages"]])
         self.assertEqual("NONE", snapshot["system"]["capital_authority"])
         self.assertEqual("LOCKED_FALSE", snapshot["system"]["live_execution"])
         self.assertEqual("NOT_EARNED", snapshot["certification"]["z8_historical"]["decision"])
         self.assertEqual("CERTIFIED", snapshot["certification"]["z9"]["construction"])
         self.assertEqual("DATA_BLOCKED", snapshot["certification"]["z9"]["contextual_performance"])
+
+    def test_operator_snapshot_exposes_frozen_question_registry_without_granting_model_or_capital_authority(self):
+        snapshot = operator_snapshot(ROOT)
+        registry = snapshot["question_registry"]
+        self.assertEqual("QUESTION_REGISTRY_V1_QUALIFIED", registry["status"])
+        self.assertEqual("ZLJ-MARKET-QUESTIONS", registry["registry"]["registry_id"])
+        self.assertEqual("1.3.0-question-registry-v1-qualified", registry["registry"]["version"])
+        self.assertEqual(10, registry["summary"]["active_resolver_ready"])
+        self.assertEqual(["EXECUTION_SUITABILITY"], registry["summary"]["deferred_families"])
+        self.assertFalse(registry["authority"]["selects_model"])
+        self.assertFalse(registry["authority"]["claims_model_competence"])
+        self.assertFalse(registry["authority"]["capital_decision"])
+        self.assertFalse(registry["authority"]["risk_authorization"])
+        self.assertFalse(registry["authority"]["external_execution"])
+        states = {item["question_ref"]: item["lifecycle_state"] for item in registry["questions"]}
+        self.assertEqual("DEFINED", states["ECONOMIC_ROOT_REVERSAL_60S@1.0.0"])
+        self.assertEqual("RETIRED", states["ECONOMIC_ROOT_REVERSAL_60S@1.1.0"])
+        self.assertEqual("RESOLVER_READY", states["ECONOMIC_ROOT_REVERSAL_60S@1.2.0"])
+        self.assertTrue(registry["guarantees"]["material_reversal_thresholds_preregistered"])
+        self.assertEqual(
+            registry["certificate"]["integrity"]["content_hash"],
+            snapshot["certification"]["question_registry"]["certificate_hash"],
+        )
 
     def test_locked_and_unavailable_controls_fail_before_domain_execution(self):
         with self.assertRaises(OperatorCommandError):
