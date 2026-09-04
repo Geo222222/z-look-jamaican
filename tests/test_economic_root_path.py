@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from autonomous_kernel.book_bridge import canonical_json
 from autonomous_kernel.experience.contracts import (
     ExperienceSourceFrame,
     ExperienceTimescale,
@@ -47,7 +48,7 @@ def _frame(frame_id, price, *, cutoff, known=None, instrument=None):
         frame_id=frame_id,
         representation_type="INSTRUMENT_STATE",
         instrument=inst,
-        window_start_ns=max(0, cutoff - SECOND),
+        window_start_ns=max(0, min(cutoff - SECOND, known_at)),
         cutoff_at_ns=int(cutoff),
         known_at_ns=known_at,
         latest_source_event_at_ns=known_at,
@@ -156,48 +157,35 @@ class EconomicRootPathTests(unittest.TestCase):
             self.assertEqual(path.to_wire(), restored.to_wire())
             self.assertEqual(path.content_hash(), restored.content_hash())
 
-    def test_wrong_instrument_and_future_known_frame_cannot_fill_grid_slots(self):
+    def test_wrong_instrument_and_post_cutoff_frame_cannot_fill_missing_historical_slot(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            frames = list(_full_history(root))
             target = T - 30 * SECOND
-            # Remove the exact BTC target from the durable store by building a
-            # fresh repository with every slot except T-30s.
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            kept = []
             cutoff_frame = None
             for index, offset in enumerate(range(-60, 1, 10)):
                 if offset == -30:
                     continue
                 frame = _frame("REP-KEEP-%02d" % index, str(100 + index), cutoff=T + offset * SECOND)
                 _persist(root, frame)
-                kept.append(frame)
                 if offset == 0:
                     cutoff_frame = frame
             wrong = _frame("REP-ETH-TARGET", "100", cutoff=target, instrument=_instrument("ETH"))
             _persist(root, wrong)
-            future_known = _frame(
-                "REP-BTC-FUTURE-KNOWN",
-                "100",
-                cutoff=target,
-                known=T + SECOND,
-            )
-            _persist(root, future_known)
+            post_cutoff = _frame("REP-BTC-POST-CUTOFF", "100", cutoff=T + SECOND)
+            _persist(root, post_cutoff)
             assert cutoff_frame is not None
             path = _build(root, _experience(cutoff_frame))
             self.assertEqual("DEGRADED", path.status)
             self.assertIn(target, path.missing_target_ns)
-            self.assertNotIn("REP-ETH-TARGET", {point.frame_id for point in path.points})
-            self.assertNotIn("REP-BTC-FUTURE-KNOWN", {point.frame_id for point in path.points})
+            ids = {point.frame_id for point in path.points}
+            self.assertNotIn("REP-ETH-TARGET", ids)
+            self.assertNotIn("REP-BTC-POST-CUTOFF", ids)
 
     def test_stale_source_is_not_carried_forward_and_one_frame_cannot_fill_two_slots(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             cutoff = _frame("REP-CUTOFF", "106", cutoff=T)
             _persist(root, cutoff)
-            # Frame cutoff is inside the T-30 slot, but its own knowledge is too
-            # old for the declared one-second source-age bound.
             stale = _frame(
                 "REP-STALE",
                 "103",
@@ -205,8 +193,6 @@ class EconomicRootPathTests(unittest.TestCase):
                 known=T - 35 * SECOND,
             )
             _persist(root, stale)
-            # One frame near T-20 cannot satisfy any other grid point because
-            # the grid slots and used-frame rule are explicit.
             one = _frame("REP-ONE", "104", cutoff=T - 20 * SECOND)
             _persist(root, one)
             path = _build(root, _experience(cutoff))
@@ -248,10 +234,7 @@ class EconomicRootPathTests(unittest.TestCase):
 
             weakened = copy.deepcopy(path.to_wire())
             weakened["truth_boundary"]["stale_carry_forward"] = True
-            # Re-signing a weakened document must still fail semantic recovery,
-            # not merely integrity verification.
             body = {key: value for key, value in weakened.items() if key != "integrity"}
-            from autonomous_kernel.book_bridge import canonical_json
             weakened["integrity"]["content_hash"] = hashlib.sha256(canonical_json(body)).hexdigest()
             with self.assertRaisesRegex(RootPathExperienceError, "stale-carry-forward"):
                 EconomicRootPathExperience.from_wire(weakened)
