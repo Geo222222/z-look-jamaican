@@ -14,6 +14,11 @@ from .competence import (
 )
 from .contracts import OutcomeContractError, PredictionOutcome, RESOLUTION_POLICY_ID
 from .journal import OutcomeJournal, OutcomeJournalError, validate_outcome_journal
+from .question_journal import (
+    QuestionOutcomeJournal,
+    QuestionOutcomeJournalError,
+    validate_question_outcome_journal,
+)
 from .question_outcome import (
     QuestionBoundOutcome,
     QuestionOutcomeError,
@@ -42,6 +47,8 @@ __all__ = [
     "PredictionOutcome",
     "QuestionBoundOutcome",
     "QuestionOutcomeError",
+    "QuestionOutcomeJournal",
+    "QuestionOutcomeJournalError",
     "RESOLUTION_POLICY_ID",
     "ResolutionEvidenceRef",
     "build_competence_profiles",
@@ -49,4 +56,5 @@ __all__ = [
     "resolve_prediction",
     "select_resolution_frame",
     "validate_outcome_journal",
+    "validate_question_outcome_journal",
 ]
