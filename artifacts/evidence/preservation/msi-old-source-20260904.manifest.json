@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "campaign_id": "MSI-ZLJ-LOCAL-RECONCILIATION-20260904",
+  "workstream": "old_market_object_source",
+  "source_checkout": "C:/Users/epinn/Documents/dev/z-look-jamaican_old",
+  "source_branch": "codex/bootstrap-kernel-checkpoint",
+  "source_head": "7c32f74b7abcb3e65d385a66e9b71a4fa3276fac",
+  "preservation_branch": "codex/preserve-msi-old-source-20260904",
+  "preservation_payload_commit": "b98967d0609ac2022a37ed136d701a33236bcc55",
+  "hash_scope": "exact Git blob bytes stored by preservation_payload_commit",
+  "classification": {
+    "included": "Source code, deterministic registry/configuration, tests, and semantic design/contract documentation.",
+    "deferred_to_evidence_preservation": "Generated market-object graphs, historical datasets, experiment outputs, state projections, evidence journals, and runtime captures.",
+    "excluded_regenerable": "Python bytecode caches and test caches."
+  },
+  "focused_tests": [
+    {
+      "phase": "before_preservation",
+      "command": "python -m unittest tests.test_historical_mechanisms tests.test_market_objects",
+      "tests_run": 14,
+      "result": "PASS",
+      "elapsed_seconds": 0.463
+    },
+    {
+      "phase": "after_source_payload_commit",
+      "command": "python -m unittest tests.test_historical_mechanisms tests.test_market_objects",
+      "tests_run": 14,
+      "result": "PASS",
+      "elapsed_seconds": 0.477
+    }
+  ],
+  "notes": [
+    "No refactoring, modernization, or semantic rewriting was performed. Existing trailing whitespace in historical notes was preserved as-built.",
+    "The store.py change is preserved as a historical behavioral contract and must be manually reconciled against current origin/main."
+  ],
+  "preserved_paths": [
+    {
+      "path": "ME.md",
+      "bytes": 7939,
+      "sha256": "c6f0ab6d059341f20b4a338e0e976d6e17f1ce457ca8328a33425d37f4366c65"
+    },
+    {
+      "path": "autonomous_kernel/store.py",
+      "bytes": 30052,
+      "sha256": "91cd4739000c4ca4e4738f2385ed9b682c76c52c27bcdfa5b0d4162348278414"
+    },
+    {
+      "path": "config/strategy_registry.json",
+      "bytes": 21842,
+      "sha256": "fcc4658ee160c52140cf9e4088ef6564ee000b27e37d26bc1cbcf6a497aa2453"
+    },
+    {
+      "path": "docs/COMPOSABLE_MARKET_OBJECTS.md",
+      "bytes": 2520,
+      "sha256": "38da5bed9c29114cde6d0feefae28298d0b39e0951b14746a1c9e24d21aebdb9"
+    },
+    {
+      "path": "docs/HISTORICAL_SPOT_PERPETUAL_MECHANISMS.md",
+      "bytes": 5241,
+      "sha256": "631a483c0e823c98db406dc7086074b9fb2596934fff27ddcf36266c71a3f740"
+    },
+    {
+      "path": "experiments/historical_mechanisms.py",
+      "bytes": 47172,
+      "sha256": "bb4fc21528d39c86b12858473bb17afbcd98d38c4b43f124358cd08ef74e474c"
+    },
+    {
+      "path": "experiments/market_object_replay.py",
+      "bytes": 13810,
+      "sha256": "d2b7a6788670d05c562b15867d87e338f2d7ddfcb8b4439da65baeed860b560e"
+    },
+    {
+      "path": "market_objects/__init__.py",
+      "bytes": 394,
+      "sha256": "26464caeb6c46d95dc0d3bcee6426e7481f97172a5ade5f579e4f8f04261287e"
+    },
+    {
+      "path": "market_objects/context/__init__.py",
+      "bytes": 71,
+      "sha256": "7c828214990dd36a76c08a0541c95764ad45320e8920d3fd3596dc7d11a49d27"
+    },
+    {
+      "path": "market_objects/context/calendar.py",
+      "bytes": 1778,
+      "sha256": "fcb5d46ec4ca674a7a6c8c38058dacfb4c0497f69041559fc1d98b349d62a5a6"
+    },
+    {
+      "path": "market_objects/core.py",
+      "bytes": 11975,
+      "sha256": "83aaa3a0c6e78f84d4ea65f9848536a345e09d5b40a4101e0845c631598e3e55"
+    },
+    {
+      "path": "market_objects/evidence/__init__.py",
+      "bytes": 683,
+      "sha256": "5d4a7e0e18c6c4484a06f6fb3edde392ab22160354acb4efab8954c6b88e4005"
+    },
+    {
+      "path": "market_objects/evidence/chart_image.py",
+      "bytes": 1187,
+      "sha256": "38c95290c03d80e08b61a667f721636d640d37bc14ab7b1a615b6c547a40baa9"
+    },
+    {
+      "path": "market_objects/evidence/events.py",
+      "bytes": 1076,
+      "sha256": "61a41b4a8bfb95ce20a42a41d67b8c3db2033a08a7930bacba7b9133c9db9a84"
+    },
+    {
+      "path": "market_objects/evidence/fundamentals.py",
+      "bytes": 1284,
+      "sha256": "554e88f1ede21cea4731e56aece5fd248ec482798a1c0fa63ae43193865ca720"
+    },
+    {
+      "path": "market_objects/evidence/funding.py",
+      "bytes": 1183,
+      "sha256": "c118a87be13abc2c94934cced8f75f9f61f21e7d5691d30c86c862e36465407e"
+    },
+    {
+      "path": "market_objects/evidence/open_interest.py",
+      "bytes": 1178,
+      "sha256": "e114c43466eb4a4c375719372fbdff8f73481b9e89e8f5f16c89c22c5db758d4"
+    },
+    {
+      "path": "market_objects/evidence/orderbook.py",
+      "bytes": 2108,
+      "sha256": "2ef609db2442a6f17f5eb6ab46d27eaad8717b28181b8a7279517c0be8ca61c7"
+    },
+    {
+      "path": "market_objects/evidence/portfolio.py",
+      "bytes": 1212,
+      "sha256": "efe46b6a25a65fc5b823a678722e9888d2780421e1cfff039950dfd0904973fd"
+    },
+    {
+      "path": "market_objects/evidence/price.py",
+      "bytes": 2659,
+      "sha256": "59d121c70c4bdad5a05f4d20af51f3e02fb4d543a74472901ecd1364c5276278"
+    },
+    {
+      "path": "market_objects/evidence/trades.py",
+      "bytes": 1778,
+      "sha256": "186530401c6d05202effbd10a64700dddf70866c0b539cf1ff886c421cb44351"
+    },
+    {
+      "path": "market_objects/measurements/__init__.py",
+      "bytes": 523,
+      "sha256": "c635b3d5baee9f03a69d4a78acae75fd7fc1bba6db2f8d19d879c12a95d0ec4a"
+    },
+    {
+      "path": "market_objects/measurements/microstructure.py",
+      "bytes": 3056,
+      "sha256": "05f27a8b08c0994acfa40e0e63b7d67d7f58c1f59a42260af688342542412f56"
+    },
+    {
+      "path": "market_objects/measurements/normalized.py",
+      "bytes": 3258,
+      "sha256": "f3fb68c756aaeae62105f846612ed0bc25fa70ef6b95e9af5a2ad1fa4206666d"
+    },
+    {
+      "path": "market_objects/measurements/relative.py",
+      "bytes": 3309,
+      "sha256": "09dfc7ae97d8533f18b765738f98e40fab3419d6861905e7d7b1d5b00bee39a7"
+    },
+    {
+      "path": "market_objects/measurements/statistical.py",
+      "bytes": 3068,
+      "sha256": "b3c7c15aaba93fedee7310121703d06f5dad099eadbca40f01f00aaa23faf2c0"
+    },
+    {
+      "path": "market_objects/measurements/technical.py",
+      "bytes": 5135,
+      "sha256": "c0f65996962d7f32e2efeb58caf9138e75922be6e3ca37875628bace99ceed8c"
+    },
+    {
+      "path": "market_objects/opportunities/__init__.py",
+      "bytes": 82,
+      "sha256": "87300a512b2e21544de3c10e58fef9bd77f1a7e2100bab501f4d38dc42bc1de9"
+    },
+    {
+      "path": "market_objects/opportunities/candidate.py",
+      "bytes": 4140,
+      "sha256": "ca5065298fb726d76cbb693b3154f69c81ae8e10ab1925d32aa2e472dcf8ab00"
+    },
+    {
+      "path": "market_objects/perception/__init__.py",
+      "bytes": 68,
+      "sha256": "1dfd3545c6e42bf5b49dda7607b0378e280ce3e8aa503920a3b12189659eb9a0"
+    },
+    {
+      "path": "market_objects/perception/chart.py",
+      "bytes": 1893,
+      "sha256": "0cc806258b26ead9409bd25f16fde502c5025e18d54d9c098e98af8e48d91b21"
+    },
+    {
+      "path": "market_objects/state/__init__.py",
+      "bytes": 394,
+      "sha256": "13696839bdd937cc4f4f9bd3f60395af361f4200c56b1e994af1d48db6e7c071"
+    },
+    {
+      "path": "market_objects/state/classifiers.py",
+      "bytes": 13646,
+      "sha256": "a583303bc0cd6987b31fe7e5afeb1475203f54ccc2b8bbcbb4bb6e0437d4af18"
+    },
+    {
+      "path": "market_objects/store.py",
+      "bytes": 7107,
+      "sha256": "68222913121df3947e84c1acb0e87c9320c778a07907b0c7a3b95fc1db18313a"
+    },
+    {
+      "path": "market_objects/stories/__init__.py",
+      "bytes": 203,
+      "sha256": "f005032c00c1adc6d8333abd52f5b72ecc877dab4872a7fb68bed85823be6619"
+    },
+    {
+      "path": "market_objects/stories/engine.py",
+      "bytes": 4143,
+      "sha256": "13242765a827abc5536835c321855ffa45ef3ce79a3b6abb963a6f0c39b3c627"
+    },
+    {
+      "path": "market_objects/stories/market_story.py",
+      "bytes": 3020,
+      "sha256": "911c38dfb4777300e8ee0918c2a443dd997acb264d7df7699330d89148e68db8"
+    },
+    {
+      "path": "market_objects/strategies/__init__.py",
+      "bytes": 209,
+      "sha256": "e0c9cada66face6261175d4c63f1dcefa8bb0e330d5804b161385aeb749a452c"
+    },
+    {
+      "path": "market_objects/strategies/applicability.py",
+      "bytes": 7703,
+      "sha256": "414643e848277086a7a4ac7eb79d4ccd47e4bb7c04b4aace3668bbca4eb46bad"
+    },
+    {
+      "path": "market_objects/strategies/registry.py",
+      "bytes": 2826,
+      "sha256": "6345674fcdfa907272db3800371118ff2339ef5bb1186f10a95366403995443f"
+    },
+    {
+      "path": "market_objects/structure/__init__.py",
+      "bytes": 187,
+      "sha256": "487c6ca6dbc081799b57188f3c9b70ee8f4b2051328445776f5c8288e5cdf21d"
+    },
+    {
+      "path": "market_objects/structure/patterns.py",
+      "bytes": 2552,
+      "sha256": "6a10a889d3a85ce1ac4944c14dcc269a7c27c8c586b44c0c2a0f1dc6d3d46a06"
+    },
+    {
+      "path": "market_objects/structure/price.py",
+      "bytes": 4312,
+      "sha256": "44999183fc97ef033b22f6fb67be891b373450ce19d8b65a9654b696403b06a4"
+    },
+    {
+      "path": "market_objects/transitions/__init__.py",
+      "bytes": 79,
+      "sha256": "a8ce16649032246e695c9cf29639374f414dc346eb6286bae8dd32ad10aa9143"
+    },
+    {
+      "path": "market_objects/transitions/state_transition.py",
+      "bytes": 3074,
+      "sha256": "f9568588cf6e178d5936249be86defbb7512cf8571c3079549a5d0e37841bac6"
+    },
+    {
+      "path": "market_objects/world.py",
+      "bytes": 2021,
+      "sha256": "1155fa65a5729fa573c8fba6a2d2dd9b021b3edc154237567976503a6104cc11"
+    },
+    {
+      "path": "tests/test_historical_mechanisms.py",
+      "bytes": 4163,
+      "sha256": "95467ee9dd0c9aa528ddbaa36d181f2660dcdd3f651a2eb1ce71f13535797447"
+    },
+    {
+      "path": "tests/test_market_objects.py",
+      "bytes": 3019,
+      "sha256": "679d6c658992c350c3189ff505906099d65afa7ebffd43f85d05c45aa3bd335a"
+    },
+    {
+      "path": "z_notes_d.md",
+      "bytes": 13735,
+      "sha256": "5ed69224e885f6d5d932f0afe88381efd393876ea2f1aaac0aff49bd02cda90c"
+    }
+  ],
+  "excluded": [
+    {
+      "path_class": "**/__pycache__/** and *.pyc",
+      "reason": "Regenerable interpreter cache, already ignored by repository policy."
+    },
+    {
+      "path_class": "state/**, evidence journals, generated artifacts, and runtime captures",
+      "reason": "Classified separately for the data/evidence preservation phase; not mixed into source payload."
+    }
+  ]
+}
