@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "experiment_id": "EXP-QUESTION-LIVE-001",
+  "status": "COMPLETED",
+  "experiment_head": "a5fee6a39f10140ec9a2bd8659e862b4c2ebb8dc",
+  "workflow_run_id": 33826657390,
+  "workflow_artifact": {
+    "artifact_id": 9920235751,
+    "name": "exp-question-live-001",
+    "sha256_digest": "4291389b24aaf24bbf3ad2d3859179492e8cb7af7aedcc938896e3828f9e40b2",
+    "retention_days": 30
+  },
+  "qualification": {
+    "decision": "SINGLE_SESSION_QUESTION_BOUND_LEARNING_MECHANISM_SUPPORTED",
+    "reasons": [],
+    "model_performance_claim": false,
+    "model_qualification": false,
+    "capital_effect": "NONE",
+    "live_execution": false
+  },
+  "session": {
+    "stream_id": "COINBASE-BTC-USD-QUESTION-LIVE-1788486038929138629",
+    "capture_seconds": 90,
+    "raw_record_count": 1953,
+    "unique_message_count": 1953,
+    "canonical_observation_count": 2200,
+    "qualified_representation_frame_count": 68,
+    "prediction_anchor_count": 2,
+    "prediction_count": 4,
+    "resolved_outcome_count": 4,
+    "duplicate_count": 0,
+    "sequence_gaps": [],
+    "out_of_order": [],
+    "level2_snapshot_count": 1,
+    "level2_update_count": 1652,
+    "market_trade_message_count": 208,
+    "heartbeat_message_count": 89,
+    "spread_sample_count": 1653,
+    "final_book_hash": "09561cdf0ca80553baf8d7aff5ba6323f02bf1b15907b47c8ecabf7f5512cbcc",
+    "raw_journal_sha256": "bd43b033606bad045c7d818fc3fe2b6af0f0d5b6b5292e2f5dc772d074475283",
+    "compressed_raw_sha256": "feb91f709f21521c13aa38499a3324c64126e0cff915dab7a190c11f374df5ca",
+    "raw_stream_manifest_content_hash": "fadd0f492e5ef689cfee4106f04d1315d1493ff26ac13ea9959cfe0d796d2903"
+  },
+  "integrity": {
+    "prediction_journal_errors": [],
+    "outcome_journal_errors": [],
+    "late_prediction_ids": [],
+    "registry_hash": "eb4bf2b7f7f5b8f10f31f416b501ca41472dc17f7b470ad383f4fe528d798442",
+    "result_content_hash": "ef090a17d9b22f28c24cc24cc4e2aa9ee77f082415e28c5c12ac340d8c715ef2"
+  },
+  "learning_commitments": {
+    "prediction_journal_range_digest": "392fc5af5f03eebd66e4a09e41ef34abc1fc3bfecbeface92521b7101fd882e9",
+    "outcome_journal_range_digest": "61637bbfee6f66dd27fd89786083186287abb5b8cdc991ef880d4d35bf1ad17f"
+  },
+  "prospective_results": [
+    {
+      "question_ref": "ECONOMIC_ROOT_DIRECTION_10S@1.0.0",
+      "prediction_id": "QPRED-78d25a6a7d0ffe290c9c30c35c3d2e8d",
+      "prediction_content_hash": "a98d0b3c6ff6513c89c46f86eed9756cabbfb2569b8ca46516be845292eab2f3",
+      "probe_answer": 1,
+      "realized_answer": 1,
+      "outcome_id": "QOUT-1f7b986f9d68aff45e874357161b1930",
+      "outcome_content_hash": "cbec38b1b651a48be1c0cf912e56df7f177715b3f00901919ef0dfa3c5924951"
+    },
+    {
+      "question_ref": "ECONOMIC_ROOT_LIQUIDITY_DETERIORATION_30S@1.0.0",
+      "prediction_id": "QPRED-4dc1df4b2921be2ec75b3f8057dcc97c",
+      "prediction_content_hash": "a9cc46a690afeaebb88260ef461024f1c4fb56824d68ff37ba12cddcc91c22ac",
+      "probe_answer": 0,
+      "realized_answer": 0,
+      "outcome_id": "QOUT-a99f1d0b0d7a9aa1133d75abb610fb65",
+      "outcome_content_hash": "112c0c53c3c6e016c63a5523a31900f40e6fe23b859cc959fdbad22c500e7c99"
+    },
+    {
+      "question_ref": "ECONOMIC_ROOT_DIRECTION_10S@1.0.0",
+      "prediction_id": "QPRED-57123c7c621093b85340957c6c52dd51",
+      "prediction_content_hash": "308da5df47f6f481933eef48967fd1c941e0de6bbff028d12b7880169e43e792",
+      "probe_answer": 1,
+      "realized_answer": 0,
+      "outcome_id": "QOUT-dde4f1d3763d88404077435c05d01966",
+      "outcome_content_hash": "39cc1ff9766eb2a33c520a03d659e401a4c219f98fcee450b3452c73c2d9e9bc"
+    },
+    {
+      "question_ref": "ECONOMIC_ROOT_LIQUIDITY_DETERIORATION_30S@1.0.0",
+      "prediction_id": "QPRED-7e028cc94d96c923bc3d5dfdcfba76b2",
+      "prediction_content_hash": "b7fb265c6f66e4df7a38326453460566c6361919133e424873b7470ca4dec793",
+      "probe_answer": 0,
+      "realized_answer": 1,
+      "outcome_id": "QOUT-2aa5f4db517a7e1acc2409b2bef113cd",
+      "outcome_content_hash": "98ead9b5f33c16e730ffda116657527ff6a7ac88b0d20e1e79c5b2d22cfba275"
+    }
+  ],
+  "claim_boundary": "This result proves one preregistered public-market session exercised the question-bound prospective memory/resolution mechanism. It does not establish model skill, contextual competence, profitability, broad empirical qualification, capital authority, or execution capability."
+}
