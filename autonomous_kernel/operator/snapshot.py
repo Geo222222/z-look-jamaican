@@ -8,6 +8,12 @@ from typing import Any, Dict, Mapping
 
 from ..context.status import market_context_status
 from ..monitor import monitor_snapshot
+from ..questions.catalog import default_question_registry_v1
+from ..questions.certification import (
+    QUESTION_REGISTRY_V1_QUALIFIED,
+    build_question_registry_v1_qualified,
+    certify_question_registry_v1,
+)
 from .contracts import STAGE_METADATA, command_catalog
 from .journal import validate_operator_journal
 
@@ -90,12 +96,75 @@ def _stage_availability(stage_id: str, metric: Mapping[str, Any]) -> str:
     return "NO_DURABLE_RUNTIME_RECORDS"
 
 
+def _question_registry() -> Dict[str, Any]:
+    """Project the frozen resolver examination contract into the owner console.
+
+    The operator surface derives this from the canonical question definitions and
+    certification code. It never upgrades resolver readiness into model competence
+    or capital/execution authority.
+    """
+    base = default_question_registry_v1(registered_at_ns=0, effective_at_ns=0)
+    qualified = build_question_registry_v1_qualified(base, known_at_ns=0, effective_at_ns=0)
+    certificate = certify_question_registry_v1(qualified)
+    questions = []
+    for entry in qualified.entries:
+        definition = entry.definition
+        questions.append(
+            {
+                "question_ref": definition.question_ref,
+                "question_id": definition.question_id,
+                "version": definition.version,
+                "family": definition.family.value,
+                "scope": definition.scope.value,
+                "asks": definition.asks,
+                "horizon_ns": definition.horizon_ns,
+                "answer_kind": definition.outcome.answer_kind.value,
+                "outcome_metric_id": definition.outcome.metric_id,
+                "resolver_policy_id": definition.outcome.resolver_policy_id,
+                "resolver_implementation_ref": entry.resolver_implementation_ref,
+                "lifecycle_state": entry.lifecycle_state,
+                "definition_hash": definition.content_hash(),
+                "evidence_cutoff_policy": definition.evidence_cutoff_policy,
+                "required_artifact_types": list(definition.required_artifact_types),
+                "required_feature_families": list(definition.required_feature_families),
+                "parameters": dict(definition.parameters),
+            }
+        )
+    active = [item for item in questions if item["lifecycle_state"] == "RESOLVER_READY"]
+    retired = [item for item in questions if item["lifecycle_state"] == "RETIRED"]
+    defined = [item for item in questions if item["lifecycle_state"] == "DEFINED"]
+    return {
+        "status": QUESTION_REGISTRY_V1_QUALIFIED,
+        "registry": certificate["registry"],
+        "certificate": certificate,
+        "questions": questions,
+        "summary": {
+            "active_resolver_ready": len(active),
+            "retired_historical": len(retired),
+            "defined_historical": len(defined),
+            "deferred_families": list(certificate["deferred_question_families"]),
+        },
+        "authority": certificate["authority"],
+        "guarantees": certificate["guarantees"],
+    }
+
+
 def _certification(root: Path) -> Dict[str, Any]:
     z8 = _json(root, "artifacts/evidence/market/z8-certification-inventory-20260903.json")
     hist = _json(root, "artifacts/evidence/market/exp-z8-hist-real-001-result.json")
     prospective = _json(root, "artifacts/evidence/market/exp-z8-prospective-002-result.json")
     z9_policy = _json(root, "artifacts/evidence/market/z9-certification-policy-v1.json")
+    question_registry = _question_registry()
     return {
+        "question_registry": {
+            "status": question_registry["status"],
+            "registry_id": question_registry["registry"]["registry_id"],
+            "version": question_registry["registry"]["version"],
+            "content_hash": question_registry["registry"]["content_hash"],
+            "certificate_hash": question_registry["certificate"]["integrity"]["content_hash"],
+            "resolver_ready": question_registry["summary"]["active_resolver_ready"],
+            "deferred_families": question_registry["summary"]["deferred_families"],
+        },
         "z8_historical": {
             "experiment_id": hist.get("experiment_id", "EXP-Z8-HIST-REAL-001"),
             "decision": hist.get("qualification_decision") or hist.get("decision") or ((hist.get("qualification") or {}).get("decision")) or "NOT_EARNED",
@@ -128,7 +197,7 @@ def build_operator_snapshot(root: Path) -> Dict[str, Any]:
     return {
         "contract": {
             "name": "zlj-operator-console",
-            "schema_version": "1.0",
+            "schema_version": "1.1",
             "generated_at_ns": time.time_ns(),
             "authority": "read/control projection only; domain journals and services remain authoritative",
         },
@@ -140,6 +209,7 @@ def build_operator_snapshot(root: Path) -> Dict[str, Any]:
             "operator_journal_errors": journal_errors,
         },
         "stages": stages,
+        "question_registry": _question_registry(),
         "certification": _certification(root),
         "controls": command_catalog(),
         "monitor": monitor,
