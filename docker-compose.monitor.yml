@@ -11,17 +11,21 @@ services:
       - no-new-privileges:true
     environment:
       ZLOOK_SOURCE_ROOT: /zlook
+      PYTHONPATH: /zlook
+      ZLOOK_OPERATOR_MUTATIONS_ENABLED: "false"
       ZLOOK_MONITOR_REFRESH_SECONDS: ${ZLOOK_MONITOR_REFRESH_SECONDS:-3}
       ZLOOK_MONITOR_COMMAND_TIMEOUT_SECONDS: ${ZLOOK_MONITOR_COMMAND_TIMEOUT_SECONDS:-15}
     volumes:
       - ./:/zlook:ro
+      - ./monitor/app:/monitor/app:ro
+      - ./monitor/web:/monitor/web:ro
     ports:
       - "127.0.0.1:${ZLOOK_MONITOR_PORT:-3000}:3000"
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/api/health', timeout=5).read()"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/api/health', timeout=20).read()"]
       interval: 10s
-      timeout: 5s
+      timeout: 30s
       retries: 3
-      start_period: 10s
+      start_period: 20s
     tmpfs:
       - /tmp:size=16m,mode=1777
