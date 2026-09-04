@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Tuple, Union
 
 from ..operations import canonical_hash
 
@@ -80,7 +80,7 @@ class GraphRef:
         return asdict(self)
 
 
-def _refs(values: Sequence[GraphRef | Mapping[str, Any]]) -> Tuple[Mapping[str, Any], ...]:
+def _refs(values: Sequence[Union[GraphRef, Mapping[str, Any]]]) -> Tuple[Mapping[str, Any], ...]:
     output = []
     for value in values:
         item = value.to_wire() if isinstance(value, GraphRef) else dict(value)
@@ -101,7 +101,7 @@ def build_graph_node(
     cutoff_at_ns: int,
     known_at_ns: int,
     source_refs: Sequence[str],
-    input_refs: Sequence[GraphRef | Mapping[str, Any]],
+    input_refs: Sequence[Union[GraphRef, Mapping[str, Any]]],
     method: Mapping[str, Any],
     quality: Mapping[str, Any],
     payload: Mapping[str, Any],
