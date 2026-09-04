@@ -10,7 +10,13 @@ from ..prediction.factory import PredictionFactoryError, representation_target_p
 from ..prediction.question_bound import QuestionBoundPrediction, QuestionPredictionError
 from ..prediction.question_journal import QuestionPredictionJournal, validate_question_prediction_journal
 from ..questions.evolution import (
+    MATERIAL_REVERSAL_MIN_FORWARD_ABS_BPS,
+    MATERIAL_REVERSAL_MIN_FORWARD_TO_TRAILING_RATIO,
+    MATERIAL_REVERSAL_MIN_TRAILING_ABS_BPS,
+    REVERSAL_MATERIAL_RESOLVER_IMPLEMENTATION_REF,
+    REVERSAL_MATERIAL_RESOLVER_POLICY_ID,
     REVERSAL_QUESTION_V1_1_REF,
+    REVERSAL_QUESTION_V1_2_REF,
     REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF,
     REVERSAL_ROOT_PATH_RESOLVER_POLICY_ID,
 )
@@ -26,6 +32,7 @@ from .question_resolvers import QuestionOutcomePendingError, QuestionResolverErr
 SECOND = 1_000_000_000
 TRAILING_WINDOW_NS = 60 * SECOND
 TRAILING_GRID_NS = 10 * SECOND
+BPS = Decimal("10000")
 
 
 class ReversalResolverError(QuestionResolverError):
@@ -152,6 +159,32 @@ def _sign(value: Decimal) -> int:
     return 0
 
 
+def _material_reversal(trailing_return: Decimal, forward_return: Decimal) -> int:
+    """Apply the immutable v1.2 materiality contract in basis-point space."""
+    trailing_bps = trailing_return * BPS
+    forward_bps = forward_return * BPS
+    trailing_floor = Decimal(MATERIAL_REVERSAL_MIN_TRAILING_ABS_BPS)
+    forward_floor = Decimal(MATERIAL_REVERSAL_MIN_FORWARD_ABS_BPS)
+    relative_floor = Decimal(MATERIAL_REVERSAL_MIN_FORWARD_TO_TRAILING_RATIO)
+
+    if abs(trailing_bps) < trailing_floor:
+        return 0
+    trailing_sign = _sign(trailing_return)
+    forward_sign = _sign(forward_return)
+    if trailing_sign == 0 or forward_sign == 0 or trailing_sign == forward_sign:
+        return 0
+    material_forward_threshold = max(forward_floor, abs(trailing_bps) * relative_floor)
+    return 1 if abs(forward_bps) >= material_forward_threshold else 0
+
+
+def _resolver_contract(prediction: QuestionBoundPrediction) -> Tuple[str, str]:
+    if prediction.question_ref == REVERSAL_QUESTION_V1_1_REF:
+        return REVERSAL_ROOT_PATH_RESOLVER_POLICY_ID, REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF
+    if prediction.question_ref == REVERSAL_QUESTION_V1_2_REF:
+        return REVERSAL_MATERIAL_RESOLVER_POLICY_ID, REVERSAL_MATERIAL_RESOLVER_IMPLEMENTATION_REF
+    raise ReversalResolverError("prediction is not a supported reversal question version")
+
+
 def resolve_reversal_question(
     root: Path,
     prediction_id: str,
@@ -160,19 +193,19 @@ def resolve_reversal_question(
     forward_frames: Sequence[RepresentationFrame],
     now_at_ns: int,
 ) -> QuestionBoundOutcome:
-    """Resolve reversal without reconstructing trailing history after prediction.
+    """Resolve sign-only v1.1 or material-reversal v1.2 from bound causal evidence.
 
-    The trailing return is read only from the exact Economic Root Path artifact
+    Both versions read the trailing return only from the exact Economic Root Path
     already bound into the journaled prediction. The forward endpoint is the
     first qualified representation for that exact canonical spot instrument at
-    or after T+60s inside the question's declared resolution lag.
+    or after T+60s inside the declared resolution lag. v1.2 additionally applies
+    fixed materiality thresholds preregistered in the question definition.
     """
     root = root.resolve()
     prediction, prediction_entry_hash, journaled_at_ns = _journaled_prediction(root, prediction_id)
-    if prediction.question_ref != REVERSAL_QUESTION_V1_1_REF:
-        raise ReversalResolverError("prediction is not reversal question v1.1")
-    if prediction.resolver_policy_id != REVERSAL_ROOT_PATH_RESOLVER_POLICY_ID:
-        raise ReversalResolverError("prediction resolver policy differs from reversal root-path resolver")
+    expected_policy, implementation_ref = _resolver_contract(prediction)
+    if prediction.resolver_policy_id != expected_policy:
+        raise ReversalResolverError("prediction resolver policy differs from reversal resolver version")
     if prediction.mode == "PROSPECTIVE_SHADOW" and journaled_at_ns >= prediction.resolves_at_ns:
         raise ReversalResolverError("late-journaled prospective prediction cannot become forward evidence")
     now = int(now_at_ns)
@@ -189,7 +222,7 @@ def resolve_reversal_question(
     outcome_id = build_question_outcome_id(
         prediction.prediction_id,
         prediction.resolver_policy_id,
-        REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF,
+        implementation_ref,
     )
     if selected is not None:
         if now < selected.known_at_ns:
@@ -199,9 +232,12 @@ def resolve_reversal_question(
         except PredictionFactoryError as exc:
             raise ReversalResolverError("selected forward representation has no qualified midpoint: %s" % exc) from exc
         forward_return = Decimal(realized_price_text) / Decimal(cutoff_point.midpoint) - Decimal("1")
-        trailing_sign = _sign(trailing_return)
-        forward_sign = _sign(forward_return)
-        reversed_sign = 1 if trailing_sign != 0 and forward_sign != 0 and trailing_sign != forward_sign else 0
+        if prediction.question_ref == REVERSAL_QUESTION_V1_2_REF:
+            reversed_value = _material_reversal(trailing_return, forward_return)
+        else:
+            trailing_sign = _sign(trailing_return)
+            forward_sign = _sign(forward_return)
+            reversed_value = 1 if trailing_sign != 0 and forward_sign != 0 and trailing_sign != forward_sign else 0
         return QuestionBoundOutcome(
             outcome_id=outcome_id,
             prediction_id=prediction.prediction_id,
@@ -214,13 +250,13 @@ def resolve_reversal_question(
             answer_kind=prediction.answer_kind,
             outcome_metric_id=prediction.outcome_metric_id,
             resolver_policy_id=prediction.resolver_policy_id,
-            resolver_implementation_ref=REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF,
+            resolver_implementation_ref=implementation_ref,
             status="RESOLVED",
             cutoff_at_ns=prediction.cutoff_at_ns,
             target_resolves_at_ns=prediction.resolves_at_ns,
             max_resolution_lag_ns=prediction.max_resolution_lag_ns,
             decided_at_ns=selected.known_at_ns,
-            realized_answer={"value": reversed_sign},
+            realized_answer={"value": reversed_value},
             resolution_evidence=(
                 ResolutionEvidenceRef(
                     evidence_family="ECONOMIC_ROOT_PATH",
@@ -258,7 +294,7 @@ def resolve_reversal_question(
         answer_kind=prediction.answer_kind,
         outcome_metric_id=prediction.outcome_metric_id,
         resolver_policy_id=prediction.resolver_policy_id,
-        resolver_implementation_ref=REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF,
+        resolver_implementation_ref=implementation_ref,
         status="UNRESOLVABLE",
         cutoff_at_ns=prediction.cutoff_at_ns,
         target_resolves_at_ns=prediction.resolves_at_ns,
