@@ -1,22 +1,28 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Mapping, Tuple
+from typing import Any, Dict, Mapping
 
 from ..operations import canonical_hash
 from .catalog import question_catalog_v1
 from .contracts import EVIDENCE_CUTOFF_POLICY, QuestionContractError, QuestionFamily, QuestionRegistrySnapshot
 from .evolution import (
+    MATERIAL_REVERSAL_MIN_FORWARD_ABS_BPS,
+    MATERIAL_REVERSAL_MIN_FORWARD_TO_TRAILING_RATIO,
+    MATERIAL_REVERSAL_MIN_TRAILING_ABS_BPS,
+    REVERSAL_MATERIAL_RESOLVER_IMPLEMENTATION_REF,
     REVERSAL_QUESTION_V1_1_REF,
+    REVERSAL_QUESTION_V1_2_REF,
     REVERSAL_QUESTION_V1_REF,
     REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF,
     reversal_question_v1_1,
+    reversal_question_v1_2,
 )
-from .readiness import RESOLVER_READY_IMPLEMENTATIONS_V1, build_complete_resolver_ready_registry_v1_1
+from .readiness import RESOLVER_READY_IMPLEMENTATIONS_V1, build_complete_resolver_ready_registry_v1_2
 
 
-QUESTION_REGISTRY_V1_CERTIFICATION_SCHEMA_VERSION = "1.0"
+QUESTION_REGISTRY_V1_CERTIFICATION_SCHEMA_VERSION = "1.1"
 QUESTION_REGISTRY_V1_QUALIFIED = "QUESTION_REGISTRY_V1_QUALIFIED"
-QUESTION_REGISTRY_V1_QUALIFIED_VERSION = "1.2.0-question-registry-v1-qualified"
+QUESTION_REGISTRY_V1_QUALIFIED_VERSION = "1.3.0-question-registry-v1-qualified"
 CANONICAL_REGISTRY_ID = "ZLJ-MARKET-QUESTIONS"
 DEFERRED_QUESTION_FAMILIES_V1 = (QuestionFamily.EXECUTION_SUITABILITY.value,)
 
@@ -40,25 +46,29 @@ _CERTIFICATION_GUARANTEES = {
     "retrospective_definition_mutation_forbidden": True,
     "missing_or_invalid_evidence_fails_closed": True,
     "relationship_compatibility_proof_required": True,
+    "material_reversal_thresholds_preregistered": True,
+    "sign_reversal_history_preserved": True,
     "registry_version_frozen": True,
 }
 
 
 def _canonical_definitions() -> Dict[str, Any]:
     definitions = {item.question_ref: item for item in question_catalog_v1()}
-    reversal = reversal_question_v1_1()
-    definitions[reversal.question_ref] = reversal
+    sign_reversal = reversal_question_v1_1()
+    material_reversal = reversal_question_v1_2()
+    definitions[sign_reversal.question_ref] = sign_reversal
+    definitions[material_reversal.question_ref] = material_reversal
     return definitions
 
 
 def resolver_ready_refs_v1_qualified() -> Dict[str, str]:
-    """Return the exact question-ref -> resolver implementation exam surface."""
+    """Return the exact active question-ref -> resolver examination surface."""
     originals = {item.question_id: item for item in question_catalog_v1()}
     refs = {
         originals[question_id].question_ref: implementation
         for question_id, implementation in sorted(RESOLVER_READY_IMPLEMENTATIONS_V1.items())
     }
-    refs[REVERSAL_QUESTION_V1_1_REF] = REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF
+    refs[REVERSAL_QUESTION_V1_2_REF] = REVERSAL_MATERIAL_RESOLVER_IMPLEMENTATION_REF
     return refs
 
 
@@ -73,7 +83,7 @@ def build_question_registry_v1_qualified(
     This freezes truth semantics only. It does not qualify a model, score an expert,
     authorize capital, or make execution reachable.
     """
-    return build_complete_resolver_ready_registry_v1_1(
+    return build_complete_resolver_ready_registry_v1_2(
         base,
         version=QUESTION_REGISTRY_V1_QUALIFIED_VERSION,
         known_at_ns=int(known_at_ns),
@@ -130,6 +140,14 @@ def _assert_semantic_guards(snapshot: QuestionRegistrySnapshot) -> None:
     if historical_reversal.qualification_evidence_refs:
         raise QuestionContractError("historical reversal v1.0 cannot gain qualification evidence retroactively")
 
+    sign_reversal = actual[REVERSAL_QUESTION_V1_1_REF]
+    if sign_reversal.lifecycle_state != "RETIRED":
+        raise QuestionContractError("sign-reversal v1.1 must be retained as retired historical truth")
+    if sign_reversal.resolver_implementation_ref != REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF:
+        raise QuestionContractError("sign-reversal v1.1 historical resolver identity changed")
+    if sign_reversal.qualification_evidence_refs:
+        raise QuestionContractError("retired sign-reversal v1.1 cannot gain qualification evidence")
+
     active_execution_questions = [
         entry.definition.question_ref
         for entry in snapshot.entries
@@ -166,31 +184,35 @@ def _assert_semantic_guards(snapshot: QuestionRegistrySnapshot) -> None:
         if "MARKET_WIDE_CONTEXT" not in definition.required_feature_families:
             raise QuestionContractError("qualified market context is not mandatory: %s" % question_ref)
 
-    reversal = actual[REVERSAL_QUESTION_V1_1_REF].definition
+    reversal = actual[REVERSAL_QUESTION_V1_2_REF].definition
     if "ECONOMIC_ROOT_PATH" not in reversal.required_artifact_types:
-        raise QuestionContractError("reversal must bind the prediction-time economic root path")
+        raise QuestionContractError("material reversal must bind the prediction-time economic root path")
     if "ECONOMIC_ROOT_PATH" not in reversal.required_feature_families:
-        raise QuestionContractError("reversal root-path feature lineage is mandatory")
+        raise QuestionContractError("material reversal root-path feature lineage is mandatory")
     if reversal.parameters.get("trailing_path_status") != "QUALIFIED":
-        raise QuestionContractError("reversal trailing path must be qualified")
+        raise QuestionContractError("material reversal trailing path must be qualified")
     if reversal.parameters.get("trailing_path_type") != "ECONOMIC_ROOT_PATH":
-        raise QuestionContractError("reversal trailing path type changed")
+        raise QuestionContractError("material reversal trailing path type changed")
     if reversal.parameters.get("instrument_policy") != "EXACT_PREDICTION_BOUND_SPOT_INSTRUMENT":
-        raise QuestionContractError("reversal reference instrument policy changed")
+        raise QuestionContractError("material reversal reference instrument policy changed")
     if reversal.parameters.get("trailing_window_ns") != 60_000_000_000:
-        raise QuestionContractError("reversal trailing window changed")
+        raise QuestionContractError("material reversal trailing window changed")
     if reversal.parameters.get("trailing_grid_interval_ns") != 10_000_000_000:
-        raise QuestionContractError("reversal trailing grid changed")
+        raise QuestionContractError("material reversal trailing grid changed")
     if reversal.parameters.get("zero_return_policy") != "EITHER_ZERO_MEANS_NO_REVERSAL":
-        raise QuestionContractError("reversal zero-return policy changed")
+        raise QuestionContractError("material reversal zero-return policy changed")
+    if reversal.parameters.get("materiality_policy") != "OPPOSITE_SIGN_WITH_ABSOLUTE_AND_TRAILING_RATIO_FLOORS_V1":
+        raise QuestionContractError("material reversal policy changed")
+    if reversal.parameters.get("min_trailing_abs_bps") != MATERIAL_REVERSAL_MIN_TRAILING_ABS_BPS:
+        raise QuestionContractError("material reversal trailing floor changed")
+    if reversal.parameters.get("min_forward_abs_bps") != MATERIAL_REVERSAL_MIN_FORWARD_ABS_BPS:
+        raise QuestionContractError("material reversal forward floor changed")
+    if reversal.parameters.get("min_forward_to_trailing_ratio") != MATERIAL_REVERSAL_MIN_FORWARD_TO_TRAILING_RATIO:
+        raise QuestionContractError("material reversal relative floor changed")
 
 
 def certify_question_registry_v1(snapshot: QuestionRegistrySnapshot) -> Mapping[str, Any]:
-    """Return a deterministic, tamper-evident qualification certificate.
-
-    Runtime replay/determinism is established by the resolver adversarial suites;
-    this certificate fixes the exact semantic surface those suites qualify.
-    """
+    """Return a deterministic, tamper-evident qualification certificate."""
     _assert_semantic_guards(snapshot)
     ready_refs = resolver_ready_refs_v1_qualified()
     entries = {entry.definition.question_ref: entry for entry in snapshot.entries}
@@ -223,6 +245,7 @@ def certify_question_registry_v1(snapshot: QuestionRegistrySnapshot) -> Mapping[
         },
         "resolver_ready_questions": ready,
         "historical_defined_questions": [REVERSAL_QUESTION_V1_REF],
+        "historical_retired_questions": [REVERSAL_QUESTION_V1_1_REF],
         "deferred_question_families": list(DEFERRED_QUESTION_FAMILIES_V1),
         "guarantees": dict(_CERTIFICATION_GUARANTEES),
         "authority": {
@@ -253,6 +276,10 @@ def validate_question_registry_v1_certificate(value: Mapping[str, Any]) -> None:
         raise QuestionContractError("registry qualification certificate schema is invalid")
     if value.get("certification_id") != QUESTION_REGISTRY_V1_QUALIFIED:
         raise QuestionContractError("registry qualification certification id is invalid")
+    if tuple(value.get("historical_defined_questions", ())) != (REVERSAL_QUESTION_V1_REF,):
+        raise QuestionContractError("registry qualification historical-defined boundary changed")
+    if tuple(value.get("historical_retired_questions", ())) != (REVERSAL_QUESTION_V1_1_REF,):
+        raise QuestionContractError("registry qualification historical-retired boundary changed")
     if tuple(value.get("deferred_question_families", ())) != DEFERRED_QUESTION_FAMILIES_V1:
         raise QuestionContractError("registry qualification deferred-family boundary changed")
     guarantees = value.get("guarantees")
