@@ -1,43 +1,51 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Mapping, Sequence, Tuple
+from typing import Any, Dict, List, Mapping, Tuple
 
 from ..models.baselines import baseline_model_set
 from ..operations import canonical_hash
 from ..prediction.question_bound import QuestionBoundPrediction
 from ..questions.catalog import question_catalog_v1
-from .contracts import ExpertContractError, build_expert_claim, build_expert_contract, validate_expert_contract
+from .contracts import build_expert_claim, build_expert_contract, validate_expert_contract
 
 
 class ExpertAdapterError(ValueError):
     pass
 
 
-IMPLEMENTED_BASELINE_ROLES = (
-    # The existing baseline models expose both expected signed move and probability
-    # positive, so each executable model can legitimately sit the two currently
-    # compatible exams. No other question family is claimed here.
-    ("ECONOMIC_ROOT_DIRECTION_10S@1.0.0", "DIRECTION"),
-    ("ECONOMIC_ROOT_MAGNITUDE_30S@1.0.0", "MAGNITUDE"),
-)
+DIRECTION_REF = "ECONOMIC_ROOT_DIRECTION_10S@1.0.0"
+MAGNITUDE_REF = "ECONOMIC_ROOT_MAGNITUDE_30S@1.0.0"
 
 
 def _question_map() -> Dict[str, Any]:
     return {question.question_ref: question for question in question_catalog_v1()}
 
 
-def implemented_baseline_expert_contracts() -> Tuple[Mapping[str, Any], ...]:
-    """Return only experts backed by executable model code already in the repo.
+def _roles_for_model(model: Any) -> Tuple[Tuple[str, str, str], ...]:
+    """Return only roles justified by the model's actual current inputs.
 
-    This inventory intentionally differs from the broader curriculum built by
-    ``build_baseline_expert_school``. Curriculum presence is not implementation
-    existence, and implementation existence is not earned competence.
+    Null prior is permitted as an explicit BENCHMARK on Direction and Magnitude.
+    Microstructure baselines are operational only for Direction today because the
+    Magnitude exam requires MARKET_WIDE_CONTEXT that those implementations do not
+    currently consume.
+    """
+    if model.definition.model_id == "NULL-PRIOR":
+        return ((DIRECTION_REF, "DIRECTION", "BENCHMARK"), (MAGNITUDE_REF, "MAGNITUDE", "BENCHMARK"))
+    return ((DIRECTION_REF, "DIRECTION", "CANDIDATE_MODEL"),)
+
+
+def implemented_baseline_expert_contracts() -> Tuple[Mapping[str, Any], ...]:
+    """Return expert roles backed by executable code already in the repository.
+
+    Curriculum presence is not implementation existence; implementation existence
+    is not earned competence. Benchmarks are marked separately from candidate
+    predictive models.
     """
     questions = _question_map()
     contracts: List[Mapping[str, Any]] = []
     for model in baseline_model_set():
         model_ref = model.definition.model_ref
-        for question_ref, role in IMPLEMENTED_BASELINE_ROLES:
+        for question_ref, role, implementation_class in _roles_for_model(model):
             question = questions[question_ref]
             if int(question.horizon_ns) not in set(int(v) for v in model.definition.supported_horizons_ns):
                 continue
@@ -46,6 +54,7 @@ def implemented_baseline_expert_contracts() -> Tuple[Mapping[str, Any], ...]:
                 "implementation_ref": implementation_ref,
                 "model_definition": model.definition.to_wire(),
                 "expert_role": role,
+                "implementation_class": implementation_class,
                 "question_ref": question_ref,
             })
             contracts.append(build_expert_contract(
@@ -60,6 +69,7 @@ def implemented_baseline_expert_contracts() -> Tuple[Mapping[str, Any], ...]:
                 allowed_feature_families=question.required_feature_families,
                 parameters={
                     "source": "EXISTING_BASELINE_MODEL_V1",
+                    "implementation_class": implementation_class,
                     "target_metric": model.definition.target_metric,
                 },
             ))
@@ -70,15 +80,23 @@ def operational_expert_inventory() -> Mapping[str, Any]:
     contracts = implemented_baseline_expert_contracts()
     by_question: Dict[str, int] = {}
     by_species: Dict[str, int] = {}
+    benchmark_count = 0
+    candidate_model_count = 0
     for contract in contracts:
         question_ref = str(contract["question_refs"][0])
         by_question[question_ref] = by_question.get(question_ref, 0) + 1
         species = str(contract["species"])
         by_species[species] = by_species.get(species, 0) + 1
+        if contract["parameters"].get("implementation_class") == "BENCHMARK":
+            benchmark_count += 1
+        else:
+            candidate_model_count += 1
     body = {
         "schema_version": "1.0",
         "status": "IMPLEMENTED_CANDIDATE_EXPERTS",
         "implemented_expert_count": len(contracts),
+        "candidate_model_expert_count": candidate_model_count,
+        "benchmark_expert_count": benchmark_count,
         "contracts": list(contracts),
         "by_question": dict(sorted(by_question.items())),
         "by_species": dict(sorted(by_species.items())),
@@ -138,17 +156,18 @@ def _experience_refs(prediction: QuestionBoundPrediction) -> Tuple[str, ...]:
     return tuple(refs)
 
 
-def question_prediction_to_expert_claim(
-    contract: Mapping[str, Any],
-    prediction: QuestionBoundPrediction,
-) -> Mapping[str, Any]:
+def question_prediction_to_expert_claim(contract: Mapping[str, Any], prediction: QuestionBoundPrediction) -> Mapping[str, Any]:
     """Adapt exact question-bound model testimony into an immutable expert claim."""
     validate_expert_contract(contract)
+    questions = _question_map()
     if prediction.question_ref not in contract["question_refs"]:
         raise ExpertAdapterError("prediction question is outside expert contract")
-    if prediction.question_definition_hash != _question_map()[prediction.question_ref].content_hash():
+    if prediction.question_ref not in questions:
+        raise ExpertAdapterError("prediction question is not canonical")
+    question = questions[prediction.question_ref]
+    if prediction.question_definition_hash != question.content_hash():
         raise ExpertAdapterError("prediction question definition is not canonical")
-    if int(prediction.horizon_ns) != int(_question_map()[prediction.question_ref].horizon_ns):
+    if int(prediction.horizon_ns) != int(question.horizon_ns):
         raise ExpertAdapterError("prediction horizon differs from expert examination")
 
     contract_models = set(str(ref) for ref in contract.get("model_refs", ()))
@@ -159,6 +178,10 @@ def question_prediction_to_expert_claim(
     elif prediction_models:
         raise ExpertAdapterError("model-backed prediction cannot enter a model-unbound expert contract")
 
+    artifact_types = {str(ref.artifact_type) for ref in prediction.artifact_refs}
+    required_artifacts = set(str(value) for value in contract["required_artifact_types"])
+    if not required_artifacts.issubset(artifact_types):
+        raise ExpertAdapterError("prediction evidence omits required expert artifacts")
     allowed = set(str(value) for value in contract["allowed_feature_families"])
     observed_features = {str(feature) for ref in prediction.artifact_refs for feature in ref.feature_families}
     if not observed_features.issubset(allowed):
