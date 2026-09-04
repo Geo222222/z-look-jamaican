@@ -11,7 +11,7 @@ from ..store import writer_lock
 from .registry import ALLOWED_TRANSITIONS, EVIDENCE_KIND_BY_TARGET, ModelRegistry, ModelRegistryError, validate_model_registry
 
 
-QUALIFICATION_RECEIPT_SCHEMA_VERSION = "1.0"
+QUALIFICATION_RECEIPT_SCHEMA_VERSION = "1.1"
 TRANSITION_PROPOSAL_SCHEMA_VERSION = "1.0"
 QUALIFICATION_AUTHORITY = {
     "evaluates_evidence": True,
@@ -56,6 +56,31 @@ def _refs(values: Sequence[str], field: str) -> Tuple[str, ...]:
     return refs
 
 
+def _optional_refs(values: Sequence[str], field: str) -> Tuple[str, ...]:
+    refs = tuple(str(value) for value in values)
+    if any(not value for value in refs) or len(set(refs)) != len(refs):
+        raise ModelQualificationError("%s must contain unique non-empty refs" % field)
+    return refs
+
+
+def _checks(values: Mapping[str, Any]) -> Dict[str, bool]:
+    if not isinstance(values, Mapping) or not values:
+        raise ModelQualificationError("qualification_checks must be a non-empty mapping")
+    result: Dict[str, bool] = {}
+    for key, value in values.items():
+        name = str(key).strip()
+        if not name or not isinstance(value, bool):
+            raise ModelQualificationError("qualification checks require named boolean values")
+        result[name] = value
+    return dict(sorted(result.items()))
+
+
+def _derive_verdict(checks: Mapping[str, bool], blockers: Sequence[str]) -> str:
+    if blockers:
+        return "BLOCKED"
+    return "SUPPORTED" if checks and all(checks.values()) else "NOT_SUPPORTED"
+
+
 def _seal(body: Mapping[str, Any]) -> Dict[str, Any]:
     value = dict(body)
     value["integrity"] = {"algorithm": "sha256", "content_hash": canonical_hash(body)}
@@ -84,16 +109,15 @@ def build_evaluation_receipt(
     sample_count: int,
     metrics: Mapping[str, Any],
     thresholds: Mapping[str, Any],
-    verdict: str,
+    qualification_checks: Mapping[str, bool],
     evaluated_at_ns: int,
+    blocking_reasons: Sequence[str] = (),
     dataset_hash: Optional[str] = None,
     walk_forward_hash: Optional[str] = None,
     experiment_hash: Optional[str] = None,
 ) -> Mapping[str, Any]:
     if target_state not in EVALUATION_MODE_BY_TARGET:
         raise ModelQualificationError("unsupported qualification target state")
-    if verdict not in {"SUPPORTED", "NOT_SUPPORTED", "BLOCKED"}:
-        raise ModelQualificationError("evaluation verdict invalid")
     questions = _refs(question_refs, "question_refs")
     refs = _refs(evaluation_artifact_refs, "evaluation_artifact_refs")
     hashes = tuple(_digest(value, "evaluation_artifact_hash") for value in evaluation_artifact_hashes)
@@ -104,6 +128,8 @@ def build_evaluation_receipt(
         raise ModelQualificationError("evaluation receipt identity/timing invalid")
     if not isinstance(metrics, Mapping) or not isinstance(thresholds, Mapping):
         raise ModelQualificationError("metrics and thresholds must be mappings")
+    normalized_checks = _checks(qualification_checks)
+    blockers = _optional_refs(blocking_reasons, "blocking_reasons")
     optional_hashes = {}
     for key, value in (("dataset_hash", dataset_hash), ("walk_forward_hash", walk_forward_hash), ("experiment_hash", experiment_hash)):
         optional_hashes[key] = None if value is None else _digest(value, key)
@@ -114,6 +140,7 @@ def build_evaluation_receipt(
         or optional_hashes["experiment_hash"] is None
     ):
         raise ModelQualificationError("walk-forward evaluation requires dataset, plan, and experiment identity")
+    verdict = _derive_verdict(normalized_checks, blockers)
     body = {
         "schema_version": QUALIFICATION_RECEIPT_SCHEMA_VERSION,
         "receipt_id": str(receipt_id),
@@ -131,7 +158,10 @@ def build_evaluation_receipt(
         "sample_count": n,
         "metrics": dict(metrics),
         "thresholds": dict(thresholds),
+        "qualification_checks": normalized_checks,
+        "blocking_reasons": list(blockers),
         "verdict": verdict,
+        "verdict_policy": "BLOCKED_IF_BLOCKERS_ELSE_SUPPORTED_IFF_ALL_PREREGISTERED_CHECKS_TRUE_V1",
         "evaluated_at_ns": int(evaluated_at_ns),
         **optional_hashes,
         "authority": dict(QUALIFICATION_AUTHORITY),
@@ -149,8 +179,12 @@ def validate_evaluation_receipt(receipt: Mapping[str, Any]) -> None:
         raise ModelQualificationError("evaluation mode/target mismatch")
     if receipt.get("required_registry_evidence_kind") != EVIDENCE_KIND_BY_TARGET[target]:
         raise ModelQualificationError("registry evidence kind mismatch")
-    if receipt.get("verdict") not in {"SUPPORTED", "NOT_SUPPORTED", "BLOCKED"}:
-        raise ModelQualificationError("evaluation receipt verdict invalid")
+    if receipt.get("verdict_policy") != "BLOCKED_IF_BLOCKERS_ELSE_SUPPORTED_IFF_ALL_PREREGISTERED_CHECKS_TRUE_V1":
+        raise ModelQualificationError("evaluation verdict policy invalid")
+    checks = _checks(receipt.get("qualification_checks", {}))
+    blockers = _optional_refs(receipt.get("blocking_reasons", ()), "blocking_reasons")
+    if receipt.get("verdict") != _derive_verdict(checks, blockers):
+        raise ModelQualificationError("evaluation verdict does not follow qualification checks")
     _digest(receipt.get("model_definition_hash"), "model_definition_hash")
     _digest(receipt.get("model_artifact_hash"), "model_artifact_hash")
     _refs(receipt.get("question_refs", ()), "question_refs")
@@ -183,7 +217,7 @@ def validate_evaluation_receipt(receipt: Mapping[str, Any]) -> None:
 def build_transition_proposal(registry: ModelRegistry, receipt: Mapping[str, Any], *, proposed_at_ns: int) -> Mapping[str, Any]:
     validate_evaluation_receipt(receipt)
     if receipt["verdict"] != "SUPPORTED":
-        raise ModelQualificationError("only SUPPORTED evaluation evidence may propose a transition")
+        raise ModelQualificationError("only mechanically SUPPORTED evaluation evidence may propose a transition")
     errors = validate_model_registry(registry.root, require_state=False)
     if errors:
         raise ModelQualificationError("model registry invalid: " + "; ".join(errors))
@@ -203,7 +237,12 @@ def build_transition_proposal(registry: ModelRegistry, receipt: Mapping[str, Any
         raise ModelQualificationError("transition cannot be proposed before evidence is evaluated")
     body = {
         "schema_version": TRANSITION_PROPOSAL_SCHEMA_VERSION,
-        "proposal_id": "MTP-%s" % receipt["integrity"]["content_hash"][:32],
+        "proposal_id": "MTP-%s" % canonical_hash({
+            "receipt_hash": receipt["integrity"]["content_hash"],
+            "from_state": current,
+            "to_state": target,
+            "proposed_at_ns": int(proposed_at_ns),
+        })[:32],
         "model_ref": receipt["model_ref"],
         "model_definition_hash": receipt["model_definition_hash"],
         "model_artifact_hash": receipt["model_artifact_hash"],
