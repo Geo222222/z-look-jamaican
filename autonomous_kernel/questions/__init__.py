@@ -1,6 +1,17 @@
 """Immutable economic-question contracts for ZLJ learning."""
 
 from .catalog import default_question_registry_v1, question_catalog_v1
+from .certification import (
+    DEFERRED_QUESTION_FAMILIES_V1,
+    QUESTION_REGISTRY_V1_CERTIFICATION_SCHEMA_VERSION,
+    QUESTION_REGISTRY_V1_QUALIFIED,
+    QUESTION_REGISTRY_V1_QUALIFIED_VERSION,
+    build_question_registry_v1_qualified,
+    certify_question_registry_v1,
+    resolver_ready_refs_v1_qualified,
+    validate_question_registry_v1_certificate,
+    verify_question_registry_v1_certificate,
+)
 from .contracts import (
     EVIDENCE_CUTOFF_POLICY,
     QUESTION_REGISTRY_SCHEMA_VERSION,
@@ -17,12 +28,20 @@ from .contracts import (
 )
 from .evidence import material_question_registry_evidence
 from .evolution import (
+    MATERIAL_REVERSAL_MIN_FORWARD_ABS_BPS,
+    MATERIAL_REVERSAL_MIN_FORWARD_TO_TRAILING_RATIO,
+    MATERIAL_REVERSAL_MIN_TRAILING_ABS_BPS,
+    REVERSAL_MATERIAL_RESOLVER_IMPLEMENTATION_REF,
+    REVERSAL_MATERIAL_RESOLVER_POLICY_ID,
     REVERSAL_QUESTION_V1_1_REF,
+    REVERSAL_QUESTION_V1_2_REF,
     REVERSAL_QUESTION_V1_REF,
     REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF,
     REVERSAL_ROOT_PATH_RESOLVER_POLICY_ID,
     build_reversal_v1_1_registry,
+    build_reversal_v1_2_registry,
     reversal_question_v1_1,
+    reversal_question_v1_2,
 )
 from .learning_evidence import (
     LearningEvidenceError,
@@ -33,17 +52,28 @@ from .readiness import (
     RESOLVER_READY_IMPLEMENTATIONS_V1,
     UNRESOLVED_QUESTION_IDS_V1,
     build_complete_resolver_ready_registry_v1_1,
+    build_complete_resolver_ready_registry_v1_2,
     build_resolver_ready_registry,
     build_resolver_ready_registry_v1,
     resolver_ready_refs_v1,
 )
 
 __all__ = [
+    "DEFERRED_QUESTION_FAMILIES_V1",
     "EVIDENCE_CUTOFF_POLICY",
+    "MATERIAL_REVERSAL_MIN_FORWARD_ABS_BPS",
+    "MATERIAL_REVERSAL_MIN_FORWARD_TO_TRAILING_RATIO",
+    "MATERIAL_REVERSAL_MIN_TRAILING_ABS_BPS",
     "QUESTION_REGISTRY_SCHEMA_VERSION",
+    "QUESTION_REGISTRY_V1_CERTIFICATION_SCHEMA_VERSION",
+    "QUESTION_REGISTRY_V1_QUALIFIED",
+    "QUESTION_REGISTRY_V1_QUALIFIED_VERSION",
     "QUESTION_SCHEMA_VERSION",
     "RESOLVER_READY_IMPLEMENTATIONS_V1",
+    "REVERSAL_MATERIAL_RESOLVER_IMPLEMENTATION_REF",
+    "REVERSAL_MATERIAL_RESOLVER_POLICY_ID",
     "REVERSAL_QUESTION_V1_1_REF",
+    "REVERSAL_QUESTION_V1_2_REF",
     "REVERSAL_QUESTION_V1_REF",
     "REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF",
     "REVERSAL_ROOT_PATH_RESOLVER_POLICY_ID",
@@ -59,14 +89,22 @@ __all__ = [
     "QuestionRegistrySnapshot",
     "QuestionScope",
     "build_complete_resolver_ready_registry_v1_1",
+    "build_complete_resolver_ready_registry_v1_2",
     "build_learning_journal_commitment",
     "build_question_registry_snapshot",
+    "build_question_registry_v1_qualified",
     "build_resolver_ready_registry",
     "build_resolver_ready_registry_v1",
     "build_reversal_v1_1_registry",
+    "build_reversal_v1_2_registry",
+    "certify_question_registry_v1",
     "default_question_registry_v1",
     "material_question_registry_evidence",
     "question_catalog_v1",
     "resolver_ready_refs_v1",
+    "resolver_ready_refs_v1_qualified",
     "reversal_question_v1_1",
+    "reversal_question_v1_2",
+    "validate_question_registry_v1_certificate",
+    "verify_question_registry_v1_certificate",
 ]

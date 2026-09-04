@@ -28,6 +28,29 @@ jobs:
         run: node --check monitor/web/product-app.js
       - name: Unit tests
         run: python -m unittest discover -s tests -v
+      - name: Generate question registry v1 qualification
+        run: |
+          python experiments/question_registry_v1_certification.py --output /tmp/question-registry-v1-qualified.json
+          cat /tmp/question-registry-v1-qualified.json
+      - name: Verify frozen question registry v1 qualification
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          generated = json.loads(Path('/tmp/question-registry-v1-qualified.json').read_text(encoding='utf-8'))
+          frozen_path = Path('artifacts/evidence/market/question-registry-v1-qualified.json')
+          if not frozen_path.is_file():
+              raise SystemExit('missing frozen QUESTION_REGISTRY_V1_QUALIFIED evidence artifact')
+          committed = json.loads(frozen_path.read_text(encoding='utf-8'))
+          if generated != committed:
+              raise SystemExit('generated question registry v1 qualification differs from frozen evidence artifact')
+          if committed.get('certification_id') != 'QUESTION_REGISTRY_V1_QUALIFIED':
+              raise SystemExit('question registry v1 certification id drifted')
+          if committed.get('registry', {}).get('version') != '1.3.0-question-registry-v1-qualified':
+              raise SystemExit('question registry v1 frozen version drifted')
+          if len(committed.get('resolver_ready_questions', [])) != 10:
+              raise SystemExit('question registry v1 active examination count drifted')
+          PY
       - name: Run preregistered Z8 real-data qualification
         run: |
           python experiments/z8_real_data_qualification.py --root . --output /tmp/z8-real-data-result.json
