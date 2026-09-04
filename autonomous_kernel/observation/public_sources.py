@@ -10,7 +10,7 @@ import time
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple
 
 from ..operations import canonical_hash
 from .adapters import (
@@ -291,10 +291,23 @@ def canonicalize_public_record(spec: PublicSourceSpec, record: ProviderRecord) -
     if record.provider != spec.provider:
         raise PublicSourceCaptureError("provider record differs from public-source spec")
     if spec.provider == KRAKEN_PROVIDER:
-        return adapt_kraken_v2(record)
-    if spec.provider == BINANCE_SPOT_PROVIDER:
-        return adapt_binance_spot(record, default_symbol=spec.provider_symbol)
-    raise PublicSourceCaptureError("unsupported public source provider")
+        observations = adapt_kraken_v2(record)
+    elif spec.provider == BINANCE_SPOT_PROVIDER:
+        observations = adapt_binance_spot(record, default_symbol=spec.provider_symbol)
+    else:
+        raise PublicSourceCaptureError("unsupported public source provider")
+
+    allowed_events = set(spec.market_event_types)
+    for observation in observations:
+        if observation.provider != spec.provider:
+            raise PublicSourceCaptureError("canonical observation provider differs from source spec")
+        if observation.instrument.canonical_id != spec.canonical_instrument_id:
+            raise PublicSourceCaptureError("canonical observation instrument differs from source spec")
+        if observation.provider_symbol.upper() != spec.provider_symbol.upper():
+            raise PublicSourceCaptureError("canonical observation provider symbol differs from source spec")
+        if observation.event_type not in allowed_events:
+            raise PublicSourceCaptureError("canonical observation event type exceeds source spec")
+    return observations
 
 
 async def capture_public_source_window(
