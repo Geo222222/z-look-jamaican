@@ -42,10 +42,12 @@ class CanonicalInstrument:
 class InstrumentRegistry:
     """Provider-symbol aliases mapped onto stable market identities.
 
-    Provider symbols are deliberately not used as canonical identifiers.  A
+    Provider symbols are deliberately not used as canonical identifiers. A
     later spot/futures or cross-venue representation can therefore join markets
-    without guessing whether `BTC-USD`, `BTC/USD`, or another venue symbol means
-    the same economic instrument.
+    without guessing whether venue-specific symbols mean the same economic
+    instrument. Quote assets remain part of identity: BTC-USD and BTC-USDT may
+    share an economic root later, but are not interchangeable spot expressions
+    unless an explicit quote-normalization contract earns that comparison.
     """
 
     def __init__(self) -> None:
@@ -72,7 +74,7 @@ class InstrumentRegistry:
 
 def default_instrument_registry() -> InstrumentRegistry:
     registry = InstrumentRegistry()
-    btc_spot = CanonicalInstrument(
+    btc_usd_spot = CanonicalInstrument(
         canonical_id="CRYPTO.SPOT.BTC-USD",
         asset_class="CRYPTO",
         market_type="SPOT",
@@ -80,7 +82,7 @@ def default_instrument_registry() -> InstrumentRegistry:
         quote_asset="USD",
         settlement_asset="USD",
     )
-    eth_spot = CanonicalInstrument(
+    eth_usd_spot = CanonicalInstrument(
         canonical_id="CRYPTO.SPOT.ETH-USD",
         asset_class="CRYPTO",
         market_type="SPOT",
@@ -88,12 +90,30 @@ def default_instrument_registry() -> InstrumentRegistry:
         quote_asset="USD",
         settlement_asset="USD",
     )
+    btc_usdt_spot = CanonicalInstrument(
+        canonical_id="CRYPTO.SPOT.BTC-USDT",
+        asset_class="CRYPTO",
+        market_type="SPOT",
+        base_asset="BTC",
+        quote_asset="USDT",
+        settlement_asset="USDT",
+    )
+    eth_usdt_spot = CanonicalInstrument(
+        canonical_id="CRYPTO.SPOT.ETH-USDT",
+        asset_class="CRYPTO",
+        market_type="SPOT",
+        base_asset="ETH",
+        quote_asset="USDT",
+        settlement_asset="USDT",
+    )
     for symbol in ("BTC-USD",):
-        registry.register("coinbase_advanced_trade_public_websocket", symbol, btc_spot)
+        registry.register("coinbase_advanced_trade_public_websocket", symbol, btc_usd_spot)
     for symbol in ("ETH-USD",):
-        registry.register("coinbase_advanced_trade_public_websocket", symbol, eth_spot)
+        registry.register("coinbase_advanced_trade_public_websocket", symbol, eth_usd_spot)
     for symbol in ("BTC/USD", "XBT/USD"):
-        registry.register("kraken_websocket_v2", symbol, btc_spot)
+        registry.register("kraken_websocket_v2", symbol, btc_usd_spot)
     for symbol in ("ETH/USD",):
-        registry.register("kraken_websocket_v2", symbol, eth_spot)
+        registry.register("kraken_websocket_v2", symbol, eth_usd_spot)
+    registry.register("binance_spot_public_websocket", "BTCUSDT", btc_usdt_spot)
+    registry.register("binance_spot_public_websocket", "ETHUSDT", eth_usdt_spot)
     return registry
