@@ -1,3 +1,9 @@
+"""Perception-only lineage graph adapted from preserved market-object work.
+
+Canonical Z1/Z2/Z9 artifacts remain authoritative. This graph adds typed,
+point-in-time relationships and provenance without restoring historical strategy
+or opportunity authority.
+"""
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
