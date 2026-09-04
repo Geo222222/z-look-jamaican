@@ -37,6 +37,11 @@ from .question_resolvers import (
     QuestionResolverError,
     resolve_midpoint_question,
 )
+from .relationship_resolver import (
+    RELATIONSHIP_RESOLVER_IMPLEMENTATION_REF,
+    RELATIONSHIP_RESOLVER_POLICY_ID,
+    resolve_relationship_question,
+)
 from .resolver import (
     MAX_RESOLUTION_LAG_NS_V1,
     OutcomePendingError,
@@ -52,6 +57,8 @@ __all__ = [
     "MAX_RESOLUTION_LAG_NS_V1",
     "MIDPOINT_RESOLVER_IMPLEMENTATION_REF",
     "MIDPOINT_RESOLVER_POLICY_ID",
+    "RELATIONSHIP_RESOLVER_IMPLEMENTATION_REF",
+    "RELATIONSHIP_RESOLVER_POLICY_ID",
     "SAMPLE_STRENGTH_PRIOR_COUNT",
     "CompetenceError",
     "CompetenceProfile",
@@ -74,6 +81,7 @@ __all__ = [
     "resolve_liquidity_question",
     "resolve_midpoint_question",
     "resolve_prediction",
+    "resolve_relationship_question",
     "select_resolution_frame",
     "validate_outcome_journal",
     "validate_question_outcome_journal",
