@@ -4,11 +4,11 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, Mapping, Sequence, Tuple
+from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
 from ..operations import canonical_hash
 from ..store import writer_lock
-from .registry import EVIDENCE_KIND_BY_TARGET, ModelRegistry, ModelRegistryError, validate_model_registry
+from .registry import ALLOWED_TRANSITIONS, EVIDENCE_KIND_BY_TARGET, ModelRegistry, ModelRegistryError, validate_model_registry
 
 
 QUALIFICATION_RECEIPT_SCHEMA_VERSION = "1.0"
@@ -86,9 +86,9 @@ def build_evaluation_receipt(
     thresholds: Mapping[str, Any],
     verdict: str,
     evaluated_at_ns: int,
-    dataset_hash: str | None = None,
-    walk_forward_hash: str | None = None,
-    experiment_hash: str | None = None,
+    dataset_hash: Optional[str] = None,
+    walk_forward_hash: Optional[str] = None,
+    experiment_hash: Optional[str] = None,
 ) -> Mapping[str, Any]:
     if target_state not in EVALUATION_MODE_BY_TARGET:
         raise ModelQualificationError("unsupported qualification target state")
@@ -108,7 +108,11 @@ def build_evaluation_receipt(
     for key, value in (("dataset_hash", dataset_hash), ("walk_forward_hash", walk_forward_hash), ("experiment_hash", experiment_hash)):
         optional_hashes[key] = None if value is None else _digest(value, key)
     mode = EVALUATION_MODE_BY_TARGET[target_state]
-    if mode == "WALK_FORWARD" and (optional_hashes["dataset_hash"] is None or optional_hashes["walk_forward_hash"] is None or optional_hashes["experiment_hash"] is None):
+    if mode == "WALK_FORWARD" and (
+        optional_hashes["dataset_hash"] is None
+        or optional_hashes["walk_forward_hash"] is None
+        or optional_hashes["experiment_hash"] is None
+    ):
         raise ModelQualificationError("walk-forward evaluation requires dataset, plan, and experiment identity")
     body = {
         "schema_version": QUALIFICATION_RECEIPT_SCHEMA_VERSION,
@@ -193,8 +197,10 @@ def build_transition_proposal(registry: ModelRegistry, receipt: Mapping[str, Any
         raise ModelQualificationError("evaluation receipt model artifact identity mismatch")
     current = str(record.get("state", ""))
     target = str(receipt["target_state"])
-    # The ModelRegistry remains authoritative for the exact legal edge; this
-    # proposal records the expected edge so apply can detect state movement.
+    if target not in ALLOWED_TRANSITIONS.get(current, set()):
+        raise ModelQualificationError("evaluation evidence cannot propose illegal lifecycle edge %s -> %s" % (current, target))
+    if int(proposed_at_ns) < int(receipt["evaluated_at_ns"]):
+        raise ModelQualificationError("transition cannot be proposed before evidence is evaluated")
     body = {
         "schema_version": TRANSITION_PROPOSAL_SCHEMA_VERSION,
         "proposal_id": "MTP-%s" % receipt["integrity"]["content_hash"][:32],
@@ -208,8 +214,6 @@ def build_transition_proposal(registry: ModelRegistry, receipt: Mapping[str, Any
         "proposed_at_ns": int(proposed_at_ns),
         "authority": dict(QUALIFICATION_AUTHORITY),
     }
-    if int(proposed_at_ns) < int(receipt["evaluated_at_ns"]):
-        raise ModelQualificationError("transition cannot be proposed before evidence is evaluated")
     return _seal(body)
 
 
@@ -217,11 +221,14 @@ def validate_transition_proposal(proposal: Mapping[str, Any]) -> None:
     if proposal.get("schema_version") != TRANSITION_PROPOSAL_SCHEMA_VERSION:
         raise ModelQualificationError("transition proposal schema invalid")
     target = str(proposal.get("to_state", ""))
+    source = str(proposal.get("from_state", ""))
     if target not in EVIDENCE_KIND_BY_TARGET or proposal.get("evidence_kind") != EVIDENCE_KIND_BY_TARGET[target]:
         raise ModelQualificationError("transition proposal evidence kind invalid")
+    if target not in ALLOWED_TRANSITIONS.get(source, set()):
+        raise ModelQualificationError("transition proposal lifecycle edge invalid")
     for field in ("model_definition_hash", "model_artifact_hash", "evaluation_receipt_hash"):
         _digest(proposal.get(field), field)
-    if not proposal.get("model_ref") or not proposal.get("from_state") or not isinstance(proposal.get("proposed_at_ns"), int):
+    if not proposal.get("model_ref") or not source or not isinstance(proposal.get("proposed_at_ns"), int) or proposal["proposed_at_ns"] < 0:
         raise ModelQualificationError("transition proposal identity/timing invalid")
     if proposal.get("authority") != QUALIFICATION_AUTHORITY:
         raise ModelQualificationError("transition proposal authority boundary changed")
@@ -275,12 +282,7 @@ class QualificationEvidenceStore:
         return self.directory / ("proposal-%s.json" % value[:32])
 
 
-def apply_transition_proposal(
-    root: Path,
-    *,
-    proposal_hash: str,
-    occurred_at_ns: int,
-) -> Mapping[str, Any]:
+def apply_transition_proposal(root: Path, *, proposal_hash: str, occurred_at_ns: int) -> Mapping[str, Any]:
     """Apply one persisted proposal exclusively through ModelRegistry.transition."""
     root = root.resolve()
     store = QualificationEvidenceStore(root)
@@ -307,15 +309,13 @@ def apply_transition_proposal(
     record = (registry.state().get("models") or {}).get(proposal["model_ref"])
     if not isinstance(record, Mapping):
         raise ModelQualificationError("proposal model no longer registered")
+    evidence_ref = "qualification-receipt:%s" % receipt["integrity"]["content_hash"]
     if record.get("state") != proposal["from_state"]:
-        # Idempotent replay is allowed only if registry already reached exactly
-        # the proposal target with this exact evidence reference.
-        if record.get("state") == proposal["to_state"] and record.get("last_evidence_refs") == ["qualification-receipt:%s" % receipt["integrity"]["content_hash"]]:
+        if record.get("state") == proposal["to_state"] and record.get("last_evidence_refs") == [evidence_ref]:
             return record
         raise ModelQualificationError("model lifecycle moved after proposal; re-evaluation required")
     if record.get("definition_hash") != proposal["model_definition_hash"] or record.get("artifact_hash") != proposal["model_artifact_hash"]:
         raise ModelQualificationError("model identity changed after proposal")
-    evidence_ref = "qualification-receipt:%s" % receipt["integrity"]["content_hash"]
     try:
         return registry.transition(
             proposal["model_ref"],
