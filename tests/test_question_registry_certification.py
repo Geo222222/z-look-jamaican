@@ -11,14 +11,19 @@ from autonomous_kernel.evaluation import (
     REGIME_ENDPOINT_IMPLEMENTATION_REF,
     REGIME_PERSISTENCE_IMPLEMENTATION_REF,
     RELATIONSHIP_RESOLVER_IMPLEMENTATION_REF,
+    REVERSAL_MATERIAL_RESOLVER_IMPLEMENTATION_REF,
     REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF,
 )
 from autonomous_kernel.operations import canonical_hash
 from autonomous_kernel.questions import (
     DEFERRED_QUESTION_FAMILIES_V1,
+    MATERIAL_REVERSAL_MIN_FORWARD_ABS_BPS,
+    MATERIAL_REVERSAL_MIN_FORWARD_TO_TRAILING_RATIO,
+    MATERIAL_REVERSAL_MIN_TRAILING_ABS_BPS,
     QUESTION_REGISTRY_V1_QUALIFIED,
     QUESTION_REGISTRY_V1_QUALIFIED_VERSION,
     REVERSAL_QUESTION_V1_1_REF,
+    REVERSAL_QUESTION_V1_2_REF,
     REVERSAL_QUESTION_V1_REF,
     QuestionContractError,
     QuestionFamily,
@@ -45,7 +50,7 @@ EXPECTED_READY = {
     "SPOT_DERIVATIVE_RELATIVE_VALUE_CONVERGENCE_5M@1.0.0": RELATIONSHIP_RESOLVER_IMPLEMENTATION_REF,
     "MARKET_DIRECTION_REGIME_15M@1.0.0": REGIME_ENDPOINT_IMPLEMENTATION_REF,
     "MARKET_REGIME_PERSISTENCE_5M@1.0.0": REGIME_PERSISTENCE_IMPLEMENTATION_REF,
-    REVERSAL_QUESTION_V1_1_REF: REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF,
+    REVERSAL_QUESTION_V1_2_REF: REVERSAL_MATERIAL_RESOLVER_IMPLEMENTATION_REF,
 }
 
 
@@ -65,7 +70,7 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
         self.assertEqual(EXPECTED_READY, resolver_ready_refs_v1_qualified())
         self.assertEqual((QuestionFamily.EXECUTION_SUITABILITY.value,), DEFERRED_QUESTION_FAMILIES_V1)
 
-    def test_complete_registry_has_ten_ready_questions_and_historical_reversal_v1(self):
+    def test_complete_registry_has_ten_active_questions_and_preserves_reversal_history(self):
         snapshot = self._snapshot()
         self.assertEqual(QUESTION_REGISTRY_V1_QUALIFIED_VERSION, snapshot.version)
         by_ref = {entry.definition.question_ref: entry for entry in snapshot.entries}
@@ -75,12 +80,21 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
             if entry.lifecycle_state == "RESOLVER_READY"
         }
         self.assertEqual(EXPECTED_READY, ready)
-        self.assertEqual(11, len(snapshot.entries))
+        self.assertEqual(12, len(snapshot.entries))
 
         historical = by_ref[REVERSAL_QUESTION_V1_REF]
         self.assertEqual("DEFINED", historical.lifecycle_state)
         self.assertIsNone(historical.resolver_implementation_ref)
         self.assertEqual((), historical.qualification_evidence_refs)
+
+        sign_only = by_ref[REVERSAL_QUESTION_V1_1_REF]
+        self.assertEqual("RETIRED", sign_only.lifecycle_state)
+        self.assertEqual(REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF, sign_only.resolver_implementation_ref)
+        self.assertEqual((), sign_only.qualification_evidence_refs)
+
+        material = by_ref[REVERSAL_QUESTION_V1_2_REF]
+        self.assertEqual("RESOLVER_READY", material.lifecycle_state)
+        self.assertEqual(REVERSAL_MATERIAL_RESOLVER_IMPLEMENTATION_REF, material.resolver_implementation_ref)
 
         self.assertFalse(any(
             entry.definition.family is QuestionFamily.EXECUTION_SUITABILITY
@@ -95,6 +109,8 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
         self.assertEqual(QUESTION_REGISTRY_V1_QUALIFIED, first["certification_id"])
         self.assertEqual(snapshot.content_hash(), first["registry"]["content_hash"])
         self.assertEqual(10, len(first["resolver_ready_questions"]))
+        self.assertEqual([REVERSAL_QUESTION_V1_REF], first["historical_defined_questions"])
+        self.assertEqual([REVERSAL_QUESTION_V1_1_REF], first["historical_retired_questions"])
         validate_question_registry_v1_certificate(first)
         verify_question_registry_v1_certificate(snapshot, first)
 
@@ -173,7 +189,7 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
             with self.assertRaises(QuestionContractError):
                 certify_question_registry_v1(mutated)
 
-    def test_regime_truth_and_reversal_path_contracts_are_frozen(self):
+    def test_regime_truth_and_material_reversal_contracts_are_frozen(self):
         snapshot = self._snapshot()
         by_ref = {entry.definition.question_ref: entry for entry in snapshot.entries}
 
@@ -185,7 +201,7 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
             self.assertIn("MARKET_WIDE_EXPERIENCE", definition.required_artifact_types)
             self.assertIn("MARKET_WIDE_CONTEXT", definition.required_feature_families)
 
-        reversal = by_ref[REVERSAL_QUESTION_V1_1_REF].definition
+        reversal = by_ref[REVERSAL_QUESTION_V1_2_REF].definition
         self.assertIn("ECONOMIC_ROOT_PATH", reversal.required_artifact_types)
         self.assertIn("ECONOMIC_ROOT_PATH", reversal.required_feature_families)
         self.assertEqual("QUALIFIED", reversal.parameters["trailing_path_status"])
@@ -197,23 +213,33 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
         self.assertEqual(60_000_000_000, reversal.parameters["trailing_window_ns"])
         self.assertEqual(10_000_000_000, reversal.parameters["trailing_grid_interval_ns"])
         self.assertEqual("EITHER_ZERO_MEANS_NO_REVERSAL", reversal.parameters["zero_return_policy"])
+        self.assertEqual(
+            "OPPOSITE_SIGN_WITH_ABSOLUTE_AND_TRAILING_RATIO_FLOORS_V1",
+            reversal.parameters["materiality_policy"],
+        )
+        self.assertEqual(MATERIAL_REVERSAL_MIN_TRAILING_ABS_BPS, reversal.parameters["min_trailing_abs_bps"])
+        self.assertEqual(MATERIAL_REVERSAL_MIN_FORWARD_ABS_BPS, reversal.parameters["min_forward_abs_bps"])
+        self.assertEqual(
+            MATERIAL_REVERSAL_MIN_FORWARD_TO_TRAILING_RATIO,
+            reversal.parameters["min_forward_to_trailing_ratio"],
+        )
 
         weakened = replace(
             reversal,
-            parameters=dict(reversal.parameters, trailing_path_status="DEGRADED_ALLOWED"),
+            parameters=dict(reversal.parameters, min_forward_to_trailing_ratio="0.01"),
         )
         entries = tuple(
             replace(entry, definition=weakened)
-            if entry.definition.question_ref == REVERSAL_QUESTION_V1_1_REF
+            if entry.definition.question_ref == REVERSAL_QUESTION_V1_2_REF
             else entry
             for entry in snapshot.entries
         )
         with self.assertRaises(QuestionContractError):
             certify_question_registry_v1(replace(snapshot, entries=entries))
 
-    def test_historical_reversal_cannot_be_retroactively_promoted(self):
+    def test_historical_reversal_lifecycle_cannot_be_forged(self):
         snapshot = self._snapshot()
-        entries = tuple(
+        v1_promoted = tuple(
             replace(
                 entry,
                 lifecycle_state="RESOLVER_READY",
@@ -223,14 +249,22 @@ class QuestionRegistryCertificationTests(unittest.TestCase):
             else entry
             for entry in snapshot.entries
         )
-        mutated = replace(snapshot, entries=entries)
         with self.assertRaises(QuestionContractError):
-            certify_question_registry_v1(mutated)
+            certify_question_registry_v1(replace(snapshot, entries=v1_promoted))
+
+        v1_1_reactivated = tuple(
+            replace(entry, lifecycle_state="RESOLVER_READY")
+            if entry.definition.question_ref == REVERSAL_QUESTION_V1_1_REF
+            else entry
+            for entry in snapshot.entries
+        )
+        with self.assertRaises(QuestionContractError):
+            certify_question_registry_v1(replace(snapshot, entries=v1_1_reactivated))
 
     def test_registry_version_and_question_set_are_frozen(self):
         snapshot = self._snapshot()
         with self.assertRaisesRegex(QuestionContractError, "version is not frozen"):
-            certify_question_registry_v1(replace(snapshot, version="1.2.1-moving-target"))
+            certify_question_registry_v1(replace(snapshot, version="1.3.1-moving-target"))
 
         reduced = replace(snapshot, entries=snapshot.entries[:-1])
         with self.assertRaisesRegex(QuestionContractError, "question set changed"):
