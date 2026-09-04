@@ -171,10 +171,18 @@ def _assert_semantic_guards(snapshot: QuestionRegistrySnapshot) -> None:
         raise QuestionContractError("reversal must bind the prediction-time economic root path")
     if "ECONOMIC_ROOT_PATH" not in reversal.required_feature_families:
         raise QuestionContractError("reversal root-path feature lineage is mandatory")
-    if reversal.parameters.get("root_path_status") != "QUALIFIED":
-        raise QuestionContractError("reversal root path must be qualified")
-    if reversal.parameters.get("reference_instrument_policy") != "EXACT_PREDICTION_BOUND_SPOT_INSTRUMENT":
+    if reversal.parameters.get("trailing_path_status") != "QUALIFIED":
+        raise QuestionContractError("reversal trailing path must be qualified")
+    if reversal.parameters.get("trailing_path_type") != "ECONOMIC_ROOT_PATH":
+        raise QuestionContractError("reversal trailing path type changed")
+    if reversal.parameters.get("instrument_policy") != "EXACT_PREDICTION_BOUND_SPOT_INSTRUMENT":
         raise QuestionContractError("reversal reference instrument policy changed")
+    if reversal.parameters.get("trailing_window_ns") != 60_000_000_000:
+        raise QuestionContractError("reversal trailing window changed")
+    if reversal.parameters.get("trailing_grid_interval_ns") != 10_000_000_000:
+        raise QuestionContractError("reversal trailing grid changed")
+    if reversal.parameters.get("zero_return_policy") != "EITHER_ZERO_MEANS_NO_REVERSAL":
+        raise QuestionContractError("reversal zero-return policy changed")
 
 
 def certify_question_registry_v1(snapshot: QuestionRegistrySnapshot) -> Mapping[str, Any]:
