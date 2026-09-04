@@ -63,6 +63,12 @@ from .resolver import (
     resolve_prediction,
     select_resolution_frame,
 )
+from .reversal_resolver import (
+    REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF,
+    REVERSAL_ROOT_PATH_RESOLVER_POLICY_ID,
+    ReversalResolverError,
+    resolve_reversal_question,
+)
 
 __all__ = [
     "COMPETENCE_SCHEMA_VERSION",
@@ -79,6 +85,8 @@ __all__ = [
     "REGIME_PERSISTENCE_POLICY_ID",
     "RELATIONSHIP_RESOLVER_IMPLEMENTATION_REF",
     "RELATIONSHIP_RESOLVER_POLICY_ID",
+    "REVERSAL_ROOT_PATH_RESOLVER_IMPLEMENTATION_REF",
+    "REVERSAL_ROOT_PATH_RESOLVER_POLICY_ID",
     "SAMPLE_STRENGTH_PRIOR_COUNT",
     "CompetenceError",
     "CompetenceProfile",
@@ -97,6 +105,7 @@ __all__ = [
     "RegimeContractDiscontinuityError",
     "RESOLUTION_POLICY_ID",
     "ResolutionEvidenceRef",
+    "ReversalResolverError",
     "build_competence_profiles",
     "build_question_outcome_id",
     "resolve_fixed_grid_question",
@@ -106,6 +115,7 @@ __all__ = [
     "resolve_prediction",
     "resolve_regime_persistence_question",
     "resolve_relationship_question",
+    "resolve_reversal_question",
     "select_resolution_frame",
     "validate_outcome_journal",
     "validate_question_outcome_journal",
