@@ -8,13 +8,12 @@ from .contracts import (
     QuestionRegistrySnapshot,
     build_question_registry_snapshot,
 )
+from .evolution import build_reversal_v1_1_registry
 
 
 # Exact implementation identities that have executable resolver contracts in
-# the question-bound learning architecture. This is intentionally keyed by
-# QuestionDefinition.question_id rather than model family. Presence here grants
-# RESOLVER_READY only; it does not claim model competence, market intelligence,
-# capital authority, or execution authority.
+# the original v1 question-bound learning architecture. This mapping preserves
+# the historical boundary in which reversal v1.0 remained unearned.
 RESOLVER_READY_IMPLEMENTATIONS_V1 = {
     "ECONOMIC_ROOT_DIRECTION_10S": "autonomous_kernel.evaluation.question_resolvers.midpoint_v1",
     "ECONOMIC_ROOT_MAGNITUDE_30S": "autonomous_kernel.evaluation.question_resolvers.midpoint_v1",
@@ -27,8 +26,8 @@ RESOLVER_READY_IMPLEMENTATIONS_V1 = {
     "MARKET_REGIME_PERSISTENCE_5M": "autonomous_kernel.evaluation.regime_resolver.persistence_v1",
 }
 
-# Reversal remains deliberately absent until its trailing-path memory and exact
-# resolver contract are independently qualified.
+# Historical v1 boundary. The logical reversal family later evolves to a new
+# question version rather than receiving a retroactive resolver here.
 UNRESOLVED_QUESTION_IDS_V1 = ("ECONOMIC_ROOT_REVERSAL_60S",)
 
 
@@ -121,10 +120,10 @@ def build_resolver_ready_registry_v1(
     known_at_ns: int,
     effective_at_ns: int,
 ) -> QuestionRegistrySnapshot:
-    """Promote only the mechanically implemented v1 question resolvers.
+    """Promote only the mechanically implemented original-v1 question resolvers.
 
-    `ECONOMIC_ROOT_REVERSAL_60S` remains DEFINED. No question is promoted to
-    QUALIFIED by this function.
+    `ECONOMIC_ROOT_REVERSAL_60S@1.0.0` remains DEFINED. No question is promoted
+    to QUALIFIED by this function.
     """
     return build_resolver_ready_registry(
         base,
@@ -132,4 +131,32 @@ def build_resolver_ready_registry_v1(
         known_at_ns=known_at_ns,
         effective_at_ns=effective_at_ns,
         resolver_implementations=resolver_ready_refs_v1(base),
+    )
+
+
+def build_complete_resolver_ready_registry_v1_1(
+    base: QuestionRegistrySnapshot,
+    *,
+    version: str,
+    known_at_ns: int,
+    effective_at_ns: int,
+) -> QuestionRegistrySnapshot:
+    """Build the forward registry with every current logical question resolvable.
+
+    The nine original mechanically implemented questions become RESOLVER_READY,
+    reversal v1.0 remains DEFINED as historical evidence, and a new reversal
+    v1.1 definition is appended as RESOLVER_READY. This still grants no model
+    qualification, capital decision, risk authorization, or execution authority.
+    """
+    original_ready = build_resolver_ready_registry_v1(
+        base,
+        version=str(version) + "-original-v1-ready",
+        known_at_ns=int(known_at_ns),
+        effective_at_ns=int(effective_at_ns),
+    )
+    return build_reversal_v1_1_registry(
+        original_ready,
+        version=str(version),
+        known_at_ns=int(known_at_ns),
+        effective_at_ns=int(effective_at_ns),
     )
