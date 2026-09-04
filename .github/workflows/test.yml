@@ -25,7 +25,9 @@ jobs:
       - name: Compile
         run: python -m compileall -q autonomous_kernel experiments tests monitor/app monitor/tests
       - name: Frontend syntax
-        run: node --check monitor/web/product-app.js
+        run: |
+          node --check monitor/web/product-app.js
+          node --check monitor/web/resolver-console.js
       - name: Unit tests
         run: python -m unittest discover -s tests -v
       - name: Generate question registry v1 qualification
