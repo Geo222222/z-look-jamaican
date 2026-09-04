@@ -21,6 +21,12 @@ from .economic_graph import (
     EconomicRelationshipType,
     InstrumentRole,
 )
+from .market_wide import (
+    MARKET_WIDE_EXPERIENCE_SCHEMA_VERSION,
+    MarketWideExperienceError,
+    MarketWideExperienceState,
+    build_market_wide_experience,
+)
 from .material_evidence import MaterialEvidenceIntent, material_graph_evidence
 from .relationships import (
     RELATIONSHIP_STATE_SCHEMA_VERSION,
@@ -48,6 +54,7 @@ __all__ = [
     "BUILDER_VERSION",
     "ECONOMIC_GRAPH_SCHEMA_VERSION",
     "EXPERIENCE_SCHEMA_VERSION",
+    "MARKET_WIDE_EXPERIENCE_SCHEMA_VERSION",
     "RELATIONSHIP_STATE_SCHEMA_VERSION",
     "AmountSemanticsError",
     "ContractConvention",
@@ -66,11 +73,14 @@ __all__ = [
     "InstrumentRole",
     "MarketExperienceFrame",
     "MarketExperienceStore",
+    "MarketWideExperienceError",
+    "MarketWideExperienceState",
     "MaterialEvidenceIntent",
     "NativeAmountKind",
     "RelationshipStateError",
     "TimescaleSpec",
     "build_market_experience",
+    "build_market_wide_experience",
     "build_spot_derivative_relationship_state",
     "material_graph_evidence",
     "normalized_amounts_comparable",

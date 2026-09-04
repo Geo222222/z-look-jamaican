@@ -29,6 +29,7 @@ The Book registers the public key and namespace authority. ZLJ cannot sign as Be
 The bridge is intended for material evidence such as:
 
 - `ZLJ.ECONOMIC_INSTRUMENT_GRAPH`
+- `ZLJ.QUESTION_REGISTRY`
 - `ZLJ.EXPERIENCE_JOURNAL_COMMITMENT`
 - `ZLJ.INTELLIGENCE`
 - `ZLJ.PREDICTION`
@@ -44,11 +45,33 @@ An activated/versioned Economic Instrument Graph is material because later marke
 
 The graph must not contain time-varying empirical claims such as `futures currently lead spot`. Those belong in causal Market Experience / relationship state and are evaluated from evidence at a particular cutoff.
 
+### Question Registry
+
+An activated Question Registry version is material because it fixes the economic questions and outcome semantics ZLJ intends to evaluate prospectively.
+
+`ZLJ.QUESTION_REGISTRY` binds the exact registry content hash, including each registered question's:
+
+- immutable question ID/version/hash;
+- economic question family and scope;
+- horizon;
+- target/outcome expression;
+- required timescale(s);
+- required, allowed, and forbidden evidence families;
+- anti-lookahead cutoff policy;
+- resolver policy identity;
+- lifecycle state.
+
+A registry definition does **not** prove that a resolver exists, that a model is competent, or that a question is qualified for production use. Those claims require later evidence and explicit lifecycle advancement.
+
+Changing what counts as a correct answer requires a new question/registry identity. ZLJ may not silently redefine a target after observing model results.
+
 ### Market Experience
 
 High-volume Market Experience frames remain ZLJ-owned learning artifacts. A frame binds exact graph/context/source-frame lineage and contains only information knowable at its cutoff; later outcomes are separate objects and never mutate the original experience.
 
-The Book does **not** receive one receipt for every observation, representation, or Market Experience frame. ZLJ periodically emits `ZLJ.EXPERIENCE_JOURNAL_COMMITMENT` containing a compact commitment to a contiguous local journal range, including:
+Market-wide structural experience is also ZLJ-owned learning state. It derives temporal trajectories only from point-in-time Market Context frames that were knowable by the declared cutoff. It may preserve facts such as changing breadth, dispersion, volatility, spread, liquidity concentration, correlation structure, regime transitions, and cross-sectional leadership. These are point-in-time/temporal representations, not causal claims.
+
+The Book does **not** receive one receipt for every observation, representation, Market Context, market-wide structural frame, or Market Experience frame. ZLJ periodically emits `ZLJ.EXPERIENCE_JOURNAL_COMMITMENT` containing a compact commitment to a contiguous local journal range, including:
 
 - journal identity;
 - start/end sequence;
@@ -58,7 +81,7 @@ The Book does **not** receive one receipt for every observation, representation,
 - last experience identity/cutoff;
 - commitment known-at time.
 
-The underlying raw ticks, source observations, and representation-frame lists stay in ZLJ unless a later evidence request or materiality policy requires a specific artifact. This preserves both complete ZLJ learning history and The Book's minimum-necessary-evidence principle.
+The underlying raw ticks, source observations, representation-frame lists, Market Context histories, and market-wide trajectory histories stay in ZLJ unless a later evidence request or materiality policy requires a specific artifact. This preserves both complete ZLJ learning history and The Book's minimum-necessary-evidence principle.
 
 Not every observation or feature becomes an individual Book receipt. High-volume complete histories use journal commitments under The Book materiality policy.
 
@@ -75,6 +98,8 @@ Every v2 envelope cryptographically binds:
 This is required to preserve anti-hindsight and calibration integrity.
 
 Market Experience adds an additional rule: a causal experience at cutoff `T` may reference only graph/context/source state knowable no later than `T`. Future realized paths and outcomes are attached later through separate evaluation objects.
+
+Question definitions add the corresponding learning rule: prospective evidence consumed to answer a question must satisfy the question's declared evidence cutoff policy and may not include post-cutoff observations or future outcome labels.
 
 ## Failure posture
 
