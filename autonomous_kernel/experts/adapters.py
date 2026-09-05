@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Mapping, Tuple
 
 from ..models.baselines import baseline_model_set
+from ..models.liquidity_baselines import liquidity_baseline_model_set
 from ..operations import canonical_hash
 from ..prediction.question_bound import QuestionBoundPrediction
 from ..questions.catalog import question_catalog_v1
@@ -15,6 +16,12 @@ class ExpertAdapterError(ValueError):
 
 DIRECTION_REF = "ECONOMIC_ROOT_DIRECTION_10S@1.0.0"
 MAGNITUDE_REF = "ECONOMIC_ROOT_MAGNITUDE_30S@1.0.0"
+LIQUIDITY_REF = "ECONOMIC_ROOT_LIQUIDITY_DETERIORATION_30S@1.0.0"
+LIQUIDITY_MODEL_IDS = {
+    "LIQUIDITY-NULL-PRIOR": "BENCHMARK",
+    "SPREAD-DEPTH-PRESSURE": "CANDIDATE_MODEL",
+    "BOOK-DEPLETION-STRESS": "CANDIDATE_MODEL",
+}
 
 
 def _question_map() -> Dict[str, Any]:
@@ -29,7 +36,10 @@ def _roles_for_model(model: Any) -> Tuple[Tuple[str, str, str], ...]:
     Magnitude exam requires MARKET_WIDE_CONTEXT that those implementations do not
     currently consume.
     """
-    if model.definition.model_id == "NULL-PRIOR":
+    model_id = str(model.definition.model_id)
+    if model_id in LIQUIDITY_MODEL_IDS:
+        return ((LIQUIDITY_REF, "LIQUIDITY", LIQUIDITY_MODEL_IDS[model_id]),)
+    if model_id == "NULL-PRIOR":
         return ((DIRECTION_REF, "DIRECTION", "BENCHMARK"), (MAGNITUDE_REF, "MAGNITUDE", "BENCHMARK"))
     return ((DIRECTION_REF, "DIRECTION", "CANDIDATE_MODEL"),)
 
@@ -43,13 +53,14 @@ def implemented_baseline_expert_contracts() -> Tuple[Mapping[str, Any], ...]:
     """
     questions = _question_map()
     contracts: List[Mapping[str, Any]] = []
-    for model in baseline_model_set():
+    for model in tuple(baseline_model_set()) + tuple(liquidity_baseline_model_set()):
         model_ref = model.definition.model_ref
+        module = "autonomous_kernel.models.liquidity_baselines" if model.definition.model_id in LIQUIDITY_MODEL_IDS else "autonomous_kernel.models.baselines"
         for question_ref, role, implementation_class in _roles_for_model(model):
             question = questions[question_ref]
             if int(question.horizon_ns) not in set(int(v) for v in model.definition.supported_horizons_ns):
                 continue
-            implementation_ref = "autonomous_kernel.models.baselines:%s" % model.__class__.__name__
+            implementation_ref = "%s:%s" % (module, model.__class__.__name__)
             implementation_hash = canonical_hash({
                 "implementation_ref": implementation_ref,
                 "model_definition": model.definition.to_wire(),

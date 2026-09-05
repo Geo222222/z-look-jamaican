@@ -293,7 +293,77 @@ class LiquidityResolverTests(unittest.TestCase):
             with self.assertRaisesRegex(QuestionResolverError, "10-bps"):
                 resolve_liquidity_question(root, prediction.prediction_id, baseline_experience=experience, baseline_frames=(baseline,), forward_frames=(), now_at_ns=T + 40 * SECOND)
 
-    def test_registry_can_promote_only_liquidity_to_resolver_ready(self):
+    def test_depth_fall_without_spread_widening_is_not_deterioration(self):
+        baseline = _frame("REP-BASE", cutoff=T, known=T - 1)
+        experience = _experience(baseline)
+        forward = _frame(
+            "REP-FWD",
+            cutoff=T + 30 * SECOND,
+            books={
+                "COINBASE": _book("99.9", "100.1", "400", "400"),
+                "KRAKEN": _book("99.8", "100.2", "400", "400"),
+            },
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prediction = _prediction(root, experience)
+            outcome = resolve_liquidity_question(root, prediction.prediction_id, baseline_experience=experience, baseline_frames=(baseline,), forward_frames=(forward,), now_at_ns=T + 31 * SECOND)
+            self.assertEqual({"value": 0}, outcome.realized_answer)
+
+    def test_spread_improves_while_depth_falls_is_not_deterioration(self):
+        baseline = _frame("REP-BASE", cutoff=T, known=T - 1)
+        experience = _experience(baseline)
+        forward = _frame(
+            "REP-FWD",
+            cutoff=T + 30 * SECOND,
+            books={
+                "COINBASE": _book("99.95", "100.05", "400", "400"),
+                "KRAKEN": _book("99.94", "100.06", "400", "400"),
+            },
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prediction = _prediction(root, experience)
+            outcome = resolve_liquidity_question(root, prediction.prediction_id, baseline_experience=experience, baseline_frames=(baseline,), forward_frames=(forward,), now_at_ns=T + 31 * SECOND)
+            self.assertEqual({"value": 0}, outcome.realized_answer)
+
+    def test_quote_notional_not_base_units_controls_depth_truth(self):
+        baseline = _frame("REP-BASE", cutoff=T, known=T - 1)
+        experience = _experience(baseline)
+        forward = _frame(
+            "REP-FWD",
+            cutoff=T + 30 * SECOND,
+            books={
+                "COINBASE": {
+                    **_book("99.7", "100.3", "1500", "1500"),
+                    "depth_bands_bps": {
+                        "10": {
+                            "bid_quote_notional": "1500",
+                            "ask_quote_notional": "1500",
+                            "bid_base": "1",
+                            "ask_base": "1",
+                        }
+                    },
+                },
+                "KRAKEN": {
+                    **_book("99.6", "100.4", "1500", "1500"),
+                    "depth_bands_bps": {
+                        "10": {
+                            "bid_quote_notional": "1500",
+                            "ask_quote_notional": "1500",
+                            "bid_base": "1",
+                            "ask_base": "1",
+                        }
+                    },
+                },
+            },
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prediction = _prediction(root, experience)
+            outcome = resolve_liquidity_question(root, prediction.prediction_id, baseline_experience=experience, baseline_frames=(baseline,), forward_frames=(forward,), now_at_ns=T + 31 * SECOND)
+            self.assertEqual({"value": 0}, outcome.realized_answer)
+
         question = _question()
         base = build_question_registry_snapshot(
             registry_id="ZLJ-MARKET-QUESTIONS",

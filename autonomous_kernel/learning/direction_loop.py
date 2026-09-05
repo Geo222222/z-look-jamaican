@@ -536,8 +536,54 @@ def process_canonical_direction_batches(root: Path, batch_ids: Sequence[str], *,
     return combined
 
 
+def _family_learning_slice(
+    predictions: Sequence[Mapping[str, Any]],
+    outcomes: Sequence[Mapping[str, Any]],
+    question_ref: str,
+) -> Mapping[str, Any]:
+    family_predictions = [
+        entry
+        for entry in predictions
+        if ((entry.get("prediction") or {}).get("question") or {}).get("question_ref") == question_ref
+    ]
+    prediction_ids = {(entry.get("prediction") or {}).get("prediction_id") for entry in family_predictions}
+    family_outcomes = [
+        entry
+        for entry in outcomes
+        if (entry.get("outcome") or {}).get("prediction_id") in prediction_ids
+    ]
+    family_counts = {"RESOLVED": 0, "UNRESOLVABLE": 0, "PENDING": 0}
+    for entry in family_outcomes:
+        status = str((entry.get("outcome") or {}).get("status") or "")
+        if status in family_counts:
+            family_counts[status] += 1
+    family_counts["PENDING"] = max(0, len(family_predictions) - family_counts["RESOLVED"] - family_counts["UNRESOLVABLE"])
+    latest_family_prediction = family_predictions[-1]["prediction"] if family_predictions else None
+    latest_family_outcome = None if not family_outcomes else family_outcomes[-1].get("outcome")
+    return {
+        "question_ref": question_ref,
+        "prediction_count": len(family_predictions),
+        "outcome_count": len(family_outcomes),
+        "status_counts": family_counts,
+        "latest_prediction": None
+        if not isinstance(latest_family_prediction, Mapping)
+        else {
+            "prediction_id": latest_family_prediction.get("prediction_id"),
+            "question_ref": (latest_family_prediction.get("question") or {}).get("question_ref"),
+            "model_refs": latest_family_prediction.get("model_refs"),
+            "cutoff_at_ns": (latest_family_prediction.get("timing") or {}).get("cutoff_at_ns"),
+            "horizon_ns": (latest_family_prediction.get("timing") or {}).get("horizon_ns"),
+            "mode": latest_family_prediction.get("mode"),
+            "answer": latest_family_prediction.get("answer"),
+        },
+        "latest_outcome": latest_family_outcome,
+    }
+
+
 def question_learning_projection(root: Path) -> Mapping[str, Any]:
     from .direction_assembly import direction_assembly_projection
+    from .liquidity_assembly import liquidity_assembly_projection
+    from .liquidity_loop import LIQUIDITY_QUESTION_REF as _LIQUIDITY_QUESTION_REF
     from ..synthesis.service import market_synthesis_projection
 
     root = Path(root).resolve()
@@ -573,6 +619,11 @@ def question_learning_projection(root: Path) -> Mapping[str, Any]:
                     "mastery": False,
                 }
             )
+    direction_slice = _family_learning_slice(predictions, outcomes, DIRECTION_QUESTION_REF)
+    liquidity_slice = dict(_family_learning_slice(predictions, outcomes, _LIQUIDITY_QUESTION_REF))
+    liquidity_slice["horizon_ns"] = 30_000_000_000
+    liquidity_slice["assembly"] = liquidity_assembly_projection(root)
+    del direction_slice
     return {
         "question_ref": DIRECTION_QUESTION_REF,
         "horizon_ns": HORIZON_NS,
@@ -601,6 +652,8 @@ def question_learning_projection(root: Path) -> Mapping[str, Any]:
         },
         "contextual_competence_status": "INSUFFICIENT_CONTEXTUAL_SUPPORT",
         "assembly": direction_assembly_projection(root),
+        "liquidity": liquidity_slice,
+        "liquidity_assembly": liquidity_slice["assembly"],
         "market_synthesis": market_synthesis_projection(root),
         "authority": {
             "capital_allocation": False,
