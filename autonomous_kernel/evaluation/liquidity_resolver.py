@@ -99,6 +99,19 @@ def _qualified_book_metrics(
     return venues, spread_bps, total_quote_depth
 
 
+def liquidity_cutoff_is_examinable(frame: RepresentationFrame) -> bool:
+    """True iff the cutoff frame can legally support the frozen resolver baseline."""
+    if frame.representation_type != "INSTRUMENT_STATE":
+        return False
+    if frame.status != "QUALIFIED":
+        return False
+    try:
+        venues, _spread, _depth = _qualified_book_metrics(frame)
+    except QuestionResolverError:
+        return False
+    return bool(venues)
+
+
 def _select_forward_liquidity_frame(
     prediction,
     baseline: RepresentationFrame,

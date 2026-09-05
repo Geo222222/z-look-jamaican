@@ -45,16 +45,21 @@ class ExpertPredictionAdapterTests(unittest.TestCase):
 
     def test_existing_baselines_are_bound_only_to_roles_they_can_defend(self):
         contracts = implemented_baseline_expert_contracts()
-        self.assertEqual(len(contracts), 4)
+        self.assertEqual(len(contracts), 7)
         self.assertEqual(sum(1 for item in contracts if "DIRECTION" in item["expert_id"]), 3)
         self.assertEqual(sum(1 for item in contracts if "MAGNITUDE" in item["expert_id"]), 1)
+        self.assertEqual(sum(1 for item in contracts if "LIQUIDITY" in item["expert_id"]), 3)
         self.assertTrue(all(item["model_refs"] for item in contracts))
         magnitude = next(item for item in contracts if "MAGNITUDE" in item["expert_id"])
         self.assertEqual(magnitude["parameters"]["implementation_class"], "BENCHMARK")
+        liquidity_ids = {item["expert_id"] for item in contracts if "LIQUIDITY" in item["expert_id"]}
+        self.assertIn("LIQUIDITY_NULL_PRIOR_LIQUIDITY_EXPERT", liquidity_ids)
+        self.assertIn("SPREAD_DEPTH_PRESSURE_LIQUIDITY_EXPERT", liquidity_ids)
+        self.assertIn("BOOK_DEPLETION_STRESS_LIQUIDITY_EXPERT", liquidity_ids)
         inventory = operational_expert_inventory()
-        self.assertEqual(inventory["implemented_expert_count"], 4)
-        self.assertEqual(inventory["candidate_model_expert_count"], 2)
-        self.assertEqual(inventory["benchmark_expert_count"], 2)
+        self.assertEqual(inventory["implemented_expert_count"], 7)
+        self.assertEqual(inventory["candidate_model_expert_count"], 4)
+        self.assertEqual(inventory["benchmark_expert_count"], 3)
         self.assertFalse(inventory["earned_competence"])
         self.assertFalse(inventory["capital_authority"])
 
