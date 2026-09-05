@@ -21,6 +21,7 @@ from .journal import validate_operator_journal
 from .perception import perception_projection
 from .research_projection import research_qualification_projection
 from ..learning.direction_loop import question_learning_projection
+from ..synthesis.service import market_synthesis_projection
 
 
 def _json(root: Path, relative: str) -> Mapping[str, Any]:
@@ -127,10 +128,16 @@ def _stage_metric(stage_id: str, root: Path, perception: Optional[Mapping[str, A
             "direction_prospective_use": latest.get("prospective_use") or assembly.get("prospective_qualification") or "NONE",
         }
     if stage_id == "Z9":
+        synthesis = market_synthesis_projection(root)
+        latest = synthesis.get("latest") if isinstance(synthesis.get("latest"), Mapping) else {}
         return {
             "context_frames": _count_items(_json(root, "state/market_context.json")),
             "context_status": market_context_status(root),
             "operational_status": perception.get("z9_status") or "NO CURRENT FRAME",
+            "market_synthesis_exists": bool(synthesis.get("exists")),
+            "market_synthesis_status": synthesis.get("status") or "ABSENT",
+            "market_synthesis_completeness": latest.get("completeness"),
+            "market_synthesis_confidence": latest.get("synthesis_confidence"),
         }
     return {}
 
@@ -261,6 +268,7 @@ def build_operator_snapshot(root: Path) -> Dict[str, Any]:
         "perception": perception,
         "question_registry": _question_registry(),
         "question_learning": question_learning_projection(root),
+        "market_synthesis": market_synthesis_projection(root),
         "expert_intelligence": expert_intelligence_projection(root),
         "research_qualification": research_qualification_projection(),
         "model_qualification": qualification_evidence_status(root),

@@ -30,6 +30,7 @@ ALLOWED_EVENT_TYPES = {
     "BENJAMIN_PUBLICATION_QUALIFIED",
     "BENJAMIN_PUBLICATION_BLOCKED",
     "BENJAMIN_HANDOFF_PUBLISHED",
+    "MARKET_SYNTHESIS_PUBLISHED",
 }
 
 
@@ -119,6 +120,7 @@ def project_runtime(events: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
         "scores": [],
         "competence": None,
         "assemblies": [],
+        "syntheses": [],
         "publications": [],
         "qualifications": [],
         "handoffs": [],
@@ -136,6 +138,8 @@ def project_runtime(events: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
             state["competence"] = payload["competence"]
         elif event["event_type"] == "EXPERT_ASSEMBLY_RECORDED":
             state["assemblies"].append(payload["assembly"])
+        elif event["event_type"] == "MARKET_SYNTHESIS_PUBLISHED":
+            state["syntheses"].append(payload["synthesis"])
         elif event["event_type"] == "INTELLIGENCE_PUBLISHED":
             state["publications"].append(payload["publication"])
         elif event["event_type"] == "BENJAMIN_PUBLICATION_QUALIFIED":
@@ -208,6 +212,24 @@ class IntelligenceRuntime:
         if not assembly.get("integrity", {}).get("content_hash"):
             raise IntelligenceRuntimeError("assembly must be integrity-bound")
         return self._append("EXPERT_ASSEMBLY_RECORDED", occurred_at_ns, {"assembly": dict(assembly)})
+
+    def record_synthesis(self, synthesis: Mapping[str, Any], *, occurred_at_ns: int) -> Mapping[str, Any]:
+        if not synthesis.get("integrity", {}).get("content_hash"):
+            raise IntelligenceRuntimeError("synthesis must be integrity-bound")
+        if synthesis.get("artifact_class") != "MARKET_SYNTHESIS":
+            raise IntelligenceRuntimeError("synthesis artifact_class must be MARKET_SYNTHESIS")
+        state = project_runtime(self.events())
+        content_hash = str(synthesis["integrity"]["content_hash"])
+        synthesis_id = str(synthesis.get("synthesis_id") or "")
+        for existing in state.get("syntheses") or []:
+            if not isinstance(existing, Mapping):
+                continue
+            existing_hash = str((existing.get("integrity") or {}).get("content_hash") or "")
+            if existing_hash == content_hash:
+                return existing
+            if synthesis_id and existing.get("synthesis_id") == synthesis_id and existing_hash != content_hash:
+                raise IntelligenceRuntimeError("synthesis identity conflict")
+        return self._append("MARKET_SYNTHESIS_PUBLISHED", occurred_at_ns, {"synthesis": dict(synthesis)})
 
     def publish(self, publication: Mapping[str, Any], *, occurred_at_ns: int) -> Mapping[str, Any]:
         validate_intelligence_publication(publication)

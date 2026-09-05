@@ -524,6 +524,13 @@ def process_canonical_direction_batches(root: Path, batch_ids: Sequence[str], *,
 
         try:
             combined["sync"]["direction_assembly"] = assemble_and_record_direction_question(root, known_at_ns=int(last_end))
+            from ..synthesis.contracts import MarketSynthesisError as _SynthesisError
+            from ..synthesis.service import synthesize_and_record
+
+            try:
+                combined["sync"]["market_synthesis"] = synthesize_and_record(root, known_at_ns=int(last_end))
+            except _SynthesisError as exc:
+                combined["sync"]["market_synthesis"] = {"status": "BLOCKED", "error": str(exc)}
         except DirectionAssemblyError as exc:
             combined["sync"]["direction_assembly"] = {"status": "BLOCKED", "error": str(exc)}
     return combined
@@ -531,6 +538,7 @@ def process_canonical_direction_batches(root: Path, batch_ids: Sequence[str], *,
 
 def question_learning_projection(root: Path) -> Mapping[str, Any]:
     from .direction_assembly import direction_assembly_projection
+    from ..synthesis.service import market_synthesis_projection
 
     root = Path(root).resolve()
     predictions = list(QuestionPredictionJournal(root).entries()) if (root / "memory/question_predictions.jsonl").is_file() else []
@@ -593,6 +601,7 @@ def question_learning_projection(root: Path) -> Mapping[str, Any]:
         },
         "contextual_competence_status": "INSUFFICIENT_CONTEXTUAL_SUPPORT",
         "assembly": direction_assembly_projection(root),
+        "market_synthesis": market_synthesis_projection(root),
         "authority": {
             "capital_allocation": False,
             "economic_decision": False,
