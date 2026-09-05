@@ -115,9 +115,16 @@ def _stage_metric(stage_id: str, root: Path, perception: Optional[Mapping[str, A
         }
     if stage_id == "Z8":
         state = _json(root, "state/assembly_journal.json")
+        learning = question_learning_projection(root)
+        assembly = learning.get("assembly") if isinstance(learning.get("assembly"), Mapping) else {}
+        latest = assembly.get("latest") if isinstance(assembly.get("latest"), Mapping) else {}
         return {
             "assembly_entries": int(state.get("entry_count", _count_jsonl(root, "memory/assemblies.jsonl")) or 0),
             "contextual_assembly_entries": _count_jsonl(root, "memory/contextual_assemblies.jsonl"),
+            "direction_assembly_count": int(assembly.get("count") or 0),
+            "direction_assembly_status": assembly.get("status") or "ABSENT",
+            "direction_research_only": latest.get("status") == "RESEARCH_ONLY",
+            "direction_prospective_use": latest.get("prospective_use") or assembly.get("prospective_qualification") or "NONE",
         }
     if stage_id == "Z9":
         return {

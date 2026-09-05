@@ -426,6 +426,12 @@ def process_canonical_direction_batch(root: Path, batch_id: str, *, sync: bool =
         if isinstance(competence, Mapping):
             _assert_no_economic_fields(competence)
             sync_result["competence"] = competence
+        from .direction_assembly import DirectionAssemblyError, assemble_and_record_direction_question
+
+        try:
+            sync_result["direction_assembly"] = assemble_and_record_direction_question(root, known_at_ns=int(end_ns))
+        except DirectionAssemblyError as exc:
+            sync_result["direction_assembly"] = {"status": "BLOCKED", "error": str(exc)}
     counts = {
         "predicted": len(predictions),
         "resolved": sum(1 for item in outcomes if item.get("status") == "RESOLVED"),
@@ -514,10 +520,18 @@ def process_canonical_direction_batches(root: Path, batch_ids: Sequence[str], *,
         if isinstance(competence, Mapping):
             _assert_no_economic_fields(competence)
             combined["sync"]["competence"] = competence
+        from .direction_assembly import DirectionAssemblyError, assemble_and_record_direction_question
+
+        try:
+            combined["sync"]["direction_assembly"] = assemble_and_record_direction_question(root, known_at_ns=int(last_end))
+        except DirectionAssemblyError as exc:
+            combined["sync"]["direction_assembly"] = {"status": "BLOCKED", "error": str(exc)}
     return combined
 
 
 def question_learning_projection(root: Path) -> Mapping[str, Any]:
+    from .direction_assembly import direction_assembly_projection
+
     root = Path(root).resolve()
     predictions = list(QuestionPredictionJournal(root).entries()) if (root / "memory/question_predictions.jsonl").is_file() else []
     outcomes = list(QuestionOutcomeJournal(root).entries()) if (root / "memory/question_outcomes.jsonl").is_file() else []
@@ -578,6 +592,7 @@ def question_learning_projection(root: Path) -> Mapping[str, Any]:
             "mastery_claim": False,
         },
         "contextual_competence_status": "INSUFFICIENT_CONTEXTUAL_SUPPORT",
+        "assembly": direction_assembly_projection(root),
         "authority": {
             "capital_allocation": False,
             "economic_decision": False,

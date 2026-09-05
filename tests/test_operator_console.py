@@ -83,6 +83,8 @@ class OperatorConsoleContractTests(unittest.TestCase):
         self.assertIn("question_learning", snapshot)
         self.assertEqual(False, snapshot["question_learning"]["authority"]["adaptive_assembly_earned"])
         self.assertEqual("INSUFFICIENT_CONTEXTUAL_SUPPORT", snapshot["question_learning"]["contextual_competence_status"])
+        self.assertEqual("ABSENT", snapshot["question_learning"]["assembly"]["status"])
+        self.assertFalse(snapshot["question_learning"]["assembly"]["authority"]["benjamin_eligible"])
 
     def test_locked_and_unavailable_controls_fail_before_domain_execution(self):
         with self.assertRaises(OperatorCommandError):

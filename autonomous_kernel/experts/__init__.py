@@ -16,6 +16,8 @@ from .contracts import (
     validate_expert_claim,
 )
 from .school import (
+    ADAPTIVE_WEIGHT_POLICY_ID,
+    ADAPTIVE_WEIGHT_POLICY_VERSION,
     EXPERT_SCHOOL_SCHEMA_VERSION,
     ExpertSchoolError,
     active_question_definitions,
@@ -30,6 +32,8 @@ __all__ = (
     "EXPERT_CONTRACT_SCHEMA_VERSION",
     "EXPERT_CLAIM_SCHEMA_VERSION",
     "EXPERT_SCHOOL_SCHEMA_VERSION",
+    "ADAPTIVE_WEIGHT_POLICY_ID",
+    "ADAPTIVE_WEIGHT_POLICY_VERSION",
     "ExpertAdapterError",
     "ExpertContractError",
     "ExpertSchoolError",
