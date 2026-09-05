@@ -129,6 +129,9 @@ def _stage_metric(stage_id: str, root: Path, perception: Optional[Mapping[str, A
             "liquidity_assembly_count": int((learning.get("liquidity_assembly") or {}).get("count") or 0),
             "liquidity_assembly_status": (learning.get("liquidity_assembly") or {}).get("status") or "ABSENT",
             "liquidity_research_only": ((learning.get("liquidity_assembly") or {}).get("latest") or {}).get("status") == "RESEARCH_ONLY",
+            "magnitude_assembly_count": int((learning.get("magnitude_assembly") or {}).get("count") or 0),
+            "magnitude_assembly_status": (learning.get("magnitude_assembly") or {}).get("status") or "ABSENT",
+            "magnitude_research_only": ((learning.get("magnitude_assembly") or {}).get("latest") or {}).get("status") == "RESEARCH_ONLY",
         }
     if stage_id == "Z9":
         synthesis = market_synthesis_projection(root)
