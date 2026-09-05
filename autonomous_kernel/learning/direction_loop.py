@@ -16,11 +16,10 @@ from ..context.service import ContextMaterializationError, materialize_market_co
 from ..evaluation.question_journal import QuestionOutcomeJournal
 from ..evaluation.question_resolvers import (
     QuestionOutcomePendingError,
-    QuestionResolverError,
     resolve_midpoint_question,
 )
 from ..experience.builder import TimescaleSpec, build_market_experience
-from ..experience.contracts import ExperienceTimescale
+from ..experience.contracts import ExperienceTimescale, MarketExperienceFrame
 from ..experience.economic_graph import EconomicInstrumentGraph, EconomicInstrumentNode, InstrumentRole
 from ..experience.store import MarketExperienceStore
 from ..experts.sync import sync_expert_learning
@@ -109,6 +108,21 @@ def _assert_no_economic_fields(value: Mapping[str, Any], *, path: str = "") -> N
 
 def _load_frame(root: Path, artifact: Mapping[str, Any]) -> RepresentationFrame:
     return RepresentationFrame.from_wire(artifact["frame"])
+
+
+def _load_stored_frame(root: Path, frame_id: str) -> RepresentationFrame:
+    path = Path(root).resolve() / "artifacts/market_data/representations" / (frame_id + ".json")
+    if not path.is_file():
+        raise DirectionLoopError("baseline representation %s is missing from the store" % frame_id)
+    document = json.loads(path.read_text(encoding="utf-8"))
+    return RepresentationFrame.from_wire(document["frame"])
+
+
+def _experience_baseline_frame(root: Path, experience: MarketExperienceFrame) -> RepresentationFrame:
+    views = [view for view in experience.views if view.timescale is ExperienceTimescale.MICRO]
+    if len(views) != 1 or len(views[0].source_frames) != 1:
+        raise DirectionLoopError("Direction experience must bind exactly one MICRO source frame")
+    return _load_stored_frame(root, views[0].source_frames[0].frame_id)
 
 
 def _observation_bounds(root: Path, batch_id: str) -> Tuple[int, int]:
@@ -229,6 +243,8 @@ def _prediction_summary(entry: Mapping[str, Any], *, frame: Optional[Representat
 
 
 def record_direction_predictions(root: Path, *, batch_id: str, frame: RepresentationFrame, experience) -> List[Mapping[str, Any]]:
+    if frame.status != "QUALIFIED":
+        return []
     registry = frozen_direction_registry()
     question = direction_question()
     status = "DEGRADED" if experience.status != "QUALIFIED" else "QUALIFIED"
@@ -322,6 +338,14 @@ def resolve_direction_prediction(
         raise DirectionLoopError("prediction is not in the question journal")
     if now_at_ns < prediction.resolves_at_ns:
         return {"status": "PENDING", "prediction_id": prediction_id, "error": "horizon has not matured"}
+    lineage_baseline = _experience_baseline_frame(root, experience)
+    if (
+        baseline_frame.frame_id != lineage_baseline.frame_id
+        or baseline_frame.content_hash() != lineage_baseline.content_hash()
+    ):
+        raise DirectionLoopError("supplied baseline frame diverges from experience lineage")
+    if lineage_baseline.status != "QUALIFIED":
+        raise DirectionLoopError("Direction resolver requires a QUALIFIED baseline instrument state")
     forward = materialize_forward_frame(root, batch_id, prediction.resolves_at_ns)
     if forward is not None and forward.known_at_ns <= prediction.cutoff_at_ns:
         raise DirectionLoopError("forward frame is not strictly later than prediction cutoff")
@@ -331,19 +355,12 @@ def resolve_direction_prediction(
             root,
             prediction_id,
             baseline_experience=experience,
-            baseline_frames=(baseline_frame,),
+            baseline_frames=(lineage_baseline,),
             forward_frames=frames,
             now_at_ns=int(now_at_ns),
         )
     except QuestionOutcomePendingError as exc:
         return {"status": "PENDING", "prediction_id": prediction_id, "error": str(exc)}
-    except QuestionResolverError as exc:
-        return {
-            "status": "UNRESOLVABLE",
-            "prediction_id": prediction_id,
-            "error": str(exc),
-            "fail_closed": True,
-        }
     _assert_no_economic_fields(outcome.to_wire())
     QuestionOutcomeJournal(root).append(outcome)
     return {
@@ -375,12 +392,18 @@ def process_canonical_direction_batch(root: Path, batch_id: str, *, sync: bool =
     predictions: List[Mapping[str, Any]] = []
     experiences: Dict[int, Tuple[Any, Any]] = {}
     frames: Dict[int, RepresentationFrame] = {}
+    skipped_unqualified_cutoffs: List[int] = []
     for cutoff in cutoffs:
         frame = materialize_cutoff_frame(root, batch_id, cutoff)
+        if frame.status != "QUALIFIED":
+            skipped_unqualified_cutoffs.append(int(cutoff))
+            continue
         experience, context = _experience_for_cutoff(root, frame)
         frames[cutoff] = frame
         experiences[cutoff] = (experience, context)
         predictions.extend(record_direction_predictions(root, batch_id=batch_id, frame=frame, experience=experience))
+    if not predictions:
+        raise DirectionLoopError("canonical batch has no QUALIFIED Direction 10s cutoff that can be examined")
     outcomes: List[Mapping[str, Any]] = []
     store = MarketExperienceStore(root)
     for item in predictions:
@@ -409,7 +432,8 @@ def process_canonical_direction_batch(root: Path, batch_id: str, *, sync: bool =
         "unresolvable": sum(1 for item in outcomes if item.get("status") == "UNRESOLVABLE"),
         "pending": sum(1 for item in outcomes if item.get("status") == "PENDING"),
     }
-    latest_context = experiences[cutoffs[-1]][1] if cutoffs else None
+    latest_cutoff = max(experiences) if experiences else None
+    latest_context = experiences[latest_cutoff][1] if latest_cutoff is not None else None
     contextual_status = "INSUFFICIENT_CONTEXTUAL_SUPPORT"
     if latest_context is not None and str(getattr(latest_context, "status", "")) == "QUALIFIED":
         contextual_status = "QUALIFIED_CONTEXT_AVAILABLE"
@@ -423,6 +447,7 @@ def process_canonical_direction_batch(root: Path, batch_id: str, *, sync: bool =
         "observation_start_ns": start_ns,
         "observation_end_ns": end_ns,
         "cutoffs": list(cutoffs),
+        "skipped_unqualified_cutoffs": skipped_unqualified_cutoffs,
         "predictions": predictions,
         "outcomes": outcomes,
         "counts": counts,
@@ -449,6 +474,7 @@ def process_canonical_direction_batches(root: Path, batch_ids: Sequence[str], *,
         "batches": [],
         "predictions": [],
         "outcomes": [],
+        "skipped_unqualified_cutoffs": [],
         "counts": {"predicted": 0, "resolved": 0, "unresolvable": 0, "pending": 0},
         "sync": None,
         "contextual_competence_status": "INSUFFICIENT_CONTEXTUAL_SUPPORT",
@@ -466,6 +492,7 @@ def process_canonical_direction_batches(root: Path, batch_ids: Sequence[str], *,
         combined["batches"].append(result)
         combined["predictions"].extend(result.get("predictions") or [])
         combined["outcomes"].extend(result.get("outcomes") or [])
+        combined["skipped_unqualified_cutoffs"].extend(result.get("skipped_unqualified_cutoffs") or [])
         last_end = max(last_end, int(result.get("observation_end_ns") or 0))
         if result.get("contextual_competence_status") == "QUALIFIED_CONTEXT_AVAILABLE":
             combined["contextual_competence_status"] = "QUALIFIED_CONTEXT_AVAILABLE"

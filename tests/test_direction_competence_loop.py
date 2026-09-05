@@ -3,16 +3,20 @@ from __future__ import annotations
 import hashlib
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
 
 from autonomous_kernel.evaluation.question_journal import QuestionOutcomeJournal
-from autonomous_kernel.evaluation.question_resolvers import resolve_midpoint_question
+from autonomous_kernel.evaluation.question_outcome import QuestionBoundOutcome
+from autonomous_kernel.evaluation.question_resolvers import QuestionResolverError, resolve_midpoint_question
 from autonomous_kernel.experts.adapters import question_prediction_to_expert_claim, implemented_baseline_expert_contracts
 from autonomous_kernel.experts.sync import sync_expert_learning
 from autonomous_kernel.intelligence.runtime import IntelligenceRuntime
 from autonomous_kernel.experience.store import MarketExperienceStore
 from autonomous_kernel.learning.direction_loop import (
     DIRECTION_QUESTION_REF,
+    DirectionLoopError,
     FORBIDDEN_FIELDS,
     HORIZON_NS,
     INSTRUMENT_ID,
@@ -246,6 +250,116 @@ class DirectionCompetenceLoopTests(unittest.TestCase):
                 matching = next(item for item in first["predictions"] if item["prediction_id"] == outcome["prediction_id"])
                 self.assertGreater(int(outcome["decided_at_ns"]), int(matching["cutoff_at_ns"]))
                 self.assertGreaterEqual(int(outcome["decided_at_ns"]), int(matching["resolves_at_ns"]))
+
+    def test_no_forward_frame_after_window_close_journals_unresolvable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            batch_id = _write_span(root, seconds=55)
+            with patch("autonomous_kernel.learning.direction_loop.materialize_forward_frame", return_value=None):
+                result = process_canonical_direction_batch(root, batch_id)
+            self.assertGreater(result["counts"]["unresolvable"], 0)
+            self.assertEqual(result["counts"]["resolved"], 0)
+            self.assertEqual(result["counts"]["pending"], 0)
+            outcomes = [QuestionBoundOutcome.from_wire(entry["outcome"]) for entry in QuestionOutcomeJournal(root).entries()]
+            self.assertTrue(all(item.status == "UNRESOLVABLE" for item in outcomes))
+            self.assertTrue(all(item.realized_answer is None for item in outcomes))
+            self.assertTrue(all(item.prediction_id for item in outcomes))
+            self.assertEqual(len(outcomes), result["counts"]["unresolvable"])
+            self.assertEqual(result["sync"]["unresolvable_predictions"], result["counts"]["unresolvable"])
+            self.assertEqual(result["sync"]["journal_outcome_count"], result["counts"]["unresolvable"])
+            self.assertEqual(result["sync"]["awaiting_outcome_predictions"], 0)
+            replay_sync = sync_expert_learning(root, known_at_ns=int(result["observation_end_ns"]))
+            self.assertEqual(len(QuestionOutcomeJournal(root).entries()), result["counts"]["unresolvable"])
+            self.assertEqual(replay_sync["scores_recorded"], 0)
+            self.assertEqual(replay_sync["unresolvable_predictions"], result["counts"]["unresolvable"])
+
+    def test_unusable_forward_after_window_close_journals_unresolvable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            batch_id = _write_span(root, seconds=55)
+
+            def unusable_forward(loop_root, loop_batch, resolves_at_ns):
+                del loop_root, loop_batch
+                return replace(
+                    materialize_cutoff_frame(root, batch_id, int(resolves_at_ns) - HORIZON_NS),
+                    frame_id="REP-UNUSABLE-FORWARD",
+                    status="UNAVAILABLE",
+                    known_at_ns=int(resolves_at_ns) + 1,
+                    cutoff_at_ns=int(resolves_at_ns) + 1,
+                )
+
+            with patch("autonomous_kernel.learning.direction_loop.materialize_forward_frame", side_effect=unusable_forward):
+                result = process_canonical_direction_batch(root, batch_id)
+            self.assertEqual(result["counts"]["unresolvable"], result["counts"]["predicted"])
+            self.assertEqual(result["sync"]["unresolvable_predictions"], result["counts"]["unresolvable"])
+            self.assertTrue(all(entry["outcome"]["status"] == "UNRESOLVABLE" for entry in QuestionOutcomeJournal(root).entries()))
+
+    def test_integrity_and_lineage_errors_are_not_journaled_as_market_outcomes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            batch_id = _write_span(root, seconds=55)
+            recorded = process_canonical_direction_batch(root, batch_id, sync=False)
+            item = recorded["predictions"][0]
+            prediction = QuestionBoundPrediction.from_wire(
+                next(entry["prediction"] for entry in QuestionPredictionJournal(root).entries() if entry["prediction"]["prediction_id"] == item["prediction_id"])
+            )
+            experience = MarketExperienceStore(root).load(item["experience_id"])
+            baseline = materialize_cutoff_frame(root, batch_id, prediction.cutoff_at_ns)
+            before = len(QuestionOutcomeJournal(root).entries())
+            changed = replace(experience, builder_version="tampered-builder")
+            with self.assertRaises(QuestionResolverError):
+                resolve_midpoint_question(
+                    root,
+                    prediction.prediction_id,
+                    baseline_experience=changed,
+                    baseline_frames=(baseline,),
+                    forward_frames=(),
+                    now_at_ns=prediction.resolves_at_ns + prediction.max_resolution_lag_ns + 2,
+                )
+            eth = default_instrument_registry().resolve("coinbase_advanced_trade_public_websocket", "ETH-USD")
+            foreign_baseline = replace(baseline, instrument=eth, frame_id="REP-WRONG-INSTRUMENT")
+            with self.assertRaises(QuestionResolverError):
+                resolve_midpoint_question(
+                    root,
+                    prediction.prediction_id,
+                    baseline_experience=experience,
+                    baseline_frames=(foreign_baseline,),
+                    forward_frames=(),
+                    now_at_ns=prediction.resolves_at_ns + prediction.max_resolution_lag_ns + 2,
+                )
+            hashed = replace(baseline, builder_version="lineage-break")
+            with self.assertRaises(QuestionResolverError):
+                resolve_midpoint_question(
+                    root,
+                    prediction.prediction_id,
+                    baseline_experience=experience,
+                    baseline_frames=(hashed,),
+                    forward_frames=(),
+                    now_at_ns=prediction.resolves_at_ns + prediction.max_resolution_lag_ns + 2,
+                )
+            with self.assertRaises(DirectionLoopError):
+                resolve_direction_prediction(
+                    root,
+                    batch_id=batch_id,
+                    prediction_id=item["prediction_id"],
+                    baseline_frame=hashed,
+                    experience=experience,
+                    now_at_ns=prediction.resolves_at_ns + prediction.max_resolution_lag_ns + 2,
+                )
+            self.assertEqual(len(QuestionOutcomeJournal(root).entries()), before)
+
+    def test_runtime_counts_match_journal_and_sync(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            batch_id = _write_span(root, seconds=55)
+            result = process_canonical_direction_batch(root, batch_id)
+            journal_outcomes = QuestionOutcomeJournal(root).entries()
+            self.assertEqual(result["counts"]["predicted"], len(QuestionPredictionJournal(root).entries()))
+            self.assertEqual(result["counts"]["resolved"] + result["counts"]["unresolvable"], len(journal_outcomes))
+            self.assertEqual(result["counts"]["unresolvable"], result["sync"]["unresolvable_predictions"])
+            self.assertEqual(result["sync"]["journal_outcome_count"], len(journal_outcomes))
+            self.assertEqual(result["sync"]["journal_prediction_count"], result["counts"]["predicted"])
+            self.assertEqual(result["sync"]["awaiting_outcome_predictions"], result["counts"]["pending"])
 
 
 if __name__ == "__main__":

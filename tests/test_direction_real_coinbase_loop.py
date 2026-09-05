@@ -38,6 +38,17 @@ class RealCoinbaseDirectionLoopTests(unittest.TestCase):
             self.assertEqual(result["question_ref"], "ECONOMIC_ROOT_DIRECTION_10S@1.0.0")
             self.assertEqual(result["horizon_ns"], 10_000_000_000)
             self.assertFalse(result["authority"]["capital_allocation"])
+            self.assertEqual(result["counts"]["predicted"], result["sync"]["journal_prediction_count"])
+            self.assertEqual(result["counts"]["unresolvable"], result["sync"]["unresolvable_predictions"])
+            self.assertEqual(
+                result["counts"]["resolved"] + result["counts"]["unresolvable"],
+                result["sync"]["journal_outcome_count"],
+            )
+            self.assertEqual(result["counts"]["pending"], result["sync"]["awaiting_outcome_predictions"])
+            self.assertEqual(
+                result["counts"]["predicted"],
+                result["counts"]["resolved"] + result["counts"]["unresolvable"] + result["counts"]["pending"],
+            )
             predictions = QuestionPredictionJournal(root).entries()
             self.assertEqual(len(predictions), result["counts"]["predicted"])
             first = result["predictions"][0]
@@ -50,6 +61,7 @@ class RealCoinbaseDirectionLoopTests(unittest.TestCase):
             proof = {
                 "batch_ids": batch_ids,
                 "counts": result["counts"],
+                "skipped_unqualified_cutoffs": result.get("skipped_unqualified_cutoffs"),
                 "question_ref": result["question_ref"],
                 "horizon_ns": result["horizon_ns"],
                 "contextual_competence_status": result["contextual_competence_status"],
