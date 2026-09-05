@@ -253,7 +253,13 @@ def slice_competence(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
 
 
 def slice_assembly(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
-    return {"stage": _stage(snapshot, "Z8"), "runtime_assembly_count": ((snapshot.get("expert_intelligence") or {}).get("runtime") or {}).get("assembly_count")}
+    learning = snapshot.get("question_learning") if isinstance(snapshot.get("question_learning"), Mapping) else {}
+    assembly = learning.get("assembly") if isinstance(learning.get("assembly"), Mapping) else {}
+    return {
+        "stage": _stage(snapshot, "Z8"),
+        "runtime_assembly_count": ((snapshot.get("expert_intelligence") or {}).get("runtime") or {}).get("assembly_count"),
+        "direction_assembly": assembly,
+    }
 
 
 def slice_research(snapshot: Mapping[str, Any]) -> Dict[str, Any]:

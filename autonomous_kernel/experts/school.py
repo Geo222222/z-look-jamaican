@@ -13,6 +13,11 @@ from .contracts import EXPERT_AUTHORITY, build_expert_contract, validate_expert_
 EXPERT_SCHOOL_SCHEMA_VERSION = "1.0"
 COMPETENCE_SCHEMA_VERSION = "1.0"
 ASSEMBLY_SCHEMA_VERSION = "1.0"
+ADAPTIVE_WEIGHT_POLICY_ID = "EXPERT_SCHOOL_ADAPTIVE_WEIGHT_POLICY_V1"
+ADAPTIVE_WEIGHT_POLICY_VERSION = "1.0"
+NEUTRAL_COMPETENCE = 0.5
+OVERLAP_PENALTY_FLOOR = 0.25
+OVERLAP_PENALTY_SCALE = 0.5
 
 SPECIES_BY_FAMILY = {
     "DIRECTION": ("NAIVE_PERSISTENCE", "LINEAR_LOGISTIC", "TREE_BOOSTING", "MICROSTRUCTURE", "TEMPORAL"),
@@ -185,75 +190,153 @@ def contextual_competence(entry: Mapping[str, Any], current_context: Mapping[str
     contextual = sum(matched) / len(matched) if matched else global_score
     support = min(1.0, math.log1p(int(entry.get("sample_count", 0))) / math.log(101.0))
     earned = (0.35 * global_score) + (0.30 * recent_score) + (0.35 * contextual)
-    shrunken = support * earned + (1.0 - support) * 0.5
+    shrunken = support * earned + (1.0 - support) * NEUTRAL_COMPETENCE
     return {
         "expert_ref": entry["expert_ref"],
         "question_ref": entry["question_ref"],
+        "global_competence": global_score,
+        "recent_competence": recent_score,
+        "contextual_match": contextual,
+        "earned_competence": earned,
         "contextual_score": max(0.0, min(1.0, shrunken)),
         "sample_support": support,
+        "sample_count": int(entry.get("sample_count", 0)),
         "matched_context_dimensions": used,
     }
 
 
-def assemble_expert_claims(claims: Sequence[Mapping[str, Any]], competence_memory: Mapping[str, Any], current_context: Mapping[str, Any]) -> Mapping[str, Any]:
+def _evidence_overlap_ratio(left: Iterable[str], right: Iterable[str]) -> float:
+    first = set(str(item) for item in left)
+    second = set(str(item) for item in right)
+    if not first or not second:
+        return 0.0
+    return len(first & second) / float(min(len(first), len(second)))
+
+
+def _overlap_penalty(claim: Mapping[str, Any], claims: Sequence[Mapping[str, Any]]) -> Tuple[float, float]:
+    evidence = set(str(value) for value in claim.get("evidence_refs", ()))
+    if not evidence or len(claims) < 2:
+        return 1.0, 0.0
+    overlaps = []
+    for other in claims:
+        if other is claim:
+            continue
+        overlaps.append(_evidence_overlap_ratio(evidence, other.get("evidence_refs", ())))
+    mean_overlap = sum(overlaps) / len(overlaps) if overlaps else 0.0
+    return max(OVERLAP_PENALTY_FLOOR, 1.0 - OVERLAP_PENALTY_SCALE * mean_overlap), mean_overlap
+
+
+def _verify_competence_memory(competence_memory: Mapping[str, Any], *, assembly_at_ns: Optional[int] = None) -> None:
+    if not isinstance(competence_memory, Mapping):
+        raise ExpertSchoolError("competence memory is required")
+    integrity = competence_memory.get("integrity")
+    if not isinstance(integrity, Mapping) or integrity.get("algorithm") != "sha256":
+        raise ExpertSchoolError("competence memory lacks integrity")
+    body = {key: value for key, value in competence_memory.items() if key != "integrity"}
+    if integrity.get("content_hash") != canonical_hash(body):
+        raise ExpertSchoolError("competence memory content hash mismatch")
+    known_at = competence_memory.get("known_at_ns")
+    if assembly_at_ns is not None and known_at is not None and int(known_at) > int(assembly_at_ns):
+        raise ExpertSchoolError("future competence cannot enter earlier assembly")
+
+
+def assemble_expert_claims(
+    claims: Sequence[Mapping[str, Any]],
+    competence_memory: Mapping[str, Any],
+    current_context: Mapping[str, Any],
+    *,
+    assembly_at_ns: Optional[int] = None,
+) -> Mapping[str, Any]:
     """Phase 14: adapt influence to earned contextual competence and evidence independence."""
     if not claims:
         raise ExpertSchoolError("assembly requires expert claims")
-    question_refs = {str(claim["question_ref"]) for claim in claims}
+    _verify_competence_memory(competence_memory, assembly_at_ns=assembly_at_ns)
+    ordered = tuple(sorted(claims, key=lambda item: (str(item.get("expert_ref")), str((item.get("integrity") or {}).get("content_hash")))))
+    expert_refs = [str(claim["expert_ref"]) for claim in ordered]
+    if len(set(expert_refs)) != len(expert_refs):
+        raise ExpertSchoolError("duplicate expert testimony cannot enter the same assembly")
+    question_refs = {str(claim["question_ref"]) for claim in ordered}
     if len(question_refs) != 1:
         raise ExpertSchoolError("assembly can only combine claims for one exact question")
     question_ref = next(iter(question_refs))
+    for field in ("question_definition_hash", "horizon_ns", "cutoff_ns"):
+        values = {claim.get(field) for claim in ordered}
+        if len(values) != 1:
+            raise ExpertSchoolError("assembly requires identical %s" % field)
+    question_definition_hash = ordered[0].get("question_definition_hash")
+    horizon_ns = ordered[0].get("horizon_ns")
+    cutoff_ns = ordered[0].get("cutoff_ns")
+    kind = str(ordered[0]["claim_kind"])
+    if any(str(claim["claim_kind"]) != kind for claim in ordered):
+        raise ExpertSchoolError("claim kinds disagree")
     entries = {
         (str(item["expert_ref"]), str(item["question_ref"])): item
         for item in competence_memory.get("entries", ())
     }
-    raw: List[Tuple[Mapping[str, Any], float, Mapping[str, Any]]] = []
-    for claim in claims:
+    raw: List[Tuple[Mapping[str, Any], float, Mapping[str, Any], float, float]] = []
+    for claim in ordered:
         entry = entries.get((str(claim["expert_ref"]), question_ref))
         if entry is None:
-            context_comp = {"contextual_score": 0.5, "sample_support": 0.0, "matched_context_dimensions": []}
+            context_comp = {
+                "contextual_score": NEUTRAL_COMPETENCE,
+                "sample_support": 0.0,
+                "sample_count": 0,
+                "global_competence": NEUTRAL_COMPETENCE,
+                "recent_competence": NEUTRAL_COMPETENCE,
+                "contextual_match": NEUTRAL_COMPETENCE,
+                "earned_competence": NEUTRAL_COMPETENCE,
+                "matched_context_dimensions": [],
+            }
         else:
             context_comp = contextual_competence(entry, current_context)
         base = max(1e-9, float(context_comp["contextual_score"]))
-        evidence = set(str(v) for v in claim.get("evidence_refs", ()))
-        overlap_penalty = 1.0
-        if evidence:
-            overlaps = []
-            for other in claims:
-                if other is claim:
-                    continue
-                other_evidence = set(str(v) for v in other.get("evidence_refs", ()))
-                union = evidence | other_evidence
-                if union:
-                    overlaps.append(len(evidence & other_evidence) / float(len(union)))
-            if overlaps:
-                overlap_penalty = max(0.25, 1.0 - 0.5 * (sum(overlaps) / len(overlaps)))
-        raw.append((claim, base * overlap_penalty, context_comp))
+        overlap_penalty, mean_overlap = _overlap_penalty(claim, ordered)
+        raw.append((claim, base * overlap_penalty, context_comp, overlap_penalty, mean_overlap))
     total = sum(item[1] for item in raw)
+    if total <= 0:
+        raise ExpertSchoolError("adaptive weight total must be positive")
     weights = [item[1] / total for item in raw]
-    kind = str(claims[0]["claim_kind"])
-    if any(str(claim["claim_kind"]) != kind for claim in claims):
-        raise ExpertSchoolError("claim kinds disagree")
     if kind in {"PROBABILITY", "POINT_ESTIMATE"}:
         estimate: Any = sum(weight * float(item[0]["answer"]) for item, weight in zip(raw, weights))
     else:
-        labels = sorted({str(label) for claim in claims for label in claim["answer"].keys()})
+        labels = sorted({str(label) for claim in ordered for label in claim["answer"].keys()})
         estimate = {label: sum(weight * float(item[0]["answer"].get(label, 0.0)) for item, weight in zip(raw, weights)) for label in labels}
     numeric_answers = []
     if kind in {"PROBABILITY", "POINT_ESTIMATE"}:
-        numeric_answers = [float(claim["answer"]) for claim in claims]
+        numeric_answers = [float(claim["answer"]) for claim in ordered]
     disagreement = (max(numeric_answers) - min(numeric_answers)) if numeric_answers else 1.0 - max(estimate.values())
     contribution = []
-    for (claim, _, context_comp), weight in zip(raw, weights):
+    mean_overlap_values = []
+    for (claim, pre_norm, context_comp, overlap_penalty, mean_overlap), weight in zip(raw, weights):
+        mean_overlap_values.append(mean_overlap)
         contribution.append({
             "expert_ref": claim["expert_ref"],
             "claim_hash": claim["integrity"]["content_hash"],
             "weight": weight,
+            "base_competence": float(context_comp.get("global_competence", NEUTRAL_COMPETENCE)),
+            "sample_support_adjustment": float(context_comp.get("sample_support", 0.0)),
+            "freshness_adjustment": float(context_comp.get("recent_competence", NEUTRAL_COMPETENCE)),
+            "contextual_adjustment": float(context_comp.get("contextual_match", NEUTRAL_COMPETENCE)),
+            "evidence_overlap_penalty": float(overlap_penalty),
+            "pre_normalization_score": float(pre_norm),
+            "normalized_weight": float(weight),
+            "sample_count": int(context_comp.get("sample_count", 0)),
             "contextual_competence": context_comp,
         })
+    pairwise = []
+    for index, left in enumerate(ordered):
+        for right in ordered[index + 1:]:
+            pairwise.append({
+                "left_expert_ref": left["expert_ref"],
+                "right_expert_ref": right["expert_ref"],
+                "overlap_ratio": _evidence_overlap_ratio(left.get("evidence_refs", ()), right.get("evidence_refs", ())),
+            })
     body = {
         "schema_version": ASSEMBLY_SCHEMA_VERSION,
         "question_ref": question_ref,
+        "question_definition_hash": question_definition_hash,
+        "horizon_ns": horizon_ns,
+        "cutoff_ns": cutoff_ns,
         "claim_kind": kind,
         "assembled_estimate": estimate,
         "expert_contributions": contribution,
@@ -261,6 +344,17 @@ def assemble_expert_claims(claims: Sequence[Mapping[str, Any]], competence_memor
         "disagreement": float(disagreement),
         "assembly_confidence": max(0.0, min(1.0, 1.0 - float(disagreement))),
         "current_context": dict(current_context),
+        "weight_policy_id": ADAPTIVE_WEIGHT_POLICY_ID,
+        "weight_policy_version": ADAPTIVE_WEIGHT_POLICY_VERSION,
+        "evidence_independence": {
+            "mean_overlap_ratio": (sum(mean_overlap_values) / len(mean_overlap_values)) if mean_overlap_values else 0.0,
+            "pairwise": pairwise,
+            "penalty_floor": OVERLAP_PENALTY_FLOOR,
+            "penalty_scale": OVERLAP_PENALTY_SCALE,
+            "metric": "OVERLAP_COEFFICIENT_MIN_SET",
+        },
+        "competence_memory_hash": (competence_memory.get("integrity") or {}).get("content_hash"),
+        "competence_known_at_ns": competence_memory.get("known_at_ns"),
         "authority": {**dict(EXPERT_AUTHORITY), "claims_competence": True, "sets_adaptive_weights": True},
     }
     body["integrity"] = {"algorithm": "sha256", "content_hash": canonical_hash({k: v for k, v in body.items() if k != "integrity"})}
