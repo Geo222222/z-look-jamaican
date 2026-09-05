@@ -21,12 +21,17 @@ from .economic_graph import (
     EconomicRelationshipType,
     InstrumentRole,
 )
+from .bridge import (
+    MarketWideExperienceBridgeError,
+    materialize_market_wide_experience,
+)
 from .market_wide import (
     MARKET_WIDE_EXPERIENCE_SCHEMA_VERSION,
     MarketWideExperienceError,
     MarketWideExperienceState,
     build_market_wide_experience,
 )
+from .market_wide_store import MarketWideExperienceStore
 from .material_evidence import MaterialEvidenceIntent, material_graph_evidence
 from .relationship_recovery import recover_economic_relationship_state
 from .relationships import (
@@ -87,8 +92,10 @@ __all__ = [
     "InstrumentRole",
     "MarketExperienceFrame",
     "MarketExperienceStore",
+    "MarketWideExperienceBridgeError",
     "MarketWideExperienceError",
     "MarketWideExperienceState",
+    "MarketWideExperienceStore",
     "MaterialEvidenceIntent",
     "NativeAmountKind",
     "RelationshipStateError",
@@ -100,6 +107,7 @@ __all__ = [
     "build_economic_root_path",
     "build_market_experience",
     "build_market_wide_experience",
+    "materialize_market_wide_experience",
     "build_spot_derivative_relationship_state",
     "material_graph_evidence",
     "normalized_amounts_comparable",

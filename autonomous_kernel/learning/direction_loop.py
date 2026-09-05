@@ -584,6 +584,8 @@ def question_learning_projection(root: Path) -> Mapping[str, Any]:
     from .direction_assembly import direction_assembly_projection
     from .liquidity_assembly import liquidity_assembly_projection
     from .liquidity_loop import LIQUIDITY_QUESTION_REF as _LIQUIDITY_QUESTION_REF
+    from .magnitude_assembly import magnitude_assembly_projection
+    from .magnitude_loop import MAGNITUDE_QUESTION_REF as _MAGNITUDE_QUESTION_REF
     from ..synthesis.service import market_synthesis_projection
 
     root = Path(root).resolve()
@@ -623,6 +625,9 @@ def question_learning_projection(root: Path) -> Mapping[str, Any]:
     liquidity_slice = dict(_family_learning_slice(predictions, outcomes, _LIQUIDITY_QUESTION_REF))
     liquidity_slice["horizon_ns"] = 30_000_000_000
     liquidity_slice["assembly"] = liquidity_assembly_projection(root)
+    magnitude_slice = dict(_family_learning_slice(predictions, outcomes, _MAGNITUDE_QUESTION_REF))
+    magnitude_slice["horizon_ns"] = 30_000_000_000
+    magnitude_slice["assembly"] = magnitude_assembly_projection(root)
     del direction_slice
     return {
         "question_ref": DIRECTION_QUESTION_REF,
@@ -654,6 +659,8 @@ def question_learning_projection(root: Path) -> Mapping[str, Any]:
         "assembly": direction_assembly_projection(root),
         "liquidity": liquidity_slice,
         "liquidity_assembly": liquidity_slice["assembly"],
+        "magnitude": magnitude_slice,
+        "magnitude_assembly": magnitude_slice["assembly"],
         "market_synthesis": market_synthesis_projection(root),
         "authority": {
             "capital_allocation": False,
