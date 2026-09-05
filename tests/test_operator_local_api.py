@@ -44,7 +44,7 @@ class OperatorLocalApiTests(unittest.TestCase):
     def test_read_only_api_surfaces(self):
         for path in (
             "/api/system", "/api/overview", "/api/market", "/api/context", "/api/questions",
-            "/api/experts", "/api/outcomes", "/api/competence", "/api/assembly", "/api/research",
+            "/api/forecasts", "/api/experts", "/api/outcomes", "/api/competence", "/api/assembly", "/api/research",
             "/api/jobs", "/api/intelligence", "/api/benjamin-handoff",
         ):
             response = self.client.get(path)

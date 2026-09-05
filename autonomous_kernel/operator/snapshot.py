@@ -20,6 +20,7 @@ from .intelligence_projection import expert_intelligence_projection
 from .journal import validate_operator_journal
 from .perception import perception_projection
 from .research_projection import research_qualification_projection
+from ..learning.direction_loop import question_learning_projection
 
 
 def _json(root: Path, relative: str) -> Mapping[str, Any]:
@@ -73,7 +74,15 @@ def _stage_metric(stage_id: str, root: Path, perception: Optional[Mapping[str, A
         }
     if stage_id == "Z3":
         state = _json(root, "state/prediction_journal.json")
-        return {"prediction_entries": int(state.get("entry_count", _count_jsonl(root, "memory/predictions.jsonl")) or 0)}
+        learning = question_learning_projection(root)
+        return {
+            "prediction_entries": int(state.get("entry_count", _count_jsonl(root, "memory/predictions.jsonl")) or 0),
+            "question_bound_predictions": int(learning.get("prediction_count") or 0),
+            "latest_question": (learning.get("latest_prediction") or {}).get("question_ref"),
+            "latest_horizon_ns": (learning.get("latest_prediction") or {}).get("horizon_ns"),
+            "latest_models": (learning.get("latest_prediction") or {}).get("model_refs"),
+            "latest_cutoff_at_ns": (learning.get("latest_prediction") or {}).get("cutoff_at_ns"),
+        }
     if stage_id in {"Z4", "Z5"}:
         state = _json(root, "state/model_registry.json")
         models = state.get("models")
@@ -86,9 +95,24 @@ def _stage_metric(stage_id: str, root: Path, perception: Optional[Mapping[str, A
         return {"registered_models": len(models), "lifecycle_counts": counts}
     if stage_id == "Z6":
         state = _json(root, "state/outcome_journal.json")
-        return {"outcome_entries": int(state.get("entry_count", _count_jsonl(root, "memory/outcomes.jsonl")) or 0)}
+        learning = question_learning_projection(root)
+        counts = learning.get("status_counts") if isinstance(learning.get("status_counts"), Mapping) else {}
+        return {
+            "outcome_entries": int(state.get("entry_count", _count_jsonl(root, "memory/outcomes.jsonl")) or 0),
+            "question_bound_outcomes": int(learning.get("outcome_count") or 0),
+            "resolved": int(counts.get("RESOLVED") or 0),
+            "unresolvable": int(counts.get("UNRESOLVABLE") or 0),
+            "pending": int(counts.get("PENDING") or 0),
+        }
     if stage_id == "Z7":
-        return {"resolved_outcome_records": _count_jsonl(root, "memory/outcomes.jsonl"), "competence_is_reconstructed": True}
+        intel = expert_intelligence_projection(root)
+        runtime = intel.get("runtime") if isinstance(intel.get("runtime"), Mapping) else {}
+        return {
+            "resolved_outcome_records": _count_jsonl(root, "memory/outcomes.jsonl"),
+            "question_bound_scores": int(runtime.get("score_count") or 0),
+            "competence_available": bool(runtime.get("competence_available")),
+            "competence_is_reconstructed": True,
+        }
     if stage_id == "Z8":
         state = _json(root, "state/assembly_journal.json")
         return {
@@ -229,6 +253,7 @@ def build_operator_snapshot(root: Path) -> Dict[str, Any]:
         "stages": stages,
         "perception": perception,
         "question_registry": _question_registry(),
+        "question_learning": question_learning_projection(root),
         "expert_intelligence": expert_intelligence_projection(root),
         "research_qualification": research_qualification_projection(),
         "model_qualification": qualification_evidence_status(root),

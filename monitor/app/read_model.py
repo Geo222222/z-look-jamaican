@@ -222,6 +222,10 @@ def slice_context(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
     }
 
 
+def slice_forecasts(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
+    return {"stage": _stage(snapshot, "Z3"), "question_learning": snapshot.get("question_learning")}
+
+
 def slice_questions(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
     return {"question_registry": snapshot.get("question_registry")}
 
@@ -232,7 +236,7 @@ def slice_experts(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
 
 
 def slice_outcomes(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
-    return {"stage": _stage(snapshot, "Z6")}
+    return {"stage": _stage(snapshot, "Z6"), "question_learning": snapshot.get("question_learning")}
 
 
 def slice_competence(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
@@ -240,6 +244,7 @@ def slice_competence(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
     return {
         "stage": _stage(snapshot, "Z7"),
         "earned_competence": (intel.get("qualification") or {}).get("earned_competence"),
+        "question_learning": snapshot.get("question_learning"),
         "runtime": {
             "score_count": (intel.get("runtime") or {}).get("score_count"),
             "competence_available": (intel.get("runtime") or {}).get("competence_available"),
