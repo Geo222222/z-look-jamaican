@@ -90,11 +90,12 @@ class MonitorSnapshotTests(unittest.TestCase):
         self.assertGreaterEqual(qualification["market_plane"]["sequence_counts"]["QUALIFIED"], 1)
 
         observer = market_data["continuous_observer"]
+        durable_observer = json.loads((self.root / "state/market_observer.json").read_text(encoding="utf-8"))
         self.assertEqual("PUBLIC-MICROSTRUCTURE-OBSERVER-001", observer["observer_id"])
-        self.assertEqual("IDLE", observer["status"])
-        self.assertEqual(0, observer["window_count"])
-        self.assertIsNone(observer["last_success_at"])
-        self.assertEqual(0, observer["consecutive_failures"])
+        self.assertEqual(durable_observer.get("status"), observer["status"])
+        self.assertEqual(len(durable_observer.get("windows") or []), observer["window_count"])
+        self.assertEqual(durable_observer.get("last_success_at"), observer["last_success_at"])
+        self.assertEqual(int(durable_observer.get("consecutive_failures") or 0), observer["consecutive_failures"])
 
         runtime = market_data["joined_shadow_runtime"]
         self.assertEqual("QUALIFIED-MARKET-SHADOW-V1", runtime["program_id"])

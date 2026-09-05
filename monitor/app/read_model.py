@@ -36,6 +36,7 @@ def _git_sha(root: Path) -> Optional[str]:
 
 
 _SNAPSHOT_CACHE: Dict[str, Any] = {"root": None, "monotonic": 0.0, "payload": None}
+_HEALTH_CACHE: Dict[str, Any] = {"root": None, "monotonic": 0.0, "payload": None}
 
 
 def operator_snapshot_payload(root: Path) -> Mapping[str, Any]:
@@ -69,6 +70,12 @@ def build_health(root: Path) -> Dict[str, Any]:
     from autonomous_kernel.intelligence.runtime import IntelligenceRuntime, validate_event_chain
 
     known_at_ns = time.time_ns()
+    now = time.monotonic()
+    cached = _HEALTH_CACHE.get("payload")
+    if cached is not None and _HEALTH_CACHE.get("root") == str(root) and now - float(_HEALTH_CACHE.get("monotonic") or 0) < 15.0:
+        payload = dict(cached)
+        payload["known_at_ns"] = known_at_ns
+        return payload
     try:
         operator_journal_errors = list(validate_operator_journal(root))
     except Exception as exc:
@@ -90,7 +97,7 @@ def build_health(root: Path) -> Dict[str, Any]:
         validation_errors = (str(exc),)
     degraded = bool(operator_journal_errors) or bool(intelligence_errors) or validation_status != "ok"
     status = "BACKEND_DEGRADED" if degraded else "BACKEND_ONLINE"
-    return {
+    payload = {
         "connectivity": "BACKEND_ONLINE",
         "status": status,
         "http_status": 200,
@@ -121,6 +128,10 @@ def build_health(root: Path) -> Dict[str, Any]:
         },
         "source_root": str(root),
     }
+    _HEALTH_CACHE["root"] = str(root)
+    _HEALTH_CACHE["monotonic"] = now
+    _HEALTH_CACHE["payload"] = payload
+    return payload
 
 
 def _stage(snapshot: Mapping[str, Any], stage_id: str) -> Mapping[str, Any]:
@@ -168,11 +179,28 @@ def slice_overview(snapshot: Mapping[str, Any], health: Mapping[str, Any]) -> Di
 
 
 def slice_market(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
-    return {"stage": _stage(snapshot, "Z1"), "data_quality": _monitor_section(snapshot, "data_quality")}
+    perception = snapshot.get("perception") if isinstance(snapshot.get("perception"), Mapping) else {}
+    return {
+        "stage": _stage(snapshot, "Z1"),
+        "instrument_state": _stage(snapshot, "Z2"),
+        "feed_status": perception.get("feed_status"),
+        "observer": perception.get("observer"),
+        "latest_instrument_state": perception.get("latest_instrument_state"),
+        "data_quality": _monitor_section(snapshot, "data_quality"),
+        "authority": perception.get("authority"),
+    }
 
 
 def slice_context(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
-    return {"stage": _stage(snapshot, "Z9"), "certification": (snapshot.get("certification") or {}).get("z9")}
+    perception = snapshot.get("perception") if isinstance(snapshot.get("perception"), Mapping) else {}
+    return {
+        "stage": _stage(snapshot, "Z9"),
+        "operational_status": perception.get("z9_status"),
+        "latest_context": perception.get("latest_context"),
+        "context_store": perception.get("context_store"),
+        "certification": (snapshot.get("certification") or {}).get("z9"),
+        "authority": perception.get("authority"),
+    }
 
 
 def slice_questions(snapshot: Mapping[str, Any]) -> Dict[str, Any]:

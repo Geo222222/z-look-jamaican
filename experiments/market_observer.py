@@ -10,6 +10,7 @@ from typing import Any, Mapping, Optional
 
 from autonomous_kernel.joined_shadow_observer import join_observer_window
 from autonomous_kernel.market_observer import ObserverConfig, run_observer_once
+from autonomous_kernel.observer_perception import propagate_captured_window
 from autonomous_kernel.observer_storage import (
     compact_successful_raw_journal,
     observer_storage_status,
@@ -30,6 +31,14 @@ async def _guarded_tick(root: Path) -> Mapping[str, Any]:
     result = dict(await run_observer_once(root))
     result["storage_before"] = storage
     if result.get("status") == "CAPTURED":
+        try:
+            result["perception_handoff"] = propagate_captured_window(root, result["window"])
+        except Exception as exc:
+            result["perception_handoff"] = {
+                "status": "ERROR",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            }
         try:
             result["joined_shadow_handoff"] = join_observer_window(root, result["window"])
         except Exception as exc:
