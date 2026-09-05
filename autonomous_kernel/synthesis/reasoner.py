@@ -75,6 +75,84 @@ def _number(value: Any) -> Optional[float]:
     return None
 
 
+def _is_claim_hash_proxy(value: str) -> bool:
+    text = str(value)
+    if text.startswith("question-prediction:") or text.startswith("claim:"):
+        return True
+    lowered = text.lower()
+    if len(lowered) == 64:
+        try:
+            int(lowered, 16)
+        except ValueError:
+            return False
+        return True
+    return False
+
+
+def _collect_lineage(assembly: Mapping[str, Any], *, subject_id: str) -> Tuple[Tuple[str, ...], Tuple[str, ...], str]:
+    groups = []
+    refs = []
+    for key in ("source_evidence_groups",):
+        value = assembly.get(key)
+        if isinstance(value, (list, tuple)):
+            groups.extend(str(item) for item in value if str(item) and not _is_claim_hash_proxy(str(item)))
+    for key in ("source_evidence_refs", "experience_refs", "evidence_refs"):
+        value = assembly.get(key)
+        if isinstance(value, (list, tuple)):
+            for item in value:
+                text = str(item)
+                if not text or _is_claim_hash_proxy(text):
+                    continue
+                refs.append(text)
+                if text.startswith("artifact:") or text.startswith("experience:"):
+                    parts = text.split(":")
+                    if len(parts) >= 2:
+                        groups.append("lineage:%s:%s" % (parts[1], subject_id))
+    assembled = assembly.get("assembled") if isinstance(assembly.get("assembled"), Mapping) else {}
+    for contribution in assembled.get("expert_contributions") or ():
+        if not isinstance(contribution, Mapping):
+            continue
+        for key in ("evidence_refs", "experience_refs"):
+            value = contribution.get(key)
+            if isinstance(value, (list, tuple)):
+                for item in value:
+                    text = str(item)
+                    if not text or _is_claim_hash_proxy(text):
+                        continue
+                    refs.append(text)
+    unique_groups = tuple(sorted(set(groups)))
+    unique_refs = tuple(sorted(set(refs)))
+    if not unique_groups and unique_refs:
+        unique_groups = unique_refs
+    status = "KNOWN" if unique_groups else "UNKNOWN"
+    return unique_groups, unique_refs, status
+
+
+def _connected_group_count(lineage_by_family: Mapping[str, Sequence[str]]) -> int:
+    families = list(lineage_by_family)
+    if not families:
+        return 0
+    parent = {family: family for family in families}
+
+    def find(item: str) -> str:
+        while parent[item] != item:
+            parent[item] = parent[parent[item]]
+            item = parent[item]
+        return item
+
+    def union(left: str, right: str) -> None:
+        root_left, root_right = find(left), find(right)
+        if root_left != root_right:
+            parent[root_right] = root_left
+
+    for index, left in enumerate(families):
+        left_groups = set(lineage_by_family[left])
+        for right in families[index + 1 :]:
+            if left_groups.intersection(lineage_by_family[right]):
+                union(left, right)
+    return len({find(family) for family in families})
+
+
 def _verify_integrity(assembly: Mapping[str, Any]) -> str:
     integrity = assembly.get("integrity")
     if not isinstance(integrity, Mapping):
@@ -246,18 +324,7 @@ def normalize_question_assembly(assembly: Mapping[str, Any], *, synthesis_known_
     freshness = age
     stale = age > STALE_HORIZON_MULTIPLE * horizon_ns
     family = definition.family.value
-    evidence_independence = assembly.get("evidence_independence") if isinstance(assembly.get("evidence_independence"), Mapping) else {}
-    evidence_refs = []
-    for key in ("evidence_refs", "source_evidence_refs", "contributing_claim_hashes"):
-        value = assembly.get(key)
-        if isinstance(value, (list, tuple)):
-            evidence_refs.extend(str(item) for item in value)
-    grouped = evidence_independence.get("evidence_groups") if isinstance(evidence_independence.get("evidence_groups"), (list, tuple)) else ()
-    for group in grouped:
-        if isinstance(group, (list, tuple)):
-            evidence_refs.extend(str(item) for item in group)
-        elif isinstance(group, str):
-            evidence_refs.append(group)
+    groups, refs, lineage_status = _collect_lineage(assembly, subject_id=str(assembly["subject_id"]))
     status = "STALE" if stale else "PRESENT"
     fact = interpret_fact(family, assembly.get("assembled_answer"))
     return {
@@ -280,7 +347,9 @@ def normalize_question_assembly(assembly: Mapping[str, Any], *, synthesis_known_
         "competence_hash": assembly.get("competence_memory_hash") or assembly.get("competence_hash"),
         "context_hash": assembly.get("context_hash"),
         "evidence_class": assembly.get("status") or assembly.get("evidence_class") or "RESEARCH_ONLY",
-        "evidence_refs": sorted(set(evidence_refs)),
+        "source_evidence_groups": list(groups),
+        "source_evidence_refs": list(refs),
+        "lineage_status": lineage_status,
         "assembled_answer": assembly.get("assembled_answer"),
         "fact": dict(fact),
         "z9_status": assembly.get("z9_status"),
@@ -450,13 +519,41 @@ def synthesize_market_state(
             findings.append(_finding("STALE_INPUT", "%s assembly is stale relative to its horizon" % item["family"], (item["family"],)))
 
     present = [item for item in question_inputs if item.get("status") in {"PRESENT", "STALE"}]
-    groups = []
-    for item in present:
-        groups.append(tuple(item.get("evidence_refs") or ()))
-    distinct_groups = len(set(groups)) if groups else 0
-    if present and distinct_groups <= 1 and len(present) > 1:
-        findings.append(_finding("LOW_INDEPENDENCE", "Multiple question families share one underlying evidence group", tuple(item["family"] for item in present)))
-    independence_score = 0.0 if not present else distinct_groups / float(len(present))
+    lineage_known = all(str(item.get("lineage_status") or "UNKNOWN") == "KNOWN" for item in present) if present else False
+    lineage_by_family = {
+        str(item["family"]): tuple(item.get("source_evidence_groups") or ())
+        for item in present
+        if str(item.get("lineage_status") or "UNKNOWN") == "KNOWN"
+    }
+    if not present:
+        independence_status = "INDEPENDENCE_NOT_ESTABLISHED"
+        distinct_groups = 0
+        independence_score = 0.0
+        independence_for_confidence = 0.0
+        dependence_warning = False
+    elif len(present) == 1:
+        independence_status = "INDEPENDENCE_NOT_ESTABLISHED"
+        distinct_groups = 1 if lineage_known else 0
+        independence_score = 0.0
+        independence_for_confidence = 0.0
+        dependence_warning = False
+        if not lineage_known:
+            findings.append(_finding("LINEAGE_UNKNOWN", "Underlying evidence lineage is unknown; independence is not established", (present[0]["family"],)))
+    elif not lineage_known:
+        independence_status = "UNKNOWN"
+        distinct_groups = 0
+        independence_score = 0.0
+        independence_for_confidence = 0.0
+        dependence_warning = True
+        findings.append(_finding("LINEAGE_UNKNOWN", "Underlying evidence lineage is unknown; independence cannot be claimed", tuple(item["family"] for item in present)))
+    else:
+        distinct_groups = _connected_group_count(lineage_by_family)
+        independence_score = distinct_groups / float(len(present))
+        independence_for_confidence = independence_score
+        dependence_warning = distinct_groups < len(present)
+        independence_status = "DEPENDENT" if dependence_warning else "INDEPENDENT"
+        if dependence_warning:
+            findings.append(_finding("LOW_INDEPENDENCE", "Multiple question families share underlying evidence lineage", tuple(item["family"] for item in present)))
     missing = [item["family"] for item in question_inputs if item.get("status") not in {"PRESENT", "STALE"}]
     if missing:
         findings.append(_finding("MISSING_SUPPORT", "Intended market-state dimensions are not assembled", tuple(missing)))
@@ -491,10 +588,12 @@ def synthesize_market_state(
             coherence -= 0.12
         elif kind == "LOW_INDEPENDENCE":
             coherence -= 0.10
+        elif kind == "LINEAGE_UNKNOWN":
+            coherence -= 0.10
         elif kind == "MISSING_SUPPORT":
             coherence -= 0.05 * min(4, len(finding["families"]))
     coherence = max(0.0, min(1.0, coherence))
-    confidence = round(max(0.0, min(1.0, 0.35 * completeness + 0.40 * coherence + 0.25 * independence_score)), 6)
+    confidence = round(max(0.0, min(1.0, 0.35 * completeness + 0.40 * coherence + 0.25 * independence_for_confidence)), 6)
 
     z9_status = str(context_status or "UNAVAILABLE")
     if z9_status == "DEGRADED":
@@ -561,7 +660,8 @@ def synthesize_market_state(
             "directional_probability": None if not direction else direction["fact"]["probability"],
             "completeness": completeness,
             "coherence": round(coherence, 6),
-            "independence": round(independence_score, 6),
+            "independence": round(independence_for_confidence, 6),
+            "independence_status": independence_status,
             "meaning": "confidence that the market-state story is sufficiently supported and coherent",
         },
         "freshness": {
@@ -571,11 +671,16 @@ def synthesize_market_state(
         "context_status": z9_status,
         "context_hash": context_hash,
         "evidence_independence_summary": {
-            "source_evidence_families": sorted({ref for item in present for ref in (item.get("evidence_refs") or ())}),
+            "lineage_status": "KNOWN" if lineage_known else "UNKNOWN",
+            "independence_status": independence_status,
+            "source_evidence_groups": sorted({group for item in present for group in (item.get("source_evidence_groups") or ())}),
+            "source_evidence_families": sorted({ref for item in present for ref in (item.get("source_evidence_refs") or ())}),
             "distinct_underlying_evidence_groups": distinct_groups,
             "present_question_count": len(present),
             "independence_score": round(independence_score, 6),
-            "dependence_warning": distinct_groups <= 1 and len(present) > 1,
+            "independence_for_confidence": round(independence_for_confidence, 6),
+            "dependence_warning": dependence_warning,
+            "used_claim_hashes_as_proxy": False,
         },
         "synthesis_status": synthesis_status,
         "prospective_qualification": "BLOCKED",

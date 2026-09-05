@@ -32,6 +32,59 @@ class DirectionAssemblyError(RuntimeError):
 EXECUTABLE_DIRECTION_MODEL_IDS = ("NULL-PRIOR", "BOOK-IMBALANCE-LINEAR", "REPORTED-FLOW-LINEAR")
 
 
+def _is_claim_hash_proxy(value: str) -> bool:
+    text = str(value)
+    if text.startswith("question-prediction:") or text.startswith("claim:"):
+        return True
+    lowered = text.lower()
+    if len(lowered) == 64:
+        try:
+            int(lowered, 16)
+        except ValueError:
+            return False
+        return True
+    return False
+
+
+def _source_evidence_refs(selected: Sequence[Mapping[str, Any]]) -> List[str]:
+    refs = set()
+    for row in selected:
+        claim = row.get("claim") if isinstance(row.get("claim"), Mapping) else {}
+        prediction = row.get("prediction")
+        for key in ("evidence_refs", "experience_refs"):
+            for item in claim.get(key) or ():
+                text = str(item)
+                if _is_claim_hash_proxy(text):
+                    continue
+                refs.add(text)
+        artifacts = getattr(prediction, "artifact_refs", ()) if prediction is not None else ()
+        for artifact in artifacts:
+            refs.add("artifact:%s:%s:%s" % (artifact.artifact_type, artifact.artifact_id, artifact.content_hash))
+            refs.add("experience:%s:%s:%s" % (artifact.artifact_type, artifact.artifact_id, artifact.content_hash))
+    return sorted(refs)
+
+
+def _source_evidence_groups(selected: Sequence[Mapping[str, Any]]) -> List[str]:
+    groups = set()
+    for row in selected:
+        prediction = row.get("prediction")
+        artifacts = getattr(prediction, "artifact_refs", ()) if prediction is not None else ()
+        subject = str(getattr(prediction, "subject_id", "") or SUBJECT_ID)
+        for artifact in artifacts:
+            groups.add("lineage:%s:%s" % (artifact.artifact_type, subject))
+            for family in artifact.feature_families:
+                groups.add("lineage:%s:%s" % (family, subject))
+        claim = row.get("claim") if isinstance(row.get("claim"), Mapping) else {}
+        for item in claim.get("experience_refs") or ():
+            text = str(item)
+            if _is_claim_hash_proxy(text):
+                continue
+            parts = text.split(":")
+            if len(parts) >= 2:
+                groups.add("lineage:%s:%s" % (parts[1], subject))
+    return sorted(groups)
+
+
 def _walk_forbidden(value: Any) -> None:
     if isinstance(value, Mapping):
         for key, item in value.items():
@@ -225,6 +278,8 @@ def assemble_direction_question(
         "known_at_ns": known_at,
         "contributing_prediction_ids": [row["prediction"].prediction_id for row in selected],
         "contributing_claim_hashes": [str(row["claim"]["integrity"]["content_hash"]) for row in selected],
+        "source_evidence_groups": _source_evidence_groups(selected),
+        "source_evidence_refs": _source_evidence_refs(selected),
         "competence_memory_hash": weighting_memory["integrity"]["content_hash"],
         "persisted_competence_hash": None if not isinstance(persisted, Mapping) else (persisted.get("integrity") or {}).get("content_hash"),
         "context_id": z9.get("context_id"),

@@ -36,7 +36,7 @@ def _family_defs():
     return definitions
 
 
-def make_assembly(family, answer, *, subject_id="ASSET.BTC", known_at_ns=1_000, cutoff_at_ns=900, evidence_refs=("EVIDENCE-A",), z9_status="DEGRADED"):
+def make_assembly(family, answer, *, subject_id="ASSET.BTC", known_at_ns=1_000, cutoff_at_ns=900, evidence_refs=("EVIDENCE-A",), source_evidence_groups=None, contributing_claim_hashes=None, omit_lineage=False, z9_status="DEGRADED"):
     definition = _family_defs()[family]
     body = {
         "schema_version": "1.0",
@@ -51,12 +51,17 @@ def make_assembly(family, answer, *, subject_id="ASSET.BTC", known_at_ns=1_000, 
         "competence_memory_hash": "c" * 64,
         "context_hash": "d" * 64,
         "assembled_answer": answer,
-        "evidence_refs": list(evidence_refs),
         "z9_status": z9_status,
         "prospective_use": "BLOCKED",
         "internal_intelligence_publication": "NOT_PUBLISHED",
         "benjamin_publication": "NOT_ELIGIBLE",
     }
+    if contributing_claim_hashes is not None:
+        body["contributing_claim_hashes"] = list(contributing_claim_hashes)
+    if not omit_lineage:
+        groups = list(source_evidence_groups) if source_evidence_groups is not None else list(evidence_refs)
+        body["source_evidence_groups"] = groups
+        body["source_evidence_refs"] = list(evidence_refs)
     body["integrity"] = {"algorithm": "sha256", "content_hash": canonical_hash(body)}
     return body
 
@@ -142,10 +147,87 @@ class AcrossQuestionSynthesisTests(unittest.TestCase):
             known_at_ns=2_000,
             subject_id="ASSET.BTC",
         )
-        self.assertEqual(1, many["evidence_independence_summary"]["distinct_underlying_evidence_groups"])
-        self.assertLess(many["confidence"]["independence"], one["confidence"]["independence"])
-        self.assertTrue(many["evidence_independence_summary"]["dependence_warning"])
+        self.assertEqual("INDEPENDENCE_NOT_ESTABLISHED", one["evidence_independence_summary"]["independence_status"])
+        self.assertEqual(0.0, one["confidence"]["independence"])
         self.assertFalse(one["evidence_independence_summary"]["dependence_warning"])
+        self.assertEqual(1, many["evidence_independence_summary"]["distinct_underlying_evidence_groups"])
+        self.assertEqual("DEPENDENT", many["evidence_independence_summary"]["independence_status"])
+        self.assertTrue(many["evidence_independence_summary"]["dependence_warning"])
+        self.assertLess(many["confidence"]["independence"], 1.0)
+
+    def test_claim_hashes_are_not_independence_proxies(self):
+        claim_a = "a" * 64
+        claim_b = "b" * 64
+        shared = ("lineage:SPOT_MICROSTRUCTURE:ASSET.BTC",)
+        synthesis = synthesize_market_state(
+            [
+                make_assembly("DIRECTION", 0.7, source_evidence_groups=shared, contributing_claim_hashes=(claim_a,)),
+                make_assembly("LIQUIDITY", 1, source_evidence_groups=shared, contributing_claim_hashes=(claim_b,)),
+            ],
+            known_at_ns=2_000,
+            subject_id="ASSET.BTC",
+        )
+        self.assertTrue(synthesis["evidence_independence_summary"]["dependence_warning"])
+        self.assertEqual("DEPENDENT", synthesis["evidence_independence_summary"]["independence_status"])
+        self.assertFalse(synthesis["evidence_independence_summary"]["used_claim_hashes_as_proxy"])
+        hashed_only = synthesize_market_state(
+            [
+                make_assembly("DIRECTION", 0.7, omit_lineage=True, contributing_claim_hashes=(claim_a,)),
+                make_assembly("LIQUIDITY", 1, omit_lineage=True, contributing_claim_hashes=(claim_b,)),
+            ],
+            known_at_ns=2_000,
+            subject_id="ASSET.BTC",
+        )
+        self.assertEqual("UNKNOWN", hashed_only["evidence_independence_summary"]["independence_status"])
+        self.assertEqual(0.0, hashed_only["confidence"]["independence"])
+        self.assertLessEqual(
+            hashed_only["confidence"]["synthesis_confidence"],
+            synthesis["confidence"]["synthesis_confidence"],
+        )
+
+    def test_missing_lineage_is_unknown_not_independent(self):
+        known = synthesize_market_state(
+            [
+                make_assembly("DIRECTION", 0.7, evidence_refs=("COINBASE-BOOK",)),
+                make_assembly("MAGNITUDE", 4, evidence_refs=("COINBASE-BOOK",)),
+            ],
+            known_at_ns=2_000,
+            subject_id="ASSET.BTC",
+        )
+        missing = synthesize_market_state(
+            [
+                make_assembly("DIRECTION", 0.7, omit_lineage=True),
+                make_assembly("MAGNITUDE", 4, omit_lineage=True),
+            ],
+            known_at_ns=2_000,
+            subject_id="ASSET.BTC",
+        )
+        self.assertEqual("UNKNOWN", missing["evidence_independence_summary"]["lineage_status"])
+        self.assertEqual("UNKNOWN", missing["evidence_independence_summary"]["independence_status"])
+        self.assertEqual(0.0, missing["confidence"]["independence"])
+        self.assertIn("LINEAGE_UNKNOWN", _kinds(missing))
+        self.assertLessEqual(missing["confidence"]["synthesis_confidence"], known["confidence"]["synthesis_confidence"])
+
+    def test_one_family_does_not_earn_cross_family_independence_bonus(self):
+        synthesis = synthesize_market_state([make_assembly("DIRECTION", 0.7, evidence_refs=("COINBASE-BOOK",))], known_at_ns=2_000, subject_id="ASSET.BTC")
+        self.assertEqual("INDEPENDENCE_NOT_ESTABLISHED", synthesis["evidence_independence_summary"]["independence_status"])
+        self.assertEqual(0.0, synthesis["confidence"]["independence"])
+        self.assertEqual(0.0, synthesis["evidence_independence_summary"]["independence_for_confidence"])
+        self.assertFalse(synthesis["evidence_independence_summary"]["dependence_warning"])
+
+    def test_independent_multi_family_lineage_is_not_a_dependence_warning(self):
+        synthesis = synthesize_market_state(
+            [
+                make_assembly("DIRECTION", 0.7, evidence_refs=("SPOT-BOOK",)),
+                make_assembly("REGIME", "DIRECTIONAL", evidence_refs=("MARKET-WIDE-CONTEXT",)),
+            ],
+            known_at_ns=2_000,
+            subject_id="ASSET.BTC",
+        )
+        self.assertEqual("INDEPENDENT", synthesis["evidence_independence_summary"]["independence_status"])
+        self.assertFalse(synthesis["evidence_independence_summary"]["dependence_warning"])
+        self.assertEqual(2, synthesis["evidence_independence_summary"]["distinct_underlying_evidence_groups"])
+        self.assertGreater(synthesis["confidence"]["independence"], 0.0)
 
     def test_tampered_assembly_hash_fails_closed(self):
         assembly = make_assembly("DIRECTION", 0.6)
@@ -340,6 +422,10 @@ class RealMarketSynthesisOptInTests(unittest.TestCase):
             self.assertEqual("NOT_PUBLISHED", synthesis["internal_intelligence_publication"])
             self.assertEqual("NOT_ELIGIBLE", synthesis["benjamin_publication"])
             self.assertEqual("DEGRADED", synthesis["context_status"])
+            self.assertEqual("INDEPENDENCE_NOT_ESTABLISHED", synthesis["evidence_independence_summary"]["independence_status"])
+            self.assertEqual(0.0, synthesis["confidence"]["independence"])
+            self.assertFalse(synthesis["evidence_independence_summary"]["used_claim_hashes_as_proxy"])
+            self.assertTrue(synthesis["evidence_independence_summary"]["source_evidence_groups"])
             self.assertFalse(synthesis["authority"]["capital_decision"])
             projection = question_learning_projection(root)
             self.assertEqual(projection["market_synthesis"]["latest"]["synthesis_id"], synthesis["synthesis_id"])
