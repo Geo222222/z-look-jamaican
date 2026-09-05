@@ -28,6 +28,7 @@ from .read_model import (
     slice_competence,
     slice_context,
     slice_experts,
+    slice_forecasts,
     slice_intelligence,
     slice_jobs,
     slice_market,
@@ -144,6 +145,11 @@ def context():
 @app.get("/api/questions")
 def questions():
     return slice_questions(_snapshot())
+
+
+@app.get("/api/forecasts")
+def forecasts():
+    return slice_forecasts(_snapshot())
 
 
 @app.get("/api/experts")

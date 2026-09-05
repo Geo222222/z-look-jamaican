@@ -73,6 +73,8 @@ def materialize_instrument_state(
     batch_ids: Iterable[str],
     instrument_id: str,
     cutoff_at_ns: Optional[int] = None,
+    min_known_at_ns: Optional[int] = None,
+    quality_statuses: Optional[Tuple[str, ...]] = None,
     depth_bands_bps: Tuple[int, ...] = (1, 5, 10),
 ) -> Mapping[str, object]:
     root = root.resolve()
@@ -83,6 +85,11 @@ def materialize_instrument_state(
         matching = [item for item in observations if item.instrument.canonical_id == instrument_id]
         if cutoff_at_ns is not None:
             matching = [item for item in matching if item.known_at_ns <= int(cutoff_at_ns)]
+        if min_known_at_ns is not None:
+            matching = [item for item in matching if item.known_at_ns >= int(min_known_at_ns)]
+        if quality_statuses is not None:
+            allowed = set(quality_statuses)
+            matching = [item for item in matching if str(item.quality.get("status")) in allowed]
         if matching:
             selected.extend(matching)
             source_batches.append(
@@ -111,6 +118,7 @@ def main(argv: Iterable[str] = None) -> int:
     parser.add_argument("--batch-id", action="append", required=True)
     parser.add_argument("--instrument-id", required=True)
     parser.add_argument("--cutoff-at-ns", type=int)
+    parser.add_argument("--min-known-at-ns", type=int)
     parser.add_argument("--depth-band-bps", action="append", type=int)
     args = parser.parse_args(list(argv) if argv is not None else None)
     bands = tuple(args.depth_band_bps) if args.depth_band_bps else (1, 5, 10)
@@ -119,6 +127,7 @@ def main(argv: Iterable[str] = None) -> int:
         batch_ids=tuple(args.batch_id),
         instrument_id=args.instrument_id,
         cutoff_at_ns=args.cutoff_at_ns,
+        min_known_at_ns=args.min_known_at_ns,
         depth_bands_bps=bands,
     )
     print(json.dumps(artifact, sort_keys=True))
