@@ -156,12 +156,9 @@ function acceptSnapshot(value){
 
 async function initial(){
   try{const response=await fetch('/api/operator',{cache:'no-store'});if(response.ok)acceptSnapshot(await response.json());}catch(_){/* base console owns connection errors */}
-  try{
-    const stream=new EventSource('/api/events');
-    stream.addEventListener('snapshot',(event)=>{try{acceptSnapshot(JSON.parse(event.data));}catch(_){}});
-  }catch(_){/* manual refresh still works */}
 }
 
+window.addEventListener('zlj-operator-snapshot',(event)=>acceptSnapshot(event.detail));
 bindNavigation();
 decorate();
 initial();

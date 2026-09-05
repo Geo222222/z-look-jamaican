@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import asyncio
 import tempfile
+import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -92,6 +95,61 @@ class OperatorLocalApiTests(unittest.TestCase):
         self.assertNotEqual(snapshot_digest(first), snapshot_digest(third))
         sse_routes = [getattr(route, "path", "") for route in mainmod.app.routes if getattr(route, "path", "") == "/api/events"]
         self.assertEqual(sse_routes, ["/api/events"])
+
+    def test_console_page_owns_a_single_event_source(self):
+        web = REPO / "monitor/web"
+        product = (web / "product-app.js").read_text(encoding="utf-8")
+        expert = (web / "expert-console.js").read_text(encoding="utf-8")
+        resolver = (web / "resolver-console.js").read_text(encoding="utf-8")
+        index = (web / "index.html").read_text(encoding="utf-8")
+        self.assertEqual(1, product.count("new EventSource"))
+        self.assertIn("closeEvents", product)
+        self.assertIn("pagehide", product)
+        self.assertIn("zlj-operator-snapshot", product)
+        self.assertNotIn("new EventSource", expert)
+        self.assertNotIn("new EventSource", resolver)
+        self.assertIn("zlj-operator-snapshot", expert)
+        self.assertIn("zlj-operator-snapshot", resolver)
+        self.assertIn("product-app.js", index)
+        self.assertNotIn('src="/assets/app.js"', index)
+
+    def test_health_stays_responsive_while_sse_clients_share_one_snapshot(self):
+        calls = {"count": 0}
+
+        def fake_snapshot():
+            calls["count"] += 1
+            time.sleep(0.3)
+            return {
+                "contract": {"name": "zlj-operator-console", "schema_version": "1.2", "read_only": True},
+                "stages": [],
+                "system": {"capital_authority": "NONE", "live_execution": "LOCKED_FALSE"},
+            }
+
+        class FakeRequest:
+            def __init__(self):
+                self.checks = 0
+
+            async def is_disconnected(self):
+                self.checks += 1
+                return self.checks >= 2
+
+        build_health(REPO)
+        started = time.perf_counter()
+        response = self.client.get("/api/health")
+        health_ms = (time.perf_counter() - started) * 1000
+        self.assertEqual(200, response.status_code)
+        self.assertLess(health_ms, 250)
+        self.assertFalse(response.json()["authority"]["capital_allocation"])
+
+        previous = (mainmod._sse_latest, mainmod._sse_digest, mainmod._sse_generation)
+        try:
+            with patch.object(mainmod, "_snapshot", side_effect=fake_snapshot):
+                asyncio.run(mainmod._publish_snapshot())
+                self.assertEqual(1, calls["count"])
+                self.assertIsNotNone(mainmod._sse_latest)
+                self.assertTrue(asyncio.run(mainmod._disconnected_within(FakeRequest(), 1.0)))
+        finally:
+            mainmod._sse_latest, mainmod._sse_digest, mainmod._sse_generation = previous
 
 
 if __name__ == "__main__":

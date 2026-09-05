@@ -5,6 +5,7 @@ import hashlib
 import json
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional, Tuple
@@ -36,26 +37,44 @@ def _git_sha(root: Path) -> Optional[str]:
 
 
 _SNAPSHOT_CACHE: Dict[str, Any] = {"root": None, "monotonic": 0.0, "payload": None}
+_SNAPSHOT_LOCK = threading.Lock()
 _HEALTH_CACHE: Dict[str, Any] = {"root": None, "monotonic": 0.0, "payload": None}
+_HEALTH_CACHE_SECONDS = 15.0
+
+
+def peek_health_payload(root: Path) -> Optional[Dict[str, Any]]:
+    cached = _HEALTH_CACHE.get("payload")
+    if cached is None or _HEALTH_CACHE.get("root") != str(root):
+        return None
+    payload = dict(cached)
+    payload["known_at_ns"] = time.time_ns()
+    return payload
+
+
+def health_cache_is_fresh(root: Path) -> bool:
+    if _HEALTH_CACHE.get("payload") is None or _HEALTH_CACHE.get("root") != str(root):
+        return False
+    return time.monotonic() - float(_HEALTH_CACHE.get("monotonic") or 0) < _HEALTH_CACHE_SECONDS
 
 
 def operator_snapshot_payload(root: Path) -> Mapping[str, Any]:
     _ensure_kernel_path(root)
-    now = time.monotonic()
-    if (
-        _SNAPSHOT_CACHE["payload"] is not None
-        and _SNAPSHOT_CACHE["root"] == str(root)
-        and now - float(_SNAPSHOT_CACHE["monotonic"]) < 2.0
-    ):
-        return _SNAPSHOT_CACHE["payload"]
-    from autonomous_kernel.operator import operator_snapshot
-    payload = operator_snapshot(root)
-    if (payload.get("contract") or {}).get("name") != "zlj-operator-console":
-        raise MonitorContractError("unexpected operator snapshot contract")
-    _SNAPSHOT_CACHE["root"] = str(root)
-    _SNAPSHOT_CACHE["monotonic"] = now
-    _SNAPSHOT_CACHE["payload"] = payload
-    return payload
+    with _SNAPSHOT_LOCK:
+        now = time.monotonic()
+        if (
+            _SNAPSHOT_CACHE["payload"] is not None
+            and _SNAPSHOT_CACHE["root"] == str(root)
+            and now - float(_SNAPSHOT_CACHE["monotonic"]) < 2.0
+        ):
+            return _SNAPSHOT_CACHE["payload"]
+        from autonomous_kernel.operator import operator_snapshot
+        payload = operator_snapshot(root)
+        if (payload.get("contract") or {}).get("name") != "zlj-operator-console":
+            raise MonitorContractError("unexpected operator snapshot contract")
+        _SNAPSHOT_CACHE["root"] = str(root)
+        _SNAPSHOT_CACHE["monotonic"] = now
+        _SNAPSHOT_CACHE["payload"] = payload
+        return payload
 
 
 def monitor_snapshot_payload(root: Path) -> Mapping[str, Any]:
@@ -72,7 +91,7 @@ def build_health(root: Path) -> Dict[str, Any]:
     known_at_ns = time.time_ns()
     now = time.monotonic()
     cached = _HEALTH_CACHE.get("payload")
-    if cached is not None and _HEALTH_CACHE.get("root") == str(root) and now - float(_HEALTH_CACHE.get("monotonic") or 0) < 15.0:
+    if cached is not None and _HEALTH_CACHE.get("root") == str(root) and now - float(_HEALTH_CACHE.get("monotonic") or 0) < _HEALTH_CACHE_SECONDS:
         payload = dict(cached)
         payload["known_at_ns"] = known_at_ns
         return payload

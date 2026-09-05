@@ -19,8 +19,10 @@ from .contract import (
 from .read_model import (
     build_health,
     compose_operator_overview,
+    health_cache_is_fresh,
     monitor_snapshot_payload,
     operator_snapshot_payload,
+    peek_health_payload,
     slice_assembly,
     slice_benjamin_handoff,
     slice_competence,
@@ -71,10 +73,42 @@ def index():
     return FileResponse(WEB / "index.html")
 
 
+_health_refresh_task: asyncio.Task | None = None
+_sse_clients = 0
+_sse_publisher: asyncio.Task | None = None
+_sse_latest: dict[str, Any] | None = None
+_sse_digest: str | None = None
+_sse_generation = 0
+
+
+def sse_client_count() -> int:
+    return _sse_clients
+
+
+def _release_sse_client() -> None:
+    global _sse_clients
+    _sse_clients = max(0, _sse_clients - 1)
+
+
+async def _refresh_health() -> None:
+    try:
+        await asyncio.to_thread(build_health, ROOT)
+    except Exception:
+        return
+
+
 @app.get("/api/health")
-def health():
-    payload = build_health(ROOT)
-    return JSONResponse(payload, status_code=200)
+async def health():
+    global _health_refresh_task
+    cached = peek_health_payload(ROOT)
+    if cached is None:
+        payload = await asyncio.to_thread(build_health, ROOT)
+        return JSONResponse(payload, status_code=200)
+    if not health_cache_is_fresh(ROOT):
+        task = _health_refresh_task
+        if task is None or task.done():
+            _health_refresh_task = asyncio.create_task(_refresh_health())
+    return JSONResponse(cached, status_code=200)
 
 
 def _snapshot():
@@ -263,26 +297,77 @@ def raw_snapshot():
     return _snapshot()
 
 
+async def _publish_snapshot() -> None:
+    global _sse_latest, _sse_digest, _sse_generation
+    try:
+        payload: dict[str, Any] = dict(await asyncio.to_thread(_snapshot))
+        payload["backend_status"] = "BACKEND_ONLINE"
+        payload.pop("monitor", None)
+    except Exception as exc:
+        payload = error_payload(exc)
+        payload["backend_status"] = "BACKEND_DEGRADED"
+    _sse_latest = payload
+    _sse_digest = snapshot_digest(payload)
+    _sse_generation += 1
+
+
+async def _publisher_loop() -> None:
+    global _sse_publisher
+    try:
+        while _sse_clients > 0:
+            await _publish_snapshot()
+            slept = 0.0
+            while slept < REFRESH_SECONDS and _sse_clients > 0:
+                await asyncio.sleep(0.25)
+                slept += 0.25
+    finally:
+        _sse_publisher = None
+
+
+async def _ensure_publisher() -> None:
+    global _sse_publisher
+    if _sse_publisher is None or _sse_publisher.done():
+        _sse_publisher = asyncio.create_task(_publisher_loop())
+
+
+async def _disconnected_within(request: Request, timeout: float) -> bool:
+    deadline = asyncio.get_running_loop().time() + timeout
+    while asyncio.get_running_loop().time() < deadline:
+        if await request.is_disconnected():
+            return True
+        await asyncio.sleep(0.2)
+    return await request.is_disconnected()
+
+
 @app.get("/api/events")
 async def events(request: Request):
+    global _sse_clients
+    _sse_clients += 1
+    await _ensure_publisher()
+
     async def stream():
-        last = None
-        while True:
-            if await request.is_disconnected():
-                break
-            try:
-                payload: dict[str, Any] = dict(await asyncio.to_thread(_snapshot))
-                payload["backend_status"] = "BACKEND_ONLINE"
-                payload.pop("monitor", None)
-            except Exception as exc:
-                payload = error_payload(exc)
-                payload["backend_status"] = "BACKEND_DEGRADED"
-            digest = snapshot_digest(payload)
-            if digest != last:
-                encoded = json.dumps(payload, sort_keys=True, default=str)
-                yield "event: snapshot\ndata: %s\n\n" % encoded
-                last = digest
-            else:
-                yield "event: heartbeat\ndata: %s\n\n" % json.dumps({"digest": digest, "backend_status": payload.get("backend_status")})
-            await asyncio.sleep(REFRESH_SECONDS)
+        last_digest = None
+        seen_generation = -1
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+                payload = _sse_latest
+                digest = _sse_digest
+                generation = _sse_generation
+                if payload is not None and generation != seen_generation:
+                    seen_generation = generation
+                    if digest != last_digest:
+                        encoded = json.dumps(payload, sort_keys=True, default=str)
+                        yield "event: snapshot\ndata: %s\n\n" % encoded
+                        last_digest = digest
+                    else:
+                        yield "event: heartbeat\ndata: %s\n\n" % json.dumps(
+                            {"digest": digest, "backend_status": payload.get("backend_status")}
+                        )
+                if await _disconnected_within(request, 0.5):
+                    break
+        finally:
+            _release_sse_client()
+
     return StreamingResponse(stream(), media_type="text/event-stream", headers={"X-Accel-Buffering": "no", "Cache-Control": "no-store"})
