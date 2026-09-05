@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
-from typing import Any, Dict, Mapping
+from typing import Any, Dict, Mapping, Optional
 
 from ..context.status import market_context_status
 from ..models.qualification_status import qualification_evidence_status
@@ -18,6 +18,7 @@ from ..questions.certification import (
 from .contracts import STAGE_METADATA, command_catalog
 from .intelligence_projection import expert_intelligence_projection
 from .journal import validate_operator_journal
+from .perception import perception_projection
 from .research_projection import research_qualification_projection
 
 
@@ -51,16 +52,25 @@ def _count_items(value: Mapping[str, Any], key: str = "items") -> int:
     return 0
 
 
-def _stage_metric(stage_id: str, root: Path) -> Dict[str, Any]:
+def _stage_metric(stage_id: str, root: Path, perception: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
+    perception = perception or {}
     if stage_id == "Z1":
         state = _json(root, "state/canonical_market_data.json")
         observation_dir = root / "artifacts/market_data/observations"
+        observer = perception.get("observer") if isinstance(perception.get("observer"), Mapping) else {}
         return {
             "canonical_batches": _count_items(state),
             "raw_observation_artifacts": len(list(observation_dir.glob("*.json"))) if observation_dir.is_dir() else 0,
+            "feed_status": perception.get("feed_status") or "NO CURRENT EVIDENCE",
+            "observer_status": observer.get("status"),
+            "last_success_at": observer.get("last_success_at"),
+            "age_ns": observer.get("age_ns"),
         }
     if stage_id == "Z2":
-        return {"representation_frames": _count_items(_json(root, "state/representations.json"))}
+        return {
+            "representation_frames": _count_items(_json(root, "state/representations.json")),
+            "operational_status": perception.get("z2_status") or "NO CURRENT FRAME",
+        }
     if stage_id == "Z3":
         state = _json(root, "state/prediction_journal.json")
         return {"prediction_entries": int(state.get("entry_count", _count_jsonl(root, "memory/predictions.jsonl")) or 0)}
@@ -86,15 +96,25 @@ def _stage_metric(stage_id: str, root: Path) -> Dict[str, Any]:
             "contextual_assembly_entries": _count_jsonl(root, "memory/contextual_assemblies.jsonl"),
         }
     if stage_id == "Z9":
-        return {"context_frames": _count_items(_json(root, "state/market_context.json")), "context_status": market_context_status(root)}
+        return {
+            "context_frames": _count_items(_json(root, "state/market_context.json")),
+            "context_status": market_context_status(root),
+            "operational_status": perception.get("z9_status") or "NO CURRENT FRAME",
+        }
     return {}
 
 
 def _stage_availability(stage_id: str, metric: Mapping[str, Any]) -> str:
+    if stage_id == "Z1":
+        return str(metric.get("feed_status") or "NO CURRENT EVIDENCE")
+    if stage_id == "Z2":
+        return str(metric.get("operational_status") or "NO CURRENT FRAME")
+    if stage_id == "Z9":
+        return str(metric.get("operational_status") or "NO CURRENT FRAME")
     numeric = [value for value in metric.values() if isinstance(value, int) and not isinstance(value, bool)]
     if any(value > 0 for value in numeric):
         return "AVAILABLE"
-    if stage_id in {"Z4", "Z5", "Z7", "Z8", "Z9"}:
+    if stage_id in {"Z4", "Z5", "Z7", "Z8"}:
         return "CONSTRUCTED_NO_RUNTIME_RECORDS"
     return "NO_DURABLE_RUNTIME_RECORDS"
 
@@ -186,9 +206,10 @@ def _certification(root: Path) -> Dict[str, Any]:
 def build_operator_snapshot(root: Path) -> Dict[str, Any]:
     root = root.resolve()
     monitor = monitor_snapshot(root)
+    perception = perception_projection(root)
     stages = []
     for metadata in STAGE_METADATA:
-        metric = _stage_metric(str(metadata["id"]), root)
+        metric = _stage_metric(str(metadata["id"]), root, perception)
         stages.append({**dict(metadata), "availability": _stage_availability(str(metadata["id"]), metric), "metrics": metric})
     journal_errors = validate_operator_journal(root)
     return {
@@ -206,6 +227,7 @@ def build_operator_snapshot(root: Path) -> Dict[str, Any]:
             "operator_journal_errors": journal_errors,
         },
         "stages": stages,
+        "perception": perception,
         "question_registry": _question_registry(),
         "expert_intelligence": expert_intelligence_projection(root),
         "research_qualification": research_qualification_projection(),

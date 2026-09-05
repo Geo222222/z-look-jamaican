@@ -36,6 +36,8 @@ class OperatorConsoleContractTests(unittest.TestCase):
         self.assertEqual("zlj-operator-console", snapshot["contract"]["name"])
         self.assertEqual("1.2", snapshot["contract"]["schema_version"])
         self.assertEqual(["Z1", "Z2", "Z3", "Z4", "Z5", "Z6", "Z7", "Z8", "Z9"], [stage["id"] for stage in snapshot["stages"]])
+        self.assertIn("perception", snapshot)
+        self.assertFalse(snapshot["perception"]["authority"]["capital_allocation"])
         self.assertEqual("NONE", snapshot["system"]["capital_authority"])
         self.assertEqual("LOCKED_FALSE", snapshot["system"]["live_execution"])
         self.assertEqual("NOT_EARNED", snapshot["certification"]["z8_historical"]["decision"])

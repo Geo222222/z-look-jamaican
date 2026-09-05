@@ -28,6 +28,8 @@ class MarketObserverEntrypointTests(unittest.TestCase):
         with patch("experiments.market_observer.observer_storage_status", return_value=storage), patch(
             "experiments.market_observer.run_observer_once", new=AsyncMock(return_value=captured)
         ) as run_once, patch(
+            "experiments.market_observer.propagate_captured_window", return_value={"status": "PROPAGATED"}
+        ) as perception, patch(
             "experiments.market_observer.join_observer_window", return_value=joined
         ) as join_window, patch(
             "experiments.market_observer.compact_successful_raw_journal", return_value=compacted
@@ -35,8 +37,10 @@ class MarketObserverEntrypointTests(unittest.TestCase):
             result = asyncio.run(_guarded_tick(Path(".").resolve()))
 
         run_once.assert_awaited_once()
+        perception.assert_called_once()
         join_window.assert_called_once()
         compact.assert_called_once()
+        self.assertEqual({"status": "PROPAGATED"}, result["perception_handoff"])
         self.assertEqual(joined, result["joined_shadow_handoff"])
         self.assertEqual(compacted, result["raw_journal_cleanup"])
         self.assertEqual(storage, result["storage_before"])
@@ -55,6 +59,8 @@ class MarketObserverEntrypointTests(unittest.TestCase):
         storage = {"allowed": True, "used_bytes": 0}
         with patch("experiments.market_observer.observer_storage_status", return_value=storage), patch(
             "experiments.market_observer.run_observer_once", new=AsyncMock(return_value=captured)
+        ), patch(
+            "experiments.market_observer.propagate_captured_window", return_value={"status": "PROPAGATED"}
         ), patch(
             "experiments.market_observer.join_observer_window", side_effect=RuntimeError("handoff defect")
         ), patch(

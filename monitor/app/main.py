@@ -271,8 +271,9 @@ async def events(request: Request):
             if await request.is_disconnected():
                 break
             try:
-                payload: dict[str, Any] = dict(_snapshot())
+                payload: dict[str, Any] = dict(await asyncio.to_thread(_snapshot))
                 payload["backend_status"] = "BACKEND_ONLINE"
+                payload.pop("monitor", None)
             except Exception as exc:
                 payload = error_payload(exc)
                 payload["backend_status"] = "BACKEND_DEGRADED"
