@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Mapping, Tuple
 from ..models.baselines import baseline_model_set
 from ..models.liquidity_baselines import liquidity_baseline_model_set
 from ..models.magnitude_baselines import magnitude_baseline_model_set
+from ..models.volatility_baselines import volatility_baseline_model_set
 from ..operations import canonical_hash
 from ..prediction.question_bound import QuestionBoundPrediction
 from ..questions.catalog import question_catalog_v1
@@ -27,6 +28,12 @@ MAGNITUDE_MODEL_IDS = {
     "BOOK-CONTEXT-BPS": "CANDIDATE_MODEL",
     "MARKET-WIDE-DRIFT-BPS": "CANDIDATE_MODEL",
 }
+VOLATILITY_REF = "ECONOMIC_ROOT_VOLATILITY_60S@1.0.0"
+VOLATILITY_MODEL_IDS = {
+    "VOLATILITY-NULL-PRIOR": "BENCHMARK",
+    "TRAILING-REALIZED-VOLATILITY": "CANDIDATE_MODEL",
+    "BOOK-STRESS-VOLATILITY": "CANDIDATE_MODEL",
+}
 
 
 def _question_map() -> Dict[str, Any]:
@@ -37,14 +44,18 @@ def _roles_for_model(model: Any) -> Tuple[Tuple[str, str, str], ...]:
     """Return only roles justified by the model's actual current inputs.
 
     Null prior is permitted as an explicit BENCHMARK on Direction and Magnitude.
-    Magnitude candidate models must consume MARKET_WIDE_CONTEXT through bridged
-    MARKET_WIDE_EXPERIENCE. Direction microstructure baselines remain Direction-only.
+    Volatility uses a dedicated VOLATILITY-NULL-PRIOR because Direction NULL-PRIOR
+    does not support the frozen 60s horizon. Magnitude and Volatility candidate
+    models must consume MARKET_WIDE_CONTEXT through bridged MARKET_WIDE_EXPERIENCE.
+    Direction microstructure baselines remain Direction-only.
     """
     model_id = str(model.definition.model_id)
     if model_id in LIQUIDITY_MODEL_IDS:
         return ((LIQUIDITY_REF, "LIQUIDITY", LIQUIDITY_MODEL_IDS[model_id]),)
     if model_id in MAGNITUDE_MODEL_IDS:
         return ((MAGNITUDE_REF, "MAGNITUDE", MAGNITUDE_MODEL_IDS[model_id]),)
+    if model_id in VOLATILITY_MODEL_IDS:
+        return ((VOLATILITY_REF, "VOLATILITY", VOLATILITY_MODEL_IDS[model_id]),)
     if model_id == "NULL-PRIOR":
         return ((DIRECTION_REF, "DIRECTION", "BENCHMARK"), (MAGNITUDE_REF, "MAGNITUDE", "BENCHMARK"))
     return ((DIRECTION_REF, "DIRECTION", "CANDIDATE_MODEL"),)
@@ -59,12 +70,19 @@ def implemented_baseline_expert_contracts() -> Tuple[Mapping[str, Any], ...]:
     """
     questions = _question_map()
     contracts: List[Mapping[str, Any]] = []
-    for model in tuple(baseline_model_set()) + tuple(liquidity_baseline_model_set()) + tuple(magnitude_baseline_model_set()):
+    for model in (
+        tuple(baseline_model_set())
+        + tuple(liquidity_baseline_model_set())
+        + tuple(magnitude_baseline_model_set())
+        + tuple(volatility_baseline_model_set())
+    ):
         model_ref = model.definition.model_ref
         if model.definition.model_id in LIQUIDITY_MODEL_IDS:
             module = "autonomous_kernel.models.liquidity_baselines"
         elif model.definition.model_id in MAGNITUDE_MODEL_IDS:
             module = "autonomous_kernel.models.magnitude_baselines"
+        elif model.definition.model_id in VOLATILITY_MODEL_IDS:
+            module = "autonomous_kernel.models.volatility_baselines"
         else:
             module = "autonomous_kernel.models.baselines"
         for question_ref, role, implementation_class in _roles_for_model(model):

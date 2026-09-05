@@ -45,10 +45,11 @@ class ExpertPredictionAdapterTests(unittest.TestCase):
 
     def test_existing_baselines_are_bound_only_to_roles_they_can_defend(self):
         contracts = implemented_baseline_expert_contracts()
-        self.assertEqual(len(contracts), 9)
+        self.assertEqual(len(contracts), 12)
         self.assertEqual(sum(1 for item in contracts if "DIRECTION" in item["expert_id"]), 3)
         self.assertEqual(sum(1 for item in contracts if "MAGNITUDE" in item["expert_id"]), 3)
         self.assertEqual(sum(1 for item in contracts if "LIQUIDITY" in item["expert_id"]), 3)
+        self.assertEqual(sum(1 for item in contracts if "VOLATILITY" in item["expert_id"]), 3)
         self.assertTrue(all(item["model_refs"] for item in contracts))
         magnitude = next(item for item in contracts if item["expert_id"] == "NULL_PRIOR_MAGNITUDE_EXPERT")
         self.assertEqual(magnitude["parameters"]["implementation_class"], "BENCHMARK")
@@ -59,10 +60,16 @@ class ExpertPredictionAdapterTests(unittest.TestCase):
         self.assertIn("LIQUIDITY_NULL_PRIOR_LIQUIDITY_EXPERT", liquidity_ids)
         self.assertIn("SPREAD_DEPTH_PRESSURE_LIQUIDITY_EXPERT", liquidity_ids)
         self.assertIn("BOOK_DEPLETION_STRESS_LIQUIDITY_EXPERT", liquidity_ids)
+        volatility_ids = {item["expert_id"] for item in contracts if "VOLATILITY" in item["expert_id"]}
+        self.assertIn("VOLATILITY_NULL_PRIOR_VOLATILITY_EXPERT", volatility_ids)
+        self.assertIn("TRAILING_REALIZED_VOLATILITY_VOLATILITY_EXPERT", volatility_ids)
+        self.assertIn("BOOK_STRESS_VOLATILITY_VOLATILITY_EXPERT", volatility_ids)
+        volatility = next(item for item in contracts if item["expert_id"] == "VOLATILITY_NULL_PRIOR_VOLATILITY_EXPERT")
+        self.assertEqual(volatility["parameters"]["implementation_class"], "BENCHMARK")
         inventory = operational_expert_inventory()
-        self.assertEqual(inventory["implemented_expert_count"], 9)
-        self.assertEqual(inventory["candidate_model_expert_count"], 6)
-        self.assertEqual(inventory["benchmark_expert_count"], 3)
+        self.assertEqual(inventory["implemented_expert_count"], 12)
+        self.assertEqual(inventory["candidate_model_expert_count"], 8)
+        self.assertEqual(inventory["benchmark_expert_count"], 4)
         self.assertFalse(inventory["earned_competence"])
         self.assertFalse(inventory["capital_authority"])
 
